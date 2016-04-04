@@ -11,6 +11,8 @@ import { MalarkeyDirective } from '../app/components/malarkey/malarkey.directive
 import { ConnectivityMatrixFactory } from '../app/components/connectivityMatrixView/connectivityMatrixFactory.service';
 import { cmResource } from '../app/components/connectivityMatrix/cmResource.service';
 import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
+import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFactory.service';
+import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr'])
   .constant('malarkey', malarkey)
@@ -22,7 +24,9 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('webDevTec', WebDevTecService)
   .service('cmResource', cmResource)
   .service('cmGraphFactory', cmGraphFactory)
+  .service('cmMatrixFactory', cmMatrixFactory)
+  .service('cmModelFactory', cmModelFactory)
+  .service('connectivityMatrixFactory', ConnectivityMatrixFactory)
   .controller('MainController', MainController)
   .directive('acmeNavbar', NavbarDirective)
-  .directive('acmeMalarkey', MalarkeyDirective)
-  .service('connectivityMatrixFactory', ConnectivityMatrixFactory);
+  .directive('acmeMalarkey', MalarkeyDirective);
