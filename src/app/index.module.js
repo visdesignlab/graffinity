@@ -8,7 +8,9 @@ import { GithubContributorService } from '../app/components/githubContributor/gi
 import { WebDevTecService } from '../app/components/webDevTec/webDevTec.service';
 import { NavbarDirective } from '../app/components/navbar/navbar.directive';
 import { MalarkeyDirective } from '../app/components/malarkey/malarkey.directive';
-import { ConnectivityMatrixFactory } from '../app/components/connectivityMatrixView/connectivityMatrixFactory.service.js';
+import { ConnectivityMatrixFactory } from '../app/components/connectivityMatrixView/connectivityMatrixFactory.service';
+import { cmResource } from '../app/components/connectivityMatrix/cmResource.service';
+import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr'])
   .constant('malarkey', malarkey)
@@ -18,6 +20,8 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .run(runBlock)
   .service('githubContributor', GithubContributorService)
   .service('webDevTec', WebDevTecService)
+  .service('cmResource', cmResource)
+  .service('cmGraphFactory', cmGraphFactory)
   .controller('MainController', MainController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)

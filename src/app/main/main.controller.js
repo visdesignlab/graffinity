@@ -1,7 +1,9 @@
 /* globals d3
  */
+import {mock} from "../components/connectivityMatrix/mock.js";
+
 export class MainController {
-  constructor($timeout, webDevTec, toastr, connectivityMatrixFactory) {
+  constructor($timeout, $log, webDevTec, toastr, connectivityMatrixFactory, cmGraphFactory) {
     'ngInject';
 
     this.awesomeThings = [];
@@ -14,7 +16,10 @@ export class MainController {
     let colNodeIndexes = [[168], [120], [1724], [142], [5107]];
     let svg = d3.select("#my-svg");
     let connectivityMatrix = connectivityMatrixFactory.createConnectivityMatrix(svg, colNodeIndexes);
-    console.log(connectivityMatrix.getD3Group());
+    if(connectivityMatrix) {
+      $log.debug("created matrix");
+    }
+    cmGraphFactory.createFromJsonObject(mock.output);
     this.activate($timeout, webDevTec);
   }
 
