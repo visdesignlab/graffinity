@@ -44,7 +44,7 @@ export class cmResource {
       deferred.resolve(result.data);
     };
 
-    let error = function (err) {
+    var error = function (err) {
       throw err;
     };
 
@@ -60,5 +60,10 @@ export class cmResource {
   setResourceUrl(url) {
     this.url = url;
   }
+
+  requestMatrix(params) {
+    return this.request(params, '/matrix');
+  }
+
 }
 
