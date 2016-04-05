@@ -2,7 +2,7 @@
 */
 import {SvgGroupElement} from "./svgGroupElement"
 
-export class MatrixRow extends SvgGroupElement {
+export class cmMatrixRow extends SvgGroupElement {
   constructor(svg, rowIndex, numColumns, colWidth, rowHeight) {
 
     var group = svg.append("g")

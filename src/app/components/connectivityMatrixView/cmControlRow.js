@@ -1,8 +1,8 @@
 /* global d3
  */
-import {MatrixRow} from "./matrixRow"
+import {cmMatrixRow} from "./cmMatrixRow"
 
-export class ControlRow extends MatrixRow {
+export class cmControlRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, colWidth, rowHeight) {
     super(svg, rowIndex, colNodeIndexes.length, colWidth, rowHeight);

@@ -6,4 +6,8 @@ export class SvgGroupElement {
   getD3Group() {
     return this.group;
   }
+
+  setPosition(x, y) {
+    this.group.attr("transform", "translate(" + x + ", " + y + ")" )
+  }
 }
