@@ -8,7 +8,7 @@ import { GithubContributorService } from '../app/components/githubContributor/gi
 import { WebDevTecService } from '../app/components/webDevTec/webDevTec.service';
 import { NavbarDirective } from '../app/components/navbar/navbar.directive';
 import { MalarkeyDirective } from '../app/components/malarkey/malarkey.directive';
-import { ConnectivityMatrixFactory } from '../app/components/connectivityMatrixView/connectivityMatrixFactory.service';
+import { cmMatrixViewFactory } from '../app/components/connectivityMatrixView/cmMatrixViewFactory';
 import { cmResource } from '../app/components/connectivityMatrix/cmResource.service';
 import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
 import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFactory.service';
@@ -26,7 +26,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('cmGraphFactory', cmGraphFactory)
   .service('cmMatrixFactory', cmMatrixFactory)
   .service('cmModelFactory', cmModelFactory)
-  .service('connectivityMatrixFactory', ConnectivityMatrixFactory)
+  .service('cmMatrixViewFactory', cmMatrixViewFactory)
   .controller('MainController', MainController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective);

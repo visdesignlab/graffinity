@@ -1,6 +1,6 @@
-import {ConnectivityMatrix} from "./connectivityMatrix"
+import {cmMatrixView} from "./cmMatrixView"
 
-export class ConnectivityMatrixFactory {
+export class cmMatrixViewFactory {
   constructor($log, $http) {
     'ngInject';
 
@@ -10,7 +10,7 @@ export class ConnectivityMatrixFactory {
   }
 
   createConnectivityMatrix(svg, colNodeIndexes) {
-    return new ConnectivityMatrix(svg, colNodeIndexes);
+    return new cmMatrixView(svg, colNodeIndexes);
   }
 
 }
