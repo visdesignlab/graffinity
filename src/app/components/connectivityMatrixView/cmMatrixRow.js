@@ -3,12 +3,24 @@
 import {SvgGroupElement} from "./svgGroupElement"
 
 export class cmMatrixRow extends SvgGroupElement {
-  constructor(svg, rowIndex, numCols, numHeaderCols, colWidth, rowHeight) {
+  constructor(svg, rowIndex, numCols, numHeaderCols, colWidth, rowHeight, isMinorRow) {
 
-    var group = svg.append("g")
-      .attr("data-major-row", rowIndex);
+    let group = null;
+    if (!isMinorRow) {
+      group = svg.append("g")
+        .attr("data-major-row", rowIndex);
+    } else {
+      group = svg.append("g")
+        .attr("data-minor-row", rowIndex);
+    }
 
     super(group);
+
+    if (!isMinorRow) {
+      this.minorRowContainer = group.append("g")
+        .attr("data-minor-row-container", rowIndex);
+      this.minorRows = [];
+    }
 
     this.majorCols = [];
     this.numHeaderCols = numHeaderCols;
@@ -27,8 +39,16 @@ export class cmMatrixRow extends SvgGroupElement {
     }
   }
 
+  addMinorRow(matrixRow) {
+    this.minorRows.push(matrixRow);
+  }
+
   getNumMajorCols() {
     return this.majorCols.length;
+  }
+
+  getNumMinorRows() {
+    return this.minorRows.length;
   }
 
   getMajorCol(i) {

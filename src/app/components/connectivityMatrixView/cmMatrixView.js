@@ -25,12 +25,14 @@ export class cmMatrixView extends SvgGroupElement {
      this.labelRow.setDebugVisible(true);
      */
 
+    let modelRows = model.getCurrentRows();
     this.dataRows = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      this.dataRows[i] = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
+      this.dataRows[i] = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
       this.dataRows[i].setPosition(0, this.rowHeight * (i + 1));
       this.dataRows[i].setDebugVisible(true);
+      console.debug("Creating a major row with minor rows:", this.dataRows[i].getNumMinorRows());
     }
 
   }
