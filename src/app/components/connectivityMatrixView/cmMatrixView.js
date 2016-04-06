@@ -18,18 +18,20 @@ export class cmMatrixView extends SvgGroupElement {
     for (var i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       this.colWidths[i] = 15;
     }
-/*
-    this.labelRow = new cmMatrixRow(svg, 1, this.colNodeIndexes.length, this.colWidth, this.rowHeight);
-    this.labelRow.setPosition(0, this.rowHeight);
-    this.labelRow.setDebugVisible(true);
+
+    /*
+     this.labelRow = new cmMatrixRow(svg, 1, this.colNodeIndexes.length, this.colWidth, this.rowHeight);
+     this.labelRow.setPosition(0, this.rowHeight);
+     this.labelRow.setDebugVisible(true);
+     */
 
     this.dataRows = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
-    for(i=0; i<this.rowNodeIndexes.length; ++i) {
-      this.dataRows[i] = new cmDataRow(svg, i+2, this.colNodeIndexes, this.colWidth, this.rowHeight);
-      this.dataRows[i].setPosition(0, this.rowHeight * (i+2));
+    for (i = 0; i < this.rowNodeIndexes.length; ++i) {
+      this.dataRows[i] = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
+      this.dataRows[i].setPosition(0, this.rowHeight * (i + 1));
       this.dataRows[i].setDebugVisible(true);
-    }*/
+    }
 
   }
 
@@ -50,8 +52,8 @@ export class cmMatrixView extends SvgGroupElement {
   setSortOrders(colWidths) {
     this.controlRow.setColWidths(colWidths);
     //this.labelRow.setColWidths(colWidths);
-    //for (var i = 0; i < this.dataRows.length; ++i) {
-    //  this.dataRows[i].setColWidths(colWidths);
-    //}
+    for (var i = 0; i < this.dataRows.length; ++i) {
+      this.dataRows[i].setColWidths(colWidths);
+    }
   }
 }

@@ -1,5 +1,5 @@
 /*global d3
-*/
+ */
 import {SvgGroupElement} from "./svgGroupElement"
 
 export class cmMatrixRow extends SvgGroupElement {
@@ -37,6 +37,10 @@ export class cmMatrixRow extends SvgGroupElement {
 
   getMajorColIndex(group) {
     return group.attr("data-major-col");
+  }
+
+  isHeaderCol(colIndex) {
+    return colIndex < this.numHeaderCols;
   }
 
   setColWidths(colWidths) {
