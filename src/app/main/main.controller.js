@@ -21,8 +21,9 @@ export class MainController {
     let graph = cmGraphFactory.createFromJsonObject(mock.output.graph);
     let matrix = cmMatrixFactory.createFromJsonObject(mock.output.matrix);
     let model = cmModelFactory.createModel(graph, matrix);
-    //let colNodeIndexes = model.getColNodeIndexes();
-    let connectivityMatrix = cmMatrixViewFactory.createConnectivityMatrix(svg, colNodeIndexes);
+    model.collapseColsByAttr("label");
+    model.collapseRowsByAttr("label");
+    let connectivityMatrix = cmMatrixViewFactory.createConnectivityMatrix(svg, model);
 
     this.activate($timeout, webDevTec);
   }

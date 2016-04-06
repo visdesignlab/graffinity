@@ -3,7 +3,7 @@
 import {SvgGroupElement} from "./svgGroupElement"
 
 export class cmMatrixRow extends SvgGroupElement {
-  constructor(svg, rowIndex, numColumns, colWidth, rowHeight) {
+  constructor(svg, rowIndex, numCols, numHeaderCols, colWidth, rowHeight) {
 
     var group = svg.append("g")
       .attr("data-major-row", rowIndex);
@@ -11,8 +11,9 @@ export class cmMatrixRow extends SvgGroupElement {
     super(group);
 
     this.majorCols = [];
-
-    for (var i = 0; i < numColumns; ++i) {
+    this.numHeaderCols = numHeaderCols;
+    let totalNumCols = numCols + numHeaderCols;
+    for (var i = 0; i < totalNumCols; ++i) {
       this.majorCols[i] = group.append("g")
         .attr("data-major-col", i)
         .attr("transform", "translate(" + (colWidth * i) + ",0)");
@@ -24,6 +25,10 @@ export class cmMatrixRow extends SvgGroupElement {
         .attr("stroke", "#444")
         .attr("fill", "none");
     }
+  }
+
+  getNumMajorCols() {
+    return this.majorCols.length;
   }
 
   getMajorCol(i) {
