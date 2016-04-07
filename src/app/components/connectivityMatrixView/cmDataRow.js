@@ -1,11 +1,9 @@
-/* global d3
- */
 import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmDataRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow) {
-    super(svg, rowIndex, colNodeIndexes.length, numHeaderCols, colWidth, rowHeight, isMinorRow);
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow);
 
     if (!isMinorRow) {
       let numChildren = modelRow.getNumChildren();

@@ -3,8 +3,8 @@
 import {SvgGroupElement} from "./svgGroupElement"
 
 export class cmMatrixRow extends SvgGroupElement {
-  constructor(svg, rowIndex, numCols, numHeaderCols, colWidth, rowHeight, isMinorRow) {
-
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow) {
+    // Create parent group for all stuff.
     let group = null;
     if (!isMinorRow) {
       group = svg.append("g")
@@ -13,31 +13,26 @@ export class cmMatrixRow extends SvgGroupElement {
       group = svg.append("g")
         .attr("data-minor-row", rowIndex);
     }
-
     super(group);
+
+
     this.currentHeight = rowHeight;
     this.isMinorRow = isMinorRow;
+    this.rowIndex = rowIndex;
+    this.majorCols = [];
+    this.numHeaderCols = numHeaderCols;
+
     if (!isMinorRow) {
       this.minorRowContainer = group.append("g")
         .attr("data-minor-row-container", rowIndex);
       this.minorRows = [];
     }
-    this.rowIndex = rowIndex;
-    this.majorCols = [];
-    this.numHeaderCols = numHeaderCols;
-    let totalNumCols = numCols + numHeaderCols;
-    for (var i = 0; i < totalNumCols; ++i) {
-      this.majorCols[i] = group.append("g")
-        .attr("data-major-col", i)
-        .attr("transform", "translate(" + (colWidth * i) + ",0)");
 
-      this.majorCols[i].append("rect")
-        .attr("data-debug", true)
-        .attr("width", colWidth)
-        .attr("height", rowHeight)
-        .attr("stroke", "#444")
-        .attr("fill", "none");
-    }
+    let numCols = colNodeIndexes.length;
+    let totalNumCols = numCols + numHeaderCols;
+    this.createMajorCols(totalNumCols, colWidth, rowHeight);
+    this.createMinorCols(numHeaderCols, colNodeIndexes);
+
   }
 
   addMinorRow(matrixRow) {
@@ -83,6 +78,66 @@ export class cmMatrixRow extends SvgGroupElement {
 
   }
 
+  createMajorCols(totalNumCols, colWidth, rowHeight) {
+    let group = this.group;
+    for (var i = 0; i < totalNumCols; ++i) {
+      this.majorCols[i] = group.append("g")
+        .attr("data-major-col", i)
+        .attr("transform", "translate(" + (colWidth * i) + ",0)");
+
+      if (this.isMinorRow) {
+        this.majorCols[i].append("rect")
+          .attr("data-debug", true)
+          .attr("width", colWidth)
+          .attr("height", rowHeight)
+          .attr("stroke", "#040")
+          .attr("fill", "none");
+      } else {
+        this.majorCols[i].append("rect")
+          .attr("data-debug", true)
+          .attr("width", colWidth)
+          .attr("height", rowHeight)
+          .attr("stroke", "#444")
+          .attr("fill", "none");
+      }
+    }
+  }
+
+  createMinorCols(numHeaderCols, colNodeIndexes) {
+    this.minorColContainers = [];
+    this.minorCols = [];
+
+    for (var i = 0; i < colNodeIndexes.length + numHeaderCols; ++i) {
+      let majorCol = this.getMajorCol(i);
+      this.minorColContainers[i] = majorCol.append("g")
+        .attr("data-minor-col-container", i)
+        .style("display", "none");
+
+      if (i >= numHeaderCols) {
+        let index = i - numHeaderCols;
+        let minorCols = [];
+        for (var j = 0; j < colNodeIndexes[index].length; ++j) {
+
+          let minorCol = this.minorColContainers[i]
+            .append("g")
+            .attr("data-minor-col", j);
+
+          minorCols.push(minorCol);
+
+          minorCol.append("circle")
+            .attr("data-debug", true)
+            .attr("r", 6)
+            .attr("cx", 6)
+            .attr("cy", 6)
+            .attr("fill", "none")
+            .attr("stroke", "#444");
+
+          this.minorCols[i] = minorCols;
+        }
+      }
+    }
+  }
+
   getCurrentHeight() {
     return this.currentHeight;
   }
@@ -125,6 +180,22 @@ export class cmMatrixRow extends SvgGroupElement {
     this.unrollRowCallback(this.rowIndex);
   }
 
+  rollupCol(colIndex) {
+    for (var i = 0; i < this.minorCols[colIndex].length; ++i) {
+      let currCol = this.minorCols[colIndex][i];
+      currCol.transition().duration(500)
+        .attr("transform", "translate(0,0)");
+    }
+    this.minorColContainers[colIndex].transition().delay(500).style("display", "none");
+
+    if (!this.isMinorRow) {
+      let numMinorRows = this.getNumMinorRows();
+      for (i = 0; i < numMinorRows; ++i) {
+        this.minorRows[i].rollupCol(colIndex);
+      }
+    }
+  }
+
   setColWidths(colWidths) {
     let numColumns = colWidths.length;
     let xPosition = 0;
@@ -149,6 +220,22 @@ export class cmMatrixRow extends SvgGroupElement {
     children.style("display", visible ? "block" : "none");
   }
 
+  unrollCol(colIndex, colWidth) {
+    this.minorColContainers[colIndex].style("display", "block");
+    for (var i = 0; i < this.minorCols[colIndex].length; ++i) {
+      let currCol = this.minorCols[colIndex][i];
+      currCol.transition().duration(500)
+        .attr("transform", "translate(" + ((i + 1) * colWidth) + ",0)");
+    }
+
+    if (!this.isMinorRow) {
+      let numMinorRows = this.getNumMinorRows();
+      for (i = 0; i < numMinorRows; ++i) {
+        this.minorRows[i].unrollCol(colIndex, colWidth);
+      }
+    }
+  }
+
   updateControls(unrolled) {
     this.unrollControls.style("display", unrolled ? "none" : "block");
     this.rollupControls.style("display", unrolled ? "block" : "none");
@@ -157,7 +244,7 @@ export class cmMatrixRow extends SvgGroupElement {
   updateMinorRows(unrolled) {
     let numMinorRows = this.getNumMinorRows();
     for (var i = 0; i < numMinorRows; ++i) {
-      if(unrolled) {
+      if (unrolled) {
         this.minorRows[i].setVisible(true);
         this.minorRows[i].setPosition(0, 0);
         this.minorRows[i].setPosition(0, this.currentHeight * (i + 1));

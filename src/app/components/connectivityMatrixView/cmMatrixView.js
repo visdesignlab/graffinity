@@ -10,21 +10,24 @@ export class cmMatrixView extends SvgGroupElement {
     this.colWidths = [];
     this.colNodeIndexes = model.getColNodeIndexes();
     this.numHeaderCols = 3;
-    this.controlRow = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
-
-    var callback = this.onColControlsClicked.bind(this);
-    this.controlRow.setColClickCallback(callback);
-
-    for (var i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      this.colWidths[i] = 15;
-    }
-
     this.numHeaderRows = 1;
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
+    this.allRows = [];
+
+    for (var i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
+      this.colWidths[i] = this.colWidth;
+    }
+
     for (i = 0; i < this.rowNodeIndexes.length + this.numHeaderRows; ++i) {
       this.rowHeights[i] = this.rowHeight;
     }
+
+    // Controls row is the only one with a onColControlsClicked callback.
+    this.controlRow = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
+    let callback = this.onColControlsClicked.bind(this);
+    this.controlRow.setColClickCallback(callback);
+    this.allRows.push(this.controlRow);
 
     /*
      this.labelRow = new cmMatrixRow(svg, 1, this.colNodeIndexes.length, this.colWidth, this.rowHeight);
@@ -33,14 +36,13 @@ export class cmMatrixView extends SvgGroupElement {
      */
 
     let modelRows = model.getCurrentRows();
-    this.dataRows = [];
-    this.rowNodeIndexes = model.getRowNodeIndexes();
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      this.dataRows[i] = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
-      this.dataRows[i].setPosition(0, this.rowHeight * (i + 1));
-      this.dataRows[i].setDebugVisible(true);
+      let dataRow = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
+      dataRow.setPosition(0, this.rowHeight * (i + 1));
+      dataRow.setDebugVisible(true);
       callback = this.onRowControlsClicked.bind(this);
-      this.dataRows[i].createControlsCol(this.colWidth, this.rowHeight, callback);
+      dataRow.createControlsCol(this.colWidth, this.rowHeight, callback);
+      this.allRows.push(dataRow);
     }
 
   }
@@ -50,28 +52,40 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onColControlsClicked(colIndex, unrolling) {
+
+    // Update width of the column
     if (unrolling) {
       let dataColIndex = this.getDataColIndex(colIndex);
-      this.colWidths[colIndex] = this.colNodeIndexes[dataColIndex].length * this.colWidths[colIndex];
+      this.colWidths[colIndex] = (this.colNodeIndexes[dataColIndex].length + 1) * this.colWidths[colIndex];
     } else {
       this.colWidths[colIndex] = this.colWidth;
     }
+
+    // Tell rows to unroll col.
+    for (var i = 0; i < this.allRows.length; ++i) {
+      if(unrolling) {
+        this.allRows[i].unrollCol(colIndex, this.colWidth);
+      } else {
+        this.allRows[i].rollupCol(colIndex);
+      }
+    }
+
+    // Update position of other cols.
     this.setSortOrders(this.colWidths, this.rowHeights);
   }
 
   onRowControlsClicked(rowIndex) {
-    this.rowHeights[rowIndex] = this.dataRows[rowIndex - this.numHeaderRows].getCurrentHeight();
+    this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
     this.setSortOrders(this.colWidths, this.rowHeights);
   }
 
   setSortOrders(colWidths, rowHeights) {
-    this.controlRow.setColWidths(colWidths);
-    //this.labelRow.setColWidths(colWidths);
-    let y = this.rowHeights[0];
-    for (var i = 0; i < this.dataRows.length; ++i) {
-      this.dataRows[i].setColWidths(colWidths);
-      this.dataRows[i].setPosition(0, y);
-      y += rowHeights[i + 1];
+
+    let y = 0;
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].setColWidths(colWidths);
+      this.allRows[i].setPosition(0, y);
+      y += rowHeights[i];
 
     }
   }

@@ -5,7 +5,7 @@ import {cmMatrixRow} from "./cmMatrixRow"
 export class cmControlRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight) {
-    super(svg, rowIndex, colNodeIndexes.length, numHeaderCols, colWidth, rowHeight);
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight);
 
     this.unrollControls = [];
     this.rollupControls = [];
