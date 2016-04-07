@@ -15,7 +15,7 @@ export class cmControlRow extends cmMatrixRow {
       var group = this.getMajorCol(i);
       this.unrollControls[i] = group.append("g");
 
-      if (!this.isHeaderCol(i)) {
+      if (!this.isHeaderCol(i) && colNodeIndexes[i - numHeaderCols].length > 1) {
         var self = this;
         this.unrollControls[i].append("text")
           .text("+")

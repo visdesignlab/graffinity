@@ -116,8 +116,11 @@ export class cmMatrixRow extends SvgGroupElement {
       if (i >= numHeaderCols) {
         let index = i - numHeaderCols;
         let minorCols = [];
-        for (var j = 0; j < colNodeIndexes[index].length; ++j) {
 
+        for (var j = 0; j < colNodeIndexes[index].length; ++j) {
+          if(colNodeIndexes[index].length == 1) {
+            continue;
+          }
           let minorCol = this.minorColContainers[i]
             .append("g")
             .attr("data-minor-col", j);

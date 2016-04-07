@@ -40,8 +40,10 @@ export class cmMatrixView extends SvgGroupElement {
       let dataRow = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
       dataRow.setPosition(0, this.rowHeight * (i + 1));
       dataRow.setDebugVisible(true);
-      callback = this.onRowControlsClicked.bind(this);
-      dataRow.createControlsCol(this.colWidth, this.rowHeight, callback);
+      if (modelRows[i].getNumChildren() > 0) {
+        callback = this.onRowControlsClicked.bind(this);
+        dataRow.createControlsCol(this.colWidth, this.rowHeight, callback);
+      }
       this.allRows.push(dataRow);
     }
 
@@ -63,7 +65,7 @@ export class cmMatrixView extends SvgGroupElement {
 
     // Tell rows to unroll col.
     for (var i = 0; i < this.allRows.length; ++i) {
-      if(unrolling) {
+      if (unrolling) {
         this.allRows[i].unrollCol(colIndex, this.colWidth);
       } else {
         this.allRows[i].rollupCol(colIndex);
