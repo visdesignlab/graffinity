@@ -15,13 +15,13 @@ export class cmMatrixRow extends SvgGroupElement {
     }
 
     super(group);
-
+    this.currentHeight = rowHeight;
     if (!isMinorRow) {
       this.minorRowContainer = group.append("g")
         .attr("data-minor-row-container", rowIndex);
       this.minorRows = [];
     }
-
+    this.rowIndex = rowIndex;
     this.majorCols = [];
     this.numHeaderCols = numHeaderCols;
     let totalNumCols = numCols + numHeaderCols;
@@ -43,6 +43,49 @@ export class cmMatrixRow extends SvgGroupElement {
     this.minorRows.push(matrixRow);
   }
 
+  createControlsCol(colWidth, rowHeight, callback) {
+    let col = this.getMajorCol(0);
+    var self = this;
+    this.unrollRowCallback = callback;
+
+    this.unrollControls = col.append("g");
+
+    this.unrollControls.append("text")
+      .text("+")
+      .style("text-anchor", "start")
+      .style("dominant-baseline", "hanging");
+
+    this.unrollControls
+      .append("rect")
+      .attr("width", colWidth)
+      .attr("height", rowHeight)
+      .style("fill", "transparent")
+      .on("click", function () {
+        self.onUnrollRowClicked();
+      });
+
+    this.rollupControls = col.append("g");
+    this.rollupControls.append("text")
+      .text("-")
+      .style("text-anchor", "start")
+      .style("dominant-baseline", "hanging");
+
+    this.rollupControls.append("rect")
+      .attr("width", colWidth)
+      .attr("height", rowHeight)
+      .style("fill", "transparent")
+      .on("click", function () {
+        self.onRollupRowClicked();
+      });
+
+    this.rollupControls.style("display", "none");
+
+  }
+
+  getCurrentHeight() {
+    return this.currentHeight;
+  }
+
   getNumMajorCols() {
     return this.majorCols.length;
   }
@@ -61,6 +104,20 @@ export class cmMatrixRow extends SvgGroupElement {
 
   isHeaderCol(colIndex) {
     return colIndex < this.numHeaderCols;
+  }
+
+  onRollupRowClicked() {
+    this.unrollControls.style("display", "block");
+    this.rollupControls.style("display", "none");
+    this.currentHeight = this.currentHeight / this.getNumMinorRows();
+    this.unrollRowCallback(this.rowIndex);
+  }
+
+  onUnrollRowClicked() {
+    this.unrollControls.style("display", "none");
+    this.rollupControls.style("display", "block");
+    this.currentHeight = this.currentHeight * this.getNumMinorRows();
+    this.unrollRowCallback(this.rowIndex);
   }
 
   setColWidths(colWidths) {

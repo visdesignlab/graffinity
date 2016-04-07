@@ -19,6 +19,13 @@ export class cmMatrixView extends SvgGroupElement {
       this.colWidths[i] = 15;
     }
 
+    this.numHeaderRows = 1;
+    this.rowHeights = [];
+    this.rowNodeIndexes = model.getRowNodeIndexes();
+    for (i = 0; i < this.rowNodeIndexes.length + this.numHeaderRows; ++i) {
+      this.rowHeights[i] = this.rowHeight;
+    }
+
     /*
      this.labelRow = new cmMatrixRow(svg, 1, this.colNodeIndexes.length, this.colWidth, this.rowHeight);
      this.labelRow.setPosition(0, this.rowHeight);
@@ -32,7 +39,8 @@ export class cmMatrixView extends SvgGroupElement {
       this.dataRows[i] = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
       this.dataRows[i].setPosition(0, this.rowHeight * (i + 1));
       this.dataRows[i].setDebugVisible(true);
-      console.debug("Creating a major row with minor rows:", this.dataRows[i].getNumMinorRows());
+      callback = this.onRowControlsClicked.bind(this);
+      this.dataRows[i].createControlsCol(this.colWidth, this.rowHeight, callback);
     }
 
   }
@@ -48,14 +56,23 @@ export class cmMatrixView extends SvgGroupElement {
     } else {
       this.colWidths[colIndex] = this.colWidth;
     }
-    this.setSortOrders(this.colWidths);
+    this.setSortOrders(this.colWidths, this.rowHeights);
   }
 
-  setSortOrders(colWidths) {
+  onRowControlsClicked(rowIndex) {
+    this.rowHeights[rowIndex] = this.dataRows[rowIndex - this.numHeaderRows].getCurrentHeight();
+    this.setSortOrders(this.colWidths, this.rowHeights);
+  }
+
+  setSortOrders(colWidths, rowHeights) {
     this.controlRow.setColWidths(colWidths);
     //this.labelRow.setColWidths(colWidths);
+    let y = this.rowHeights[0];
     for (var i = 0; i < this.dataRows.length; ++i) {
       this.dataRows[i].setColWidths(colWidths);
+      this.dataRows[i].setPosition(0, y);
+      y += rowHeights[i + 1];
+
     }
   }
 }

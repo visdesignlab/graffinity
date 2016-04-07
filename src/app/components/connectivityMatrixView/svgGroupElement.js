@@ -8,6 +8,16 @@ export class SvgGroupElement {
   }
 
   setPosition(x, y) {
-    this.group.attr("transform", "translate(" + x + ", " + y + ")" )
+    let transform = this.group.attr("transform");
+    if (!transform) {
+      this.group.attr("transform", "translate(" + x + ", " + y + ")")
+    } else {
+      this.group.transition().duration(500).attr("transform", "translate(" + x + ", " + y + ")");
+    }
+
+  }
+
+  setVisible(visible) {
+    this.group.style("display", visible ? "block" : "none");
   }
 }
