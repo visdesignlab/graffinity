@@ -7,14 +7,18 @@ export class SvgGroupElement {
     return this.group;
   }
 
-  setPosition(x, y) {
+  setPosition(x, y, hideAfterMove) {
     let transform = this.group.attr("transform");
     if (!transform) {
       this.group.attr("transform", "translate(" + x + ", " + y + ")")
     } else {
-      this.group.transition().duration(500).attr("transform", "translate(" + x + ", " + y + ")");
+      if (!hideAfterMove) {
+        this.group.transition().duration(500).attr("transform", "translate(" + x + ", " + y + ")");
+      } else {
+        this.group.transition().duration(500).attr("transform", "translate(" + x + ", " + y + ")");
+        this.group.transition().delay(500).style("display", "none");
+      }
     }
-
   }
 
   setVisible(visible) {

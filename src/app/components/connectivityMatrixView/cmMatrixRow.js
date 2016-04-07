@@ -16,6 +16,7 @@ export class cmMatrixRow extends SvgGroupElement {
 
     super(group);
     this.currentHeight = rowHeight;
+    this.isMinorRow = isMinorRow;
     if (!isMinorRow) {
       this.minorRowContainer = group.append("g")
         .attr("data-minor-row-container", rowIndex);
@@ -107,16 +108,20 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   onRollupRowClicked() {
-    this.unrollControls.style("display", "block");
-    this.rollupControls.style("display", "none");
-    this.currentHeight = this.currentHeight / this.getNumMinorRows();
+    let unrolled = false;
+    this.updateControls(unrolled);
+    this.updateMinorRows(unrolled);
+
+    this.currentHeight = this.currentHeight / (this.getNumMinorRows() + 1);
     this.unrollRowCallback(this.rowIndex);
   }
 
   onUnrollRowClicked() {
-    this.unrollControls.style("display", "none");
-    this.rollupControls.style("display", "block");
-    this.currentHeight = this.currentHeight * this.getNumMinorRows();
+    let unrolled = true;
+    this.updateControls(unrolled);
+    this.updateMinorRows(unrolled);
+
+    this.currentHeight = this.currentHeight * (this.getNumMinorRows() + 1);
     this.unrollRowCallback(this.rowIndex);
   }
 
@@ -127,6 +132,13 @@ export class cmMatrixRow extends SvgGroupElement {
       this.majorCols[i].transition().duration(500).attr("transform", "translate(" + xPosition + ",0)");
       xPosition += colWidths[i];
     }
+
+    if (!this.isMinorRow) {
+      let numMinorRows = this.getNumMinorRows();
+      for (i = 0; i < numMinorRows; ++i) {
+        this.minorRows[i].setColWidths(colWidths);
+      }
+    }
   }
 
   setDebugVisible(visible) {
@@ -135,5 +147,23 @@ export class cmMatrixRow extends SvgGroupElement {
       return d3.select(this).attr("data-debug");
     });
     children.style("display", visible ? "block" : "none");
+  }
+
+  updateControls(unrolled) {
+    this.unrollControls.style("display", unrolled ? "none" : "block");
+    this.rollupControls.style("display", unrolled ? "block" : "none");
+  }
+
+  updateMinorRows(unrolled) {
+    let numMinorRows = this.getNumMinorRows();
+    for (var i = 0; i < numMinorRows; ++i) {
+      if(unrolled) {
+        this.minorRows[i].setVisible(true);
+        this.minorRows[i].setPosition(0, 0);
+        this.minorRows[i].setPosition(0, this.currentHeight * (i + 1));
+      } else {
+        this.minorRows[i].setPosition(0, 0, true);
+      }
+    }
   }
 }
