@@ -1,7 +1,8 @@
 import {SvgGroupElement} from "./svgGroupElement"
 import {cmControlRow} from "./cmControlRow"
-import {cmMatrixRow} from "./cmMatrixRow"
+import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
+import {cmCellVisitor} from "./cmCellVisitors"
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model) {
     super(svg);
@@ -10,7 +11,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.colWidths = [];
     this.colNodeIndexes = model.getColNodeIndexes();
     this.numHeaderCols = 3;
-    this.numHeaderRows = 1;
+    this.numHeaderRows = 2;
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
@@ -29,16 +30,14 @@ export class cmMatrixView extends SvgGroupElement {
     this.controlRow.setColClickCallback(callback);
     this.allRows.push(this.controlRow);
 
-    /*
-     this.labelRow = new cmMatrixRow(svg, 1, this.colNodeIndexes.length, this.colWidth, this.rowHeight);
-     this.labelRow.setPosition(0, this.rowHeight);
-     this.labelRow.setDebugVisible(true);
-     */
+    this.labelRow = new cmLabelRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
+    this.labelRow.setPosition(0, this.rowHeight);
+    this.allRows.push(this.labelRow);
 
     let modelRows = model.getCurrentRows();
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(svg, i + 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
-      dataRow.setPosition(0, this.rowHeight * (i + 1));
+      let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
+      dataRow.setPosition(0, this.rowHeight * (i + this.numHeaderRows ));
       dataRow.setDebugVisible(true);
       if (modelRows[i].getNumChildren() > 0) {
         callback = this.onRowControlsClicked.bind(this);
@@ -47,6 +46,11 @@ export class cmMatrixView extends SvgGroupElement {
       this.allRows.push(dataRow);
     }
 
+    // Visitor will set colors of all the cells.
+    let visitor = new cmCellVisitor();
+    for (i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].apply(visitor);
+    }
   }
 
   getDataColIndex(viewColIndex) {
@@ -82,7 +86,6 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   setSortOrders(colWidths, rowHeights) {
-
     let y = 0;
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].setColWidths(colWidths);
@@ -92,3 +95,4 @@ export class cmMatrixView extends SvgGroupElement {
     }
   }
 }
+

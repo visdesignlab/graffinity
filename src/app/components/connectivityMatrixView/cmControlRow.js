@@ -12,7 +12,7 @@ export class cmControlRow extends cmMatrixRow {
 
     var numMajorCols = this.getNumMajorCols();
     for (var i = 0; i < numMajorCols; ++i) {
-      var group = this.getMajorCol(i);
+      var group = this.getMajorCol(i).getD3Group();
       this.unrollControls[i] = group.append("g");
 
       if (!this.isHeaderCol(i) && colNodeIndexes[i - numHeaderCols].length > 1) {

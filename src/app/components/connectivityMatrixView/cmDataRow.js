@@ -24,12 +24,9 @@ export class cmDataRow extends cmMatrixRow {
 
     var numMajorCols = this.getNumMajorCols();
     for (i = 0; i < numMajorCols; ++i) {
-      var group = this.getMajorCol(i);
-      if (!this.isHeaderCol(i)) {
-        group.append("rect")
-          .attr("width", colWidth)
-          .attr("height", rowHeight);
-      }
+      var group = this.getMajorCol(i).getD3Group();
     }
+
+    this.createMinorCols(numHeaderCols, colNodeIndexes);
   }
 }
