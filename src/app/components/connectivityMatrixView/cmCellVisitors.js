@@ -5,10 +5,7 @@ export class cmCellVisitor {
       return;
     }
 
-    console.log(cell.data);
     let values = cell.data.modelRow.getValuesAsList([cell.data.colNodeIndexes])[0];
-    console.log(cell.getGroup());
-    console.log(values);
 
     if (cell.isMajorCell) {
       if (cell.isInMajorRow) {

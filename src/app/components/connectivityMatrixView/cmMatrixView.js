@@ -23,6 +23,7 @@ export class cmMatrixView extends SvgGroupElement {
     for (i = 0; i < this.rowNodeIndexes.length + this.numHeaderRows; ++i) {
       this.rowHeights[i] = this.rowHeight;
     }
+    this.rowHeights[1] = 40;
 
     // Controls row is the only one with a onColControlsClicked callback.
     this.controlRow = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
@@ -30,20 +31,40 @@ export class cmMatrixView extends SvgGroupElement {
     this.controlRow.setColClickCallback(callback);
     this.allRows.push(this.controlRow);
 
-    this.labelRow = new cmLabelRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
-    this.labelRow.setPosition(0, this.rowHeight);
+    // Create the labels row
+    let colLabels = model.getViewLabels(model.getColNodeIndexes(), model.getCmGraph().getNodeIdName());
+
+    // TODO "label" should be passed in from somewhere.
+    if (model.areColsCollapsed) {
+      colLabels = model.getViewLabels(this.colNodeIndexes, "label")
+    }
+    let majorColLabels = model.getMajorColLabels();
+    let minorColLabels = model.getMinorColLabels();
+    console.log(majorColLabels);
+    console.log(minorColLabels);
+
+    let majorRowLabels = model.getMajorRowLabels();
+    let minorRowLabels = model.getMinorRowLabels();
+    console.log(majorRowLabels, minorRowLabels);
+
+    this.labelRow = new cmLabelRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeights[1],
+      majorColLabels, minorColLabels);
+
+    this.labelRow.setPosition(0, this.rowHeights[0]);
     this.allRows.push(this.labelRow);
 
     let modelRows = model.getCurrentRows();
+    let y = this.rowHeights[0] + this.rowHeights[1];
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
-      dataRow.setPosition(0, this.rowHeight * (i + this.numHeaderRows ));
+      dataRow.setPosition(0, y);
       dataRow.setDebugVisible(true);
       if (modelRows[i].getNumChildren() > 0) {
         callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
       this.allRows.push(dataRow);
+      y += this.rowHeights[i + 2];
     }
 
     // Visitor will set colors of all the cells.

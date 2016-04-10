@@ -9,6 +9,8 @@ export class cmModel {
     self.matrix = matrix;
     self.current = {};
     self.reset();
+    self.colsCollapseAttr = "";
+    self.rowCollapseAttr = "";
   }
 
   collapseCols(colIndexesToCollapse) {
@@ -57,6 +59,7 @@ export class cmModel {
 
   collapseColsByAttr(attr) {
     var self = this;
+    self.colsCollapseAttr = attr;
     var labels = [];
     var colIndexes = [];
     var colNodeIndexes = self.getColNodeIndexes();
@@ -184,6 +187,7 @@ export class cmModel {
 
   expandCols(colIndexesToExpand) {
     var self = this;
+    self.colsCollapseAttr = "";
     var colNodeIndexes = self.current.colNodeIndexes;
     var colIndexesToDelete = [];
 
@@ -308,6 +312,45 @@ export class cmModel {
     }
 
     return scalarMatrix;
+  }
+
+  getMinorLabels(indexes) {
+    var self = this;
+    var minorLabels = [];
+    for (var i = 0; i < indexes.length; ++i) {
+      var currIndexes = indexes[i];
+      minorLabels.push(self.getNodeAttr(currIndexes, self.getCmGraph().getNodeIdName()));
+    }
+    return minorLabels;
+  }
+
+  getMajorLabels(indexes, attr) {
+    var self = this;
+    if (attr.length > 0) {
+      return self.getViewLabels(indexes, attr);
+    } else {
+      return self.getNodeAttr(indexes, self.getCmGraph().getNodeIdName());
+    }
+  }
+
+  getMajorColLabels() {
+    var self = this;
+    return self.getMajorLabels(self.getColNodeIndexes(), self.colsCollapseAttr);
+  }
+
+  getMinorColLabels() {
+    var self = this;
+    return self.getMinorLabels(self.getColNodeIndexes());
+  }
+
+  getMajorRowLabels() {
+    var self = this;
+    return self.getMajorLabels(self.getRowNodeIndexes(), self.rowCollapseAttr);
+  }
+
+  getMinorRowLabels() {
+    var self = this;
+    return self.getMinorLabels(self.getRowNodeIndexes());
   }
 
   getNodeAttr(nodeIndexes, attribute) {
