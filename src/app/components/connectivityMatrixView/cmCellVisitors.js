@@ -1,23 +1,26 @@
 export class cmCellVisitor {
+  constructor() {
+  }
+
   apply(cell) {
-    let color = "red";
+    let color = "lightgrey";
     if (cell.isHeaderCell || !cell.isDataCell) {
       return;
     }
-
-    let values = cell.data.modelRow.getValuesAsList([cell.data.colNodeIndexes])[0];
-
-    if (cell.isMajorCell) {
-      if (cell.isInMajorRow) {
-        color = "red";
-      } else {
-        color = "red";
-      }
-    } else { // !majorCell
-      if (cell.isInMajorRow) {
-        color = "red";
-      } else {
-        color = "black";
+    let values = cell.getPathList();
+    if (values.length > 0) {
+      if (cell.isMajorCell) {
+        if (cell.isInMajorRow) {
+          color = "green";
+        } else {
+          color = "red";
+        }
+      } else { // !majorCell
+        if (cell.isInMajorRow) {
+          color = "red";
+        } else {
+          color = "black";
+        }
       }
     }
 

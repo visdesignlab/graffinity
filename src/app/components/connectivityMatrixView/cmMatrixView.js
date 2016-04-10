@@ -101,7 +101,6 @@ export class cmMatrixView extends SvgGroupElement {
       this.allRows[i].setColWidths(colWidths);
       this.allRows[i].setPosition(0, y);
       y += rowHeights[i];
-
     }
   }
 }
