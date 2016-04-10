@@ -16,11 +16,10 @@ export class cmMatrixRow extends SvgGroupElement {
     }
     super(group);
 
-
     this.currentHeight = rowHeight;
     this.isMinorRow = isMinorRow;
     this.rowIndex = rowIndex;
-    this.majorCols = [];
+    this.majorCells = [];
     this.numHeaderCols = numHeaderCols;
     this.minorRows = [];
     if (!isMinorRow) {
@@ -30,7 +29,7 @@ export class cmMatrixRow extends SvgGroupElement {
 
     let numCols = colNodeIndexes.length;
     let totalNumCols = numCols + numHeaderCols;
-    this.createMajorCols(totalNumCols, numHeaderCols, colWidth, rowHeight);
+    this.createMajorCells(totalNumCols, numHeaderCols, colWidth, rowHeight);
 
   }
 
@@ -39,16 +38,16 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   apply(cellVisitor) {
-    for (var i = 0; i < this.majorCols.length; ++i) {
-      this.majorCols[i].apply(cellVisitor);
+    for (var i = 0; i < this.majorCells.length; ++i) {
+      this.majorCells[i].apply(cellVisitor);
     }
     for (var j = 0; j < this.minorRows.length; ++j) {
       this.minorRows[j].apply(cellVisitor);
     }
   }
 
-  createControlsCol(colWidth, rowHeight, callback) {
-    let col = this.getMajorCol(0).getD3Group();
+  createControlsCell(colWidth, rowHeight, callback) {
+    let col = this.getMajorCell(0).getGroup();
     var self = this;
     this.unrollRowCallback = callback;
 
@@ -86,22 +85,22 @@ export class cmMatrixRow extends SvgGroupElement {
 
   }
 
-  createMajorCols(totalNumCols, numHeaderCols, colWidth, rowHeight) {
+  createMajorCells(totalNumCols, numHeaderCols, colWidth) {
     let group = this.group;
     for (var i = 0; i < totalNumCols; ++i) {
-      this.majorCols[i] = new cmMatrixCell(group, i, !this.isMinorRow, true, i < numHeaderCols);
-      this.majorCols[i].setPosition(colWidth * i, 0);
+      this.majorCells[i] = new cmMatrixCell(group, i, !this.isMinorRow, true, i < numHeaderCols);
+      this.majorCells[i].setPosition(colWidth * i, 0);
     }
   }
 
-  createMinorCols(numHeaderCols, colNodeIndexes) {
+  createMinorCells(numHeaderCols, colNodeIndexes, isDataCell) {
     for (var i = 0; i < colNodeIndexes.length + numHeaderCols; ++i) {
       if (i >= numHeaderCols) {
         let currColNodeIndexes = colNodeIndexes[i - numHeaderCols];
         for (var j = 0; j < currColNodeIndexes.length; ++j) {
-          let majorCol = this.getMajorCol(i);
-          let majorGroup = majorCol.getD3Group();
-          let minorCell = new cmMatrixCell(majorGroup, j, !this.isMinorRow, false, i < numHeaderCols);
+          let majorCol = this.getMajorCell(i);
+          let majorGroup = majorCol.getGroup();
+          let minorCell = new cmMatrixCell(majorGroup, j, !this.isMinorRow, false, i < numHeaderCols, isDataCell);
           minorCell.setVisible(false);
           majorCol.addMinorCell(minorCell);
         }
@@ -113,23 +112,27 @@ export class cmMatrixRow extends SvgGroupElement {
     return this.currentHeight;
   }
 
-  getNumMajorCols() {
-    return this.majorCols.length;
+  getDataColIndex(colIndex) {
+    return colIndex - this.numHeaderCols;
+  }
+
+  getNumMajorCells() {
+    return this.majorCells.length;
   }
 
   getNumMinorRows() {
     return this.minorRows.length;
   }
 
-  getMajorCol(i) {
-    return this.majorCols[i];
+  getMajorCell(i) {
+    return this.majorCells[i];
   }
 
-  getMajorColIndex(group) {
+  getMajorCellIndex(group) {
     return group.attr("data-major-col");
   }
 
-  isHeaderCol(colIndex) {
+  isHeaderCell(colIndex) {
     return colIndex < this.numHeaderCols;
   }
 
@@ -153,12 +156,16 @@ export class cmMatrixRow extends SvgGroupElement {
 
   rollupCol(colIndex) {
 
-    let minorCells = this.majorCols[colIndex].getMinorCells();
+    let minorCells = this.majorCells[colIndex].minorCells;
     for (var i = 0; i < minorCells.length; ++i) {
-      let currCol = minorCells[i].getD3Group();
-      currCol.transition().duration(500)
+      let cellGroup = minorCells[i].getGroup();
+      cellGroup.transition()
+        .duration(500)
         .attr("transform", "translate(0,0)");
-      currCol.transition().delay(500).style("display", "none");
+
+      cellGroup.transition()
+        .delay(500)
+        .style("display", "none");
     }
 
     if (!this.isMinorRow) {
@@ -173,7 +180,7 @@ export class cmMatrixRow extends SvgGroupElement {
     let numColumns = colWidths.length;
     let xPosition = 0;
     for (var i = 0; i < numColumns; ++i) {
-      this.majorCols[i].getD3Group().transition().duration(500).attr("transform", "translate(" + xPosition + ",0)");
+      this.majorCells[i].getGroup().transition().duration(500).attr("transform", "translate(" + xPosition + ",0)");
       xPosition += colWidths[i];
     }
 
@@ -194,11 +201,12 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   unrollCol(colIndex, colWidth) {
-    let minorCols = this.majorCols[colIndex].getMinorCells();
-    for (var i = 0; i < minorCols.length; ++i) {
-      let currCol = minorCols[i].getD3Group();
-      currCol.style("display", "block");
-      currCol.transition().duration(500)
+    let minorCells = this.majorCells[colIndex].minorCells;
+    for (var i = 0; i < minorCells.length; ++i) {
+      let cellGroup = minorCells[i].getGroup();
+      cellGroup.style("display", "block");
+      cellGroup.transition()
+        .duration(500)
         .attr("transform", "translate(" + ((i + 1) * colWidth) + ",0)");
     }
 

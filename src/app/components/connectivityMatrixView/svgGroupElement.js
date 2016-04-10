@@ -3,7 +3,7 @@ export class SvgGroupElement {
     this.group = group;
   }
 
-  getD3Group() {
+  getGroup() {
     return this.group;
   }
 

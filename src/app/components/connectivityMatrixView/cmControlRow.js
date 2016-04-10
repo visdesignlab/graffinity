@@ -10,12 +10,12 @@ export class cmControlRow extends cmMatrixRow {
     this.unrollControls = [];
     this.rollupControls = [];
 
-    var numMajorCols = this.getNumMajorCols();
-    for (var i = 0; i < numMajorCols; ++i) {
-      var group = this.getMajorCol(i).getD3Group();
+    var numMajorCells = this.getNumMajorCells();
+    for (var i = 0; i < numMajorCells; ++i) {
+      var group = this.getMajorCell(i).getGroup();
       this.unrollControls[i] = group.append("g");
-
-      if (!this.isHeaderCol(i) && colNodeIndexes[i - numHeaderCols].length > 1) {
+      let dataIndex = this.getDataColIndex(i);
+      if (!this.isHeaderCell(i) && colNodeIndexes[dataIndex].length > 1) {
         var self = this;
         this.unrollControls[i].append("text")
           .text("+")
@@ -53,14 +53,14 @@ export class cmControlRow extends cmMatrixRow {
   }
 
   onUnrollColClicked(majorCol) {
-    var colIndex = this.getMajorColIndex(majorCol);
+    var colIndex = this.getMajorCellIndex(majorCol);
     this.unrollControls[colIndex].style("display", "none");
     this.rollupControls[colIndex].style("display", "block");
     this.colClickedCallback(colIndex, true);
   }
 
   onRollupColClicked(majorCol) {
-    var colIndex = this.getMajorColIndex(majorCol);
+    var colIndex = this.getMajorCellIndex(majorCol);
     this.unrollControls[colIndex].style("display", "block");
     this.rollupControls[colIndex].style("display", "none");
     this.colClickedCallback(colIndex, false);

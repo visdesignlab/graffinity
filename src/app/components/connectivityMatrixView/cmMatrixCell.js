@@ -1,14 +1,16 @@
 import {SvgGroupElement} from "./svgGroupElement"
 
 export class cmMatrixCell extends SvgGroupElement {
-  constructor(parent, colIndex, isInMajorRow, isMajorCol, isHeaderCell) {
+  constructor(parent, colIndex, isInMajorRow, isMajorCell, isHeaderCell, isDataCell) {
     let group = parent.append("g");
     group.attr("data-major-col", colIndex);
     super(group);
+
     this.isInMajorRow = isInMajorRow;
-    this.isMajorCell = isMajorCol;
-    this.minorCells = [];
     this.isHeaderCell = isHeaderCell;
+    this.isMajorCell = isMajorCell;
+    this.isDataCell = isDataCell;
+    this.minorCells = [];
   }
 
   addMinorCell(cell) {
@@ -22,22 +24,8 @@ export class cmMatrixCell extends SvgGroupElement {
     }
   }
 
-  getMinorCells() {
-    return this.minorCells;
-  }
-
-  isMajorCell() {
-    return this.isMajorCell;
-  }
-
-  isInMajorRow() {
-    return this.isInMajorRow;
-  }
-
   setData(data) {
-    let group = this.getD3Group();
-    group.append("text")
-    .text(data);
+    this.data = data;
   }
 }
 

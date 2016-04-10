@@ -41,7 +41,7 @@ export class cmMatrixView extends SvgGroupElement {
       dataRow.setDebugVisible(true);
       if (modelRows[i].getNumChildren() > 0) {
         callback = this.onRowControlsClicked.bind(this);
-        dataRow.createControlsCol(this.colWidth, this.rowHeight, callback);
+        dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
       this.allRows.push(dataRow);
     }
