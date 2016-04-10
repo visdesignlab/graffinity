@@ -15,8 +15,8 @@ export class cmDataRow extends cmMatrixRow {
         this.addMinorRow(minorRow);
 
         for (var i = 0; i < numChildren; ++i) {
-          minorRow = new cmDataRow(this.minorRowContainer, i+1,  colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-            true, modelRow.getChildRowAt(i), minorLabels[i+1]);
+          minorRow = new cmDataRow(this.minorRowContainer, i + 1, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
+            true, modelRow.getChildRowAt(i), minorLabels[i + 1]);
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
         }
@@ -27,9 +27,9 @@ export class cmDataRow extends cmMatrixRow {
     this.rollupControls = [];
 
     var numMajorCells = this.getNumMajorCells();
-    cmDataRow.createLabelInCell(this.majorCells[1], label)
+    cmDataRow.createLabelInCell(this.majorCells[2], label);
     for (i = 0; i < numMajorCells; ++i) {
-      if(!this.isHeaderCell(i)) {
+      if (!this.isHeaderCell(i)) {
         this.majorCells[i].isDataCell = true;
       }
     }
@@ -37,7 +37,13 @@ export class cmDataRow extends cmMatrixRow {
     this.createMinorCells(numHeaderCols, colNodeIndexes, true);
 
     for (i = 0; i < numMajorCells; ++i) {
-      if (!this.isHeaderCell(i)) {
+      if (i == 1) {
+        this.majorCells[i].getGroup()
+          .append("rect")
+          .attr("width", 80)
+          .attr("height", rowHeight);
+      }
+      else if (!this.isHeaderCell(i)) {
         let dataIndex = this.getDataColIndex(i);
         let data = {
           colNodeIndexes: colNodeIndexes[dataIndex],
@@ -61,8 +67,8 @@ export class cmDataRow extends cmMatrixRow {
   }
 
   static createLabelInCell(cell, label) {
-     let group = cell.getGroup();
-      group.append("g")
+    let group = cell.getGroup();
+    group.append("g")
       .append("text")
       .attr("text-anchor", "start")
       .attr("alignment-baseline", "text-before-edge")

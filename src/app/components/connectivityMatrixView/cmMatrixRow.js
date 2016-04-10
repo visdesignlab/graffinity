@@ -28,7 +28,7 @@ export class cmMatrixRow extends SvgGroupElement {
 
     let numCols = colNodeIndexes.length;
     let totalNumCols = numCols + numHeaderCols;
-    this.createMajorCells(totalNumCols, numHeaderCols, colWidth, rowHeight);
+    this.createMajorCells(totalNumCols, numHeaderCols)
 
   }
 
@@ -84,11 +84,10 @@ export class cmMatrixRow extends SvgGroupElement {
 
   }
 
-  createMajorCells(totalNumCols, numHeaderCols, colWidth) {
+  createMajorCells(totalNumCols, numHeaderCols) {
     let group = this.group;
     for (var i = 0; i < totalNumCols; ++i) {
       this.majorCells[i] = new cmMatrixCell(group, i, !this.isMinorRow, true, i < numHeaderCols);
-      this.majorCells[i].setPosition(colWidth * i, 0);
     }
   }
 
