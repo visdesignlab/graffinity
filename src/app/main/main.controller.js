@@ -11,9 +11,6 @@ export class MainController {
     this.creationDate = 1459790674829;
     this.toastr = toastr;
 
-
-    let colNodeIndexes = [[168, 120, 1724], [142, 5107]];
-
     let svg = d3.select("#my-svg")
       .append("g")
       .attr("transform", "translate(20, 20)");
@@ -23,6 +20,7 @@ export class MainController {
     let model = cmModelFactory.createModel(graph, matrix);
     model.collapseColsByAttr("label");
     model.collapseRowsByAttr("label");
+    model.areColsCollapsed = true;
     let connectivityMatrix = cmMatrixViewFactory.createConnectivityMatrix(svg, model);
 
     this.activate($timeout, webDevTec);

@@ -32,31 +32,20 @@ export class cmMatrixView extends SvgGroupElement {
     this.allRows.push(this.controlRow);
 
     // Create the labels row
-    let colLabels = model.getViewLabels(model.getColNodeIndexes(), model.getCmGraph().getNodeIdName());
-
-    // TODO "label" should be passed in from somewhere.
-    if (model.areColsCollapsed) {
-      colLabels = model.getViewLabels(this.colNodeIndexes, "label")
-    }
     let majorColLabels = model.getMajorColLabels();
     let minorColLabels = model.getMinorColLabels();
-    console.log(majorColLabels);
-    console.log(minorColLabels);
-
-    let majorRowLabels = model.getMajorRowLabels();
-    let minorRowLabels = model.getMinorRowLabels();
-    console.log(majorRowLabels, minorRowLabels);
-
     this.labelRow = new cmLabelRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeights[1],
       majorColLabels, minorColLabels);
-
     this.labelRow.setPosition(0, this.rowHeights[0]);
     this.allRows.push(this.labelRow);
 
+    // Create each of the data rows!
     let modelRows = model.getCurrentRows();
+    let majorRowLabels = model.getMajorRowLabels();
+    let minorRowLabels = model.getMinorRowLabels();
     let y = this.rowHeights[0] + this.rowHeights[1];
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i]);
+      let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i]);
       dataRow.setPosition(0, y);
       dataRow.setDebugVisible(true);
       if (modelRows[i].getNumChildren() > 0) {

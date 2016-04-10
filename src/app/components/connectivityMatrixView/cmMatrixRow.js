@@ -5,7 +5,6 @@ import {cmMatrixCell} from "./cmMatrixCell"
 
 export class cmMatrixRow extends SvgGroupElement {
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow) {
-    // Create parent group for all stuff.
     let group = null;
     if (!isMinorRow) {
       group = svg.append("g")
