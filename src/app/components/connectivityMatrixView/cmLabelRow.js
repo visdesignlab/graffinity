@@ -1,5 +1,3 @@
-/* global d3
- */
 import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmLabelRow extends cmMatrixRow {

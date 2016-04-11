@@ -18,7 +18,7 @@ export class cmAttributeRow extends cmMatrixRow {
         this.majorCells[i].setData(data);
         for (var j = 0; j < colNodeIndexes[colIndex].length; ++j) {
           let data = {
-            values: colNodeAttributes[colIndex][j],
+            values: [colNodeAttributes[colIndex][j]],
             orientation: 1
           };
           this.majorCells[i].minorCells[j].isAttributeCell = true;

@@ -10,13 +10,13 @@ export class cmDataRow extends cmMatrixRow {
       if (numChildren > 0) {
 
         let minorRow = new cmDataRow(this.minorRowContainer, 0, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-          true, modelRow, minorLabels[0], null, rowNodeAttributes[0]);
+          true, modelRow, minorLabels[0], null, [rowNodeAttributes[0]]);
         minorRow.setVisible(false);
         this.addMinorRow(minorRow);
 
         for (var i = 0; i < numChildren; ++i) {
           minorRow = new cmDataRow(this.minorRowContainer, i + 1, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-            true, modelRow.getChildRowAt(i), minorLabels[i + 1], null, rowNodeAttributes[i + 1]);
+            true, modelRow.getChildRowAt(i), minorLabels[i + 1], null, [rowNodeAttributes[i + 1]]);
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
         }
