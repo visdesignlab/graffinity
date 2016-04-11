@@ -15,8 +15,17 @@ export class MainController {
       .append("g")
       .attr("transform", "translate(20, 20)");
 
-    let graph = cmGraphFactory.createFromJsonObject(mock.output.graph);
-    let matrix = cmMatrixFactory.createFromJsonObject(mock.output.matrix);
+    let useLargeResult = true;
+    useLargeResult = false;
+    let jsonGraph = mock.output.graph;
+    let jsonMatrix = mock.output.matrix;
+    if(useLargeResult) {
+      jsonGraph = mock.largeResult.graph;
+      jsonMatrix = mock.largeResult.matrix;
+    }
+
+    let graph = cmGraphFactory.createFromJsonObject(jsonGraph);
+    let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     let model = cmModelFactory.createModel(graph, matrix);
     model.collapseColsByAttr("label");
     model.collapseRowsByAttr("label");

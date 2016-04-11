@@ -3,8 +3,10 @@ import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
-import {cmCellVisitor} from "./cmCellVisitors"
-import {cmAttributeCellVisitor} from "./cmCellVisitors"
+import {cmCellVisitor} from "./visitors/cmCellVisitors"
+import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
+import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
+
 
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model) {
@@ -18,7 +20,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
-    this.selectedAttribute = "area";
+    this.selectedAttribute = "locations";
 
     let colNodeAttributes = model.getNodeAttrs(this.colNodeIndexes, this.selectedAttribute);
     let rowNodeAttributes = model.getNodeAttrs(this.rowNodeIndexes, this.selectedAttribute);
@@ -65,8 +67,11 @@ export class cmMatrixView extends SvgGroupElement {
     // Visitor will set colors of all the cells.
     let visitor = new cmCellVisitor();
     this.applyVisitor(visitor);
+    let preprocessor = new cmScatterPlot1DPreprocessor();
+    this.applyVisitor(preprocessor);
+    let valueRange = preprocessor.getValueRange();
 
-    visitor = new cmAttributeCellVisitor();
+    visitor = new cmScatterPlot1DVisitor(this.rowHeight / 4, valueRange);
     this.applyVisitor(visitor);
 
     this.setSortOrders(this.colWidths, this.rowHeights);
