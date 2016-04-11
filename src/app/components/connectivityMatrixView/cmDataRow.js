@@ -2,7 +2,7 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmDataRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow);
 
     if (!isMinorRow) {
@@ -10,13 +10,13 @@ export class cmDataRow extends cmMatrixRow {
       if (numChildren > 0) {
 
         let minorRow = new cmDataRow(this.minorRowContainer, 0, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-          true, modelRow, minorLabels[0]);
+          true, modelRow, minorLabels[0], null, rowNodeAttributes[0]);
         minorRow.setVisible(false);
         this.addMinorRow(minorRow);
 
         for (var i = 0; i < numChildren; ++i) {
           minorRow = new cmDataRow(this.minorRowContainer, i + 1, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-            true, modelRow.getChildRowAt(i), minorLabels[i + 1]);
+            true, modelRow.getChildRowAt(i), minorLabels[i + 1], null, rowNodeAttributes[i + 1]);
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
         }
@@ -29,6 +29,9 @@ export class cmDataRow extends cmMatrixRow {
     var numMajorCells = this.getNumMajorCells();
     cmDataRow.createLabelInCell(this.majorCells[2], label);
     for (i = 0; i < numMajorCells; ++i) {
+      if (i == 1) {
+        this.majorCells[i].isAttributeCell = true;
+      }
       if (!this.isHeaderCell(i)) {
         this.majorCells[i].isDataCell = true;
       }
@@ -38,10 +41,11 @@ export class cmDataRow extends cmMatrixRow {
 
     for (i = 0; i < numMajorCells; ++i) {
       if (i == 1) {
-        this.majorCells[i].getGroup()
-          .append("rect")
-          .attr("width", 80)
-          .attr("height", rowHeight);
+        let data = {
+          values: rowNodeAttributes,
+          orientation: 0
+        };
+        this.majorCells[i].setData(data);
       }
       else if (!this.isHeaderCell(i)) {
         let dataIndex = this.getDataColIndex(i);
@@ -49,7 +53,6 @@ export class cmDataRow extends cmMatrixRow {
           colNodeIndexes: colNodeIndexes[dataIndex],
           modelRow: modelRow
         };
-
         this.majorCells[i].setData(data);
         if (this.majorCells[i].minorCells.length != colNodeIndexes[dataIndex].length) {
           throw "something fucked up in col node indexes and minor cells";

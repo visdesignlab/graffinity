@@ -10,7 +10,9 @@ export class cmMatrixCell extends SvgGroupElement {
     this.isHeaderCell = isHeaderCell;
     this.isMajorCell = isMajorCell;
     this.isDataCell = isDataCell;
+    this.isAttributeCell = false;
     this.minorCells = [];
+    this.data = {};
   }
 
   addMinorCell(cell) {

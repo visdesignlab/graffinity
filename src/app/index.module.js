@@ -14,6 +14,9 @@ import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFact
 import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFactory.service';
 import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
 
+
+
+
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr'])
   .constant('malarkey', malarkey)
   .constant('moment', moment)
@@ -30,3 +33,4 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .controller('MainController', MainController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective);
+

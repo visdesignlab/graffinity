@@ -33,3 +33,23 @@ export class cmCellVisitor {
       .style("stroke-width", 2);
   }
 }
+
+export class cmAttributeCellVisitor {
+  apply(cell) {
+
+    if(cell.isAttributeCell) {
+      let data = cell.data;
+      if(data.orientation) {
+        cell.getGroup()
+          .append("rect")
+          .attr("height", 80)
+          .attr("width", 10);
+      } else {
+        cell.getGroup()
+          .append("rect")
+          .attr("height", 10)
+          .attr("width", 80);
+      }
+    }
+  }
+}

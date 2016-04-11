@@ -4,6 +4,8 @@ import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {cmCellVisitor} from "./cmCellVisitors"
+import {cmAttributeCellVisitor} from "./cmCellVisitors"
+
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model) {
     super(svg);
@@ -16,6 +18,10 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
+    this.selectedAttribute = "area";
+
+    let colNodeAttributes = model.getNodeAttrs(this.colNodeIndexes, this.selectedAttribute);
+    let rowNodeAttributes = model.getNodeAttrs(this.rowNodeIndexes, this.selectedAttribute);
 
     for (var i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       this.colWidths[i] = this.colWidth;
@@ -30,7 +36,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.addRow(row, this.rowHeight);
 
     let attributeRowHeight = 80;
-    let attributeRow = new cmAttributeRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, attributeRowHeight, false);
+    let attributeRow = new cmAttributeRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, attributeRowHeight, false, colNodeAttributes);
     this.addRow(attributeRow, attributeRowHeight);
 
     // Create the labels row
@@ -47,7 +53,8 @@ export class cmMatrixView extends SvgGroupElement {
     let minorRowLabels = model.getMinorRowLabels();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i]);
+      let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i]);
       if (modelRows[i].getNumChildren() > 0) {
         callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
@@ -57,9 +64,11 @@ export class cmMatrixView extends SvgGroupElement {
 
     // Visitor will set colors of all the cells.
     let visitor = new cmCellVisitor();
-    for (i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].apply(visitor);
-    }
+    this.applyVisitor(visitor);
+
+    visitor = new cmAttributeCellVisitor();
+    this.applyVisitor(visitor);
+
     this.setSortOrders(this.colWidths, this.rowHeights);
   }
 
@@ -71,6 +80,12 @@ export class cmMatrixView extends SvgGroupElement {
     row.setPosition(0, y);
     this.allRows.push(row);
     this.rowHeights.push(rowHeight);
+  }
+
+  applyVisitor(visitor) {
+     for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].apply(visitor);
+    }
   }
 
   getDataColIndex(viewColIndex) {
