@@ -47,5 +47,9 @@ export class cmMatrixCell extends SvgGroupElement {
     }
     return values;
   }
+
+  isCellBetweenSets() {
+    return this.isInMajorRow || this.isMajorCell;
+  }
 }
 

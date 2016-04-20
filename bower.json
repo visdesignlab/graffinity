@@ -18,7 +18,8 @@
     "animate.css": "~3.4.0",
     "angular": "~1.4.2",
     "d3": "~3.5",
-    "graphlib": "*"
+    "graphlib": "*",
+    "colorbrewer": "*"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.2"
