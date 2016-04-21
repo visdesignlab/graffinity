@@ -17,19 +17,23 @@ export class cmResource {
       urlExtension = '';
     }
 
+    // Create the http request
     let config = {};
     config.query = query;
 
+    // Create a promise object to return.
     let deferred = this.$q.defer();
 
     let success = function (result) {
       deferred.resolve(result.data);
     };
 
-    let error = function (err) {
-      throw err;
+    let failure = function (error) {
+      deferred.reject(error);
     };
-    this.$http.post(this.url + urlExtension, config).then(success, error);
+
+    // Send off request
+    this.$http.post(this.url + urlExtension, config).then(success, failure);
 
     return deferred.promise;
   }
@@ -46,15 +50,15 @@ export class cmResource {
       deferred.resolve(result.data);
     };
 
-    var error = function (err) {
-      throw err;
+    var failure = function (error) {
+      deferred.reject(error);
     };
 
     let config = {};
 
     config.params = params;
 
-    this.$http.get(this.url + urlExtension, config).then(success, error);
+    this.$http.get(this.url + urlExtension, config).then(success, failure);
 
     return deferred.promise;
   }

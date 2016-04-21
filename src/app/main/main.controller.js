@@ -72,11 +72,16 @@ export class MainController {
   onQuerySubmitted(query) {
     let self = this;
 
-    function success(model) {
-      this.model = model;
+    let success = function (model) {
+      self.model = model;
       self.createMatrixAndUi(model);
-    }
+    };
 
-    this.cmModelFactory.requestAndCreateModel(query).then(success);
+    let failure = function (error) {
+      self.$log.error("The query failed!", error);
+    };
+
+    // Give the model factory a query string. Async call success or failure.
+    this.cmModelFactory.requestAndCreateModel(query).then(success, failure);
   }
 }

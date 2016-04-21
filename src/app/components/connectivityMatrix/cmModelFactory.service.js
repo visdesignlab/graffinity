@@ -15,17 +15,26 @@ export class cmModelFactory {
   requestAndCreateModel(query) {
     var self = this;
 
-    function success(data) {
+    // Promise that represents the response we'll be expecting from the server.
+    let deferred = this.$q.defer();
+
+    // We got something back from the server! Create a model.
+    let success = function (data) {
       var graph = self.cmGraphFactory.createFromJsonObject(data.graph);
       var matrix = self.cmMatrixFactory.createFromJsonObject(data.matrix);
-      return new cmModel(graph, matrix);
-    }
+      deferred.resolve(new cmModel(graph, matrix));
+    };
 
-    function error(error) {
-      throw 'Something went wrong!' + error;
-    }
+    // Something went wrong!
+    let failure = function (error) {
+      deferred.reject(error);
+    };
 
-    return this.cmResource.postRequest(query).then(success, error);
+    // Send the request to the server.
+    this.cmResource.postRequest(query).then(success, failure);
+
+    // Return the promise. It will be resolved when we hear back from the server.
+    return deferred.promise;
   }
 
   createModel(graph, matrix) {

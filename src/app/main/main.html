@@ -6,14 +6,14 @@
     <span class="col-lg-2">
       <b>Controls</b>
       <div>
-        Collapse rows by attr:
+        Collapse rows
         <select ng-options="option for option in main.ui.availableCategoricalAttr track by option"
                 ng-model="main.ui.selectedCategoricalRowAttr"
                 ng-change="main.onCollapseRowsByAttr(main.ui.selectedCategoricalRowAttr)">
         </select>
       </div>
       <div>
-        Collapse cols by attr:
+        Collapse cols
         <select ng-options="option for option in main.ui.availableCategoricalAttr track by option"
                 ng-model="main.ui.selectedCategoricalColAttr"
                 ng-change="main.onCollapseColsByAttr(main.ui.selectedCategoricalColAttr)">
