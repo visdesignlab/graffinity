@@ -3,15 +3,15 @@
 import {mock} from "../components/connectivityMatrix/mock.js";
 
 export class MainController {
-  constructor($timeout, $log, webDevTec, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory) {
+  constructor($log, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory) {
     'ngInject';
 
-    this.awesomeThings = [];
-    this.classAnimation = '';
-    this.creationDate = 1459790674829;
+    this.$log = $log;
     this.toastr = toastr;
+    this.cmModelFactory = cmModelFactory;
+    this.cmMatrixViewFactory = cmMatrixViewFactory;
 
-    let svg = d3.select("#my-svg")
+    this.svg = d3.select("#my-svg")
       .append("g")
       .attr("transform", "translate(20, 20)");
 
@@ -19,7 +19,7 @@ export class MainController {
     useLargeResult = false;
     let jsonGraph = mock.output.graph;
     let jsonMatrix = mock.output.matrix;
-    if(useLargeResult) {
+    if (useLargeResult) {
       jsonGraph = mock.largeResult.graph;
       jsonMatrix = mock.largeResult.matrix;
     }
@@ -27,31 +27,25 @@ export class MainController {
     let graph = cmGraphFactory.createFromJsonObject(jsonGraph);
     let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     let model = cmModelFactory.createModel(graph, matrix);
+
+    this.createMatrix(model);
+  }
+
+  createMatrix(model) {
+    this.svg.selectAll("*").remove();
     model.collapseColsByAttr("label");
     model.collapseRowsByAttr("label");
     model.areColsCollapsed = true;
-    let connectivityMatrix = cmMatrixViewFactory.createConnectivityMatrix(svg, model);
-
-    this.activate($timeout, webDevTec);
+    this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model);
   }
 
-  activate($timeout, webDevTec) {
-    this.getWebDevTec(webDevTec);
-    $timeout(() => {
-      this.classAnimation = 'rubberBand';
-    }, 4000);
-  }
+  onQuerySubmitted(query) {
+    let self = this;
 
-  getWebDevTec(webDevTec) {
-    this.awesomeThings = webDevTec.getTec();
+    function success(model) {
+      self.createMatrix(model);
+    }
 
-    angular.forEach(this.awesomeThings, (awesomeThing) => {
-      awesomeThing.rank = Math.random();
-    });
-  }
-
-  showToastr() {
-    this.toastr.info('Fork <a href="https://github.com/Swiip/generator-gulp-angular" target="_blank"><b>generator-gulp-angular</b></a>');
-    this.classAnimation = '';
+    this.cmModelFactory.requestAndCreateModel(query).then(success);
   }
 }
