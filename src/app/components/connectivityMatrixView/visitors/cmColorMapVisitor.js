@@ -35,8 +35,6 @@ export class cmColorMapVisitor extends cmCellVisitor {
       .range(colorbrewer.Oranges[7])
       .domain(preprocessor.nodeRange);
 
-    console.log(preprocessor);
-
     this.preprocessor = preprocessor;
   }
 
