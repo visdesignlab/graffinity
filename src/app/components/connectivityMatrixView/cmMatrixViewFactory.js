@@ -10,8 +10,8 @@ export class cmMatrixViewFactory {
   }
 
 
-  createConnectivityMatrix(svg, colNodeIndexes) {
-    return new cmMatrixView(svg, colNodeIndexes);
+  createConnectivityMatrix(svg, model) {
+    return new cmMatrixView(svg, model);
   }
 
 }

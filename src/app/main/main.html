@@ -1,8 +1,27 @@
-<div class="container">
-  <div class="row">
+<div class="container-fluid">
+  <div class="row top-row">
     <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
   </div>
   <div class="row">
+    <span class="col-lg-2">
+      <b>Controls</b>
+      <div>
+        Collapse rows by attr:
+        <select ng-options="option for option in main.ui.availableCategoricalAttr track by option"
+                ng-model="main.ui.selectedCategoricalRowAttr"
+                ng-change="main.onCollapseRowsByAttr(main.ui.selectedCategoricalRowAttr)">
+        </select>
+      </div>
+      <div>
+        Collapse cols by attr:
+        <select ng-options="option for option in main.ui.availableCategoricalAttr track by option"
+                ng-model="main.ui.selectedCategoricalColAttr"
+                ng-change="main.onCollapseColsByAttr(main.ui.selectedCategoricalColAttr)">
+        </select>
+      </div>
+    </span>
+    <span class="col-lg-4">
     <svg id="my-svg" width="1024" height="1024"></svg>
+      </span>
   </div>
 </div>
