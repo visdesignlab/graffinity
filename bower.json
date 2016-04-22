@@ -19,7 +19,8 @@
     "angular": "~1.5.3",
     "d3": "~3.5",
     "graphlib": "*",
-    "colorbrewer": "*"
+    "colorbrewer": "*",
+    "ui-select": "angular-ui-select#~0.16.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.2"

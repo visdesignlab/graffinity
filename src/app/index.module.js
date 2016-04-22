@@ -15,7 +15,7 @@ import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFa
 import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
 import { QueryDirective } from "../app/components/query/query.directive";
 
-angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr'])
+angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
   .constant('moment', moment)
   .config(config)

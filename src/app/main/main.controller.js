@@ -49,6 +49,11 @@ export class MainController {
   createMatrixAndUi(model) {
     this.createMatrix(model);
     this.createCategoricalCollapseControls(model);
+    this.createReorderControls();
+  }
+
+  createReorderControls() {
+    this.ui.orders = ["initial", "random", "optimal leaf"];
   }
 
   onCollapseColsByAttr(attr) {
@@ -85,11 +90,24 @@ export class MainController {
     this.cmModelFactory.requestAndCreateModel(query).then(success, failure);
   }
 
-  onSortOrderChanged() {
-    this.$log.debug("sort order changed");
+  onSortOrderChanged(order) {
     let matrix = this.model.getCurrentScalarMatrix();
-    let rowPerm = reorder.randomPermutation(matrix.length);
-    let colPerm = reorder.randomPermutation(matrix[0].length);
+    let rowPerm = undefined;
+    let colPerm = undefined;
+    if (order == 'random') {
+      rowPerm = reorder.randomPermutation(matrix.length);
+      colPerm = reorder.randomPermutation(matrix[0].length);
+    } else if (order == 'optimal leaf') {
+      let transpose = reorder.transpose(matrix);
+      let distRows = reorder.dist()(matrix);
+      let distCols = reorder.dist()(transpose);
+      let order = reorder.optimal_leaf_order();
+      rowPerm = order.distanceMatrix(distRows)(matrix);
+      colPerm = order.distanceMatrix(distCols)(transpose);
+    } else if (order == 'initial') {
+      rowPerm = reorder.permutation(matrix.length);
+      colPerm = reorder.permutation(matrix[0].length);
+    }
     this.matrix.setSortOrders(rowPerm, colPerm);
   }
 }

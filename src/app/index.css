@@ -12,16 +12,22 @@
 .thumbnail img.pull-right {
   width: 50px;
 }
+
 .dot {
   fill: none;
   stroke: #333;
   stroke-width: 1px;
 
 }
+
 .axis path,
 .axis line {
   fill: none;
   stroke: #777;
   shape-rendering: crispEdges;
   stroke-width: 1px;
+}
+
+.control-header {
+  margin-top: 15px;
 }
