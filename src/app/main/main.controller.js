@@ -1,4 +1,4 @@
-/* globals d3
+/* globals d3 reorder
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
 
@@ -43,7 +43,7 @@ export class MainController {
 
   createMatrix(model) {
     this.svg.selectAll("*").remove();
-    this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model);
+    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model);
   }
 
   createMatrixAndUi(model) {
@@ -83,5 +83,13 @@ export class MainController {
 
     // Give the model factory a query string. Async call success or failure.
     this.cmModelFactory.requestAndCreateModel(query).then(success, failure);
+  }
+
+  onSortOrderChanged() {
+    this.$log.debug("sort order changed");
+    let matrix = this.model.getCurrentScalarMatrix();
+    let rowPerm = reorder.randomPermutation(matrix.length);
+    let colPerm = reorder.randomPermutation(matrix[0].length);
+    this.matrix.setSortOrders(rowPerm, colPerm);
   }
 }

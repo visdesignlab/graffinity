@@ -79,7 +79,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.applyVisitor(visitor);
 
 
-    this.setSortOrders(this.colWidths, this.rowHeights);
+    this.setRowAndColDimensions(this.colWidths, this.rowHeights);
   }
 
   addRow(row, rowHeight) {
@@ -122,21 +122,26 @@ export class cmMatrixView extends SvgGroupElement {
     }
 
     // Update position of other cols.
-    this.setSortOrders(this.colWidths, this.rowHeights);
+    this.setRowAndColDimensions(this.colWidths, this.rowHeights);
   }
 
   onRowControlsClicked(rowIndex) {
     this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
-    this.setSortOrders(this.colWidths, this.rowHeights);
+    this.setRowAndColDimensions(this.colWidths, this.rowHeights);
   }
 
-  setSortOrders(colWidths, rowHeights) {
+  setRowAndColDimensions(colWidths, rowHeights) {
+    console.log("set row and col dimensions)");
     let y = 0;
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].setColWidths(colWidths);
       this.allRows[i].setPosition(0, y);
       y += rowHeights[i];
     }
+  }
+
+  setSortOrders(rowPerm, colPerm) {
+
   }
 }
 

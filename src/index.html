@@ -42,5 +42,12 @@
     <!-- endinject -->
     <!-- endbuild -->
 
+
+    <!--
+    These files do not export modules so they cannot be included with ES import. These files are also not part of
+    bower nor node modules so they cannot use the standard injection path.
+    -->
+    <script src="app/components/reorder/reorder.v1.js"></script>
+    <script src="app/components/reorder/tiny-queue.js"></script>
   </body>
 </html>
