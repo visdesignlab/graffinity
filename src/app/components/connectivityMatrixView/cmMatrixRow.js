@@ -174,6 +174,19 @@ export class cmMatrixRow extends SvgGroupElement {
     }
   }
 
+  setColPositions(colInv, positions) {
+    let numColumns = positions.length;
+    for (var i = 0; i < numColumns; ++i) {
+      this.majorCells[i].setPosition(positions[colInv[i]], 0);
+    }
+    if (!this.isMinorRow) {
+      let numMinorRows = this.getNumMinorRows();
+      for (i = 0; i < numMinorRows; ++i) {
+        this.minorRows[i].setColPositions(colInv, positions);
+      }
+    }
+  }
+
   setColWidths(colWidths) {
     let numColumns = colWidths.length;
     let xPosition = 0;
