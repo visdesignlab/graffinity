@@ -5,7 +5,7 @@ describe('cmGraphFactory', () => {
   beforeEach(angular.mock.module('connectivityMatrixJs'));
 
   function requestAndCreateGraph($httpBackend, $q, cmGraphFactory) {
-    $httpBackend.when('GET', 'http://127.0.0.1:5000?graph=feedback').respond(
+    $httpBackend.when('GET', 'http://localhost:8000/?graph=feedback').respond(
       mock.output.graph
     );
 

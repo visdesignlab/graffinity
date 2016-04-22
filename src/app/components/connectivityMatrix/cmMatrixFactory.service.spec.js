@@ -8,7 +8,7 @@ describe('cmGraphFactory', () => {
   }));
 
   it('request matrix by path', inject(($httpBackend, cmMatrixFactory)=> {
-    $httpBackend.when('GET', 'http://127.0.0.1:5000/matrix?graph=feedback&path=%7B%22nodeConstraints%22:%5B%22CBb.*%22,%22AC%22,%22GC%22%5D,%22edgeConstraints%22:%5B%22.*%22,%22.*%22%5D%7D').respond(
+    $httpBackend.when('GET', 'http://localhost:8000//matrix?graph=feedback&path=%7B%22nodeConstraints%22:%5B%22CBb.*%22,%22AC%22,%22GC%22%5D,%22edgeConstraints%22:%5B%22.*%22,%22.*%22%5D%7D').respond(
       mock.output.matrix
     );
 

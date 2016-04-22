@@ -9,7 +9,7 @@ describe('cmModelFactory', () => {
   }));
 
   function requestAndCreateModel($httpBackend, $q, cmModelFactory) {
-    $httpBackend.when('POST', 'http://127.0.0.1:5000').respond(
+    $httpBackend.when('POST', 'http://localhost:8000/').respond(
       mock.output
     );
     var deferred = $q.defer();
