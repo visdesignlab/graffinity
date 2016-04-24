@@ -10,6 +10,7 @@ import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
 import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
+import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 
 import {Utils} from "../utils/utils"
 export class cmMatrixView extends SvgGroupElement {
@@ -172,7 +173,9 @@ export class cmMatrixView extends SvgGroupElement {
     this.applyVisitor(visitor);
 
     if (encoding == "bar chart") {
-
+      preprocessor = new cmBarChartPreprocessor();
+      this.applyVisitor(preprocessor);
+      console.log(preprocessor);
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       this.applyVisitor(preprocessor);
