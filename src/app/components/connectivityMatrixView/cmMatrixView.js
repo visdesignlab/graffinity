@@ -9,6 +9,8 @@ import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
 import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
+import {cmClearVisitor} from "./visitors/cmClearVisitor"
+
 import {Utils} from "../utils/utils"
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model) {
@@ -23,6 +25,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
     this.selectedAttribute = "locations";
+    this.availableEncodings = [];
 
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
@@ -69,17 +72,14 @@ export class cmMatrixView extends SvgGroupElement {
       this.addRow(dataRow, this.rowHeight);
     }
 
-    let preprocessor = new cmColorMapPreprocessor();
-    this.applyVisitor(preprocessor);
-    let visitor = new cmColorMapVisitor(preprocessor);
-    this.applyVisitor(visitor);
+    this.setEncoding("colormap");
 
 
     // Visitor to create scatter plots in per-cell attributes
-    preprocessor = new cmScatterPlot1DPreprocessor();
+    let preprocessor = new cmScatterPlot1DPreprocessor();
     this.applyVisitor(preprocessor);
     let valueRange = preprocessor.getValueRange();
-    visitor = new cmScatterPlot1DVisitor(this.rowHeight / 4, valueRange);
+    let visitor = new cmScatterPlot1DVisitor(this.rowHeight / 4, valueRange);
     this.applyVisitor(visitor);
 
 
@@ -100,6 +100,10 @@ export class cmMatrixView extends SvgGroupElement {
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].apply(visitor);
     }
+  }
+
+  static getAvailableEncodings() {
+    return ["colormap", "bar chart"];
   }
 
   static getColXPositions(colPerm, colWidths) {
@@ -159,6 +163,22 @@ export class cmMatrixView extends SvgGroupElement {
   onRowControlsClicked(rowIndex) {
     this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
     this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  setEncoding(encoding) {
+    let preprocessor = undefined;
+
+    let visitor = new cmClearVisitor();
+    this.applyVisitor(visitor);
+
+    if (encoding == "bar chart") {
+
+    } else if (encoding == "colormap") {
+      preprocessor = new cmColorMapPreprocessor();
+      this.applyVisitor(preprocessor);
+      visitor = new cmColorMapVisitor(preprocessor);
+      this.applyVisitor(visitor);
+    }
   }
 
   /** Used for externally setting sort orders.
