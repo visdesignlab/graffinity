@@ -80,7 +80,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
     let self = this;
 
     // Fill in empty spaces in summary. If there were no n-hop paths, then put a 0 there.
-    for (var i = 0; i < self.preprocessor.maxNumHops; ++i) {
+    for (var i = 0; i <= self.preprocessor.maxNumHops; ++i) {
       if (summary[i] == undefined) {
         summary[i] = 0;
       }
@@ -99,6 +99,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
     if (!cell.getPathList().length) {
       return;
     }
+
 
     // Create the mini-bar chart.
     let encoding = group.append("g");
