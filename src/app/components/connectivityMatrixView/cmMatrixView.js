@@ -12,8 +12,9 @@ import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
-
+import {cmMatrixCell} from "./cmMatrixCell"
 import {Utils} from "../utils/utils"
+
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model) {
     super(svg);
@@ -134,6 +135,14 @@ export class cmMatrixView extends SvgGroupElement {
     return positions;
   }
 
+  onCellClicked(cell) {
+    // console.log("cell clicked", cell, cell.getPathList());
+  }
+
+  onCellHovered(cell) {
+    // console.log("cell hovered", cell);
+  }
+
   /** Callback when user clicks on the column controls.
    * Updates width of the column and unrolls its children.
    */
@@ -173,15 +182,20 @@ export class cmMatrixView extends SvgGroupElement {
     let visitor = new cmClearVisitor();
     this.applyVisitor(visitor);
 
+    let cellWidth = this.colWidth - 2;
+    let cellHeight = this.rowHeight - 2;
+
     if (encoding == "bar chart") {
       preprocessor = new cmBarChartPreprocessor();
       this.applyVisitor(preprocessor);
-      visitor = new cmBarChartVisitor(preprocessor, this.colWidth, this.rowHeight);
+      visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
+      visitor.setCallbacks(this.onCellClicked, this.onCellHovered);
       this.applyVisitor(visitor);
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       this.applyVisitor(preprocessor);
-      visitor = new cmColorMapVisitor(preprocessor);
+      visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
+      visitor.setCallbacks(this.onCellClicked, this.onCellHovered);
       this.applyVisitor(visitor);
     }
   }

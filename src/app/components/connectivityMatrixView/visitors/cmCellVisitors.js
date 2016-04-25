@@ -1,35 +1,33 @@
 export class cmCellVisitor {
-  constructor() {
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
+    this.rx = 2;
+    this.ry = 2;
   }
 
-  apply(cell) {
-    let color = "lightgrey";
-    if (cell.isHeaderCell || !cell.isDataCell) {
-      return;
-    }
-    let values = cell.getPathList();
-    if (values.length > 0) {
-      if (cell.isMajorCell) {
-        if (cell.isInMajorRow) {
-          color = "green";
-        } else {
-          color = "red";
-        }
-      } else { // !majorCell
-        if (cell.isInMajorRow) {
-          color = "red";
-        } else {
-          color = "black";
-        }
-      }
-    }
+  setCallbacks(clicked, hovered) {
+    this.callbacks = {};
+    this.callbacks.clicked = clicked;
+    this.callbacks.hovered = hovered;
+  }
 
-    cell.getGroup().append("circle")
-      .attr("cx", 5)
-      .attr("cy", 5)
-      .attr("r", 5)
-      .attr("fill", "none")
-      .style("stroke", color)
-      .style("stroke-width", 2);
+  createInteractionGroup(cell) {
+    let self = this;
+    let group = cell.getGroup();
+
+    group.append("rect")
+      .attr("class", "matrix-view-interactive-cell")
+      .attr("width", this.width)
+      .attr("height", this.height)
+      .attr("rx", this.rx)
+      .attr("ry", this.ry)
+      .on("click", function () {
+        self.callbacks.clicked(cell);
+      })
+      .on("mouseover", function () {
+        self.callbacks.hovered(cell);
+      })
+
   }
 }

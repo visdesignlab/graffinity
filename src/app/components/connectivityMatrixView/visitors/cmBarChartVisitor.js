@@ -1,5 +1,4 @@
-/*globals
- colorbrewer, d3
+/*globals d3, reorder
  */
 
 import {cmCellVisitor} from "./cmCellVisitors"
@@ -100,7 +99,6 @@ export class cmBarChartVisitor extends cmCellVisitor {
       return;
     }
 
-
     // Create the mini-bar chart.
     let encoding = group.append("g");
     encoding.selectAll("rect")
@@ -114,16 +112,18 @@ export class cmBarChartVisitor extends cmCellVisitor {
       .attr('height', function (d) {
         return self.height - self.yScale(d);
       })
-      .attr("class", "histogramBar");
+      .attr("class", "matrix-view-histogram-bar");
 
     group.append("rect")
       .attr("width", this.width)
       .attr("height", this.height)
       .attr("rx", 2)
       .attr("ry", 2)
-      .style("stroke", "gray")
+      .style("stroke", "lightgray")
       .style("stroke-width", "1px")
       .attr("fill", "none");
+
+    this.createInteractionGroup(cell);
 
   }
 }

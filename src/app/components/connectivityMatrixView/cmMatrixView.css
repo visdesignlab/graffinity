@@ -1,0 +1,13 @@
+.matrix-view-interactive-cell {
+  fill: transparent;
+}
+
+.matrix-view-interactive-cell:hover {
+  stroke: black;
+  stroke-width: 1px;
+  fill: transparent;
+}
+
+.matrix-view-histogram-bar {
+  fill: gray;
+}

@@ -25,8 +25,8 @@ export class cmColorMapPreprocessor extends cmCellVisitor {
 }
 
 export class cmColorMapVisitor extends cmCellVisitor {
-  constructor(preprocessor) {
-    super();
+  constructor(preprocessor, width, height) {
+    super(width, height);
     this.setColorScale = d3.scale.quantize()
       .range(colorbrewer.Blues[7])
       .domain(preprocessor.setRange);
@@ -44,13 +44,18 @@ export class cmColorMapVisitor extends cmCellVisitor {
     }
 
     let color = this.getCellColor(cell);
-    cell.getGroup().append("circle")
-      .attr("cx", 5)
-      .attr("cy", 5)
-      .attr("r", 5)
-      .attr("fill", color)
+    let group = cell.getGroup();
+
+    group.append("rect")
+      .attr("width", this.width)
+      .attr("height", this.height)
+      .attr("rx", this.rx)
+      .attr("ry", this.ry)
       .style("stroke", color)
-      .style("stroke-width", 2);
+      .style("stroke-width", "1px")
+      .attr("fill", color);
+
+    this.createInteractionGroup(cell);
   }
 
   getCellColor(cell) {
