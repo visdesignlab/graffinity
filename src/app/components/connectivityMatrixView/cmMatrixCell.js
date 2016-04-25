@@ -31,21 +31,22 @@ export class cmMatrixCell extends SvgGroupElement {
   }
 
   getPathList() {
-    let values = null;
+    let key = [];
     if (this.isInMajorRow) {
       if (this.isMajorCell) {
-        values = this.data.modelRow.getAllValuesAsList([this.data.colNodeIndexes])[0];
+        key = [this.data.colNodeIndexes];
       } else {
-        values = this.data.modelRow.getValuesAsList([[this.data.colNodeIndexes]])[0];
+        key = [[this.data.colNodeIndexes]];
       }
+      return this.data.modelRow.getAllValuesAsList(key)[0];
     } else {
       if (this.isMajorCell) {
-        values = this.data.modelRow.getValuesAsList([this.data.colNodeIndexes])[0];
+        key = [this.data.colNodeIndexes];
       } else {
-        values = this.data.modelRow.getValuesAsList([[this.data.colNodeIndexes]])[0];
+        key = [[this.data.colNodeIndexes]];
       }
     }
-    return values;
+    return this.data.modelRow.getValuesAsList(key)[0];
   }
 
   isCellBetweenSets() {
