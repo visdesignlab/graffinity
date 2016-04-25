@@ -4,18 +4,17 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmControlRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, areColsCollapsed) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight);
 
     this.unrollControls = [];
     this.rollupControls = [];
 
-    var numMajorCells = this.getNumMajorCells();
+    let numMajorCells = this.getNumMajorCells();
     for (var i = 0; i < numMajorCells; ++i) {
       var group = this.getMajorCell(i).getGroup();
       this.unrollControls[i] = group.append("g");
-      let dataIndex = this.getDataColIndex(i);
-      if (!this.isHeaderCell(i) && colNodeIndexes[dataIndex].length > 1) {
+      if (!this.isHeaderCell(i) && areColsCollapsed) {
         var self = this;
         this.unrollControls[i].append("text")
           .text("+")

@@ -11,10 +11,12 @@ export class cmModel {
     self.reset();
     self.colsCollapseAttr = "";
     self.rowCollapseAttr = "";
+    self.areColsCollapsed = false;
   }
 
   collapseCols(colIndexesToCollapse) {
     var self = this;
+    self.areColsCollapsed = true;
     // get the current matrix.
     var colNodeIndexes = self.getColNodeIndexes();
     var collapsedColIndexes = [];
@@ -163,6 +165,7 @@ export class cmModel {
 
   expandAllCols() {
     var self = this;
+    self.areColsCollapsed = false;
     var colNodeIndexes = self.current.colNodeIndexes;
     var colsToExpand = [];
     for (var i = 0; i < colNodeIndexes.length; ++i) {

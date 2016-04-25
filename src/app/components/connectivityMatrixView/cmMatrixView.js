@@ -42,7 +42,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.colWidths[1] = 80;
 
     // Controls row is the only one with a onColControlsClicked callback.
-    let row = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight);
+    let row = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, model.areColsCollapsed);
     let callback = this.onColControlsClicked.bind(this);
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
