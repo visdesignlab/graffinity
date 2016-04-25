@@ -11,6 +11,7 @@ import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
 import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
+import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
 
 import {Utils} from "../utils/utils"
 export class cmMatrixView extends SvgGroupElement {
@@ -175,7 +176,8 @@ export class cmMatrixView extends SvgGroupElement {
     if (encoding == "bar chart") {
       preprocessor = new cmBarChartPreprocessor();
       this.applyVisitor(preprocessor);
-      console.log(preprocessor);
+      visitor = new cmBarChartVisitor(preprocessor, this.colWidth, this.rowHeight);
+      this.applyVisitor(visitor);
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       this.applyVisitor(preprocessor);

@@ -10,8 +10,15 @@ export class cmClearVisitor extends cmCellVisitor {
       return;
     }
 
-    cell.getGroup()
-      .selectAll("*")
-      .remove();
+    let children = cell.getGroup()
+      .selectAll("*");
+
+    children = children.filter(function () {
+      let attribute = d3.select(this)
+        .attr("data-major-col");
+      return attribute == undefined;
+    });
+
+    children.remove();
   }
 }
