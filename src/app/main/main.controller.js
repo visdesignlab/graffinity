@@ -1,7 +1,8 @@
 /* globals d3 reorder
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
-import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView"
+import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
+
 export class MainController {
   constructor($log, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory) {
     'ngInject';
@@ -41,16 +42,17 @@ export class MainController {
 
   }
 
-  createMatrix(model) {
+  createMatrix(model, encoding) {
     this.svg.selectAll("*").remove();
     this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model);
+    this.matrix.setEncoding(encoding);
   }
 
   createMatrixAndUi(model) {
-    this.createMatrix(model);
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
     this.createEncodingControls();
+    this.createMatrix(model, this.ui.selectedEncoding);
   }
 
   createReorderControls() {
@@ -68,7 +70,7 @@ export class MainController {
     } else {
       this.model.collapseColsByAttr(attr);
     }
-    this.createMatrix(this.model);
+    this.createMatrix(this.model, this.ui.selectedEncoding);
   }
 
   onCollapseRowsByAttr(attr) {
@@ -77,7 +79,7 @@ export class MainController {
     } else {
       this.model.collapseRowsByAttr(attr);
     }
-    this.createMatrix(this.model);
+    this.createMatrix(this.model, this.ui.selectedEncoding);
   }
 
   onEncodingChanged(encoding) {
