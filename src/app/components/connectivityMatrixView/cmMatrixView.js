@@ -9,6 +9,7 @@ import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
 import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
+import {cmColorMapLegend} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
@@ -76,7 +77,6 @@ export class cmMatrixView extends SvgGroupElement {
     }
 
     this.setEncoding("colormap");
-
 
     // Visitor to create scatter plots in per-cell attributes
     let preprocessor = new cmScatterPlot1DPreprocessor();
@@ -191,12 +191,14 @@ export class cmMatrixView extends SvgGroupElement {
       visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
       visitor.setCallbacks(this.onCellClicked, this.onCellHovered);
       this.applyVisitor(visitor);
+      this.legend = undefined;
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       this.applyVisitor(preprocessor);
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
       visitor.setCallbacks(this.onCellClicked, this.onCellHovered);
       this.applyVisitor(visitor);
+      this.legend = new cmColorMapLegend(visitor);
     }
   }
 

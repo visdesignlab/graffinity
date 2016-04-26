@@ -4,7 +4,7 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 
 export class MainController {
-  constructor($log, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory) {
+  constructor($log, $timeout, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory) {
     'ngInject';
 
     this.$log = $log;
@@ -31,7 +31,11 @@ export class MainController {
     let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = cmModelFactory.createModel(graph, matrix);
 
-    this.createMatrixAndUi(this.model);
+    let self = this;
+    $timeout(function () {
+      self.createMatrixAndUi(self.model)
+    }, 1);
+
   }
 
   createCategoricalCollapseControls(model) {
@@ -45,7 +49,7 @@ export class MainController {
   createMatrix(model, encoding) {
     this.svg.selectAll("*").remove();
     this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model);
-    this.matrix.setEncoding(encoding);
+    this.onEncodingChanged(encoding);
   }
 
   createMatrixAndUi(model) {
@@ -84,6 +88,22 @@ export class MainController {
 
   onEncodingChanged(encoding) {
     this.matrix.setEncoding(encoding);
+
+    d3.select("#encoding-legend")
+      .selectAll("*")
+      .remove();
+
+    let group = d3.select("#encoding-legend")
+      .append("g")
+      .attr("transform", "translate(1, 4)");
+
+    let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
+    if (this.matrix.legend) {
+      this.matrix.legend.createView(group, width, width);
+      this.ui.hasLegend = true;
+    } else {
+      this.ui.hasLegend = false;
+    }
   }
 
   onQuerySubmitted(query) {

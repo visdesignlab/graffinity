@@ -1,3 +1,5 @@
+/* globals d3
+ */
 import {cmCellVisitor} from "./cmCellVisitors"
 
 export class cmClearVisitor extends cmCellVisitor {

@@ -27,12 +27,14 @@ export class cmColorMapPreprocessor extends cmCellVisitor {
 export class cmColorMapVisitor extends cmCellVisitor {
   constructor(preprocessor, width, height) {
     super(width, height);
+    let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
     this.setColorScale = d3.scale.quantize()
-      .range(colorbrewer.Blues[7])
+      .range(colorRange)
       .domain(preprocessor.setRange);
 
+    colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Oranges, preprocessor.nodeRange);
     this.nodeColorScale = d3.scale.quantize()
-      .range(colorbrewer.Oranges[7])
+      .range(colorRange)
       .domain(preprocessor.nodeRange);
 
     this.preprocessor = preprocessor;
@@ -65,5 +67,80 @@ export class cmColorMapVisitor extends cmCellVisitor {
       return this.nodeColorScale(cell.getPathList().length);
     }
 
+  }
+
+  static getColorScaleRange(colors, range) {
+    if (range[1] == 0 || range[1] == 1) {
+      return [colors[3][0], colors[3][2]]
+    } else if (range[1] >= 2 && range[1] < 7) {
+      return colors[range[1] + 1];
+    } else {
+      return colors[7];
+    }
+  }
+}
+
+export class cmColorMapLegend {
+  constructor(visitor) {
+    this.visitor = visitor;
+  }
+
+  createView(parent, width) {
+    let group = parent.append('g');
+
+    // Create the color legend for major rows/cols
+    let swatchWidth = 20;
+    let swatchHeight = Math.min(width, 20);
+    cmColorMapLegend.createColorScaleLegend(this.visitor.setColorScale, group, swatchWidth, swatchHeight);
+    group = parent.append('g').attr('transform', function () {
+      return 'translate(' + swatchWidth * 3 + ',0)';
+    });
+
+    // If there are minor rows/cols, create the legend.
+    if (this.visitor.nodeColorScale.domain()[1] != 0) {
+      cmColorMapLegend.createColorScaleLegend(this.visitor.nodeColorScale, group, swatchWidth, swatchHeight);
+    }
+  }
+
+  static createColorScaleLegend(colorScale, group, swatchWidth, swatchHeight) {
+
+    let data = colorScale.range();
+
+    let swatchPositionFn = function (d, i) {
+      return "translate(0" + ", " + (i * swatchHeight) + ")";
+    };
+
+    // Create square swatches.
+    group.selectAll('rect')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('width', swatchWidth)
+      .attr('height', swatchHeight)
+      .attr('rx', 2)
+      .attr('ry', 2)
+      .attr('transform', swatchPositionFn)
+      .style('fill', function (d) {
+        return d;
+      });
+
+
+    let textPositionFn = function (d, i) {
+      return "translate(" + (swatchWidth * 1.1) + ", " + ((i * swatchHeight) + (0.5 * swatchHeight)) + ")";
+    };
+
+    // Create text labels to the right of the swatches.
+    group.append('g')
+      .selectAll('text')
+      .data(data)
+      .enter()
+      .append('text')
+      .text(function (d) {
+        let value = colorScale.invertExtent(d);
+        return Math.floor(value[1]);
+      })
+      .attr('transform', textPositionFn)
+      .style('alignment-baseline', 'mathematical')
+      .style('text-anchor', 'start');
   }
 }
