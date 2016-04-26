@@ -7,8 +7,8 @@ import {cmCellVisitor} from "./cmCellVisitors"
 export class cmColorMapPreprocessor extends cmCellVisitor {
   constructor() {
     super();
-    this.setRange = [0, 0];
-    this.nodeRange = [0, 0];
+    this.setRange = [1, 1];
+    this.nodeRange = [1, 0];
   }
 
   apply(cell) {
@@ -28,14 +28,25 @@ export class cmColorMapVisitor extends cmCellVisitor {
   constructor(preprocessor, width, height) {
     super(width, height);
     let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
+    let domain = [0, 1];
+
+    if (colorRange.length != 1) {
+      domain = preprocessor.setRange;
+    }
+
     this.setColorScale = d3.scale.quantize()
       .range(colorRange)
-      .domain(preprocessor.setRange);
+      .domain(domain);
 
     colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Oranges, preprocessor.nodeRange);
+    domain = [0, 1];
+    if (colorRange.length != 1) {
+      domain = preprocessor.nodeRange;
+    }
+
     this.nodeColorScale = d3.scale.quantize()
       .range(colorRange)
-      .domain(preprocessor.nodeRange);
+      .domain(domain);
 
     this.preprocessor = preprocessor;
   }
@@ -47,20 +58,24 @@ export class cmColorMapVisitor extends cmCellVisitor {
 
     let color = this.getCellColor(cell);
     let group = cell.getGroup();
+    if (cell.getPathList().length) {
 
-    group.append("rect")
-      .attr("width", this.width)
-      .attr("height", this.height)
-      .attr("rx", this.rx)
-      .attr("ry", this.ry)
-      .style("stroke", color)
-      .style("stroke-width", "1px")
-      .attr("fill", color);
+      group.append("rect")
+        .attr("width", this.width)
+        .attr("height", this.height)
+        .attr("rx", this.rx)
+        .attr("ry", this.ry)
+        .style("stroke", color)
+        .style("stroke-width", "1px")
+        .attr("fill", color);
 
-    this.createInteractionGroup(cell);
+      this.createInteractionGroup(cell);
+    }
   }
 
   getCellColor(cell) {
+    console.log("getting cell color", cell.getPathList());
+    console.log(this.setColorScale.range());
     if (cell.isCellBetweenSets()) {
       return this.setColorScale(cell.getPathList().length);
     } else {
@@ -70,8 +85,10 @@ export class cmColorMapVisitor extends cmCellVisitor {
   }
 
   static getColorScaleRange(colors, range) {
-    if (range[1] == 0 || range[1] == 1) {
-      return [colors[3][0], colors[3][2]]
+    if (range[0] == 1 && range[1] == 1) {
+      return [colors[3][2]];
+    } else if (range[0] == 1 && range[1] == 2) {
+      return [colors[3][0], colors[3][2]];
     } else if (range[1] >= 2 && range[1] < 7) {
       return colors[range[1] + 1];
     } else {
