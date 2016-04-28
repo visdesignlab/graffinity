@@ -13,11 +13,10 @@ import {cmColorMapLegend} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
-import {cmMatrixCell} from "./cmMatrixCell"
 import {Utils} from "../utils/utils"
 
 export class cmMatrixView extends SvgGroupElement {
-  constructor(svg, model) {
+  constructor(svg, model, $log) {
     super(svg);
     this.colWidth = 15;
     this.rowHeight = 15;
@@ -29,8 +28,6 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
     this.selectedAttribute = "locations";
-    this.availableEncodings = [];
-
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
 
@@ -42,6 +39,8 @@ export class cmMatrixView extends SvgGroupElement {
     }
     this.colWidths[2] = 30;
     this.colWidths[1] = 80;
+
+    this.$log = $log;
 
     // Controls row is the only one with a onColControlsClicked callback.
     let row = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, model.areColsCollapsed);
@@ -136,11 +135,11 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
-    // console.log("cell clicked", cell, cell.getPathList());
+    this.$log.log("cell clicked", cell, cell.getPathList());
   }
 
   onCellHovered(cell) {
-    // console.log("cell hovered", cell);
+    this.$log.log("cell hovered", cell, cell.getPathList());
   }
 
   /** Callback when user clicks on the column controls.
@@ -185,18 +184,21 @@ export class cmMatrixView extends SvgGroupElement {
     let cellWidth = this.colWidth - 2;
     let cellHeight = this.rowHeight - 2;
 
+    let clicked = this.onCellClicked.bind(this);
+    let hovered = this.onCellHovered.bind(this);
+
     if (encoding == "bar chart") {
       preprocessor = new cmBarChartPreprocessor();
       this.applyVisitor(preprocessor);
       visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(this.onCellClicked, this.onCellHovered);
+      visitor.setCallbacks(clicked, hovered);
       this.applyVisitor(visitor);
       this.legend = undefined;
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       this.applyVisitor(preprocessor);
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(this.onCellClicked, this.onCellHovered);
+      visitor.setCallbacks(clicked, hovered);
       this.applyVisitor(visitor);
       this.legend = new cmColorMapLegend(visitor);
     }

@@ -18,7 +18,7 @@ export function QueryDirective() {
 class QueryController {
   constructor() {
     'ngInject';
-    this.defaultQuery = "MATCH p = n-[SYNAPSE*1..2]->m WHERE n.label in ['CBb4w', 'CBb3n'] and m.label in ['GC', 'GC ON'] RETURN p LIMIT 100;";
+    this.defaultQuery = "MATCH p = n-[SYNAPSE*1..2]->m WHERE n.label in ['CBb4w', 'CBb3n'] and m.label in ['GC', 'GC ON'] RETURN p LIMIT 500;";
     this.cypherQuery = this.defaultQuery;
   }
 

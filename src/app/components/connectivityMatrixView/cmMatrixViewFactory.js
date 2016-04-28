@@ -6,12 +6,11 @@ export class cmMatrixViewFactory {
 
     this.$log = $log;
     this.$http = $http;
-    this.apiHost = 'https://api.github.com/repos/Swiip/generator-gulp-angular';
   }
 
 
   createConnectivityMatrix(svg, model) {
-    return new cmMatrixView(svg, model);
+    return new cmMatrixView(svg, model, this.$log);
   }
 
 }

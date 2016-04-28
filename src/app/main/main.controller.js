@@ -43,7 +43,6 @@ export class MainController {
     this.ui.availableCategoricalAttr = this.ui.availableCategoricalAttr.concat(model.getCmGraph().getCategoricalNodeAttrNames());
     this.ui.selectedCategoricalColAttr = this.ui.availableCategoricalAttr[0];
     this.ui.selectedCategoricalRowAttr = this.ui.availableCategoricalAttr[0];
-
   }
 
   createMatrix(model, encoding) {

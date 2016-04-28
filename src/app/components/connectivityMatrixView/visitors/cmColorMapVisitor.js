@@ -74,14 +74,11 @@ export class cmColorMapVisitor extends cmCellVisitor {
   }
 
   getCellColor(cell) {
-    console.log("getting cell color", cell.getPathList());
-    console.log(this.setColorScale.range());
     if (cell.isCellBetweenSets()) {
       return this.setColorScale(cell.getPathList().length);
     } else {
       return this.nodeColorScale(cell.getPathList().length);
     }
-
   }
 
   static getColorScaleRange(colors, range) {
