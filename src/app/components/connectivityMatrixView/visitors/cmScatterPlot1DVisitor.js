@@ -4,6 +4,7 @@
 import {ScatterPlot1D} from "../svg/scatterPlot1D";
 import {cmCellVisitor} from "./cmCellVisitors";
 
+
 export class cmAttributeCellVisitor extends cmCellVisitor {
   constructor(attributeIndex) {
     super();
@@ -50,7 +51,7 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
       let data = cell.data;
       let group = cell.getGroup()
         .append("g");
-      if (data.orientation == 1) {
+      if (data.isVertical) {
         new ScatterPlot1D(group, 15, 80, this.radius, data.values, this.valueRange, data.orientation);
       } else {
         new ScatterPlot1D(group, 80, 15, this.radius, data.values, this.valueRange, data.orientation);

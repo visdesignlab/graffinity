@@ -111,10 +111,6 @@ export class cmMatrixRow extends SvgGroupElement {
     return this.currentHeight;
   }
 
-  getDataColIndex(colIndex) {
-    return colIndex - this.numHeaderCols;
-  }
-
   getNumMajorCells() {
     return this.majorCells.length;
   }

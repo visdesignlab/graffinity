@@ -11,3 +11,9 @@
 .matrix-view-histogram-bar {
   fill: gray;
 }
+
+.matrix-view-attribute-label {
+  text-anchor: middle;
+  font-size: 10px;
+  alignment-baseline: text-before-edge;
+}

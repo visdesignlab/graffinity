@@ -14,6 +14,7 @@ export class cmMatrixCell extends SvgGroupElement {
 
     // Attribute cells contain a list of per-node attribute values for a given row/col.
     this.isAttributeCell = false;
+    this.isAttributeLabelCell = false;
 
     this.isInMajorRow = isInMajorRow;
     this.isMajorCell = isMajorCell;

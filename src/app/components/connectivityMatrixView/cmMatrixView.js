@@ -5,6 +5,7 @@ import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
+import {cmAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
 import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
@@ -34,14 +35,12 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
-    this.selectedAttribute = "area";
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
 
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
-
     let colNodeAttributes = [];
     let rowAttributes = [];
     for (var i = 0; i < attributes.length; ++i) {
@@ -60,13 +59,15 @@ export class cmMatrixView extends SvgGroupElement {
       }
     }
 
+    this.colWidthAttr = 80;
+    this.colWidthLabel = 30;
     for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       if(this.isControlCell(i) || this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
       } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = 80;
+        this.colWidths[i] = this.colWidthAttr;
       } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = 30;
+        this.colWidths[i] = this.colWidthLabel;
       }
     }
 
@@ -90,7 +91,7 @@ export class cmMatrixView extends SvgGroupElement {
         false,
         colNodeAttributes[i],
         this,
-        i);
+        i, attributes[i]);
 
       this.addRow(attributeRow, attributeRowHeight);
     }
@@ -111,7 +112,7 @@ export class cmMatrixView extends SvgGroupElement {
       attributes);
     this.addRow(labelRow, labelRowHeight);
 
-    //// Create each of the data rows!
+    // Create each of the data rows!
     let modelRows = model.getCurrentRows();
     let majorRowLabels = model.getMajorRowLabels();
     let minorRowLabels = model.getMinorRowLabels();
@@ -129,13 +130,17 @@ export class cmMatrixView extends SvgGroupElement {
     this.setEncoding("colormap");
 
     // Visitor to create scatter plots in per-cell attributes
+    let visitor = null;
     for (i = 0; i < attributes.length; ++i) {
       let preprocessor = new cmScatterPlot1DPreprocessor(i);
       this.applyVisitor(preprocessor);
       let valueRange = preprocessor.getValueRange();
-      let visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
+      visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
       this.applyVisitor(visitor);
     }
+
+    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight);
+    this.applyVisitor(visitor);
 
     this.updatePositions(this.rowPerm, this.colPerm);
   }
