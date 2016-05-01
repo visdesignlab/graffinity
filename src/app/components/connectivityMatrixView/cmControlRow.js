@@ -51,14 +51,14 @@ export class cmControlRow extends cmMatrixRow {
   }
 
   onUnrollColClicked(majorCol) {
-    var colIndex = this.getMajorCellIndex(majorCol);
+    var colIndex = cmMatrixRow.getMajorCellIndex(majorCol);
     this.unrollControls[colIndex].style("display", "none");
     this.rollupControls[colIndex].style("display", "block");
     this.colClickedCallback(colIndex, true);
   }
 
   onRollupColClicked(majorCol) {
-    var colIndex = this.getMajorCellIndex(majorCol);
+    var colIndex = cmMatrixRow.getMajorCellIndex(majorCol);
     this.unrollControls[colIndex].style("display", "block");
     this.rollupControls[colIndex].style("display", "none");
     this.colClickedCallback(colIndex, false);

@@ -19,7 +19,6 @@ export class cmMatrixRow extends SvgGroupElement {
     this.isMinorRow = isMinorRow;
     this.rowIndex = rowIndex;
     this.majorCells = [];
-    this.numHeaderCols = numHeaderCols;
     this.minorRows = [];
     this.matrix = matrix;
     if (!isMinorRow) {
@@ -123,7 +122,7 @@ export class cmMatrixRow extends SvgGroupElement {
     return this.majorCells[i];
   }
 
-  getMajorCellIndex(group) {
+  static getMajorCellIndex(group) {
     return group.attr("data-major-col");
   }
 
