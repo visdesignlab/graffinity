@@ -6,12 +6,20 @@ export class cmMatrixCell extends SvgGroupElement {
     group.attr("data-major-col", colIndex);
     super(group);
 
-    this.isInMajorRow = isInMajorRow;
+    // Header cells are all cells that to the left of the data cells. E.g., control, label and attribute cells.
     this.isHeaderCell = isHeaderCell;
-    this.isMajorCell = isMajorCell;
+
+    // Data cells are at the core of the matrix.
     this.isDataCell = isDataCell;
+
+    // Attribute cells contain a list of per-node attribute values for a given row/col.
     this.isAttributeCell = false;
+
+    this.isInMajorRow = isInMajorRow;
+    this.isMajorCell = isMajorCell;
+
     this.minorCells = [];
+
     this.data = {};
   }
 

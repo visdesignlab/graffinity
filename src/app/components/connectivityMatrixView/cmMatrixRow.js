@@ -4,7 +4,7 @@ import {SvgGroupElement} from "./svgGroupElement"
 import {cmMatrixCell} from "./cmMatrixCell"
 
 export class cmMatrixRow extends SvgGroupElement {
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix) {
     let group = null;
     if (!isMinorRow) {
       group = svg.append("g")
@@ -21,6 +21,7 @@ export class cmMatrixRow extends SvgGroupElement {
     this.majorCells = [];
     this.numHeaderCols = numHeaderCols;
     this.minorRows = [];
+    this.matrix = matrix;
     if (!isMinorRow) {
       this.minorRowContainer = group.append("g")
         .attr("data-minor-row-container", rowIndex);
@@ -128,10 +129,6 @@ export class cmMatrixRow extends SvgGroupElement {
 
   getMajorCellIndex(group) {
     return group.attr("data-major-col");
-  }
-
-  isHeaderCell(colIndex) {
-    return colIndex < this.numHeaderCols;
   }
 
   onRollupRowClicked() {

@@ -1,4 +1,4 @@
-/*global reorder
+/*global reorder, d3
  */
 import {SvgGroupElement} from "./svgGroupElement"
 import {cmControlRow} from "./cmControlRow"
@@ -18,56 +18,107 @@ import {Utils} from "../utils/utils"
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model, $log) {
     super(svg);
+    this.$log = $log;
     this.colWidth = 15;
     this.rowHeight = 15;
     this.colWidths = [];
     this.colNodeIndexes = model.getColNodeIndexes();
-    this.numHeaderCols = 3;
-    this.numHeaderRows = 3;
+
+    let attributes = ['area', 'locations'];
+    this.numControlCols = 1;
+    this.numAttributeCols = attributes.length;
+    this.numLabelCols = 1;
+    this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
+
+    this.numHeaderRows = 2 + attributes.length; // 2 is the control row and the label row
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
-    this.selectedAttribute = "locations";
+    this.selectedAttribute = "area";
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
 
-    let colNodeAttributes = model.getNodeAttrs(this.colNodeIndexes, this.selectedAttribute);
-    let rowNodeAttributes = model.getNodeAttrs(this.rowNodeIndexes, this.selectedAttribute);
+    // Populate the row/col node attributes.
+    // rowNodeAttributes[i][j] = attributes[j] for row[i]
+    // colNodeAttributes[i][j] = attributes[i] for col[j]
 
-    for (var i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      this.colWidths[i] = this.colWidth;
+    let colNodeAttributes = [];
+    let rowAttributes = [];
+    for (var i = 0; i < attributes.length; ++i) {
+      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, attributes[i]);
+      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, attributes[i]);
     }
-    this.colWidths[2] = 30;
-    this.colWidths[1] = 80;
 
-    this.$log = $log;
+    let rowNodeAttributes = rowAttributes[0];
+    if(attributes.length > 1) {
+      for (i = 1; i < attributes.length; ++i) {
+        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
+      }
+    } else {
+      for(i=0; i<rowNodeAttributes.length; ++i) {
+        rowNodeAttributes[i] = [rowNodeAttributes[i]];
+      }
+    }
+
+    for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
+      if(this.isControlCell(i) || this.isDataCell(i)) {
+        this.colWidths[i] = this.colWidth;
+      } else if (this.isAttributeCell(i)) {
+        this.colWidths[i] = 80;
+      } else if (this.isLabelCell(i)) {
+        this.colWidths[i] = 30;
+      }
+    }
+
 
     // Controls row is the only one with a onColControlsClicked callback.
-    let row = new cmControlRow(svg, 0, this.colNodeIndexes, this.numHeaderCols, this.colWidth, this.rowHeight, model.areColsCollapsed);
+    let row = new cmControlRow(svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+      this.rowHeight, model.areColsCollapsed, this);
+
     let callback = this.onColControlsClicked.bind(this);
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
 
     let attributeRowHeight = 80;
-    let attributeRow = new cmAttributeRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, attributeRowHeight, false, colNodeAttributes);
-    this.addRow(attributeRow, attributeRowHeight);
+    for (i = 0; i < attributes.length; ++i) {
+      let attributeRow = new cmAttributeRow(svg,
+        this.allRows.length,
+        this.colNodeIndexes,
+        this.numHeaderCols,
+        this.colWidth,
+        attributeRowHeight,
+        false,
+        colNodeAttributes[i],
+        this,
+        i);
+
+      this.addRow(attributeRow, attributeRowHeight);
+    }
 
     // Create the labels row
     let majorColLabels = model.getMajorColLabels();
     let minorColLabels = model.getMinorColLabels();
     let labelRowHeight = 30;
-    let labelRow = new cmLabelRow(svg, 1, this.colNodeIndexes, this.numHeaderCols, this.colWidth, labelRowHeight,
-      majorColLabels, minorColLabels);
+    let labelRow = new cmLabelRow(svg,
+      this.allRows.length,
+      this.colNodeIndexes,
+      this.numHeaderCols,
+      this.colWidth,
+      labelRowHeight,
+      majorColLabels,
+      minorColLabels,
+      this,
+      attributes);
     this.addRow(labelRow, labelRowHeight);
 
-    // Create each of the data rows!
+    //// Create each of the data rows!
     let modelRows = model.getCurrentRows();
     let majorRowLabels = model.getMajorRowLabels();
     let minorRowLabels = model.getMinorRowLabels();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i]);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this);
       if (modelRows[i].getNumChildren() > 0) {
         callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
@@ -78,12 +129,13 @@ export class cmMatrixView extends SvgGroupElement {
     this.setEncoding("colormap");
 
     // Visitor to create scatter plots in per-cell attributes
-    let preprocessor = new cmScatterPlot1DPreprocessor();
-    this.applyVisitor(preprocessor);
-    let valueRange = preprocessor.getValueRange();
-    let visitor = new cmScatterPlot1DVisitor(this.rowHeight / 4, valueRange);
-    this.applyVisitor(visitor);
-
+    for (i = 0; i < attributes.length; ++i) {
+      let preprocessor = new cmScatterPlot1DPreprocessor(i);
+      this.applyVisitor(preprocessor);
+      let valueRange = preprocessor.getValueRange();
+      let visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
+      this.applyVisitor(visitor);
+    }
 
     this.updatePositions(this.rowPerm, this.colPerm);
   }
@@ -119,6 +171,10 @@ export class cmMatrixView extends SvgGroupElement {
     return positions;
   }
 
+  getAttributeColIndex(viewColIndex) {
+    return viewColIndex - this.numControlCols;
+  }
+
   getDataColIndex(viewColIndex) {
     return viewColIndex - this.numHeaderCols;
   }
@@ -132,6 +188,24 @@ export class cmMatrixView extends SvgGroupElement {
       y += rowHeights[logicalRowIndex];
     }
     return positions;
+  }
+
+  isControlCell(colIndex) {
+    return colIndex < this.numControlCols;
+  }
+
+  isAttributeCell(colIndex) {
+    return colIndex >= this.numControlCols && colIndex < (this.numAttributeCols + this.numControlCols);
+  }
+
+  isLabelCell(colIndex) {
+    return colIndex >= this.numAttributeCols + this.numControlCols &&
+      colIndex < this.numAttributeCols + this.numControlCols + this.numLabelCols;
+  }
+
+  isDataCell(colIndex) {
+    return !this.isControlCell(colIndex) && !this.isAttributeCell(colIndex) && !this.isLabelCell(colIndex);
+
   }
 
   onCellClicked(cell) {

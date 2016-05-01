@@ -2,8 +2,8 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmLabelRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight);
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix, attributeLabels) {
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);
 
     this.unrollControls = [];
     this.rollupControls = [];
@@ -14,11 +14,16 @@ export class cmLabelRow extends cmMatrixRow {
     for (var i = 0; i < numMajorCells; ++i) {
       let majorCell = this.getMajorCell(i);
       let dataIndex = this.getDataColIndex(i);
-      if (!this.isHeaderCell(i)) {
-        cmLabelRow.createLabelInCell(majorCell, majorColLabels[dataIndex], rowHeight);
+      if (this.matrix.isAttributeCell(i)) {
+        majorCell.getGroup()
+          .append("text")
+          .text(attributeLabels[this.matrix.getAttributeColIndex(i)]);
+
+      } else if (this.matrix.isDataCell(i)) {
+        cmLabelRow.createColNodeLabel(majorCell, majorColLabels[dataIndex], rowHeight);
         for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
           let minorCell = majorCell.minorCells[j];
-          cmLabelRow.createLabelInCell(minorCell, minorColLabels[dataIndex][j], rowHeight);
+          cmLabelRow.createColNodeLabel(minorCell, minorColLabels[dataIndex][j], rowHeight);
         }
       }
     }
@@ -26,7 +31,7 @@ export class cmLabelRow extends cmMatrixRow {
     this.colNodeIndexes = colNodeIndexes;
   }
 
-  static createLabelInCell(cell, label, rowHeight) {
+  static createColNodeLabel(cell, label, rowHeight) {
     let group = cell.getGroup();
     group.append("g")
       .attr("transform", "translate(0," + rowHeight + ")rotate(270)")

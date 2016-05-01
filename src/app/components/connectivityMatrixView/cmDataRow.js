@@ -2,21 +2,22 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmDataRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow);
-
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix) {
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
+    console.log('creating data row', rowNodeAttributes);
     if (!isMinorRow) {
       let numChildren = modelRow.getNumChildren();
       if (numChildren > 0) {
-
-        let minorRow = new cmDataRow(this.minorRowContainer, 0, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-          true, modelRow, minorLabels[0], null, [rowNodeAttributes[0]]);
+        let childIndex = 0;
+        let minorRow = new cmDataRow(this.minorRowContainer, childIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
+          true, modelRow, minorLabels[childIndex], null, cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix);
         minorRow.setVisible(false);
         this.addMinorRow(minorRow);
 
         for (var i = 0; i < numChildren; ++i) {
-          minorRow = new cmDataRow(this.minorRowContainer, i + 1, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
-            true, modelRow.getChildRowAt(i), minorLabels[i + 1], null, [rowNodeAttributes[i + 1]]);
+          childIndex = i + 1;
+          minorRow = new cmDataRow(this.minorRowContainer, childIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight,
+            true, modelRow.getChildRowAt(i), minorLabels[childIndex], null, cmDataRow.getAttributes(rowNodeAttributes, i+1), matrix);
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
         }
@@ -27,12 +28,13 @@ export class cmDataRow extends cmMatrixRow {
     this.rollupControls = [];
 
     var numMajorCells = this.getNumMajorCells();
-    cmDataRow.createLabelInCell(this.majorCells[2], label);
+
     for (i = 0; i < numMajorCells; ++i) {
-      if (i == 1) {
+      if(this.matrix.isAttributeCell(i)) {
         this.majorCells[i].isAttributeCell = true;
-      }
-      if (!this.isHeaderCell(i)) {
+      } else if (this.matrix.isLabelCell(i)) {
+        cmDataRow.createLabelInCell(this.majorCells[i], label);
+      } else if (this.matrix.isDataCell(i)) {
         this.majorCells[i].isDataCell = true;
       }
     }
@@ -40,14 +42,17 @@ export class cmDataRow extends cmMatrixRow {
     this.createMinorCells(numHeaderCols, colNodeIndexes, true);
 
     for (i = 0; i < numMajorCells; ++i) {
-      if (i == 1) {
+      if(this.matrix.isAttributeCell(i)) {
+        let attributeIndex = this.matrix.getAttributeColIndex(i);
         let data = {
-          values: rowNodeAttributes,
-          orientation: 0
+          values: rowNodeAttributes[attributeIndex],
+          orientation: 0,
+          attributeIndex: attributeIndex
         };
         this.majorCells[i].setData(data);
-      }
-      else if (!this.isHeaderCell(i)) {
+      } else if (this.matrix.isLabelCell(i)) {
+        cmDataRow.createLabelInCell(this.majorCells[i], label);
+      } else if (this.matrix.isDataCell(i)) {
         let dataIndex = this.getDataColIndex(i);
         let data = {
           colNodeIndexes: colNodeIndexes[dataIndex],
@@ -77,5 +82,13 @@ export class cmDataRow extends cmMatrixRow {
       .attr("alignment-baseline", "text-before-edge")
       .attr("font-size", 8)
       .text(label);
+  }
+
+  static getAttributes(rowNodeAttributes, childIndex) {
+    let attributes = [];
+    for(var i=0; i<rowNodeAttributes.length; ++i) {
+      attributes.push([rowNodeAttributes[i][childIndex]]);
+    }
+    return attributes;
   }
 }
