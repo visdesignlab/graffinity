@@ -22,3 +22,30 @@
   fill: none;
   stroke: black;
 }
+
+.matrix-view-attribute-controls {
+  fill: transparent;
+  rx: 3px;
+  ry: 3px;
+}
+
+.matrix-view-toolbar {
+  display: none;
+  text-align: left;
+  border-radius: 3px 3px 3px 3px;
+  padding: 0 2px;
+  background: #6D6C6C;
+  font-size: 10px;
+  width: 30px;
+  stroke: black;
+}
+
+.fa {
+  display: inline;
+  background: transparent;
+}
+
+.fa:hover {
+  color: white;
+  cursor: pointer;
+}

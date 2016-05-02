@@ -1,4 +1,5 @@
 import {cmCellVisitor} from "./cmCellVisitors";
+import {cmAttributeControls} from "../cmAttributeControls";
 
 export class cmAttributeLabelVisitor extends cmCellVisitor {
   constructor(width, height) {
@@ -11,8 +12,7 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
     if (cell.isAttributeLabelCell) {
       let isVertical = cell.data.isVertical;
       let name = cell.data.name;
-      let group = cell.getGroup()
-        .append("g");
+      let group = cell.getGroup();
 
       if (isVertical) {
 
@@ -22,10 +22,8 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
           .classed("matrix-view-attribute-label", true)
 
       } else {
-        group.append("text")
-          .text(name)
-          .attr("transform", "translate(" + this.width/2 + " ," + this.height + ")")
-          .classed("matrix-view-attribute-label", true)
+
+        cell.controls = new cmAttributeControls(group, name, cell.isVertical, this.width, this.height);
       }
     }
   }
