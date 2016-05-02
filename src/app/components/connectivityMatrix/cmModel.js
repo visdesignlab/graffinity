@@ -356,6 +356,19 @@ export class cmModel {
     return self.getMinorLabels(self.getRowNodeIndexes());
   }
 
+  getNodeAttrs(nodeIndexes, attribute) {
+    var self = this;
+    var attributes = [nodeIndexes.length];
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+      attributes[i] = [];
+      for (var j = 0; j < nodeIndexes[i].length; ++j) {
+        attributes[i].push(self.graph.getNode(nodeIndexes[i][j])[attribute]);
+      }
+    }
+    return attributes;
+  }
+
+
   getNodeAttr(nodeIndexes, attribute) {
     var self = this;
     var attributes = [nodeIndexes.length];
@@ -390,17 +403,6 @@ export class cmModel {
 
   }
 
-  getNodeAttrs(nodeIndexes, attribute) {
-    var self = this;
-    var attributes = [nodeIndexes.length];
-    for (var i = 0; i < nodeIndexes.length; ++i) {
-      attributes[i] = [];
-      for (var j = 0; j < nodeIndexes[i].length; ++j) {
-        attributes[i].push(self.graph.getNode(nodeIndexes[i][j])[attribute]);
-      }
-    }
-    return attributes;
-  }
 
   /**
    * Returns a list of indexes into nodeIndexes - the returned list is sorted by attribute.
@@ -416,16 +418,15 @@ export class cmModel {
     // find max values of each node index list in nodeIndexes
     for (var i = 0; i < nodeIndexes.length; ++i) {
       var currentNodeIndexes = nodeIndexes[i];
-      var maxAttrValue = undefined;
+      var maxAttrValue = null;
 
       // find max values of each node in nodeIndexes[i]
       for (var j = 0; j < currentNodeIndexes.length; ++j) {
         var currentRowNodeIndex = currentNodeIndexes[j];
-
-        if (maxAttrValue == undefined) {
-          maxAttrValue = self.getNodeAttr(currentRowNodeIndex, attribute);
+        if (maxAttrValue == null) {
+          maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute);
         } else {
-          maxAttrValue = Math.max(self.getNodeAttr(currentRowNodeIndex, attribute), maxAttrValue);
+          maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue);
         }
 
         nodeValues.push(maxAttrValue);
@@ -485,6 +486,11 @@ export class cmModel {
   getRowsSortedByAttr(attribute, ascending) {
     var self = this;
     return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending);
+  }
+
+  getColsSortedByAttr(attribute, ascending) {
+    var self = this;
+    return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
   }
 
   getViewLabels(nodeIndexesLists, groupAttr) {

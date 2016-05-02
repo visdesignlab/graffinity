@@ -38,6 +38,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.allRows = [];
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
+    this.model = model;
 
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
@@ -141,7 +142,9 @@ export class cmMatrixView extends SvgGroupElement {
       this.applyVisitor(visitor);
     }
 
-    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight);
+    let sortRows = this.onSortRowsByAttribute.bind(this);
+    let sortCols = this.onSortColsByAttribute.bind(this);
+    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols);
     this.applyVisitor(visitor);
 
     this.updatePositions(this.rowPerm, this.colPerm);
@@ -324,6 +327,18 @@ export class cmMatrixView extends SvgGroupElement {
   onRowControlsClicked(rowIndex) {
     this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
     this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  onSortRowsByAttribute(attribute, ascending) {
+    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
+    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
+    this.updatePositions(shiftedRowPerm, this.colPerm);
+  }
+
+  onSortColsByAttribute(attribute, ascending) {
+    let colPerm = this.model.getColsSortedByAttr(attribute, ascending);
+    let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderRows);
+    this.updatePositions(this.rowPerm, shiftedColPerm);
   }
 
   setEncoding(encoding) {

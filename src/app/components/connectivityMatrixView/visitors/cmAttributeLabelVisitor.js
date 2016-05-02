@@ -2,10 +2,13 @@ import {cmCellVisitor} from "./cmCellVisitors";
 import {cmAttributeControls} from "../cmAttributeControls";
 
 export class cmAttributeLabelVisitor extends cmCellVisitor {
-  constructor(width, height) {
+  constructor(width, height, onSortRows, onSortCols) {
     super();
     this.width = width;
     this.height = height;
+    this.callbacks = {};
+    this.callbacks.onSortRows = onSortRows;
+    this.callbacks.onSortCols = onSortCols;
   }
 
   apply(cell) {
@@ -14,17 +17,9 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
       let name = cell.data.name;
       let group = cell.getGroup();
 
-      if (isVertical) {
+      let onSort = isVertical ? this.callbacks.onSortCols : this.callbacks.onSortRows;
 
-        group.append("text")
-          .text(name)
-          .attr("transform", "translate(" + this.height + " ," + this.width / 2 + ")rotate(270)")
-          .classed("matrix-view-attribute-label", true)
-
-      } else {
-
-        cell.controls = new cmAttributeControls(group, name, cell.isVertical, this.width, this.height);
-      }
+      cell.controls = new cmAttributeControls(group, name, isVertical, this.width, this.height, onSort);
     }
   }
 }
