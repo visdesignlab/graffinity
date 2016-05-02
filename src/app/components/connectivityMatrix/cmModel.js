@@ -436,7 +436,7 @@ export class cmModel {
 
     // sort the indexes according to the node values.
     sortedIndexes.sort(function (a, b) {
-      return nodeValues[a] < nodeValues[b] ? -1 : nodeValues[a] > nodeValues[b] ? 1 : 0;
+      return nodeValues[a][0] < nodeValues[b][0] ? -1 : nodeValues[a][0] > nodeValues[b][0] ? 1 : 0;
     });
 
     // order results

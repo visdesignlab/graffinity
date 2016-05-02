@@ -337,7 +337,7 @@ export class cmMatrixView extends SvgGroupElement {
 
   onSortColsByAttribute(attribute, ascending) {
     let colPerm = this.model.getColsSortedByAttr(attribute, ascending);
-    let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderRows);
+    let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
     this.updatePositions(this.rowPerm, shiftedColPerm);
   }
 
