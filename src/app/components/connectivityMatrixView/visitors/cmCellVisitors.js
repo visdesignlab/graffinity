@@ -6,10 +6,11 @@ export class cmCellVisitor {
     this.ry = 2;
   }
 
-  setCallbacks(clicked, hovered) {
+  setCallbacks(clicked, mouseOver, mouseOut) {
     this.callbacks = {};
     this.callbacks.clicked = clicked;
-    this.callbacks.hovered = hovered;
+    this.callbacks.mouseOver = mouseOver;
+    this.callbacks.mouseOut = mouseOut;
   }
 
   createInteractionGroup(cell) {
@@ -26,8 +27,9 @@ export class cmCellVisitor {
         self.callbacks.clicked(cell);
       })
       .on("mouseover", function () {
-        self.callbacks.hovered(cell);
-      })
-
+        self.callbacks.mouseOver(cell); })
+      .on("mouseout", function () {
+        self.callbacks.mouseOut(cell);
+      });
   }
 }

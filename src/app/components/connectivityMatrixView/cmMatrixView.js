@@ -15,6 +15,7 @@ import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
 import {Utils} from "../utils/utils"
+import {UtilsD3} from "../utils/utilsd3"
 
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model, $log) {
@@ -24,7 +25,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowHeight = 15;
     this.colWidths = [];
     this.colNodeIndexes = model.getColNodeIndexes();
-
+    this.svg = svg;
     let attributes = ['area', 'locations'];
     this.numControlCols = 1;
     this.numAttributeCols = attributes.length;
@@ -49,12 +50,12 @@ export class cmMatrixView extends SvgGroupElement {
     }
 
     let rowNodeAttributes = rowAttributes[0];
-    if(attributes.length > 1) {
+    if (attributes.length > 1) {
       for (i = 1; i < attributes.length; ++i) {
         rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
       }
     } else {
-      for(i=0; i<rowNodeAttributes.length; ++i) {
+      for (i = 0; i < rowNodeAttributes.length; ++i) {
         rowNodeAttributes[i] = [rowNodeAttributes[i]];
       }
     }
@@ -62,7 +63,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.colWidthAttr = 80;
     this.colWidthLabel = 30;
     for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if(this.isControlCell(i) || this.isDataCell(i)) {
+      if (this.isControlCell(i) || this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
       } else if (this.isAttributeCell(i)) {
         this.colWidths[i] = this.colWidthAttr;
@@ -217,8 +218,23 @@ export class cmMatrixView extends SvgGroupElement {
     this.$log.log("cell clicked", cell, cell.getPathList());
   }
 
-  onCellHovered(cell) {
-    this.$log.log("cell hovered", cell, cell.getPathList());
+  onCellMouseOver(cell) {
+    this.$log.log("cell hovered", cell, cell.getPathList(), cell.getGroup()[0][0]);
+    let element = cell.getGroup()[0][0];
+    let transform = UtilsD3.getAccumulatedTranslate(element, 1);
+    console.log(transform);
+    this.svg.append("rect")
+      .attr("width", transform.translate[0] + this.colWidth)
+      .attr("height", this.rowHeight)
+      .attr("transform", "translate(0," + transform.translate[1] + ")")
+      .attr("fill", "none")
+      .attr("stroke", "black");
+
+    this.$log.log(transform);
+  }
+
+  onCellMouseOut(cell) {
+    console.log("mouseout");
   }
 
   /** Callback when user clicks on the column controls.
@@ -264,20 +280,21 @@ export class cmMatrixView extends SvgGroupElement {
     let cellHeight = this.rowHeight - 2;
 
     let clicked = this.onCellClicked.bind(this);
-    let hovered = this.onCellHovered.bind(this);
+    let mouseover = this.onCellMouseOver.bind(this);
+    let mouseout = this.onCellMouseOut.bind(this);
 
     if (encoding == "bar chart") {
       preprocessor = new cmBarChartPreprocessor();
       this.applyVisitor(preprocessor);
       visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(clicked, hovered);
+      visitor.setCallbacks(clicked, mouseover, mouseout);
       this.applyVisitor(visitor);
       this.legend = undefined;
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       this.applyVisitor(preprocessor);
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(clicked, hovered);
+      visitor.setCallbacks(clicked, mouseover, mouseout);
       this.applyVisitor(visitor);
       this.legend = new cmColorMapLegend(visitor);
     }
