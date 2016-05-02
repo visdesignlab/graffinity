@@ -19,6 +19,8 @@ export class cmMatrixCell extends SvgGroupElement {
     this.isInMajorRow = isInMajorRow;
     this.isMajorCell = isMajorCell;
 
+    this.isRowLabelCell = false;
+
     this.minorCells = [];
 
     this.data = {};

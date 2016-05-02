@@ -125,6 +125,7 @@ export class cmMatrixView extends SvgGroupElement {
         callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
+      dataRow.setLabelColWidth(this.colWidthLabel);
       this.addRow(dataRow, this.rowHeight);
     }
 
@@ -331,8 +332,8 @@ export class cmMatrixView extends SvgGroupElement {
     let visitor = new cmClearVisitor();
     this.applyVisitor(visitor);
 
-    let cellWidth = this.colWidth - 2;
-    let cellHeight = this.rowHeight - 2;
+    let cellWidth = this.colWidth;
+    let cellHeight = this.rowHeight;
 
     let clicked = this.onCellClicked.bind(this);
     let mouseover = this.onCellMouseOver.bind(this);

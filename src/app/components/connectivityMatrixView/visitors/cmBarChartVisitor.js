@@ -96,6 +96,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
 
     // Skip cells with no paths.
     if (!cell.getPathList().length) {
+      this.createEmptyCellOutline(cell);
       return;
     }
 

@@ -41,7 +41,7 @@ export class cmDataRow extends cmMatrixRow {
       if (this.matrix.isAttributeCell(i)) {
         this.majorCells[i].isAttributeCell = true;
       } else if (this.matrix.isLabelCell(i)) {
-        cmDataRow.createLabelInCell(this.majorCells[i], label);
+        this.majorCells[i].isRowLabelCell = true;
       } else if (this.matrix.isDataCell(i)) {
         this.majorCells[i].isDataCell = true;
       }
@@ -67,7 +67,7 @@ export class cmDataRow extends cmMatrixRow {
 
       } else if (this.matrix.isLabelCell(i)) {
 
-        cmDataRow.createLabelInCell(cell, label);
+        cmDataRow.createLabelInCell(cell, label, this.colWidth, this.matrix.rowHeight);
 
       } else if (this.matrix.isDataCell(i)) {
 
@@ -96,12 +96,14 @@ export class cmDataRow extends cmMatrixRow {
     }
   }
 
-  static createLabelInCell(cell, label) {
+  static createLabelInCell(cell, label, colWidth, rowHeight) {
     let group = cell.getGroup();
     group.append("g")
       .append("text")
-      .attr("text-anchor", "start")
-      .attr("alignment-baseline", "text-before-edge")
+      .attr("x", colWidth)
+      .attr("y", rowHeight / 2)
+      .style("text-anchor", "end")
+      .attr("alignment-baseline", "middle")
       .attr("font-size", 8)
       .text(label);
   }
@@ -112,5 +114,15 @@ export class cmDataRow extends cmMatrixRow {
       attributes.push([rowNodeAttributes[i][childIndex]]);
     }
     return attributes;
+  }
+
+  setLabelColWidth(colWidth) {
+    for (var i = 0; i < this.majorCells.length; ++i) {
+      let cell = this.majorCells[i];
+      if (cell.isRowLabelCell) {
+        cell.getGroup().select("text")
+          .attr("x", colWidth - 1);
+      }
+    }
   }
 }

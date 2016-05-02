@@ -4,6 +4,9 @@ export class cmCellVisitor {
     this.height = height;
     this.rx = 2;
     this.ry = 2;
+
+    // For debugging. Setting this to true will draw outline rects around every datacell in the matrix.
+    this.showOutlines = false;
   }
 
   setCallbacks(clicked, mouseOver, mouseOut) {
@@ -27,9 +30,23 @@ export class cmCellVisitor {
         self.callbacks.clicked(cell);
       })
       .on("mouseover", function () {
-        self.callbacks.mouseOver(cell); })
+        self.callbacks.mouseOver(cell);
+      })
       .on("mouseout", function () {
         self.callbacks.mouseOut(cell);
       });
+  }
+
+  createEmptyCellOutline(cell) {
+    let group = cell.getGroup();
+    group.append("rect")
+      .attr("width", this.width)
+      .attr("height", this.height)
+      .attr("rx", this.rx)
+      .attr("ry", this.ry)
+      .style("stroke", "lightgray")
+      .style("stroke-width", "1px")
+      .attr("fill", "transparent")
+      .style("display", this.showOutlines ? "block" : "none");
   }
 }

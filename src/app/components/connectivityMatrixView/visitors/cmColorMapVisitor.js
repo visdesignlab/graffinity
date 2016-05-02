@@ -69,8 +69,10 @@ export class cmColorMapVisitor extends cmCellVisitor {
         .style("stroke-width", "1px")
         .attr("fill", color);
 
-      this.createInteractionGroup(cell);
+    } else {
+      this.createEmptyCellOutline(cell);
     }
+    this.createInteractionGroup(cell);
   }
 
   getCellColor(cell) {

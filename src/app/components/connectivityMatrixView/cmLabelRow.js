@@ -26,10 +26,10 @@ export class cmLabelRow extends cmMatrixRow {
         cell.isAttributeLabelCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
-        cmLabelRow.createColNodeLabel(cell, majorColLabels[dataIndex], rowHeight);
+        cmLabelRow.createColNodeLabel(cell, majorColLabels[dataIndex], rowHeight, this.matrix.colWidth);
         for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
           let minorCell = cell.minorCells[j];
-          cmLabelRow.createColNodeLabel(minorCell, minorColLabels[dataIndex][j], rowHeight);
+          cmLabelRow.createColNodeLabel(minorCell, minorColLabels[dataIndex][j], rowHeight, this.matrix.colWidth);
         }
       }
     }
@@ -37,13 +37,13 @@ export class cmLabelRow extends cmMatrixRow {
     this.colNodeIndexes = colNodeIndexes;
   }
 
-  static createColNodeLabel(cell, label, rowHeight) {
+  static createColNodeLabel(cell, label, rowHeight, colWidth) {
     let group = cell.getGroup();
     group.append("g")
-      .attr("transform", "translate(0," + rowHeight + ")rotate(270)")
+      .attr("transform", "translate(" + colWidth / 2 + "," + rowHeight + ")rotate(270)")
       .append("text")
       .attr("text-anchor", "start")
-      .attr("alignment-baseline", "text-before-edge")
+      .attr("alignment-baseline", "middle")
       .attr("font-size", 8)
       .text(label);
   }
