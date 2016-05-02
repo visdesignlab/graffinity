@@ -166,6 +166,25 @@ export class cmMatrixView extends SvgGroupElement {
     return ["colormap", "bar chart"];
   }
 
+  /**
+   * Returns transform of cell in this.svg's coordinate system.
+   * Accumulates transforms of the cells ancestors, depending on how deep the cell is in the tree.
+   */
+  static getCellTransform(cell) {
+    let transform = {};
+    let element = cell.getGroup()[0][0];
+    if (cell.isMajorCell && cell.isInMajorRow) {
+      transform = UtilsD3.getAccumulatedTranslate(element, 1);
+    } else if (cell.isMajorCell && !cell.isInMajorRow) {
+      transform = UtilsD3.getAccumulatedTranslate(element, 3);
+    } else if (!cell.isMajorCell && cell.isInMajorRow) {
+      transform = UtilsD3.getAccumulatedTranslate(element, 2);
+    } else if (!cell.isMajorCell && !cell.isInMajorRow) {
+      transform = UtilsD3.getAccumulatedTranslate(element, 4);
+    }
+    return transform;
+  }
+
   static getColXPositions(colPerm, colWidths) {
     let positions = [];
     let x = 0;
@@ -251,10 +270,9 @@ export class cmMatrixView extends SvgGroupElement {
     }
 
     // Position highlight rectangles.
-    let element = cell.getGroup()[0][0];
     let width = cmMatrixView.getWidth(this.colPerm, this.colWidths);
     let height = cmMatrixView.getHeight(this.rowPerm, this.rowHeights);
-    let transform = UtilsD3.getAccumulatedTranslate(element, 1);
+    let transform = cmMatrixView.getCellTransform(cell);
 
     this.highlights[0]
       .attr("width", width)
@@ -267,7 +285,7 @@ export class cmMatrixView extends SvgGroupElement {
       .attr("transform", "translate(" + transform.translate[0] + ",0)");
   }
 
-  onCellMouseOut(cell) {
+  onCellMouseOut() {
     // Hide highlights.
     this.highlights.forEach(function (highlight) {
       highlight.style("display", "none");
