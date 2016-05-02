@@ -17,3 +17,8 @@
   font-size: 10px;
   alignment-baseline: text-before-edge;
 }
+
+.matrix-view-highlight-rect {
+  fill: none;
+  stroke: black;
+}

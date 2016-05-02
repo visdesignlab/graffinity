@@ -31,7 +31,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.numAttributeCols = attributes.length;
     this.numLabelCols = 1;
     this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
-
+    this.highlights = [];
     this.numHeaderRows = 2 + attributes.length; // 2 is the control row and the label row
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
@@ -185,6 +185,15 @@ export class cmMatrixView extends SvgGroupElement {
     return viewColIndex - this.numHeaderCols;
   }
 
+  static getHeight(rowPerm, rowHeights) {
+    let y = 0;
+    for (var i = 0; i < rowPerm.length; ++i) {
+      let logicalRowIndex = rowPerm[i];
+      y += rowHeights[logicalRowIndex];
+    }
+    return y;
+  }
+
   static getRowYPositions(rowPerm, rowHeights) {
     let positions = [];
     let y = 0;
@@ -194,6 +203,15 @@ export class cmMatrixView extends SvgGroupElement {
       y += rowHeights[logicalRowIndex];
     }
     return positions;
+  }
+
+  static getWidth(colPerm, colWidths) {
+    let x = 0;
+    for (var i = 0; i < colWidths.length; ++i) {
+      let logicalColIndex = colPerm[i];
+      x += colWidths[logicalColIndex];
+    }
+    return x;
   }
 
   isControlCell(colIndex) {
@@ -219,22 +237,41 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onCellMouseOver(cell) {
-    this.$log.log("cell hovered", cell, cell.getPathList(), cell.getGroup()[0][0]);
-    let element = cell.getGroup()[0][0];
-    let transform = UtilsD3.getAccumulatedTranslate(element, 1);
-    console.log(transform);
-    this.svg.append("rect")
-      .attr("width", transform.translate[0] + this.colWidth)
-      .attr("height", this.rowHeight)
-      .attr("transform", "translate(0," + transform.translate[1] + ")")
-      .attr("fill", "none")
-      .attr("stroke", "black");
 
-    this.$log.log(transform);
+    // If first time, then create highlight rectangles.
+    if (this.highlights.length == 0) {
+      this.highlights[0] = this.svg.append("rect")
+        .classed("matrix-view-highlight-rect", true);
+      this.highlights[1] = this.svg.append("rect")
+        .classed("matrix-view-highlight-rect", true);
+    } else {
+      this.highlights.forEach(function (highlight) {
+        highlight.style("display", "block");
+      });
+    }
+
+    // Position highlight rectangles.
+    let element = cell.getGroup()[0][0];
+    let width = cmMatrixView.getWidth(this.colPerm, this.colWidths);
+    let height = cmMatrixView.getHeight(this.rowPerm, this.rowHeights);
+    let transform = UtilsD3.getAccumulatedTranslate(element, 1);
+
+    this.highlights[0]
+      .attr("width", width)
+      .attr("height", this.rowHeight)
+      .attr("transform", "translate(0," + transform.translate[1] + ")");
+
+    this.highlights[1]
+      .attr("width", this.colWidth)
+      .attr("height", height)
+      .attr("transform", "translate(" + transform.translate[0] + ",0)");
   }
 
   onCellMouseOut(cell) {
-    console.log("mouseout");
+    // Hide highlights.
+    this.highlights.forEach(function (highlight) {
+      highlight.style("display", "none");
+    });
   }
 
   /** Callback when user clicks on the column controls.
