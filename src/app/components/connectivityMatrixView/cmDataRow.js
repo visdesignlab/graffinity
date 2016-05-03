@@ -117,12 +117,20 @@ export class cmDataRow extends cmMatrixRow {
   }
 
   setLabelColWidth(colWidth) {
+
+    // Update the width of label columns
+    // This makes the text aligned with the matrix's edge.
     for (var i = 0; i < this.majorCells.length; ++i) {
       let cell = this.majorCells[i];
       if (cell.isRowLabelCell) {
         cell.getGroup().select("text")
           .attr("x", colWidth - 1);
       }
+    }
+
+    // Update the width of child row's column labels.
+    for (i = 0; i < this.minorRows.length; ++i) {
+      this.minorRows[i].setLabelColWidth(colWidth);
     }
   }
 }
