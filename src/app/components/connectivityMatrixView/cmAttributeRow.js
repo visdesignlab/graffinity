@@ -20,6 +20,7 @@ export class cmAttributeRow extends cmMatrixRow {
         // Put the label in it.
         data = {
           name: attributeLabel,
+          index: rowIndex,
           isVertical: true,
           attributeIndex: attributeIndex
         };

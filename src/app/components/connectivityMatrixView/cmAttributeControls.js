@@ -1,6 +1,6 @@
 import {SvgGroupElement} from "./svgGroupElement"
 export class cmAttributeControls extends SvgGroupElement {
-  constructor(parent, name, isVertical, width, height, onSort) {
+  constructor(parent, name, isVertical, width, height, onSort, onHide, index) {
     super(parent);
 
     let group = this.getGroup();
@@ -13,6 +13,8 @@ export class cmAttributeControls extends SvgGroupElement {
     this.name = name;
     this.onSort = onSort;
     this.sortAscending = false;
+    this.onHide = onHide;
+    this.index = index;
     cmAttributeControls.createLabel(group, name, isVertical, width, height);
 
     this.createInteractionRect(group, isVertical, width, height);
@@ -84,7 +86,7 @@ export class cmAttributeControls extends SvgGroupElement {
       .classed("fa-close", true)
       .attr("float", "left")
       .on("click", function () {
-        console.log("hello " + self.name + " closed");
+        self.onHide(self.index);
       });
 
 

@@ -32,7 +32,12 @@ export class cmMatrixView extends SvgGroupElement {
     this.numLabelCols = 1;
     this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
     this.highlights = [];
-    this.numHeaderRows = 2 + attributes.length; // 2 is the control row and the label row
+
+    this.numControlRows = 1;
+    this.numAttributeRows = attributes.length;
+    this.numLabelRows = 1;
+    this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
+
     this.rowHeights = [];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.allRows = [];
@@ -82,20 +87,20 @@ export class cmMatrixView extends SvgGroupElement {
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
 
-    let attributeRowHeight = 80;
+    this.rowHeightAttr = 80;
     for (i = 0; i < attributes.length; ++i) {
       let attributeRow = new cmAttributeRow(svg,
         this.allRows.length,
         this.colNodeIndexes,
         this.numHeaderCols,
         this.colWidth,
-        attributeRowHeight,
+        this.rowHeightAttr,
         false,
         colNodeAttributes[i],
         this,
         i, attributes[i]);
 
-      this.addRow(attributeRow, attributeRowHeight);
+      this.addRow(attributeRow, this.rowHeightAttr);
     }
 
     // Create the labels row
@@ -144,7 +149,9 @@ export class cmMatrixView extends SvgGroupElement {
 
     let sortRows = this.onSortRowsByAttribute.bind(this);
     let sortCols = this.onSortColsByAttribute.bind(this);
-    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols);
+    let hideRows = this.hideRow.bind(this);
+    let hideCols = this.hideCol.bind(this);
+    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols);
     this.applyVisitor(visitor);
 
     this.updatePositions(this.rowPerm, this.colPerm);
@@ -237,12 +244,56 @@ export class cmMatrixView extends SvgGroupElement {
     return x;
   }
 
+  hideCol(colIndex) {
+    this.colWidths[colIndex] = 0;
+
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].majorCells[colIndex].setVisible(false);
+    }
+
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  hideRow(rowIndex) {
+    this.allRows[rowIndex].setVisible(false);
+    this.rowHeights[rowIndex] = 0;
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  showCol(colIndex) {
+    if (this.isAttributeCell(colIndex)) {
+      this.colWidths[colIndex] = this.colWidthAttr;
+    }
+
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].majorCells[colIndex].setVisible(true);
+    }
+
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  showRow(rowIndex) {
+    this.allRows[rowIndex].setVisible(true);
+    if (this.isAttributeRow) {
+      this.rowHeights[rowIndex] = this.rowHeightAttr;
+    }
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
   isControlCell(colIndex) {
     return colIndex < this.numControlCols;
   }
 
+  isControlRow(rowIndex) {
+    return rowIndex < this.numControlRows;
+  }
+
   isAttributeCell(colIndex) {
     return colIndex >= this.numControlCols && colIndex < (this.numAttributeCols + this.numControlCols);
+  }
+
+  isAttributeRow(rowIndex) {
+    return rowIndex >= this.numControlRows && rowIndex < (this.numAttributeRows + this.numControlRows);
   }
 
   isLabelCell(colIndex) {
@@ -250,9 +301,17 @@ export class cmMatrixView extends SvgGroupElement {
       colIndex < this.numAttributeCols + this.numControlCols + this.numLabelCols;
   }
 
+  isLabelRow(rowIndex) {
+    return rowIndex >= this.numAttributeRows + this.numControlRows &&
+      rowIndex < this.numAttributeRows + this.numControlRows + this.numLabelRows;
+  }
+
   isDataCell(colIndex) {
     return !this.isControlCell(colIndex) && !this.isAttributeCell(colIndex) && !this.isLabelCell(colIndex);
+  }
 
+  isDataRow(rowIndex) {
+    return !this.isControlRow(rowIndex) && !this.isAttributeRow(rowIndex) && !this.isLabelRow(rowIndex);
   }
 
   onCellClicked(cell) {

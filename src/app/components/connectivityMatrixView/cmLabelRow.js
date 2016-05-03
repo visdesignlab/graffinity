@@ -19,7 +19,7 @@ export class cmLabelRow extends cmMatrixRow {
         let attributeIndex = this.matrix.getAttributeColIndex(i);
         cell.setData({
           name: attributeLabels[attributeIndex],
-          values: -1,
+          index: i,
           isVertical: 0,
           attributeIndex: attributeIndex
         });
