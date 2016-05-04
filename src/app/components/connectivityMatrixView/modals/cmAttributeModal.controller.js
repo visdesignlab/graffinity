@@ -6,7 +6,6 @@ export class cmModalController {
 
   ok() {
     let result = this.getResult();
-    console.log(result);
     this.$uibModalInstance.close(result);
   }
 
