@@ -18,16 +18,27 @@ import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
 export class cmMatrixView extends SvgGroupElement {
-  constructor(svg, model, $log) {
+  constructor(svg, model, $log, $uibModal) {
     super(svg);
     this.$log = $log;
+    this.$uibModal = $uibModal;
+
     this.colWidth = 15;
     this.rowHeight = 15;
     this.colWidths = [];
     this.colNodeIndexes = model.getColNodeIndexes();
     this.svg = svg;
     let attributes = ['area', 'locations'];
+    this.attributes = attributes;
     this.numControlCols = 1;
+
+    this.isAttributeColVisible = {};
+    this.isAttributeRowVisible = {};
+    for (var i = 0; i < attributes.length; ++i) {
+      this.isAttributeColVisible[attributes[i]] = true;
+      this.isAttributeRowVisible[attributes[i]] = true;
+    }
+
     this.numAttributeCols = attributes.length;
     this.numLabelCols = 1;
     this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
@@ -50,7 +61,7 @@ export class cmMatrixView extends SvgGroupElement {
     // colNodeAttributes[i][j] = attributes[i] for col[j]
     let colNodeAttributes = [];
     let rowAttributes = [];
-    for (var i = 0; i < attributes.length; ++i) {
+    for (i = 0; i < attributes.length; ++i) {
       colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, attributes[i]);
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, attributes[i]);
     }
@@ -155,6 +166,8 @@ export class cmMatrixView extends SvgGroupElement {
     this.applyVisitor(visitor);
 
     this.updatePositions(this.rowPerm, this.colPerm);
+
+    this.onEditVisibleAttributeRows();
   }
 
   addRow(row, rowHeight) {
@@ -209,6 +222,10 @@ export class cmMatrixView extends SvgGroupElement {
 
   getAttributeColIndex(viewColIndex) {
     return viewColIndex - this.numControlCols;
+  }
+
+  getViewColIndexFromAttributeIndex(attributeIndex) {
+    return attributeIndex + this.numControlCols;
   }
 
   getDataColIndex(viewColIndex) {
@@ -380,6 +397,46 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
+  onEditVisibleAttributeCols() {
+    let updateRowAttributes = this.updateRowAttributes.bind(this);
+    this.onEditVisibleAttributes(this.attributes, this.isAttributeColVisible, updateRowAttributes);
+  }
+
+  onEditVisibleAttributeRows() {
+    let updateColAttributes = this.updateColAttributes.bind(this);
+    this.onEditVisibleAttributes(this.attributes, this.isAttributeRowVisible, updateColAttributes);
+  }
+
+  onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes) {
+    var modalInstance = this.$uibModal.open({
+      animation: true,
+      templateUrl: '/app/components/connectivityMatrixView/modals/cmAttributeModalController.html',
+      controller: 'cmAttributeModalController',
+      controllerAs: 'modalController',
+      size: 'sm',
+      resolve: {
+        title: function () {
+          return "Select attributes";
+        },
+        attributes: function () {
+          return attributes;
+        },
+        selection: function () {
+          return isAttributeVisible;
+        }
+      }
+    });
+
+    let modalSuccess = function (selection) {
+      updateVisibleAttributes(selection);
+    };
+
+    modalSuccess = modalSuccess.bind(this);
+    modalInstance.result.then(modalSuccess, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  }
+
   /** Unroll the row.
    * Expands its height.
    */
@@ -456,6 +513,32 @@ export class cmMatrixView extends SvgGroupElement {
       this.allRows[i].setColPositions(this.colInv, xPositions);
     }
   }
+
+  updateColAttributes(selection) {
+    let showRow = this.showRow.bind(this);
+    let hideRow = this.hideRow.bind(this);
+    this.updateAttributes(selection, this.isAttributeColVisible, showRow, hideRow);
+  }
+
+  updateRowAttributes(selection) {
+    let showCol = this.showCol.bind(this);
+    let hideCol = this.hideCol.bind(this);
+    this.updateAttributes(selection, this.isAttributeColVisible, showCol, hideCol);
+  }
+
+  updateAttributes(selection, isAttributeVisible, show, hide) {
+    let attributes = this.attributes;
+    for (var i = 0; i < attributes.length; ++i) {
+      let attribute = attributes[i];
+      if (selection[attribute]) {
+        show(this.getViewColIndexFromAttributeIndex(i));
+      } else {
+        hide(this.getViewColIndexFromAttributeIndex(i));
+      }
+      isAttributeVisible[attribute] = selection[attribute];
+    }
+  }
+
 
 }
 
