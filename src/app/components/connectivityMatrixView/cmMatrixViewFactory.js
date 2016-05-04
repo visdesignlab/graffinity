@@ -11,7 +11,6 @@ export class cmMatrixViewFactory {
 
 
   createConnectivityMatrix(svg, model) {
-    console.log('creating matrix', this.$uibModal);
     return new cmMatrixView(svg, model, this.$log, this.$uibModal);
   }
 
