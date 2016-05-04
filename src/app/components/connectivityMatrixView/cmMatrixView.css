@@ -29,6 +29,18 @@
   ry: 3px;
 }
 
+.matrix-view-edit-attribute-controls {
+  background: transparent;
+  border-radius: 3px 3px 3px 3px;
+  text-align: center;
+  padding: 0 2px;
+  font-size: 10px;
+}
+
+.matrix-view-edit-attribute-controls:hover {
+  background: #6D6C6C;
+}
+
 .matrix-view-toolbar {
   display: none;
   text-align: left;
