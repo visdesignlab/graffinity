@@ -12,13 +12,17 @@ export class cmMatrixCell extends SvgGroupElement {
     // Data cells are at the core of the matrix.
     this.isDataCell = isDataCell;
 
-    // Attribute cells contain a list of per-node attribute values for a given row/col.
+    // AttributeCells hold a list of per-node attribute values for a given row/col.
     this.isAttributeCell = false;
+
+    // AttributeLabelCells hold a 'name' of the attribute it controls.
     this.isAttributeLabelCell = false;
+
+    // EditAttributeCells hold controls for manipulating what attributes are displayed
+    this.isEditAttributeCell = false;
 
     this.isInMajorRow = isInMajorRow;
     this.isMajorCell = isMajorCell;
-
     this.isRowLabelCell = false;
 
     this.minorCells = [];

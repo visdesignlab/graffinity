@@ -14,23 +14,35 @@ export class cmLabelRow extends cmMatrixRow {
     for (var i = 0; i < numMajorCells; ++i) {
       let cell = this.getMajorCell(i);
       let dataIndex = this.matrix.getDataColIndex(i);
-      if (this.matrix.isAttributeCell(i)) {
+      if (this.matrix.isControlCell(i)) {
+
+        cell.isEditAttributeCell = true;
+        cell.setData({
+          isVertical: false
+        });
+
+      } else if (this.matrix.isAttributeCell(i)) {
 
         let attributeIndex = this.matrix.getAttributeColIndex(i);
+
         cell.setData({
           name: attributeLabels[attributeIndex],
           index: i,
           isVertical: 0,
           attributeIndex: attributeIndex
         });
+
         cell.isAttributeLabelCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
+
         cmLabelRow.createColNodeLabel(cell, majorColLabels[dataIndex], rowHeight, this.matrix.colWidth);
+
         for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
           let minorCell = cell.minorCells[j];
           cmLabelRow.createColNodeLabel(minorCell, minorColLabels[dataIndex][j], rowHeight, this.matrix.colWidth);
         }
+
       }
     }
 

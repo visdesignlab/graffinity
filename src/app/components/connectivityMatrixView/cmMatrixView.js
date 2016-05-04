@@ -14,6 +14,7 @@ import {cmColorMapLegend} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
+import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributesVisitor"
 import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
@@ -28,6 +29,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.colWidths = [];
     this.colNodeIndexes = model.getColNodeIndexes();
     this.svg = svg;
+
     let attributes = ['area', 'locations'];
     this.attributes = attributes;
     this.numControlCols = 1;
@@ -138,17 +140,21 @@ export class cmMatrixView extends SvgGroupElement {
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
         this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this);
+
+      // If row has minor rows, then we want the controls to be visible!
       if (modelRows[i].getNumChildren() > 0) {
         callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
+
       dataRow.setLabelColWidth(this.colWidthLabel);
       this.addRow(dataRow, this.rowHeight);
     }
 
+    // Data is all set. Now create encodings and controls.
     this.setEncoding("colormap");
 
-    // Visitor to create scatter plots in per-cell attributes
+    // Create visual encodings for all the quantitative attributes.
     let visitor = null;
     for (i = 0; i < attributes.length; ++i) {
       let preprocessor = new cmScatterPlot1DPreprocessor(i);
@@ -158,6 +164,7 @@ export class cmMatrixView extends SvgGroupElement {
       this.applyVisitor(visitor);
     }
 
+    // Create controls for all attributes.
     let sortRows = this.onSortRowsByAttribute.bind(this);
     let sortCols = this.onSortColsByAttribute.bind(this);
     let hideRows = this.hideRow.bind(this);
@@ -165,9 +172,14 @@ export class cmMatrixView extends SvgGroupElement {
     visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols);
     this.applyVisitor(visitor);
 
-    this.updatePositions(this.rowPerm, this.colPerm);
+    // Create controls for editing visible attributes.
+    let editAttributeCols = this.onEditVisibleAttributeCols.bind(this);
+    let editAttributeRows = this.onEditVisibleAttributeRows.bind(this);
+    visitor = new cmEditVisibleAttributesVisitor(this.colWidth, this.rowHeight, editAttributeRows, editAttributeCols);
+    this.applyVisitor(visitor);
 
-    this.onEditVisibleAttributeRows();
+    // Put stuff in the correct place.
+    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   addRow(row, rowHeight) {
@@ -224,7 +236,7 @@ export class cmMatrixView extends SvgGroupElement {
     return viewColIndex - this.numControlCols;
   }
 
-  getViewColIndexFromAttributeIndex(attributeIndex) {
+  getViewIndexFromAttributeIndex(attributeIndex) {
     return attributeIndex + this.numControlCols;
   }
 
@@ -428,13 +440,11 @@ export class cmMatrixView extends SvgGroupElement {
     });
 
     let modalSuccess = function (selection) {
-      updateVisibleAttributes(selection);
+      updateVisibleAttributes(selection, isAttributeVisible);
     };
 
     modalSuccess = modalSuccess.bind(this);
-    modalInstance.result.then(modalSuccess, function () {
-      $log.info('Modal dismissed at: ' + new Date());
-    });
+    modalInstance.result.then(modalSuccess);
   }
 
   /** Unroll the row.
@@ -517,7 +527,7 @@ export class cmMatrixView extends SvgGroupElement {
   updateColAttributes(selection) {
     let showRow = this.showRow.bind(this);
     let hideRow = this.hideRow.bind(this);
-    this.updateAttributes(selection, this.isAttributeColVisible, showRow, hideRow);
+    this.updateAttributes(selection, this.isAttributeRowVisible, showRow, hideRow);
   }
 
   updateRowAttributes(selection) {
@@ -526,14 +536,21 @@ export class cmMatrixView extends SvgGroupElement {
     this.updateAttributes(selection, this.isAttributeColVisible, showCol, hideCol);
   }
 
+  /**
+   * Function called when the user changed the visible attribute rows or cols.
+   * @param selection - selection[attribute] is a boolean for whether attribute should be displayed
+   * @param isAttributeVisible - state of what attributes are displayed. Needs to be updated.
+   * @param show - callback to show rows/cols
+   * @param hide - callback to hide rows/cols
+   */
   updateAttributes(selection, isAttributeVisible, show, hide) {
     let attributes = this.attributes;
     for (var i = 0; i < attributes.length; ++i) {
       let attribute = attributes[i];
       if (selection[attribute]) {
-        show(this.getViewColIndexFromAttributeIndex(i));
+        show(this.getViewIndexFromAttributeIndex(i));
       } else {
-        hide(this.getViewColIndexFromAttributeIndex(i));
+        hide(this.getViewIndexFromAttributeIndex(i));
       }
       isAttributeVisible[attribute] = selection[attribute];
     }

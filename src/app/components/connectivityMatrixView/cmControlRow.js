@@ -13,7 +13,16 @@ export class cmControlRow extends cmMatrixRow {
     for (var i = 0; i < numMajorCells; ++i) {
       var group = this.getMajorCell(i).getGroup();
       this.unrollControls[i] = group.append("g");
-      if (this.matrix.isDataCell(i) && areColsCollapsed) {
+      if (this.matrix.isLabelCell(i)) {
+
+        this.majorCells[i].isEditAttributeCell = true;
+        let data = {
+          isVertical: true
+        };
+        this.majorCells[i].setData(data);
+
+      } else if (this.matrix.isDataCell(i) && areColsCollapsed) {
+
         var self = this;
         this.unrollControls[i].append("text")
           .text("+")
