@@ -27,7 +27,6 @@ export class cmLabelRow extends cmMatrixRow {
 
         cell.setData({
           name: attributeLabels[attributeIndex],
-          index: i,
           isVertical: 0,
           attributeIndex: attributeIndex
         });

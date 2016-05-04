@@ -167,8 +167,8 @@ export class cmMatrixView extends SvgGroupElement {
     // Create controls for all attributes.
     let sortRows = this.onSortRowsByAttribute.bind(this);
     let sortCols = this.onSortColsByAttribute.bind(this);
-    let hideRows = this.hideRow.bind(this);
-    let hideCols = this.hideCol.bind(this);
+    let hideRows = this.onHideAttributeRow.bind(this);
+    let hideCols = this.onHideAttributeCol.bind(this);
     visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols);
     this.applyVisitor(visitor);
 
@@ -445,6 +445,20 @@ export class cmMatrixView extends SvgGroupElement {
 
     modalSuccess = modalSuccess.bind(this);
     modalInstance.result.then(modalSuccess);
+  }
+
+  onHideAttributeRow(attributeIndex) {
+    let attribute = this.attributes[attributeIndex];
+    let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
+    this.isAttributeRowVisible[attribute] = false;
+    this.hideRow(viewIndex);
+  }
+
+  onHideAttributeCol(attributeIndex) {
+    let attribute = this.attributes[attributeIndex];
+    let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
+    this.isAttributeColVisible[attribute] = false;
+    this.hideCol(this.getViewIndexFromAttributeIndex(attributeIndex));
   }
 
   /** Unroll the row.

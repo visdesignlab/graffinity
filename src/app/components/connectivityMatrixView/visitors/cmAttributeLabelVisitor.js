@@ -18,7 +18,7 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
       let isVertical = cell.data.isVertical;
       let name = cell.data.name;
       let group = cell.getGroup();
-      let index = cell.data.index; // index is the row/col index depending on if this is vertical or not.
+      let index = cell.data.attributeIndex; // index is the row/col index depending on if this is vertical or not.
       let onSort = isVertical ? this.callbacks.onSortCols : this.callbacks.onSortRows;
       let onHide = isVertical ? this.callbacks.onHideRow : this.callbacks.onHideCol;
 
