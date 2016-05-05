@@ -114,7 +114,6 @@ export class MainController {
     d3.select("#encoding-legend")
       .selectAll("*")
       .remove();
-
     //display "query in progress..."
     this.queryText = this.svg.append("text")         // append text
         .style("fill", "black")   // fill the text with the colour black
@@ -135,6 +134,7 @@ export class MainController {
       //upon failure, update text mesage to the the error message
       self.queryText.text(error.data.message)
 
+      //log the error
       self.$log.error("The query failed", error);
       self.$log.debug("This is the debug part", error);
     };
