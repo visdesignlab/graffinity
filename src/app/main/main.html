@@ -1,8 +1,14 @@
 <div class="container-fluid">
+
+  <!--Row holding the query text box -->
   <div class="row top-row">
     <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
   </div>
+
+  <!-- Row holding the controls (left-most col) and matrix (right-ish cols) -->
   <div class="row">
+
+    <!-- Column holding global matrix controls -->
     <span class="col-lg-1" id="controls-column">
 
       <div class="control-header">
@@ -47,7 +53,7 @@
       <div class="control-header">
         <b>Cell encoding</b>
         <ui-select id="select-encoding"
-                    ng-model="main.ui.selectedEncoding"
+                   ng-model="main.ui.selectedEncoding"
                    ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">
           <ui-select-match placeholder="Cell encoding">
             {{main.ui.selectedEncoding}}
@@ -57,15 +63,17 @@
           </ui-select-choices>
         </ui-select>
       </div>
+
       <div class="control-header" ng-show="main.ui.hasLegend">
         <b>Legend</b>
-         <svg id="encoding-legend">
-         </svg>
+        <svg id="encoding-legend">
+        </svg>
       </div>
     </span>
 
+    <!-- Columns holding the matrix -->
     <span class="col-lg-4">
-    <svg id="my-svg" width="1024" height="1024"></svg>
-      </span>
+      <svg id="my-svg" width="1024" height="1024"></svg>
+    </span>
   </div>
 </div>
