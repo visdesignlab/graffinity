@@ -244,6 +244,10 @@ export class cmMatrixView extends SvgGroupElement {
     return viewColIndex - this.numHeaderCols;
   }
 
+  getDataRowIndex(viewRowIndex) {
+    return viewRowIndex - this.numHeaderRows;
+  }
+
   static getHeight(rowPerm, rowHeights) {
     let y = 0;
     for (var i = 0; i < rowPerm.length; ++i) {
@@ -271,6 +275,41 @@ export class cmMatrixView extends SvgGroupElement {
       x += colWidths[logicalColIndex];
     }
     return x;
+  }
+
+  updateDataRows(nodeIndexes, hide) {
+    console.log("update data rows", nodeIndexes);
+    let rowNodeIndexes = this.rowNodeIndexes;
+
+    // Loop over all indexes who we are showing/hiding.
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+
+      // Loop over all major rows
+      for (var rowIndex = 0; rowIndex < this.allRows.length; ++rowIndex) {
+
+        // Only check rows that have data bound.
+        if (this.isDataRow(rowIndex)) {
+
+          let dataIndex = this.getDataRowIndex(rowIndex);
+
+          let isOnlyNodeInRow = rowNodeIndexes[dataIndex].length == 1;
+          let minorRowIndex = rowNodeIndexes[dataIndex].indexOf(nodeIndexes[i]);
+          let isNodeInRow = minorRowIndex != -1;
+
+          if (isNodeInRow && isOnlyNodeInRow) {
+            if(hide) {
+              this.hideRow(rowIndex);
+            } else {
+              this.showRow(rowIndex);
+            }
+          } else if (isNodeInRow && !isOnlyNodeInRow) {
+            this.$log.error("found minor row containg node", rowIndex, minorRowIndex);
+            this.allRows[rowIndex].hideMinorRow(minorRowIndex);
+            this.updatePositions(this.rowPerm, this.colPerm);
+          }
+        }
+      }
+    }
   }
 
   hideCol(colIndex) {
@@ -303,8 +342,10 @@ export class cmMatrixView extends SvgGroupElement {
 
   showRow(rowIndex) {
     this.allRows[rowIndex].setVisible(true);
-    if (this.isAttributeRow) {
+    if (this.isAttributeRow(rowIndex)) {
       this.rowHeights[rowIndex] = this.rowHeightAttr;
+    } else if (this.isDataRow(rowIndex)) {
+      this.rowHeights[rowIndex] = this.rowHeight;
     }
     this.updatePositions(this.rowPerm, this.colPerm);
   }
@@ -420,31 +461,7 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes) {
-    var modalInstance = this.$uibModal.open({
-      animation: true,
-      templateUrl: '/app/components/connectivityMatrixView/modals/cmAttributeModalController.html',
-      controller: 'cmAttributeModalController',
-      controllerAs: 'modalController',
-      size: 'sm',
-      resolve: {
-        title: function () {
-          return "Select attributes";
-        },
-        attributes: function () {
-          return attributes;
-        },
-        selection: function () {
-          return isAttributeVisible;
-        }
-      }
-    });
 
-    let modalSuccess = function (selection) {
-      updateVisibleAttributes(selection, isAttributeVisible);
-    };
-
-    modalSuccess = modalSuccess.bind(this);
-    modalInstance.result.then(modalSuccess);
   }
 
   onHideAttributeRow(attributeIndex) {

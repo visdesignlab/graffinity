@@ -13,7 +13,7 @@ import { cmResource } from '../app/components/connectivityMatrix/cmResource.serv
 import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
 import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFactory.service';
 import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
-
+import { cmNodeFilterModalController } from "../app/components/connectivityMatrixView/modals/cmNodeFilterModal.controller"
 import { cmAttributeModalController } from "../app/components/connectivityMatrixView/modals/cmAttributeModal.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
 
@@ -32,6 +32,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('cmMatrixViewFactory', cmMatrixViewFactory)
   .controller('MainController', MainController)
   .controller('cmAttributeModalController', cmAttributeModalController)
+  .controller('cmNodeFilterModalController', cmNodeFilterModalController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective);

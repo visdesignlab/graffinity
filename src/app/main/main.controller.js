@@ -14,6 +14,8 @@ export class MainController {
 
     this.ui = {};
 
+    this.ui.debugNodeHiding = true;
+
     this.svg = d3.select("#my-svg")
       .append("g")
       .attr("transform", "translate(20, 20)");
@@ -83,6 +85,13 @@ export class MainController {
       this.model.collapseRowsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
+  }
+
+  onDebugNodeHiding(nodeId, makeVisible) {
+    console.log(nodeId, makeVisible);
+
+    this.matrix.updateDataRows([parseInt(nodeId)], !makeVisible);
+
   }
 
   onEncodingChanged(encoding) {

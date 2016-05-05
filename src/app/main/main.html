@@ -69,6 +69,12 @@
         <svg id="encoding-legend">
         </svg>
       </div>
+
+      <div class="control-header" ng-show="main.ui.debugNodeHiding">
+        <input type="text" name="input" ng-model="main.ui.nodeId">
+        <button ng-click="main.onDebugNodeHiding(main.ui.nodeId, true)">Show</button>
+        <button ng-click="main.onDebugNodeHiding(main.ui.nodeId, false)">Hide</button>
+      </div>
     </span>
 
     <!-- Columns holding the matrix -->

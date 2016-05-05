@@ -16,10 +16,12 @@ export class cmMatrixRow extends SvgGroupElement {
     super(group);
 
     this.currentHeight = rowHeight;
+    this.rowHeight = rowHeight;
     this.isMinorRow = isMinorRow;
     this.rowIndex = rowIndex;
     this.majorCells = [];
     this.minorRows = [];
+    this.isMinorRowVisible = [];
     this.matrix = matrix;
     if (!isMinorRow) {
       this.minorRowContainer = group.append("g")
@@ -33,6 +35,7 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   addMinorRow(matrixRow) {
+    this.isMinorRowVisible[this.minorRows.length] = true;
     this.minorRows.push(matrixRow);
   }
 
@@ -118,6 +121,16 @@ export class cmMatrixRow extends SvgGroupElement {
     return this.minorRows.length;
   }
 
+  getNumVisibleMinorRows() {
+    let numVisibleMinorRows = 0;
+    for (var i = 0; i < this.isMinorRowVisible.length; ++i) {
+      if (this.isMinorRowVisible[i]) {
+        numVisibleMinorRows++;
+      }
+    }
+    return numVisibleMinorRows;
+  }
+
   getMajorCell(i) {
     return this.majorCells[i];
   }
@@ -126,12 +139,17 @@ export class cmMatrixRow extends SvgGroupElement {
     return group.attr("data-major-col");
   }
 
+  hideMinorRow(minorRowIndex) {
+    this.isMinorRowVisible[minorRowIndex] = false;
+    this.onUnrollRowClicked();
+  }
+
   onRollupRowClicked() {
     let unrolled = false;
     this.updateControls(unrolled);
     this.updateMinorRows(unrolled);
 
-    this.currentHeight = this.currentHeight / (this.getNumMinorRows() + 1);
+    this.currentHeight = this.currentHeight / (this.getNumVisibleMinorRows() + 1);
     this.unrollRowCallback(this.rowIndex);
   }
 
@@ -140,7 +158,7 @@ export class cmMatrixRow extends SvgGroupElement {
     this.updateControls(unrolled);
     this.updateMinorRows(unrolled);
 
-    this.currentHeight = this.currentHeight * (this.getNumMinorRows() + 1);
+    this.currentHeight = this.currentHeight * (this.getNumVisibleMinorRows() + 1);
     this.unrollRowCallback(this.rowIndex);
   }
 
@@ -203,6 +221,10 @@ export class cmMatrixRow extends SvgGroupElement {
     children.style("display", visible ? "block" : "none");
   }
 
+  showMinorRow(minorRowIndex) {
+
+  }
+
   unrollCol(colIndex, colWidth) {
     let minorCells = this.majorCells[colIndex].minorCells;
     for (var i = 0; i < minorCells.length; ++i) {
@@ -228,14 +250,22 @@ export class cmMatrixRow extends SvgGroupElement {
 
   updateMinorRows(unrolled) {
     let numMinorRows = this.getNumMinorRows();
+    let numVisibleMinorRowsAdded = 1;
+    this.currentHeight = this.rowHeight;
     for (var i = 0; i < numMinorRows; ++i) {
       if (unrolled) {
-        this.minorRows[i].setVisible(true);
-        this.minorRows[i].setPosition(0, 0);
-        this.minorRows[i].setPosition(0, this.currentHeight * (i + 1));
+        if (this.isMinorRowVisible[i]) {
+          this.minorRows[i].setVisible(true);
+          this.minorRows[i].setPosition(0, 0);
+          this.minorRows[i].setPosition(0, this.currentHeight * (numVisibleMinorRowsAdded));
+          numVisibleMinorRowsAdded += 1;
+        } else {
+          this.minorRows[i].setVisible(false);
+        }
       } else {
         this.minorRows[i].setPosition(0, 0, true);
       }
     }
+    this.unrollRowCallback(this.rowIndex);
   }
 }
