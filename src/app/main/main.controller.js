@@ -115,6 +115,7 @@ export class MainController {
       .selectAll("*")
       .remove();
 
+    //display "query in progress..."
     this.queryText = this.svg.append("text")         // append text
         .style("fill", "black")   // fill the text with the colour black
         .attr("x", 80)
