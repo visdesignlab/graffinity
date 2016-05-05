@@ -11,7 +11,9 @@ export class MainController {
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
-    this.hasActiveQuery = false
+    this.hasActiveQuery = false;
+    this.hasQueryError = false;
+    this.queryError = "";
 
     this.ui = {};
 
@@ -109,7 +111,8 @@ export class MainController {
   onQuerySubmitted(query) {
     let self = this;
 
-    self.hasActiveQuery = true
+    self.hasActiveQuery = true;
+    self.hasQueryError = false;
 
     //remove svg when query button pressed
     this.svg.selectAll("*").remove();
@@ -120,7 +123,7 @@ export class MainController {
 
     let success = function (model) {
       //remove the text upon success
-      self.hasActiveQuery = false
+      self.hasActiveQuery = false;
       self.$log.debug("The query succeeded");
       self.model = model;
       self.createMatrixAndUi(model);
@@ -128,8 +131,9 @@ export class MainController {
 
     let failure = function (error) {
       //upon failure, update text mesage to the the error message
-      self.hasActiveQuery = false
-
+      self.hasActiveQuery = false;
+      self.hasQueryError = true;
+      self.queryError = "Query Error: \n" + error.data.message;
       //self.queryText.text(error.data.message)
 
       //log the error
