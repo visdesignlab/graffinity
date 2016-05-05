@@ -11,6 +11,7 @@ export class MainController {
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
+    this.hasActiveQuery = false
 
     this.ui = {};
 
@@ -108,23 +109,18 @@ export class MainController {
   onQuerySubmitted(query) {
     let self = this;
 
+    self.hasActiveQuery = true
+
     //remove svg when query button pressed
     this.svg.selectAll("*").remove();
     //remove legend when query button pressed
     d3.select("#encoding-legend")
       .selectAll("*")
       .remove();
-    //display "query in progress..."
-    this.queryText = this.svg.append("text")         // append text
-        .style("fill", "black")   // fill the text with the colour black
-        .attr("x", 80)
-        .attr("y", 10)
-        .text("Query in progress.....");          // define the text to display
 
     let success = function (model) {
       //remove the text upon success
-      self.queryText.remove();
-
+      self.hasActiveQuery = false
       self.$log.debug("The query succeeded");
       self.model = model;
       self.createMatrixAndUi(model);
@@ -132,7 +128,9 @@ export class MainController {
 
     let failure = function (error) {
       //upon failure, update text mesage to the the error message
-      self.queryText.text(error.data.message)
+      self.hasActiveQuery = false
+
+      //self.queryText.text(error.data.message)
 
       //log the error
       self.$log.error("The query failed", error);
