@@ -458,7 +458,7 @@ export class cmMatrixView extends SvgGroupElement {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeColVisible[attribute] = false;
-    this.hideCol(this.getViewIndexFromAttributeIndex(attributeIndex));
+    this.hideCol(viewIndex);
   }
 
   /** Unroll the row.
