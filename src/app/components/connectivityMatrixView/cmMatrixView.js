@@ -156,30 +156,7 @@ export class cmMatrixView extends SvgGroupElement {
 
     // Data is all set. Now create encodings and controls.
     this.setEncoding("colormap");
-
-    // Create visual encodings for all the quantitative attributes.
-    let visitor = null;
-    for (i = 0; i < attributes.length; ++i) {
-      let preprocessor = new cmScatterPlot1DPreprocessor(i);
-      this.applyVisitor(preprocessor);
-      let valueRange = preprocessor.getValueRange();
-      visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
-      this.applyVisitor(visitor);
-    }
-
-    // Create controls for all attributes.
-    let sortRows = this.onSortRowsByAttribute.bind(this);
-    let sortCols = this.onSortColsByAttribute.bind(this);
-    let hideRows = this.onHideAttributeRow.bind(this);
-    let hideCols = this.onHideAttributeCol.bind(this);
-    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols);
-    this.applyVisitor(visitor);
-
-    // Create controls for editing visible attributes.
-    let editAttributeCols = this.onEditVisibleAttributeCols.bind(this);
-    let editAttributeRows = this.onEditVisibleAttributeRows.bind(this);
-    visitor = new cmEditVisibleAttributesVisitor(this.colWidth, this.rowHeight, editAttributeRows, editAttributeCols);
-    this.applyVisitor(visitor);
+    this.createAttributeEncodings();
 
     // Put stuff in the correct place.
     this.updatePositions(this.rowPerm, this.colPerm);
@@ -207,6 +184,33 @@ export class cmMatrixView extends SvgGroupElement {
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].apply(visitor);
     }
+  }
+
+  createAttributeEncodings() {
+    // Create visual encodings for all the quantitative attributes.
+    let visitor = null;
+    for (var i = 0; i < this.attributes.length; ++i) {
+      let preprocessor = new cmScatterPlot1DPreprocessor(i);
+      this.applyVisitor(preprocessor);
+      let valueRange = preprocessor.getValueRange();
+      visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
+      this.applyVisitor(visitor);
+    }
+
+    // Create controls for all attributes.
+    let sortRows = this.onSortRowsByAttribute.bind(this);
+    let sortCols = this.onSortColsByAttribute.bind(this);
+    let hideRows = this.onHideAttributeRow.bind(this);
+    let hideCols = this.onHideAttributeCol.bind(this);
+    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols);
+    this.applyVisitor(visitor);
+
+    // Create controls for editing visible attributes.
+    let editAttributeCols = this.onEditVisibleAttributeCols.bind(this);
+    let editAttributeRows = this.onEditVisibleAttributeRows.bind(this);
+    visitor = new cmEditVisibleAttributesVisitor(this.colWidth, this.rowHeight, editAttributeRows, editAttributeCols);
+    this.applyVisitor(visitor);
+
   }
 
   static getAvailableEncodings() {
