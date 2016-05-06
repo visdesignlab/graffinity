@@ -3,7 +3,16 @@
 import {SvgGroupElement} from "./svgGroupElement"
 import {cmMatrixCell} from "./cmMatrixCell"
 
+/**
+ * Base class for rows displayed in the matrix.
+ *
+ * Responsibilities of this class include:
+ *  - minorRows which appear when the user wants to unroll a collapsed row
+ *  - cells and their width (for unrolling columns)
+ *  - managing data bound to major and minor cells which appear in the matrix
+ */
 export class cmMatrixRow extends SvgGroupElement {
+
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix) {
     let group = null;
     if (!isMinorRow) {
@@ -23,6 +32,8 @@ export class cmMatrixRow extends SvgGroupElement {
     this.minorRows = [];
     this.isMinorRowVisible = [];
     this.matrix = matrix;
+    this.unrolled = false;
+
     if (!isMinorRow) {
       this.minorRowContainer = group.append("g")
         .attr("data-minor-row-container", rowIndex);
@@ -31,12 +42,12 @@ export class cmMatrixRow extends SvgGroupElement {
     let numCols = colNodeIndexes.length;
     let totalNumCols = numCols + numHeaderCols;
     this.createMajorCells(totalNumCols, numHeaderCols)
-
   }
 
   addMinorRow(matrixRow) {
     this.isMinorRowVisible[this.minorRows.length] = true;
     this.minorRows.push(matrixRow);
+    matrixRow.setPosition(0, 0);
   }
 
   apply(cellVisitor) {
@@ -141,24 +152,26 @@ export class cmMatrixRow extends SvgGroupElement {
 
   hideMinorRow(minorRowIndex) {
     this.isMinorRowVisible[minorRowIndex] = false;
-    this.onUnrollRowClicked();
+    this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
   }
 
+  /**
+   * Updates state then tells the matrix that this is rolling up.
+   */
   onRollupRowClicked() {
-    let unrolled = false;
-    this.updateControls(unrolled);
-    this.updateMinorRows(unrolled);
-
-    this.currentHeight = this.currentHeight / (this.getNumVisibleMinorRows() + 1);
+    this.unrolled = false;
+    this.updateControls(this.unrolled);
+    this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
     this.unrollRowCallback(this.rowIndex);
   }
 
+  /**
+   * Updates state then tells the matrix that this is unrolling.
+   */
   onUnrollRowClicked() {
-    let unrolled = true;
-    this.updateControls(unrolled);
-    this.updateMinorRows(unrolled);
-
-    this.currentHeight = this.currentHeight * (this.getNumVisibleMinorRows() + 1);
+    this.unrolled = true;
+    this.updateControls(this.unrolled);
+    this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
     this.unrollRowCallback(this.rowIndex);
   }
 
@@ -221,8 +234,12 @@ export class cmMatrixRow extends SvgGroupElement {
     children.style("display", visible ? "block" : "none");
   }
 
+  /**
+   * Makes this.minorRow[minorRowIndex] visible.
+   */
   showMinorRow(minorRowIndex) {
-
+    this.isMinorRowVisible[minorRowIndex] = true;
+    this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
   }
 
   unrollCol(colIndex, colWidth) {
@@ -243,29 +260,39 @@ export class cmMatrixRow extends SvgGroupElement {
     }
   }
 
+  /**
+   * Toggles controls cell from + to -
+   */
   updateControls(unrolled) {
     this.unrollControls.style("display", unrolled ? "none" : "block");
     this.rollupControls.style("display", unrolled ? "block" : "none");
   }
 
-  updateMinorRows(unrolled) {
+  /**
+   * Updates the position and visibility of minor rows. Gets called when rows are unrolled or when rows are filtered.
+   * @param unrolled - if true then put minor rows below this, else put minor rows at same position as this.
+   * @param isMinorRowVisible - hide rows based on their index
+   */
+  updateMinorRows(unrolled, isMinorRowVisible) {
     let numMinorRows = this.getNumMinorRows();
-    let numVisibleMinorRowsAdded = 1;
     this.currentHeight = this.rowHeight;
+
+    // For each minor row...
     for (var i = 0; i < numMinorRows; ++i) {
       if (unrolled) {
-        if (this.isMinorRowVisible[i]) {
+        if (isMinorRowVisible[i]) {
+          // Put the visible minor rows in correct position underneath this.
           this.minorRows[i].setVisible(true);
-          this.minorRows[i].setPosition(0, 0);
-          this.minorRows[i].setPosition(0, this.currentHeight * (numVisibleMinorRowsAdded));
-          numVisibleMinorRowsAdded += 1;
+          this.minorRows[i].setPosition(0, this.currentHeight);
+          this.currentHeight += this.rowHeight;
         } else {
+          // And hide the invisible rows.
           this.minorRows[i].setVisible(false);
         }
       } else {
+        // Not unrolled - we need to move the minor rows underneath this.
         this.minorRows[i].setPosition(0, 0, true);
       }
     }
-    this.unrollRowCallback(this.rowIndex);
   }
 }

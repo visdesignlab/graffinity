@@ -4,9 +4,12 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 
 export class MainController {
-  constructor($log, $timeout, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory) {
+  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState) {
     'ngInject';
 
+    this.viewState = viewState;
+
+    this.$scope = $scope;
     this.$log = $log;
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
@@ -49,7 +52,7 @@ export class MainController {
 
   createMatrix(model, encoding) {
     this.svg.selectAll("*").remove();
-    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model);
+    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState);
     this.onEncodingChanged(encoding);
   }
 
@@ -88,9 +91,11 @@ export class MainController {
   }
 
   onDebugNodeHiding(nodeId, makeVisible) {
-    console.log(nodeId, makeVisible);
-
-    this.matrix.updateDataRows([parseInt(nodeId)], !makeVisible);
+    if(!makeVisible) {
+      this.viewState.hideNodes([parseInt(nodeId)]);
+    } else {
+      this.viewState.showNodes([parseInt(nodeId)]);
+    }
 
   }
 

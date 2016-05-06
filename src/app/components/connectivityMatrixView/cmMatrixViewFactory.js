@@ -10,8 +10,8 @@ export class cmMatrixViewFactory {
   }
 
 
-  createConnectivityMatrix(svg, model) {
-    return new cmMatrixView(svg, model, this.$log, this.$uibModal);
+  createConnectivityMatrix(svg, model, scope, viewState) {
+    return new cmMatrixView(svg, model, this.$log, this.$uibModal, scope, viewState);
   }
 
 }

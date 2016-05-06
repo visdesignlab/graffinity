@@ -19,10 +19,13 @@ import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
 export class cmMatrixView extends SvgGroupElement {
-  constructor(svg, model, $log, $uibModal) {
+  constructor(svg, model, $log, $uibModal, scope, viewState) {
     super(svg);
     this.$log = $log;
     this.$uibModal = $uibModal;
+    this.$scope = scope;
+    this.viewState = viewState;
+    this.$log.debug(this.$scope, this.viewState);
 
     this.colWidth = 15;
     this.rowHeight = 15;
@@ -180,6 +183,14 @@ export class cmMatrixView extends SvgGroupElement {
 
     // Put stuff in the correct place.
     this.updatePositions(this.rowPerm, this.colPerm);
+    this.connectToViewState(this.$scope);
+  }
+
+  connectToViewState(scope) {
+    let onHideNodes = this.onHideNodes.bind(this);
+    let onShowNodes = this.onShowNodes.bind(this);
+    scope.$on("hideNodes", onHideNodes);
+    scope.$on("showNodes", onShowNodes);
   }
 
   addRow(row, rowHeight) {
@@ -275,41 +286,6 @@ export class cmMatrixView extends SvgGroupElement {
       x += colWidths[logicalColIndex];
     }
     return x;
-  }
-
-  updateDataRows(nodeIndexes, hide) {
-    console.log("update data rows", nodeIndexes);
-    let rowNodeIndexes = this.rowNodeIndexes;
-
-    // Loop over all indexes who we are showing/hiding.
-    for (var i = 0; i < nodeIndexes.length; ++i) {
-
-      // Loop over all major rows
-      for (var rowIndex = 0; rowIndex < this.allRows.length; ++rowIndex) {
-
-        // Only check rows that have data bound.
-        if (this.isDataRow(rowIndex)) {
-
-          let dataIndex = this.getDataRowIndex(rowIndex);
-
-          let isOnlyNodeInRow = rowNodeIndexes[dataIndex].length == 1;
-          let minorRowIndex = rowNodeIndexes[dataIndex].indexOf(nodeIndexes[i]);
-          let isNodeInRow = minorRowIndex != -1;
-
-          if (isNodeInRow && isOnlyNodeInRow) {
-            if(hide) {
-              this.hideRow(rowIndex);
-            } else {
-              this.showRow(rowIndex);
-            }
-          } else if (isNodeInRow && !isOnlyNodeInRow) {
-            this.$log.error("found minor row containg node", rowIndex, minorRowIndex);
-            this.allRows[rowIndex].hideMinorRow(minorRowIndex);
-            this.updatePositions(this.rowPerm, this.colPerm);
-          }
-        }
-      }
-    }
   }
 
   hideCol(colIndex) {
@@ -461,7 +437,31 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes) {
+    var modalInstance = this.$uibModal.open({
+      animation: true,
+      templateUrl: '/app/components/connectivityMatrixView/modals/cmAttributeModalController.html',
+      controller: 'cmAttributeModalController',
+      controllerAs: 'modalController',
+      size: 'sm',
+      resolve: {
+        title: function () {
+          return "Select attributes";
+        },
+        attributes: function () {
+          return attributes;
+        },
+        selection: function () {
+          return isAttributeVisible;
+        }
+      }
+    });
 
+    let modalSuccess = function (selection) {
+      updateVisibleAttributes(selection, isAttributeVisible);
+    };
+
+    modalSuccess = modalSuccess.bind(this);
+    modalInstance.result.then(modalSuccess);
   }
 
   onHideAttributeRow(attributeIndex) {
@@ -476,6 +476,14 @@ export class cmMatrixView extends SvgGroupElement {
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeColVisible[attribute] = false;
     this.hideCol(viewIndex);
+  }
+
+  onHideNodes(event, nodeIndexes) {
+    this.updateDataRows(nodeIndexes, true);
+  }
+
+  onShowNodes(event, nodeIndexes) {
+    this.updateDataRows(nodeIndexes, false);
   }
 
   /** Unroll the row.
@@ -552,6 +560,44 @@ export class cmMatrixView extends SvgGroupElement {
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].setPosition(0, yPositions[this.rowInv[i]]);
       this.allRows[i].setColPositions(this.colInv, xPositions);
+    }
+  }
+
+  updateDataRows(nodeIndexes, hide) {
+    let rowNodeIndexes = this.rowNodeIndexes;
+
+    // Loop over all indexes who we are showing/hiding.
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+
+      // Loop over all major rows
+      for (var rowIndex = 0; rowIndex < this.allRows.length; ++rowIndex) {
+
+        // Only check rows that have data bound.
+        if (this.isDataRow(rowIndex)) {
+
+          let dataIndex = this.getDataRowIndex(rowIndex);
+
+          let isOnlyNodeInRow = rowNodeIndexes[dataIndex].length == 1;
+          let minorRowIndex = rowNodeIndexes[dataIndex].indexOf(nodeIndexes[i]);
+          let isNodeInRow = minorRowIndex != -1;
+
+          if (isNodeInRow && isOnlyNodeInRow) {
+            if (hide) {
+              this.hideRow(rowIndex);
+            } else {
+              this.showRow(rowIndex);
+            }
+          } else if (isNodeInRow && !isOnlyNodeInRow) {
+            if(hide) {
+              this.allRows[rowIndex].hideMinorRow(minorRowIndex);
+            } else {
+              this.allRows[rowIndex].showMinorRow(minorRowIndex);
+            }
+            this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
+            this.updatePositions(this.rowPerm, this.colPerm);
+          }
+        }
+      }
     }
   }
 

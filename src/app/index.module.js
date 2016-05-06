@@ -17,6 +17,8 @@ import { cmNodeFilterModalController } from "../app/components/connectivityMatri
 import { cmAttributeModalController } from "../app/components/connectivityMatrixView/modals/cmAttributeModal.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
 
+import { ViewState } from "../app/components/viewState/viewState.service";
+
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
   .constant('moment', moment)
@@ -30,6 +32,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('cmMatrixFactory', cmMatrixFactory)
   .service('cmModelFactory', cmModelFactory)
   .service('cmMatrixViewFactory', cmMatrixViewFactory)
+  .service('viewState', ViewState)
   .controller('MainController', MainController)
   .controller('cmAttributeModalController', cmAttributeModalController)
   .controller('cmNodeFilterModalController', cmNodeFilterModalController)
