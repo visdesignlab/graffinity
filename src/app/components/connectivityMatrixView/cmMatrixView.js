@@ -263,6 +263,10 @@ export class cmMatrixView extends SvgGroupElement {
     return viewRowIndex - this.numHeaderRows;
   }
 
+  getViewColIndexFromDataIndex(dataColIndex) {
+    return dataColIndex + this.numHeaderCols;
+  }
+
   static getHeight(rowPerm, rowHeights) {
     let y = 0;
     for (var i = 0; i < rowPerm.length; ++i) {
@@ -292,6 +296,28 @@ export class cmMatrixView extends SvgGroupElement {
     return x;
   }
 
+  getFirstDataRowIndex() {
+    return this.numControlRows + this.numAttributeRows + this.numLabelRows;
+  }
+
+  hideMinorCol(colIndex, minorColIndex) {
+    this.$log.debug("hide minor col", colIndex, minorColIndex);
+
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth);
+    }
+
+    let dataRowIndex = this.getFirstDataRowIndex();
+    let dataRow = this.allRows[dataRowIndex];
+    if (dataRow.isMajorCellUnrolled[colIndex]) {
+      let numVisibleMinorCells = this.allRows[dataRowIndex].getNumVisibleMinorCells(colIndex);
+      this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
+      this.updatePositions(this.rowPerm, this.colPerm);
+    }
+
+
+  }
+
   hideCol(colIndex) {
     this.colWidths[colIndex] = 0;
 
@@ -308,9 +334,27 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
+  showMinorCol(colIndex, minorColIndex) {
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].showMinorCol(colIndex, minorColIndex, this.colWidth);
+    }
+
+    let dataRowIndex = this.getFirstDataRowIndex();
+    let dataRow = this.allRows[dataRowIndex];
+    if (dataRow.isMajorCellUnrolled[colIndex]) {
+      let numVisibleMinorCells = this.allRows[dataRowIndex].getNumVisibleMinorCells(colIndex);
+      this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
+      this.updatePositions(this.rowPerm, this.colPerm);
+    }
+  }
+
   showCol(colIndex) {
     if (this.isAttributeCell(colIndex)) {
       this.colWidths[colIndex] = this.colWidthAttr;
+    } else if (this.isDataCell(colIndex)) {
+      this.colWidths[colIndex] = this.colWidth;
+    } else {
+      this.$log.error("Showing a column type not yet handled!");
     }
 
     for (var i = 0; i < this.allRows.length; ++i) {
@@ -484,10 +528,12 @@ export class cmMatrixView extends SvgGroupElement {
 
   onHideNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, true);
+    this.updateDataCols(nodeIndexes, true);
   }
 
   onShowNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, false);
+    this.updateDataCols(nodeIndexes, false);
   }
 
   /** Unroll the row.
@@ -567,6 +613,42 @@ export class cmMatrixView extends SvgGroupElement {
     }
   }
 
+  updateDataCols(nodeIndexes, hide) {
+
+    // Loop over all indexes who we are showing/hiding.
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+
+      // Loop over all major cols
+      for (var colIndex = 0; colIndex < this.colNodeIndexes.length; ++colIndex) {
+
+        let isOnlyNodeInCol = this.colNodeIndexes[colIndex].length == 1;
+        let minorColIndex = this.colNodeIndexes[colIndex].indexOf(nodeIndexes[i]);
+        let isNodeInCol = minorColIndex != -1;
+        let viewColIndex = this.getViewColIndexFromDataIndex(colIndex);
+
+        if (isOnlyNodeInCol && isNodeInCol) {
+          if (hide) {
+            this.hideCol(viewColIndex);
+          } else {
+            this.showCol(viewColIndex);
+          }
+        } else if (isNodeInCol && !isOnlyNodeInCol) {
+          if(hide) {
+            this.hideMinorCol(viewColIndex, minorColIndex);
+          } else {
+            this.showMinorCol(viewColIndex, minorColIndex);
+          }
+        }
+      }
+    }
+    this.updatePositions(this.rowPerm, this.colPerm);
+    // if nodeIndex[i] is in colNodeIndex and the only one
+    // hide colNodeIndex.indexOf(nodeIndex[i])
+    // if nodeIndex[i] is in colNodeIndex and not the only one
+    // hide minorColNodeIndex.indexOf(nodeIndex[i])
+
+  }
+
   updateDataRows(nodeIndexes, hide) {
     let rowNodeIndexes = this.rowNodeIndexes;
 
@@ -592,7 +674,7 @@ export class cmMatrixView extends SvgGroupElement {
               this.showRow(rowIndex);
             }
           } else if (isNodeInRow && !isOnlyNodeInRow) {
-            if(hide) {
+            if (hide) {
               this.allRows[rowIndex].hideMinorRow(minorRowIndex);
             } else {
               this.allRows[rowIndex].showMinorRow(minorRowIndex);

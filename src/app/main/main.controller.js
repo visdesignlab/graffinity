@@ -18,6 +18,7 @@ export class MainController {
     this.ui = {};
 
     this.ui.debugNodeHiding = true;
+    this.ui.nodeId = 168;
 
     this.svg = d3.select("#my-svg")
       .append("g")

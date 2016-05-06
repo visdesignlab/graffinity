@@ -31,6 +31,9 @@ export class cmMatrixRow extends SvgGroupElement {
     this.majorCells = [];
     this.minorRows = [];
     this.isMinorRowVisible = [];
+    this.isMajorCellVisible = [];
+    this.isMinorCellVisible = [];
+    this.isMajorCellUnrolled = [];
     this.matrix = matrix;
     this.unrolled = false;
 
@@ -102,6 +105,9 @@ export class cmMatrixRow extends SvgGroupElement {
     let group = this.group;
     for (var i = 0; i < totalNumCols; ++i) {
       this.majorCells[i] = new cmMatrixCell(group, i, !this.isMinorRow, true, i < numHeaderCols);
+      this.isMajorCellVisible[i] = true;
+      this.isMinorCellVisible[i] = [];
+      this.isMajorCellUnrolled[i] = false;
     }
   }
 
@@ -115,6 +121,7 @@ export class cmMatrixRow extends SvgGroupElement {
           let minorCell = new cmMatrixCell(majorGroup, j, !this.isMinorRow, false, i < numHeaderCols, isDataCell);
           minorCell.setVisible(false);
           majorCol.addMinorCell(minorCell);
+          this.isMinorCellVisible[i][j] = true;
         }
       }
     }
@@ -142,12 +149,34 @@ export class cmMatrixRow extends SvgGroupElement {
     return numVisibleMinorRows;
   }
 
+  getNumVisibleMinorCells(colIndex) {
+    let numVisibleMinorCols = 0;
+    let isMinorCellVisible = this.isMinorCellVisible[colIndex];
+    for (var i = 0; i < isMinorCellVisible.length; ++i) {
+      if (isMinorCellVisible[i]) {
+        numVisibleMinorCols++;
+      }
+    }
+    return numVisibleMinorCols;
+  }
+
   getMajorCell(i) {
     return this.majorCells[i];
   }
 
   static getMajorCellIndex(group) {
     return group.attr("data-major-col");
+  }
+
+  hideMinorCol(colIndex, minorColIndex, colWidth) {
+    this.isMinorCellVisible[colIndex][minorColIndex] = false;
+    this.updateMinorCols(colIndex, colWidth);
+
+    if (!this.isMinorRow) {
+      for (var i = 0; i < this.minorRows.length; ++i) {
+        this.minorRows[i].hideMinorCol(colIndex, minorColIndex, colWidth);
+      }
+    }
   }
 
   hideMinorRow(minorRowIndex) {
@@ -176,6 +205,7 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   rollupCol(colIndex) {
+    this.isMajorCellUnrolled[colIndex] = false;
 
     let minorCells = this.majorCells[colIndex].minorCells;
     for (var i = 0; i < minorCells.length; ++i) {
@@ -234,6 +264,16 @@ export class cmMatrixRow extends SvgGroupElement {
     children.style("display", visible ? "block" : "none");
   }
 
+  showMinorCol(colIndex, minorColIndex, colWidth) {
+    this.isMinorCellVisible[colIndex][minorColIndex] = true;
+    this.updateMinorCols(colIndex, colWidth);
+    if (!this.isMinorRow) {
+      for (var i = 0; i < this.minorRows.length; ++i) {
+        this.minorRows[i].showMinorCol(colIndex, minorColIndex, colWidth);
+      }
+    }
+  }
+
   /**
    * Makes this.minorRow[minorRowIndex] visible.
    */
@@ -243,6 +283,7 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   unrollCol(colIndex, colWidth) {
+    this.isMajorCellUnrolled[colIndex] = true;
     let minorCells = this.majorCells[colIndex].minorCells;
     for (var i = 0; i < minorCells.length; ++i) {
       let cellGroup = minorCells[i].getGroup();
@@ -251,13 +292,34 @@ export class cmMatrixRow extends SvgGroupElement {
         .duration(500)
         .attr("transform", "translate(" + ((i + 1) * colWidth) + ",0)");
     }
-
     if (!this.isMinorRow) {
       let numMinorRows = this.getNumMinorRows();
       for (i = 0; i < numMinorRows; ++i) {
         this.minorRows[i].unrollCol(colIndex, colWidth);
       }
     }
+  }
+
+  updateMinorCols(colIndex, colWidth) {
+    let minorCells = this.majorCells[colIndex].minorCells;
+    let position = colWidth;
+    for (var i = 0; i < minorCells.length; ++i) {
+      let cellGroup = minorCells[i].getGroup();
+      if (this.isMajorCellUnrolled[colIndex] && this.isMinorCellVisible[colIndex][i]) {
+        cellGroup.style("display", "block");
+
+        cellGroup.transition()
+          .duration(500)
+          .attr("transform", "translate(" + position + ",0)");
+
+        position += colWidth;
+
+      } else if (this.isMajorCellUnrolled[colIndex] && !this.isMinorCellVisible[colIndex][i]) {
+        cellGroup.style("display", "none");
+      }
+
+    }
+
   }
 
   /**
