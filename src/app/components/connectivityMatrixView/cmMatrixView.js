@@ -163,13 +163,6 @@ export class cmMatrixView extends SvgGroupElement {
     this.connectToViewState(this.$scope);
   }
 
-  connectToViewState(scope) {
-    let onHideNodes = this.onHideNodes.bind(this);
-    let onShowNodes = this.onShowNodes.bind(this);
-    scope.$on("hideNodes", onHideNodes);
-    scope.$on("showNodes", onShowNodes);
-  }
-
   addRow(row, rowHeight) {
     let y = 0;
     for (var i = 0; i < this.allRows.length; ++i) {
@@ -210,7 +203,18 @@ export class cmMatrixView extends SvgGroupElement {
     let editAttributeRows = this.onEditVisibleAttributeRows.bind(this);
     visitor = new cmEditVisibleAttributesVisitor(this.colWidth, this.rowHeight, editAttributeRows, editAttributeCols);
     this.applyVisitor(visitor);
+  }
 
+  // TODO: review this.
+  connectToViewState(scope) {
+    let onHideNodes = this.onHideNodes.bind(this);
+    let onShowNodes = this.onShowNodes.bind(this);
+    scope.$on("hideNodes", onHideNodes);
+    scope.$on("showNodes", onShowNodes);
+  }
+
+  getAttributeColIndex(viewColIndex) {
+    return viewColIndex - this.numControlCols;
   }
 
   static getAvailableEncodings() {
@@ -247,14 +251,6 @@ export class cmMatrixView extends SvgGroupElement {
     return positions;
   }
 
-  getAttributeColIndex(viewColIndex) {
-    return viewColIndex - this.numControlCols;
-  }
-
-  getViewIndexFromAttributeIndex(attributeIndex) {
-    return attributeIndex + this.numControlCols;
-  }
-
   getDataColIndex(viewColIndex) {
     return viewColIndex - this.numHeaderCols;
   }
@@ -263,8 +259,9 @@ export class cmMatrixView extends SvgGroupElement {
     return viewRowIndex - this.numHeaderRows;
   }
 
-  getViewColIndexFromDataIndex(dataColIndex) {
-    return dataColIndex + this.numHeaderCols;
+  // TODO - review this. flatten into getNumVisibleMinorCells ?
+  getFirstDataRowIndex() {
+    return this.numControlRows + this.numAttributeRows + this.numLabelRows;
   }
 
   static getHeight(rowPerm, rowHeights) {
@@ -287,6 +284,14 @@ export class cmMatrixView extends SvgGroupElement {
     return positions;
   }
 
+  getViewIndexFromAttributeIndex(attributeIndex) {
+    return attributeIndex + this.numControlCols;
+  }
+
+  getViewColIndexFromDataIndex(dataColIndex) {
+    return dataColIndex + this.numHeaderCols;
+  }
+
   static getWidth(colPerm, colWidths) {
     let x = 0;
     for (var i = 0; i < colWidths.length; ++i) {
@@ -294,28 +299,6 @@ export class cmMatrixView extends SvgGroupElement {
       x += colWidths[logicalColIndex];
     }
     return x;
-  }
-
-  getFirstDataRowIndex() {
-    return this.numControlRows + this.numAttributeRows + this.numLabelRows;
-  }
-
-  hideMinorCol(colIndex, minorColIndex) {
-    this.$log.debug("hide minor col", colIndex, minorColIndex);
-
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth);
-    }
-
-    let dataRowIndex = this.getFirstDataRowIndex();
-    let dataRow = this.allRows[dataRowIndex];
-    if (dataRow.isMajorCellUnrolled[colIndex]) {
-      let numVisibleMinorCells = this.allRows[dataRowIndex].getNumVisibleMinorCells(colIndex);
-      this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
-      this.updatePositions(this.rowPerm, this.colPerm);
-    }
-
-
   }
 
   hideCol(colIndex) {
@@ -328,17 +311,15 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
-  hideRow(rowIndex) {
-    this.allRows[rowIndex].setVisible(false);
-    this.rowHeights[rowIndex] = 0;
-    this.updatePositions(this.rowPerm, this.colPerm);
-  }
+  // TODO - review this.
+  hideMinorCol(colIndex, minorColIndex) {
+    this.$log.debug("hide minor col", colIndex, minorColIndex);
 
-  showMinorCol(colIndex, minorColIndex) {
     for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].showMinorCol(colIndex, minorColIndex, this.colWidth);
+      this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth);
     }
 
+    // TODO - flatten this into a single getNumVisibleMinorCells()
     let dataRowIndex = this.getFirstDataRowIndex();
     let dataRow = this.allRows[dataRowIndex];
     if (dataRow.isMajorCellUnrolled[colIndex]) {
@@ -348,38 +329,10 @@ export class cmMatrixView extends SvgGroupElement {
     }
   }
 
-  showCol(colIndex) {
-    if (this.isAttributeCell(colIndex)) {
-      this.colWidths[colIndex] = this.colWidthAttr;
-    } else if (this.isDataCell(colIndex)) {
-      this.colWidths[colIndex] = this.colWidth;
-    } else {
-      this.$log.error("Showing a column type not yet handled!");
-    }
-
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].majorCells[colIndex].setVisible(true);
-    }
-
+  hideRow(rowIndex) {
+    this.allRows[rowIndex].setVisible(false);
+    this.rowHeights[rowIndex] = 0;
     this.updatePositions(this.rowPerm, this.colPerm);
-  }
-
-  showRow(rowIndex) {
-    this.allRows[rowIndex].setVisible(true);
-    if (this.isAttributeRow(rowIndex)) {
-      this.rowHeights[rowIndex] = this.rowHeightAttr;
-    } else if (this.isDataRow(rowIndex)) {
-      this.rowHeights[rowIndex] = this.rowHeight;
-    }
-    this.updatePositions(this.rowPerm, this.colPerm);
-  }
-
-  isControlCell(colIndex) {
-    return colIndex < this.numControlCols;
-  }
-
-  isControlRow(rowIndex) {
-    return rowIndex < this.numControlRows;
   }
 
   isAttributeCell(colIndex) {
@@ -390,14 +343,12 @@ export class cmMatrixView extends SvgGroupElement {
     return rowIndex >= this.numControlRows && rowIndex < (this.numAttributeRows + this.numControlRows);
   }
 
-  isLabelCell(colIndex) {
-    return colIndex >= this.numAttributeCols + this.numControlCols &&
-      colIndex < this.numAttributeCols + this.numControlCols + this.numLabelCols;
+  isControlCell(colIndex) {
+    return colIndex < this.numControlCols;
   }
 
-  isLabelRow(rowIndex) {
-    return rowIndex >= this.numAttributeRows + this.numControlRows &&
-      rowIndex < this.numAttributeRows + this.numControlRows + this.numLabelRows;
+  isControlRow(rowIndex) {
+    return rowIndex < this.numControlRows;
   }
 
   isDataCell(colIndex) {
@@ -406,6 +357,16 @@ export class cmMatrixView extends SvgGroupElement {
 
   isDataRow(rowIndex) {
     return !this.isControlRow(rowIndex) && !this.isAttributeRow(rowIndex) && !this.isLabelRow(rowIndex);
+  }
+
+  isLabelCell(colIndex) {
+    return colIndex >= this.numAttributeCols + this.numControlCols &&
+      colIndex < this.numAttributeCols + this.numControlCols + this.numLabelCols;
+  }
+
+  isLabelRow(rowIndex) {
+    return rowIndex >= this.numAttributeRows + this.numControlRows &&
+      rowIndex < this.numAttributeRows + this.numControlRows + this.numLabelRows;
   }
 
   onCellClicked(cell) {
@@ -453,10 +414,12 @@ export class cmMatrixView extends SvgGroupElement {
    * Updates width of the column and unrolls its children.
    */
   onColControlsClicked(colIndex, unrolling) {
+    // TODO - review this for symmetry with show/hide minor cols.
     // Update width of the column
     if (unrolling) {
-      let dataColIndex = this.getDataColIndex(colIndex);
-      this.colWidths[colIndex] = (this.colNodeIndexes[dataColIndex].length + 1) * this.colWidths[colIndex];
+      let dataRowIndex = this.getFirstDataRowIndex();
+      let dataRow = this.allRows[dataRowIndex];
+      this.colWidths[colIndex] = (dataRow.getNumVisibleMinorCells(colIndex) + 1) * this.colWidths[colIndex];
     } else {
       this.colWidths[colIndex] = this.colWidth;
     }
@@ -531,17 +494,17 @@ export class cmMatrixView extends SvgGroupElement {
     this.updateDataCols(nodeIndexes, true);
   }
 
-  onShowNodes(event, nodeIndexes) {
-    this.updateDataRows(nodeIndexes, false);
-    this.updateDataCols(nodeIndexes, false);
-  }
-
-  /** Unroll the row.
-   * Expands its height.
+  /**
+   * Unroll the row and expands its height.
    */
   onRowControlsClicked(rowIndex) {
     this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
     this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  onShowNodes(event, nodeIndexes) {
+    this.updateDataRows(nodeIndexes, false);
+    this.updateDataCols(nodeIndexes, false);
   }
 
   onSortRowsByAttribute(attribute, ascending) {
@@ -595,24 +558,73 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(shiftedRowPerm, shiftedColPerm);
   }
 
-  /** Update positions of rows and columns in the table.
-   * Used for reordering and unrolling.
-   */
-  updatePositions(rowPerm, colPerm) {
-    this.rowPerm = rowPerm;
-    let yPositions = cmMatrixView.getRowYPositions(this.rowPerm, this.rowHeights);
-    this.rowInv = reorder.inverse_permutation(this.rowPerm);
-
-    this.colPerm = colPerm;
-    this.colInv = reorder.inverse_permutation(this.colPerm);
-    let xPositions = cmMatrixView.getColXPositions(this.colPerm, this.colWidths);
+  showCol(colIndex) {
+    if (this.isAttributeCell(colIndex)) {
+      this.colWidths[colIndex] = this.colWidthAttr;
+    } else if (this.isDataCell(colIndex)) {
+      this.colWidths[colIndex] = this.colWidth;
+    } else {
+      this.$log.error("Showing a column type not yet handled!");
+    }
 
     for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].setPosition(0, yPositions[this.rowInv[i]]);
-      this.allRows[i].setColPositions(this.colInv, xPositions);
+      this.allRows[i].majorCells[colIndex].setVisible(true);
+    }
+
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  showMinorCol(colIndex, minorColIndex) {
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].showMinorCol(colIndex, minorColIndex, this.colWidth);
+    }
+
+    let dataRowIndex = this.getFirstDataRowIndex();
+    let dataRow = this.allRows[dataRowIndex];
+    if (dataRow.isMajorCellUnrolled[colIndex]) {
+      let numVisibleMinorCells = this.allRows[dataRowIndex].getNumVisibleMinorCells(colIndex);
+      this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
+      this.updatePositions(this.rowPerm, this.colPerm);
     }
   }
 
+  showRow(rowIndex) {
+    this.allRows[rowIndex].setVisible(true);
+    if (this.isAttributeRow(rowIndex)) {
+      this.rowHeights[rowIndex] = this.rowHeightAttr;
+    } else if (this.isDataRow(rowIndex)) {
+      this.rowHeights[rowIndex] = this.rowHeight;
+    }
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  /**
+   * Function called when the user changed the visible attribute rows or cols.
+   * @param selection - selection[attribute] is a boolean for whether attribute should be displayed
+   * @param isAttributeVisible - state of what attributes are displayed. Needs to be updated.
+   * @param show - callback to show rows/cols
+   * @param hide - callback to hide rows/cols
+   */
+  updateAttributes(selection, isAttributeVisible, show, hide) {
+    let attributes = this.attributes;
+    for (var i = 0; i < attributes.length; ++i) {
+      let attribute = attributes[i];
+      if (selection[attribute]) {
+        show(this.getViewIndexFromAttributeIndex(i));
+      } else {
+        hide(this.getViewIndexFromAttributeIndex(i));
+      }
+      isAttributeVisible[attribute] = selection[attribute];
+    }
+  }
+
+  updateColAttributes(selection) {
+    let showRow = this.showRow.bind(this);
+    let hideRow = this.hideRow.bind(this);
+    this.updateAttributes(selection, this.isAttributeRowVisible, showRow, hideRow);
+  }
+
+  // TODO - review this. Check for symmetry with updateDataRows
   updateDataCols(nodeIndexes, hide) {
 
     // Loop over all indexes who we are showing/hiding.
@@ -633,7 +645,7 @@ export class cmMatrixView extends SvgGroupElement {
             this.showCol(viewColIndex);
           }
         } else if (isNodeInCol && !isOnlyNodeInCol) {
-          if(hide) {
+          if (hide) {
             this.hideMinorCol(viewColIndex, minorColIndex);
           } else {
             this.showMinorCol(viewColIndex, minorColIndex);
@@ -649,6 +661,7 @@ export class cmMatrixView extends SvgGroupElement {
 
   }
 
+  // TODO - review this.
   updateDataRows(nodeIndexes, hide) {
     let rowNodeIndexes = this.rowNodeIndexes;
 
@@ -687,10 +700,22 @@ export class cmMatrixView extends SvgGroupElement {
     }
   }
 
-  updateColAttributes(selection) {
-    let showRow = this.showRow.bind(this);
-    let hideRow = this.hideRow.bind(this);
-    this.updateAttributes(selection, this.isAttributeRowVisible, showRow, hideRow);
+  /** Update positions of rows and columns in the table.
+   * Used for reordering and unrolling.
+   */
+  updatePositions(rowPerm, colPerm) {
+    this.rowPerm = rowPerm;
+    let yPositions = cmMatrixView.getRowYPositions(this.rowPerm, this.rowHeights);
+    this.rowInv = reorder.inverse_permutation(this.rowPerm);
+
+    this.colPerm = colPerm;
+    this.colInv = reorder.inverse_permutation(this.colPerm);
+    let xPositions = cmMatrixView.getColXPositions(this.colPerm, this.colWidths);
+
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].setPosition(0, yPositions[this.rowInv[i]]);
+      this.allRows[i].setColPositions(this.colInv, xPositions);
+    }
   }
 
   updateRowAttributes(selection) {
@@ -698,27 +723,6 @@ export class cmMatrixView extends SvgGroupElement {
     let hideCol = this.hideCol.bind(this);
     this.updateAttributes(selection, this.isAttributeColVisible, showCol, hideCol);
   }
-
-  /**
-   * Function called when the user changed the visible attribute rows or cols.
-   * @param selection - selection[attribute] is a boolean for whether attribute should be displayed
-   * @param isAttributeVisible - state of what attributes are displayed. Needs to be updated.
-   * @param show - callback to show rows/cols
-   * @param hide - callback to hide rows/cols
-   */
-  updateAttributes(selection, isAttributeVisible, show, hide) {
-    let attributes = this.attributes;
-    for (var i = 0; i < attributes.length; ++i) {
-      let attribute = attributes[i];
-      if (selection[attribute]) {
-        show(this.getViewIndexFromAttributeIndex(i));
-      } else {
-        hide(this.getViewIndexFromAttributeIndex(i));
-      }
-      isAttributeVisible[attribute] = selection[attribute];
-    }
-  }
-
 
 }
 
