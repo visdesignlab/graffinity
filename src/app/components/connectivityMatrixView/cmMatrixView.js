@@ -63,12 +63,15 @@ export class cmMatrixView extends SvgGroupElement {
 
     // Create state for whether cols are unrolled and visible.
     this.isMajorColUnrolled = [];
-    this.isMinorColHidden = [];
-    for (i = 0; i < this.colNodeIndexes.length; ++i) {
+    this.isMinorColVisible = [];
+    for (i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
       this.isMajorColUnrolled[i] = false;
-      this.isMinorColHidden[i] = [];
-      for (var j = 0; j < this.colNodeIndexes[i].length; ++j) {
-        this.isMinorColHidden[i][j] = false;
+      this.isMinorColVisible[i] = [];
+      if (this.isDataCell(i)) {
+        let dataIndex = this.getDataColIndex(i);
+        for (var j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
+          this.isMinorColVisible[i][j] = true;
+        }
       }
     }
 
@@ -264,6 +267,15 @@ export class cmMatrixView extends SvgGroupElement {
     return positions;
   }
 
+  getColWidth(colIndex, unrolled) {
+    if (unrolled) {
+      let numVisibleMinorCells = this.getNumVisibleMinorCells(colIndex);
+      return (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
+    } else {
+      return this.colWidth;
+    }
+  }
+
   getDataColIndex(viewColIndex) {
     return viewColIndex - this.numHeaderCols;
   }
@@ -273,9 +285,16 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   getNumVisibleMinorCells(colIndex) {
-    let rowIndex = this.getFirstDataRowIndex();
-    let row = this.allRows[rowIndex];
-    return row.getNumVisibleMinorCells(colIndex);
+    console.log("matrixview - getNumVisibleMinorCells");
+    console.log(this.isMinorColVisible[colIndex]);
+    let isMinorColVisible = this.isMinorColVisible[colIndex];
+    let numVisibleMinorCols = 0;
+    for (var i = 0; i < isMinorColVisible.length; ++i) {
+      if (isMinorColVisible[i]) {
+        numVisibleMinorCols += 1;
+      }
+    }
+    return numVisibleMinorCols;
   }
 
   // TODO - review this. flatten into getNumVisibleMinorCells ?
@@ -330,15 +349,16 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
-  //
   hideMinorCol(colIndex, minorColIndex) {
+    console.log("hiding minor col");
+    this.isMinorColVisible[colIndex][minorColIndex] = false;
+
     for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth);
+      this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
     }
 
-    if (this.isMajorCellUnrolled(colIndex)) {
-      let numVisibleMinorCells = this.getNumVisibleMinorCells(colIndex);
-      this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
+    if (this.isMajorColUnrolled[colIndex]) {
+      this.colWidths[colIndex] = this.getColWidth(colIndex, true);
       this.updatePositions(this.rowPerm, this.colPerm);
     }
   }
@@ -438,20 +458,15 @@ export class cmMatrixView extends SvgGroupElement {
 
     // TODO - review this for symmetry with show/hide minor cols.
     // Update width of the column
-    if (unrolling) {
-      let dataRowIndex = this.getFirstDataRowIndex();
-      let dataRow = this.allRows[dataRowIndex];
-      this.colWidths[colIndex] = (dataRow.getNumVisibleMinorCells(colIndex) + 1) * this.colWidths[colIndex];
-    } else {
-      this.colWidths[colIndex] = this.colWidth;
-    }
+
+    this.colWidths[colIndex] = this.getColWidth(colIndex, unrolling);
 
     // Tell rows to unroll col.
     for (var i = 0; i < this.allRows.length; ++i) {
       if (unrolling) {
-        this.allRows[i].unrollCol(colIndex, this.colWidth);
+        this.allRows[i].unrollCol(colIndex, this.colWidth, this.isMinorColVisible);
       } else {
-        this.allRows[i].rollupCol(colIndex);
+        this.allRows[i].rollupCol(colIndex, this.isMinorColVisible);
       }
     }
 
@@ -597,15 +612,13 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   showMinorCol(colIndex, minorColIndex) {
+    this.isMinorColVisible[colIndex][minorColIndex] = true;
     for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].showMinorCol(colIndex, minorColIndex, this.colWidth);
+      this.allRows[i].showMinorCol(colIndex, minorColIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
     }
 
-    let dataRowIndex = this.getFirstDataRowIndex();
-    let dataRow = this.allRows[dataRowIndex];
-    if (dataRow.isMajorCellUnrolled[colIndex]) {
-      let numVisibleMinorCells = this.allRows[dataRowIndex].getNumVisibleMinorCells(colIndex);
-      this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
+    if (this.isMajorColUnrolled[colIndex]) {
+      this.colWidths[colIndex] = this.getColWidth(colIndex, this.isMajorColUnrolled[colIndex]);
       this.updatePositions(this.rowPerm, this.colPerm);
     }
   }

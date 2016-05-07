@@ -170,13 +170,12 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   // TODO - review this. Check for symmetry with showMinorCol and rollup/unrollCol
-  hideMinorCol(colIndex, minorColIndex, colWidth) {
-    this.isMinorCellVisible[colIndex][minorColIndex] = false;
-    this.updateMinorCols(colIndex, colWidth);
+  hideMinorCol(colIndex, minorColIndex, colWidth, isColIndexUnrolled, isMinorColVisible) {
+    this.updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
 
     if (!this.isMinorRow) {
       for (var i = 0; i < this.minorRows.length; ++i) {
-        this.minorRows[i].hideMinorCol(colIndex, minorColIndex, colWidth);
+        this.minorRows[i].hideMinorCol(colIndex, minorColIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
       }
     }
   }
@@ -206,23 +205,23 @@ export class cmMatrixRow extends SvgGroupElement {
     this.unrollRowCallback(this.rowIndex);
   }
 
-  // TODO - review this.
-  rollupCol(colIndex) {
-    this.updateMinorCols(colIndex, 0, false);
-    if (!this.isMinorRow) {
-      let numMinorRows = this.getNumMinorRows();
-      for (var i = 0; i < numMinorRows; ++i) {
-        this.minorRows[i].rollupCol(colIndex);
-      }
-    }
-  }
-
   setDebugVisible(visible) {
     var children = this.group.selectAll("*");
     children = children.filter(function () {
       return d3.select(this).attr("data-debug");
     });
     children.style("display", visible ? "block" : "none");
+  }
+
+  // TODO - review this.
+  rollupCol(colIndex, isMinorColVisible) {
+    this.updateMinorCols(colIndex, 0, false, isMinorColVisible);
+    if (!this.isMinorRow) {
+      let numMinorRows = this.getNumMinorRows();
+      for (var i = 0; i < numMinorRows; ++i) {
+        this.minorRows[i].rollupCol(colIndex);
+      }
+    }
   }
 
   setColPositions(colInv, positions) {
@@ -255,9 +254,8 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   // TODO - review this.
-  showMinorCol(colIndex, minorColIndex, colWidth) {
-    this.isMinorCellVisible[colIndex][minorColIndex] = true;
-    this.updateMinorCols(colIndex, colWidth);
+  showMinorCol(colIndex, minorColIndex, colWidth, isColIndexUnrolled, isMinorColVisible) {
+    this.updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
     if (!this.isMinorRow) {
       for (var i = 0; i < this.minorRows.length; ++i) {
         this.minorRows[i].showMinorCol(colIndex, minorColIndex, colWidth);
@@ -273,24 +271,24 @@ export class cmMatrixRow extends SvgGroupElement {
     this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
   }
 
-  unrollCol(colIndex, colWidth) {
-    this.updateMinorCols(colIndex, colWidth, true);
+  unrollCol(colIndex, colWidth, isMinorColVisible) {
+    this.updateMinorCols(colIndex, colWidth, true, isMinorColVisible);
     if (!this.isMinorRow) {
       let numMinorRows = this.getNumMinorRows();
       for (var i = 0; i < numMinorRows; ++i) {
-        this.minorRows[i].unrollCol(colIndex, colWidth);
+        this.minorRows[i].unrollCol(colIndex, colWidth, isMinorColVisible);
       }
     }
   }
 
   // TODO - review and comment this.
-  updateMinorCols(colIndex, colWidth, isColIndexUnrolled) {
+  updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorCellVisible) {
     let minorCells = this.majorCells[colIndex].minorCells;
     let position = colWidth;
     for (var i = 0; i < minorCells.length; ++i) {
       let cell = minorCells[i];
-      let isUnrolledAndCellVisible = isColIndexUnrolled && this.isMinorCellVisible[colIndex][i];
-      let isUnrolledAndCellHidden = isColIndexUnrolled && !this.isMinorCellVisible[colIndex][i];
+      let isUnrolledAndCellVisible = isColIndexUnrolled && isMinorCellVisible[colIndex][i];
+      let isUnrolledAndCellHidden = isColIndexUnrolled && !isMinorCellVisible[colIndex][i];
       let isRolledUp = !isColIndexUnrolled;
       if (isUnrolledAndCellVisible) {
         cell.setVisible(true);

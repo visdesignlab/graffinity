@@ -1,6 +1,7 @@
 export class SvgGroupElement {
   constructor(group) {
     this.group = group;
+    this.positionInitialized = false;
   }
 
   getGroup() {
@@ -8,8 +9,8 @@ export class SvgGroupElement {
   }
 
   setPosition(x, y, hideAfterMove) {
-    let transform = this.group.attr("transform");
-    if (!transform) {
+    if (!this.positionInitialized) {
+      this.positionInitialized = true;
       this.group.attr("transform", "translate(" + x + ", " + y + ")")
     } else {
       if (!hideAfterMove) {
