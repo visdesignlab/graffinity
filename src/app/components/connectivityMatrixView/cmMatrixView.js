@@ -61,6 +61,17 @@ export class cmMatrixView extends SvgGroupElement {
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
     this.model = model;
 
+    // Create state for whether cols are unrolled and visible.
+    this.isMajorColUnrolled = [];
+    this.isMinorColHidden = [];
+    for (i = 0; i < this.colNodeIndexes.length; ++i) {
+      this.isMajorColUnrolled[i] = false;
+      this.isMinorColHidden[i] = [];
+      for (var j = 0; j < this.colNodeIndexes[i].length; ++j) {
+        this.isMinorColHidden[i][j] = false;
+      }
+    }
+
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
@@ -205,7 +216,9 @@ export class cmMatrixView extends SvgGroupElement {
     this.applyVisitor(visitor);
   }
 
-  // TODO: review this.
+  /**
+   * Connects this to signals broadcast by the global scope.
+   */
   connectToViewState(scope) {
     let onHideNodes = this.onHideNodes.bind(this);
     let onShowNodes = this.onShowNodes.bind(this);
@@ -257,6 +270,12 @@ export class cmMatrixView extends SvgGroupElement {
 
   getDataRowIndex(viewRowIndex) {
     return viewRowIndex - this.numHeaderRows;
+  }
+
+  getNumVisibleMinorCells(colIndex) {
+    let rowIndex = this.getFirstDataRowIndex();
+    let row = this.allRows[rowIndex];
+    return row.getNumVisibleMinorCells(colIndex);
   }
 
   // TODO - review this. flatten into getNumVisibleMinorCells ?
@@ -311,19 +330,14 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
-  // TODO - review this.
+  //
   hideMinorCol(colIndex, minorColIndex) {
-    this.$log.debug("hide minor col", colIndex, minorColIndex);
-
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth);
     }
 
-    // TODO - flatten this into a single getNumVisibleMinorCells()
-    let dataRowIndex = this.getFirstDataRowIndex();
-    let dataRow = this.allRows[dataRowIndex];
-    if (dataRow.isMajorCellUnrolled[colIndex]) {
-      let numVisibleMinorCells = this.allRows[dataRowIndex].getNumVisibleMinorCells(colIndex);
+    if (this.isMajorCellUnrolled(colIndex)) {
+      let numVisibleMinorCells = this.getNumVisibleMinorCells(colIndex);
       this.colWidths[colIndex] = (numVisibleMinorCells + 1) * this.colWidth; // +1 is for the width of the major cells
       this.updatePositions(this.rowPerm, this.colPerm);
     }
@@ -362,6 +376,12 @@ export class cmMatrixView extends SvgGroupElement {
   isLabelCell(colIndex) {
     return colIndex >= this.numAttributeCols + this.numControlCols &&
       colIndex < this.numAttributeCols + this.numControlCols + this.numLabelCols;
+  }
+
+  isMajorCellUnrolled(colIndex) {
+    let rowIndex = this.getFirstDataRowIndex();
+    let row = this.allRows[rowIndex];
+    return row.isMajorCellUnrolled[colIndex];
   }
 
   isLabelRow(rowIndex) {
@@ -414,6 +434,8 @@ export class cmMatrixView extends SvgGroupElement {
    * Updates width of the column and unrolls its children.
    */
   onColControlsClicked(colIndex, unrolling) {
+    this.isMajorColUnrolled[colIndex] = unrolling;
+
     // TODO - review this for symmetry with show/hide minor cols.
     // Update width of the column
     if (unrolling) {

@@ -208,8 +208,7 @@ export class cmMatrixRow extends SvgGroupElement {
 
   // TODO - review this.
   rollupCol(colIndex) {
-    this.isMajorCellUnrolled[colIndex] = false;
-    this.updateMinorCols(colIndex, 0);
+    this.updateMinorCols(colIndex, 0, false);
     if (!this.isMinorRow) {
       let numMinorRows = this.getNumMinorRows();
       for (var i = 0; i < numMinorRows; ++i) {
@@ -275,8 +274,7 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   unrollCol(colIndex, colWidth) {
-    this.isMajorCellUnrolled[colIndex] = true;
-    this.updateMinorCols(colIndex, colWidth);
+    this.updateMinorCols(colIndex, colWidth, true);
     if (!this.isMinorRow) {
       let numMinorRows = this.getNumMinorRows();
       for (var i = 0; i < numMinorRows; ++i) {
@@ -286,14 +284,14 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   // TODO - review and comment this.
-  updateMinorCols(colIndex, colWidth) {
+  updateMinorCols(colIndex, colWidth, isColIndexUnrolled) {
     let minorCells = this.majorCells[colIndex].minorCells;
     let position = colWidth;
     for (var i = 0; i < minorCells.length; ++i) {
       let cell = minorCells[i];
-      let isUnrolledAndCellVisible = this.isMajorCellUnrolled[colIndex] && this.isMinorCellVisible[colIndex][i];
-      let isUnrolledAndCellHidden = this.isMajorCellUnrolled[colIndex] && !this.isMinorCellVisible[colIndex][i];
-      let isRolledUp = !this.isMajorCellUnrolled[colIndex];
+      let isUnrolledAndCellVisible = isColIndexUnrolled && this.isMinorCellVisible[colIndex][i];
+      let isUnrolledAndCellHidden = isColIndexUnrolled && !this.isMinorCellVisible[colIndex][i];
+      let isRolledUp = !isColIndexUnrolled;
       if (isUnrolledAndCellVisible) {
         cell.setVisible(true);
         cell.setPosition(position, 0);
@@ -301,8 +299,7 @@ export class cmMatrixRow extends SvgGroupElement {
       } else if (isUnrolledAndCellHidden) {
         cell.setVisible(false);
       } else if (isRolledUp) {
-        cell.setPosition(0, 0);
-        cell.setVisible(false);
+        cell.setPosition(0, 0, true);
       }
     }
   }
