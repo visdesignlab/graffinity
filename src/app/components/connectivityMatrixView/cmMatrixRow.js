@@ -24,16 +24,15 @@ export class cmMatrixRow extends SvgGroupElement {
     }
     super(group);
 
-    this.currentHeight = rowHeight;
-    this.rowHeight = rowHeight;
-    this.isMinorRow = isMinorRow;
+    this.currentHeight = rowHeight; // for position other rows relative to this one.
+    this.rowHeight = rowHeight;     // for expanding child rows
+    this.isMinorRow = isMinorRow;   // for positioning and traversal
     this.rowIndex = rowIndex;
+
+    this.isMinorRowVisible = [];    // should this state be managed by matrixView?
+
     this.majorCells = [];
     this.minorRows = [];
-    this.isMinorRowVisible = [];
-    this.isMajorCellVisible = [];
-    this.isMinorCellVisible = [];
-    this.isMajorCellUnrolled = [];
     this.matrix = matrix;
     this.unrolled = false;
 
@@ -48,8 +47,8 @@ export class cmMatrixRow extends SvgGroupElement {
   }
 
   addMinorRow(matrixRow) {
-    this.isMinorRowVisible[this.minorRows.length] = true;
     this.minorRows.push(matrixRow);
+    this.isMinorRowVisible.push(true);
     matrixRow.setPosition(0, 0);
   }
 
@@ -105,9 +104,6 @@ export class cmMatrixRow extends SvgGroupElement {
     let group = this.group;
     for (var i = 0; i < totalNumCols; ++i) {
       this.majorCells[i] = new cmMatrixCell(group, i, !this.isMinorRow, true, i < numHeaderCols);
-      this.isMajorCellVisible[i] = true;
-      this.isMinorCellVisible[i] = [];
-      this.isMajorCellUnrolled[i] = false;
     }
   }
 
@@ -122,7 +118,6 @@ export class cmMatrixRow extends SvgGroupElement {
           minorCell.setVisible(false);
           minorCell.setPosition(0, 0);
           majorCol.addMinorCell(minorCell);
-          this.isMinorCellVisible[i][j] = true;
         }
       }
     }
@@ -152,17 +147,6 @@ export class cmMatrixRow extends SvgGroupElement {
       }
     }
     return numVisibleMinorRows;
-  }
-
-  getNumVisibleMinorCells(colIndex) {
-    let numVisibleMinorCols = 0;
-    let isMinorCellVisible = this.isMinorCellVisible[colIndex];
-    for (var i = 0; i < isMinorCellVisible.length; ++i) {
-      if (isMinorCellVisible[i]) {
-        numVisibleMinorCols++;
-      }
-    }
-    return numVisibleMinorCols;
   }
 
   static getMajorCellIndex(group) {

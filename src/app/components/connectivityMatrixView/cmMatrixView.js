@@ -335,12 +335,6 @@ export class cmMatrixView extends SvgGroupElement {
     return x;
   }
 
-  hideRow(rowIndex) {
-    this.allRows[rowIndex].setVisible(false);
-    this.rowHeights[rowIndex] = 0;
-    this.updatePositions(this.rowPerm, this.colPerm);
-  }
-
   isAttributeCell(colIndex) {
     return colIndex >= this.numControlCols && colIndex < (this.numAttributeCols + this.numControlCols);
   }
@@ -546,41 +540,6 @@ export class cmMatrixView extends SvgGroupElement {
     let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
     this.updatePositions(shiftedRowPerm, shiftedColPerm);
-  }
-
-  hideCol(colIndex) {
-    this.colWidths[colIndex] = 0;
-
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].majorCells[colIndex].setVisible(false);
-    }
-
-  }
-
-  showCol(colIndex) {
-    if (this.isAttributeCell(colIndex)) {
-      this.colWidths[colIndex] = this.colWidthAttr;
-    } else if (this.isDataCell(colIndex)) {
-      this.colWidths[colIndex] = this.colWidth;
-    } else {
-      this.$log.error("Showing a column type not yet handled!");
-    }
-
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].majorCells[colIndex].setVisible(true);
-    }
-
-    this.updatePositions(this.rowPerm, this.colPerm);
-  }
-
-  showRow(rowIndex) {
-    this.allRows[rowIndex].setVisible(true);
-    if (this.isAttributeRow(rowIndex)) {
-      this.rowHeights[rowIndex] = this.rowHeightAttr;
-    } else if (this.isDataRow(rowIndex)) {
-      this.rowHeights[rowIndex] = this.rowHeight;
-    }
-    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   /**
