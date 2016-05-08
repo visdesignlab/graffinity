@@ -284,9 +284,10 @@ export class cmMatrixView extends SvgGroupElement {
     return viewRowIndex - this.numHeaderRows;
   }
 
+  /**
+   * Returns the number of visible minor cols inside colIndex.
+   */
   getNumVisibleMinorCells(colIndex) {
-    console.log("matrixview - getNumVisibleMinorCells");
-    console.log(this.isMinorColVisible[colIndex]);
     let isMinorColVisible = this.isMinorColVisible[colIndex];
     let numVisibleMinorCols = 0;
     for (var i = 0; i < isMinorColVisible.length; ++i) {
@@ -295,11 +296,6 @@ export class cmMatrixView extends SvgGroupElement {
       }
     }
     return numVisibleMinorCols;
-  }
-
-  // TODO - review this. flatten into getNumVisibleMinorCells ?
-  getFirstDataRowIndex() {
-    return this.numControlRows + this.numAttributeRows + this.numLabelRows;
   }
 
   static getHeight(rowPerm, rowHeights) {
@@ -339,30 +335,6 @@ export class cmMatrixView extends SvgGroupElement {
     return x;
   }
 
-  hideCol(colIndex) {
-    this.colWidths[colIndex] = 0;
-
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].majorCells[colIndex].setVisible(false);
-    }
-
-    this.updatePositions(this.rowPerm, this.colPerm);
-  }
-
-  hideMinorCol(colIndex, minorColIndex) {
-    console.log("hiding minor col");
-    this.isMinorColVisible[colIndex][minorColIndex] = false;
-
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].hideMinorCol(colIndex, minorColIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
-    }
-
-    if (this.isMajorColUnrolled[colIndex]) {
-      this.colWidths[colIndex] = this.getColWidth(colIndex, true);
-      this.updatePositions(this.rowPerm, this.colPerm);
-    }
-  }
-
   hideRow(rowIndex) {
     this.allRows[rowIndex].setVisible(false);
     this.rowHeights[rowIndex] = 0;
@@ -396,12 +368,6 @@ export class cmMatrixView extends SvgGroupElement {
   isLabelCell(colIndex) {
     return colIndex >= this.numAttributeCols + this.numControlCols &&
       colIndex < this.numAttributeCols + this.numControlCols + this.numLabelCols;
-  }
-
-  isMajorCellUnrolled(colIndex) {
-    let rowIndex = this.getFirstDataRowIndex();
-    let row = this.allRows[rowIndex];
-    return row.isMajorCellUnrolled[colIndex];
   }
 
   isLabelRow(rowIndex) {
@@ -455,22 +421,7 @@ export class cmMatrixView extends SvgGroupElement {
    */
   onColControlsClicked(colIndex, unrolling) {
     this.isMajorColUnrolled[colIndex] = unrolling;
-
-    // TODO - review this for symmetry with show/hide minor cols.
-    // Update width of the column
-
-    this.colWidths[colIndex] = this.getColWidth(colIndex, unrolling);
-
-    // Tell rows to unroll col.
-    for (var i = 0; i < this.allRows.length; ++i) {
-      if (unrolling) {
-        this.allRows[i].unrollCol(colIndex, this.colWidth, this.isMinorColVisible);
-      } else {
-        this.allRows[i].rollupCol(colIndex, this.isMinorColVisible);
-      }
-    }
-
-    // Update position of other cols.
+    this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -516,14 +467,16 @@ export class cmMatrixView extends SvgGroupElement {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeRowVisible[attribute] = false;
-    this.hideRow(viewIndex);
+    this.updateRow(viewIndex, false);
+    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   onHideAttributeCol(attributeIndex) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeColVisible[attribute] = false;
-    this.hideCol(viewIndex);
+    this.updateCol(viewIndex, false)
+    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   onHideNodes(event, nodeIndexes) {
@@ -544,16 +497,16 @@ export class cmMatrixView extends SvgGroupElement {
     this.updateDataCols(nodeIndexes, false);
   }
 
-  onSortRowsByAttribute(attribute, ascending) {
-    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
-    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
-    this.updatePositions(shiftedRowPerm, this.colPerm);
-  }
-
   onSortColsByAttribute(attribute, ascending) {
     let colPerm = this.model.getColsSortedByAttr(attribute, ascending);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
     this.updatePositions(this.rowPerm, shiftedColPerm);
+  }
+
+  onSortRowsByAttribute(attribute, ascending) {
+    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
+    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
+    this.updatePositions(shiftedRowPerm, this.colPerm);
   }
 
   setEncoding(encoding) {
@@ -595,6 +548,15 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(shiftedRowPerm, shiftedColPerm);
   }
 
+  hideCol(colIndex) {
+    this.colWidths[colIndex] = 0;
+
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].majorCells[colIndex].setVisible(false);
+    }
+
+  }
+
   showCol(colIndex) {
     if (this.isAttributeCell(colIndex)) {
       this.colWidths[colIndex] = this.colWidthAttr;
@@ -611,18 +573,6 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
-  showMinorCol(colIndex, minorColIndex) {
-    this.isMinorColVisible[colIndex][minorColIndex] = true;
-    for (var i = 0; i < this.allRows.length; ++i) {
-      this.allRows[i].showMinorCol(colIndex, minorColIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
-    }
-
-    if (this.isMajorColUnrolled[colIndex]) {
-      this.colWidths[colIndex] = this.getColWidth(colIndex, this.isMajorColUnrolled[colIndex]);
-      this.updatePositions(this.rowPerm, this.colPerm);
-    }
-  }
-
   showRow(rowIndex) {
     this.allRows[rowIndex].setVisible(true);
     if (this.isAttributeRow(rowIndex)) {
@@ -637,26 +587,43 @@ export class cmMatrixView extends SvgGroupElement {
    * Function called when the user changed the visible attribute rows or cols.
    * @param selection - selection[attribute] is a boolean for whether attribute should be displayed
    * @param isAttributeVisible - state of what attributes are displayed. Needs to be updated.
-   * @param show - callback to show rows/cols
-   * @param hide - callback to hide rows/cols
+   * @param updateCol - callback
    */
-  updateAttributes(selection, isAttributeVisible, show, hide) {
+  updateAttributes(selection, isAttributeVisible, updateCol) {
     let attributes = this.attributes;
     for (var i = 0; i < attributes.length; ++i) {
       let attribute = attributes[i];
-      if (selection[attribute]) {
-        show(this.getViewIndexFromAttributeIndex(i));
-      } else {
-        hide(this.getViewIndexFromAttributeIndex(i));
-      }
+      let viewIndex = this.getViewIndexFromAttributeIndex(i);
+      updateCol(viewIndex, selection[attribute]);
       isAttributeVisible[attribute] = selection[attribute];
+    }
+    this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  /**
+   * Toggles visibility of colIndex.
+   */
+  updateCol(colIndex, isColIndexVisible) {
+    if (isColIndexVisible) {
+      if (this.isAttributeCell(colIndex)) {
+        this.colWidths[colIndex] = this.colWidthAttr;
+      } else if (this.isDataCell(colIndex)) {
+        this.colWidths[colIndex] = this.colWidth;
+      } else {
+        this.$log.error("Showing a column type not yet handled!");
+      }
+    } else {
+      this.colWidths[colIndex] = 0;
+    }
+
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].majorCells[colIndex].setVisible(isColIndexVisible);
     }
   }
 
   updateColAttributes(selection) {
-    let showRow = this.showRow.bind(this);
-    let hideRow = this.hideRow.bind(this);
-    this.updateAttributes(selection, this.isAttributeRowVisible, showRow, hideRow);
+    let updateRow = this.updateRow.bind(this);
+    this.updateAttributes(selection, this.isAttributeRowVisible, updateRow);
   }
 
   // TODO - review this. Check for symmetry with updateDataRows
@@ -666,34 +633,23 @@ export class cmMatrixView extends SvgGroupElement {
     for (var i = 0; i < nodeIndexes.length; ++i) {
 
       // Loop over all major cols
-      for (var colIndex = 0; colIndex < this.colNodeIndexes.length; ++colIndex) {
+      for (var dataColIndex = 0; dataColIndex < this.colNodeIndexes.length; ++dataColIndex) {
 
-        let isOnlyNodeInCol = this.colNodeIndexes[colIndex].length == 1;
-        let minorColIndex = this.colNodeIndexes[colIndex].indexOf(nodeIndexes[i]);
+        let isOnlyNodeInCol = this.colNodeIndexes[dataColIndex].length == 1;
+        let minorColIndex = this.colNodeIndexes[dataColIndex].indexOf(nodeIndexes[i]);
         let isNodeInCol = minorColIndex != -1;
-        let viewColIndex = this.getViewColIndexFromDataIndex(colIndex);
+        let colIndex = this.getViewColIndexFromDataIndex(dataColIndex);
 
         if (isOnlyNodeInCol && isNodeInCol) {
-          if (hide) {
-            this.hideCol(viewColIndex);
-          } else {
-            this.showCol(viewColIndex);
-          }
+          this.updateCol(colIndex, !hide);
         } else if (isNodeInCol && !isOnlyNodeInCol) {
-          if (hide) {
-            this.hideMinorCol(viewColIndex, minorColIndex);
-          } else {
-            this.showMinorCol(viewColIndex, minorColIndex);
-          }
+          this.isMinorColVisible[colIndex][minorColIndex] = !hide;
+          this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
         }
       }
     }
-    this.updatePositions(this.rowPerm, this.colPerm);
-    // if nodeIndex[i] is in colNodeIndex and the only one
-    // hide colNodeIndex.indexOf(nodeIndex[i])
-    // if nodeIndex[i] is in colNodeIndex and not the only one
-    // hide minorColNodeIndex.indexOf(nodeIndex[i])
 
+    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   // TODO - review this.
@@ -716,11 +672,7 @@ export class cmMatrixView extends SvgGroupElement {
           let isNodeInRow = minorRowIndex != -1;
 
           if (isNodeInRow && isOnlyNodeInRow) {
-            if (hide) {
-              this.hideRow(rowIndex);
-            } else {
-              this.showRow(rowIndex);
-            }
+            this.updateRow(rowIndex, !hide);
           } else if (isNodeInRow && !isOnlyNodeInRow) {
             if (hide) {
               this.allRows[rowIndex].hideMinorRow(minorRowIndex);
@@ -733,6 +685,18 @@ export class cmMatrixView extends SvgGroupElement {
         }
       }
     }
+  }
+
+  /**
+   * Updates the state of all major and minor cols to match current visibility and rolled/unrolled.
+   * After calling, this must call updatePositions to correctly account for changes in the view.
+   */
+  updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible) {
+    for (var i = 0; i < this.allRows.length; ++i) {
+      this.allRows[i].updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
+    }
+
+    this.colWidths[colIndex] = this.getColWidth(colIndex, isColIndexUnrolled);
   }
 
   /** Update positions of rows and columns in the table.
@@ -753,11 +717,26 @@ export class cmMatrixView extends SvgGroupElement {
     }
   }
 
-  updateRowAttributes(selection) {
-    let showCol = this.showCol.bind(this);
-    let hideCol = this.hideCol.bind(this);
-    this.updateAttributes(selection, this.isAttributeColVisible, showCol, hideCol);
+  /**
+   * Toggles visibility of this.allRows[rowIndex] and updates this.rowHeights.
+   * Should be followed by this.updatePositions.
+   */
+  updateRow(rowIndex, isRowIndexVisible) {
+    this.allRows[rowIndex].setVisible(isRowIndexVisible);
+    if (isRowIndexVisible) {
+      if (this.isAttributeRow(rowIndex)) {
+        this.rowHeights[rowIndex] = this.rowHeightAttr;
+      } else if (this.isDataRow(rowIndex)) {
+        this.rowHeights[rowIndex] = this.rowHeight;
+      }
+    } else {
+      this.rowHeights[rowIndex] = 0;
+    }
   }
 
+  updateRowAttributes(selection) {
+    let updateCol = this.updateCol.bind(this);
+    this.updateAttributes(selection, this.isAttributeColVisible, updateCol);
+  }
 }
 

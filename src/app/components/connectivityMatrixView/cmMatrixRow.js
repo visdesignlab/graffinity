@@ -169,17 +169,6 @@ export class cmMatrixRow extends SvgGroupElement {
     return group.attr("data-major-col");
   }
 
-  // TODO - review this. Check for symmetry with showMinorCol and rollup/unrollCol
-  hideMinorCol(colIndex, minorColIndex, colWidth, isColIndexUnrolled, isMinorColVisible) {
-    this.updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
-
-    if (!this.isMinorRow) {
-      for (var i = 0; i < this.minorRows.length; ++i) {
-        this.minorRows[i].hideMinorCol(colIndex, minorColIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
-      }
-    }
-  }
-
   hideMinorRow(minorRowIndex) {
     this.isMinorRowVisible[minorRowIndex] = false;
     this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
@@ -213,17 +202,6 @@ export class cmMatrixRow extends SvgGroupElement {
     children.style("display", visible ? "block" : "none");
   }
 
-  // TODO - review this.
-  rollupCol(colIndex, isMinorColVisible) {
-    this.updateMinorCols(colIndex, 0, false, isMinorColVisible);
-    if (!this.isMinorRow) {
-      let numMinorRows = this.getNumMinorRows();
-      for (var i = 0; i < numMinorRows; ++i) {
-        this.minorRows[i].rollupCol(colIndex);
-      }
-    }
-  }
-
   setColPositions(colInv, positions) {
     let numColumns = positions.length;
     for (var i = 0; i < numColumns; ++i) {
@@ -253,16 +231,6 @@ export class cmMatrixRow extends SvgGroupElement {
     }
   }
 
-  // TODO - review this.
-  showMinorCol(colIndex, minorColIndex, colWidth, isColIndexUnrolled, isMinorColVisible) {
-    this.updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible);
-    if (!this.isMinorRow) {
-      for (var i = 0; i < this.minorRows.length; ++i) {
-        this.minorRows[i].showMinorCol(colIndex, minorColIndex, colWidth);
-      }
-    }
-  }
-
   /**
    * Makes this.minorRow[minorRowIndex] visible.
    */
@@ -271,33 +239,39 @@ export class cmMatrixRow extends SvgGroupElement {
     this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
   }
 
-  unrollCol(colIndex, colWidth, isMinorColVisible) {
-    this.updateMinorCols(colIndex, colWidth, true, isMinorColVisible);
-    if (!this.isMinorRow) {
-      let numMinorRows = this.getNumMinorRows();
-      for (var i = 0; i < numMinorRows; ++i) {
-        this.minorRows[i].unrollCol(colIndex, colWidth, isMinorColVisible);
-      }
-    }
-  }
-
-  // TODO - review and comment this.
-  updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorCellVisible) {
+  /**
+   * Updates the state of minorCols in the colIndex.
+   * The state can be in three possible cases:
+   * 1) the colIndex is rolled up -> move minor col behind the major col and then hide it
+   * 2) the colIndex is unrolled and minorCol is visible -> move minorCol to the correct position
+   * 3) the colIndex is unrolled and minorCol is hidden -> hide minor col
+   *
+   * In #1 - don't care about whether the minor is visible or not.
+   */
+  updateMinorCols(colIndex, minorColWidth, isColIndexUnrolled, isMinorCellVisible) {
     let minorCells = this.majorCells[colIndex].minorCells;
-    let position = colWidth;
+    let position = minorColWidth;
+
     for (var i = 0; i < minorCells.length; ++i) {
       let cell = minorCells[i];
-      let isUnrolledAndCellVisible = isColIndexUnrolled && isMinorCellVisible[colIndex][i];
-      let isUnrolledAndCellHidden = isColIndexUnrolled && !isMinorCellVisible[colIndex][i];
-      let isRolledUp = !isColIndexUnrolled;
-      if (isUnrolledAndCellVisible) {
-        cell.setVisible(true);
-        cell.setPosition(position, 0);
-        position += colWidth;
-      } else if (isUnrolledAndCellHidden) {
-        cell.setVisible(false);
-      } else if (isRolledUp) {
+
+      if (!isColIndexUnrolled) {
         cell.setPosition(0, 0, true);
+      } else {
+        if (isMinorCellVisible[colIndex][i]) {
+          cell.setVisible(true);
+          cell.setPosition(position, 0);
+          position += minorColWidth;
+        } else {
+          cell.setVisible(false);
+        }
+      }
+    }
+
+    if (!this.isMinorRow) {
+      let numMinorRows = this.getNumMinorRows();
+      for (i = 0; i < numMinorRows; ++i) {
+        this.minorRows[i].updateMinorCols(colIndex, minorColWidth, isColIndexUnrolled, isMinorCellVisible)
       }
     }
   }
