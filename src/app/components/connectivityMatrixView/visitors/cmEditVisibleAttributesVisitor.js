@@ -2,7 +2,6 @@ import {cmCellVisitor} from "./cmCellVisitors"
 
 /**
  * Visitor for creating buttons that let the user select visible attribute rows and cols.
- * TODO: Change this so that it appends the correct looking controls -- not just rectangles.
  */
 export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
 

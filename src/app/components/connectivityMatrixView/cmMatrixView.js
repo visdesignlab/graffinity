@@ -18,6 +18,31 @@ import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributes
 import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
+/**
+ * Manages the matrix svg.
+ *
+ * Call stack for hiding major data cols:
+ * - updateDataCols - identifies which columns need to be hidden
+ * -- updateCol - toggles visibility of major cols
+ * - updatePositions
+ *
+ * Stack for hiding minor data cols:
+ * - updateDataCols
+ * -- set state of isMinorColVisible
+ * -- updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible)
+ * - updatePositions
+ *
+ * Stack for hiding major rows:
+ * - updateDataRows
+ * -- updateRow - toggles visibilty of major rows
+ * - updatePositions
+ *
+ * Stack for hiding minor cols:
+ * - updateDataRows
+ * -- this.allRows[rowIndex].hide/showMinorRow(minorRowIndex)
+ * - updatePositions
+ *
+ */
 export class cmMatrixView extends SvgGroupElement {
   constructor(svg, model, $log, $uibModal, scope, viewState) {
     super(svg);
@@ -469,13 +494,14 @@ export class cmMatrixView extends SvgGroupElement {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeColVisible[attribute] = false;
-    this.updateCol(viewIndex, false)
+    this.updateCol(viewIndex, false);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   onHideNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, true);
     this.updateDataCols(nodeIndexes, true);
+    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   /**
@@ -489,6 +515,7 @@ export class cmMatrixView extends SvgGroupElement {
   onShowNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, false);
     this.updateDataCols(nodeIndexes, false);
+    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
   onSortColsByAttribute(attribute, ascending) {
@@ -585,7 +612,11 @@ export class cmMatrixView extends SvgGroupElement {
     this.updateAttributes(selection, this.isAttributeRowVisible, updateRow);
   }
 
-  // TODO - review this. Check for symmetry with updateDataRows
+  /**
+   * Toggles visbility of major and minor cols containing nodeIndexes.
+   * Requres that we call this.updatePositions to account for gaps in matrix layout due to visibility.
+   * There is some symmetry with updateDataRows. They could probably be condensed to the same function.
+   */
   updateDataCols(nodeIndexes, hide) {
 
     // Loop over all indexes who we are showing/hiding.
@@ -607,11 +638,13 @@ export class cmMatrixView extends SvgGroupElement {
         }
       }
     }
-
-    this.updatePositions(this.rowPerm, this.colPerm);
   }
 
-  // TODO - review this.
+  /**
+   * Toggles visbility of major and minor rows containing nodeIndexes.
+   * There is some symmetry with updateDataCols. One difference from updateDataCols is that major and minor row
+   * row visbility is tracked by the individual rows, as opposed to the matrixView.
+   */
   updateDataRows(nodeIndexes, hide) {
     let rowNodeIndexes = this.rowNodeIndexes;
 
@@ -639,7 +672,6 @@ export class cmMatrixView extends SvgGroupElement {
               this.allRows[rowIndex].showMinorRow(minorRowIndex);
             }
             this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
-            this.updatePositions(this.rowPerm, this.colPerm);
           }
         }
       }
