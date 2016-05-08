@@ -219,13 +219,19 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   createAttributeEncodings() {
+    let visitor = new cmClearVisitor();
+    visitor.setClearAttributeCells(true);
+    this.applyVisitor(visitor);
+
     // Create visual encodings for all the quantitative attributes.
-    let visitor = null;
+    let isNodeHidden = this.viewState.isNodeHidden;
     for (var i = 0; i < this.attributes.length; ++i) {
       let preprocessor = new cmScatterPlot1DPreprocessor(i);
+      preprocessor.setNodeFilter(isNodeHidden);
       this.applyVisitor(preprocessor);
       let valueRange = preprocessor.getValueRange();
       visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
+      visitor.setNodeFilter(isNodeHidden);
       this.applyVisitor(visitor);
     }
 
@@ -501,6 +507,7 @@ export class cmMatrixView extends SvgGroupElement {
   onHideNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, true);
     this.updateDataCols(nodeIndexes, true);
+    this.createAttributeEncodings();
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -515,6 +522,7 @@ export class cmMatrixView extends SvgGroupElement {
   onShowNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, false);
     this.updateDataCols(nodeIndexes, false);
+    this.createAttributeEncodings();
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -531,9 +539,11 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   setEncoding(encoding) {
+    this.encoding = encoding;
     let preprocessor = undefined;
 
     let visitor = new cmClearVisitor();
+    visitor.setClearDataCells(true);
     this.applyVisitor(visitor);
 
     let cellWidth = this.colWidth;

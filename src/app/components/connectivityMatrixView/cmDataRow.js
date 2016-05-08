@@ -60,7 +60,8 @@ export class cmDataRow extends cmMatrixRow {
         data = {
           values: rowNodeAttributes[attributeIndex],
           orientation: 0,
-          attributeIndex: attributeIndex
+          attributeIndex: attributeIndex,
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
         };
 
         cell.setData(data);

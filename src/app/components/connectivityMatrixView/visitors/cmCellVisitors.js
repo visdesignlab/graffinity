@@ -5,8 +5,11 @@ export class cmCellVisitor {
     this.rx = 2;
     this.ry = 2;
 
-    // For debugging. Setting this to true will draw outline rects around every datacell in the matrix.
+    // For debugging. Setting this to true will draw outline rects around every data cell in the matrix.
     this.showOutlines = false;
+
+    this.hasNodeFilter = false;
+    this.isNodeHidden = {};
   }
 
   setCallbacks(clicked, mouseOver, mouseOut) {
@@ -48,5 +51,10 @@ export class cmCellVisitor {
       .style("stroke-width", "1px")
       .attr("fill", "transparent")
       .style("display", this.showOutlines ? "block" : "none");
+  }
+
+  setNodeFilter(isNodeHidden) {
+    this.isNodeHidden = isNodeHidden;
+    this.hasNodeFilter = true;
   }
 }

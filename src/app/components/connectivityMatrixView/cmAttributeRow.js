@@ -33,6 +33,7 @@ export class cmAttributeRow extends cmMatrixRow {
         let colIndex = this.matrix.getDataColIndex(i);
         data = {
           values: colNodeAttributes[colIndex],
+          nodeIndexes: colNodeIndexes[colIndex],
           isVertical: true,
           attributeIndex: attributeIndex
         };
@@ -45,7 +46,8 @@ export class cmAttributeRow extends cmMatrixRow {
           data = {
             values: [colNodeAttributes[colIndex][j]],
             isVertical: true,
-            attributeIndex: attributeIndex
+            attributeIndex: attributeIndex,
+            nodeIndexes: [colNodeIndexes[colIndex][j]]
           };
 
           cell.minorCells[j].isAttributeCell = true;

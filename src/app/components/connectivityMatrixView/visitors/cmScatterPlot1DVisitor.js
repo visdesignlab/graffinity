@@ -7,8 +7,23 @@ import {cmCellVisitor} from "./cmCellVisitors";
 
 export class cmAttributeCellVisitor extends cmCellVisitor {
   constructor(attributeIndex) {
-    super();
+    super(0, 0);
     this.attributeIndex = attributeIndex;
+  }
+
+  getFilteredValues(hasNodeFilter, isNodeHidden, nodeIndexes, values) {
+    if (hasNodeFilter) {
+      let filteredValues = [];
+      for (var i = 0; i < nodeIndexes.length; ++i) {
+        if (!isNodeHidden[nodeIndexes[i]]) {
+          filteredValues.push(values[i]);
+        }
+      }
+      return filteredValues;
+    }
+    else {
+      return values;
+    }
   }
 }
 
@@ -24,8 +39,9 @@ export class cmScatterPlot1DPreprocessor extends cmAttributeCellVisitor {
 
   apply(cell) {
     if (cell.isAttributeCell && cell.data.attributeIndex == this.attributeIndex) {
-      for (var i = 0; i < cell.data.values.length; ++i) {
-        this.values.push(cell.data.values[i]);
+      let filteredValues = this.getFilteredValues(this.hasNodeFilter, this.isNodeHidden, cell.data.nodeIndexes, cell.data.values);
+      for (var i = 0; i < filteredValues.length; ++i) {
+        this.values.push(filteredValues[i]);
       }
     }
   }
@@ -49,12 +65,14 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
   apply(cell) {
     if (cell.isAttributeCell && cell.data.attributeIndex == this.attributeIndex) {
       let data = cell.data;
+      let values = this.getFilteredValues(this.hasNodeFilter, this.isNodeHidden, cell.data.nodeIndexes, cell.data.values);
+      console.log(cell.data.isVertical, cell.data.nodeIndexes, cell.data.values);
       let group = cell.getGroup()
         .append("g");
       if (data.isVertical) {
-        new ScatterPlot1D(group, 15, 80, this.radius, data.values, this.valueRange, data.orientation);
+        new ScatterPlot1D(group, 15, 80, this.radius, values, this.valueRange, data.orientation);
       } else {
-        new ScatterPlot1D(group, 80, 15, this.radius, data.values, this.valueRange, data.orientation);
+        new ScatterPlot1D(group, 80, 15, this.radius, values, this.valueRange, data.orientation);
       }
     }
   }

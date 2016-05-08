@@ -5,22 +5,31 @@ import {cmCellVisitor} from "./cmCellVisitors"
 export class cmClearVisitor extends cmCellVisitor {
   constructor() {
     super();
+    this.clearAttributeCells = false;
+    this.clearDataCells = false;
   }
 
   apply(cell) {
-    if (!cell.isDataCell) {
-      return;
+    if ((cell.isDataCell && this.clearDataCells) || (cell.isAttributeCell && this.clearAttributeCells)) {
+
+      let children = cell.getGroup()
+          .selectAll("*");
+
+      children = children.filter(function () {
+        let attribute = d3.select(this)
+          .attr("data-major-col");
+        return attribute == undefined;
+      });
+
+      children.remove();
     }
+  }
 
-    let children = cell.getGroup()
-      .selectAll("*");
+  setClearAttributeCells(clearAttributeCells) {
+    this.clearAttributeCells = clearAttributeCells;
+  }
 
-    children = children.filter(function () {
-      let attribute = d3.select(this)
-        .attr("data-major-col");
-      return attribute == undefined;
-    });
-
-    children.remove();
+  setClearDataCells(clearDataCells) {
+    this.clearDataCells = clearDataCells;
   }
 }
