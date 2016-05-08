@@ -401,7 +401,8 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
-    this.$log.log("cell clicked", cell, cell.getPathList());
+    let paths = cell.getPathList();
+    this.$log.log("cell clicked", cell, paths, Utils.getFilteredPaths(paths, true, this.viewState.isNodeHidden));
   }
 
   onCellMouseOver(cell) {
@@ -508,6 +509,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.updateDataRows(nodeIndexes, true);
     this.updateDataCols(nodeIndexes, true);
     this.createAttributeEncodings();
+    this.setEncoding(this.encoding);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -523,6 +525,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.updateDataRows(nodeIndexes, false);
     this.updateDataCols(nodeIndexes, false);
     this.createAttributeEncodings();
+    this.setEncoding(this.encoding);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -555,17 +558,26 @@ export class cmMatrixView extends SvgGroupElement {
 
     if (encoding == "bar chart") {
       preprocessor = new cmBarChartPreprocessor();
+      preprocessor.setNodeFilter(this.viewState.isNodeHidden);
       this.applyVisitor(preprocessor);
+
       visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
+      visitor.setNodeFilter(this.viewState.isNodeHidden);
       visitor.setCallbacks(clicked, mouseover, mouseout);
       this.applyVisitor(visitor);
+
       this.legend = undefined;
+
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
+      preprocessor.setNodeFilter(this.viewState.isNodeHidden);
+
       this.applyVisitor(preprocessor);
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
       visitor.setCallbacks(clicked, mouseover, mouseout);
+      visitor.setNodeFilter(this.viewState.isNodeHidden);
       this.applyVisitor(visitor);
+
       this.legend = new cmColorMapLegend(visitor);
     }
   }

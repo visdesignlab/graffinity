@@ -66,7 +66,6 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
     if (cell.isAttributeCell && cell.data.attributeIndex == this.attributeIndex) {
       let data = cell.data;
       let values = this.getFilteredValues(this.hasNodeFilter, this.isNodeHidden, cell.data.nodeIndexes, cell.data.values);
-      console.log(cell.data.isVertical, cell.data.nodeIndexes, cell.data.values);
       let group = cell.getGroup()
         .append("g");
       if (data.isVertical) {

@@ -3,6 +3,7 @@
  */
 
 import {cmCellVisitor} from "./cmCellVisitors"
+import {Utils} from "../../utils/utils"
 
 export class cmColorMapPreprocessor extends cmCellVisitor {
   constructor() {
@@ -15,11 +16,11 @@ export class cmColorMapPreprocessor extends cmCellVisitor {
     if (cell.isHeaderCell || !cell.isDataCell) {
       return;
     }
-
+    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
     if (cell.isCellBetweenSets()) {
-      this.setRange[1] = Math.max(this.setRange[1], cell.getPathList().length);
+      this.setRange[1] = Math.max(this.setRange[1], paths.length);
     } else {
-      this.nodeRange[1] = Math.max(this.nodeRange[1], cell.getPathList().length);
+      this.nodeRange[1] = Math.max(this.nodeRange[1], paths.length);
     }
   }
 }
@@ -56,9 +57,10 @@ export class cmColorMapVisitor extends cmCellVisitor {
       return;
     }
 
-    let color = this.getCellColor(cell);
+    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let color = this.getCellColor(cell, paths);
     let group = cell.getGroup();
-    if (cell.getPathList().length) {
+    if (paths.length) {
 
       group.append("rect")
         .attr("width", this.width)
@@ -75,11 +77,11 @@ export class cmColorMapVisitor extends cmCellVisitor {
     this.createInteractionGroup(cell);
   }
 
-  getCellColor(cell) {
+  getCellColor(cell, paths) {
     if (cell.isCellBetweenSets()) {
-      return this.setColorScale(cell.getPathList().length);
+      return this.setColorScale(paths.length);
     } else {
-      return this.nodeColorScale(cell.getPathList().length);
+      return this.nodeColorScale(paths.length);
     }
   }
 

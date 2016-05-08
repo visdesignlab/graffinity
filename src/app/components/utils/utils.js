@@ -7,6 +7,7 @@ Utils = (function () {
     compareLists: compareLists,
     createMap: createMap,
     deleteCol: deleteCol,
+    getFilteredPaths: getFilteredPaths,
     getNumHops: getNumHops,
     getNodesFromPaths: getNodesFromPaths,
     getUniqueValues: getUniqueValues,
@@ -52,6 +53,22 @@ Utils = (function () {
     }
 
     return map;
+  }
+
+  function getFilteredPaths(paths, hasNodeFilter, isNodeHidden) {
+    if (hasNodeFilter) {
+      let filteredPaths = [];
+      for (var i = 0; i < paths.length; ++i) {
+        let source = paths[i][0];
+        let target = paths[i][paths[i].length - 1];
+        if (!isNodeHidden[source] && !isNodeHidden[target]) {
+          filteredPaths.push(paths[i]);
+        }
+      }
+      return filteredPaths;
+    } else {
+      return paths;
+    }
   }
 
   function getNodesFromPaths(paths) {

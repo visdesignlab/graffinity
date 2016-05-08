@@ -92,7 +92,7 @@ export class MainController {
   }
 
   onDebugNodeHiding(nodeId, makeVisible) {
-    if(!makeVisible) {
+    if (!makeVisible) {
       this.viewState.hideNodes([parseInt(nodeId)]);
     } else {
       this.viewState.showNodes([parseInt(nodeId)]);
