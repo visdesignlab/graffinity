@@ -11,6 +11,9 @@ export class MainController {
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
+    this.hasActiveQuery = false;
+    this.hasQueryError = false;
+    this.queryError = "";
 
     this.ui = {};
 
@@ -108,13 +111,36 @@ export class MainController {
   onQuerySubmitted(query) {
     let self = this;
 
+    self.hasActiveQuery = true;
+    self.hasQueryError = false;
+
+    //remove svg when query button pressed
+    this.svg.selectAll("*").remove();
+
+    //remove legend when query button pressed
+    d3.select("#encoding-legend")
+      .selectAll("*")
+      .remove();
+
     let success = function (model) {
+      self.hasActiveQuery = false;
       self.model = model;
       self.createMatrixAndUi(model);
     };
 
     let failure = function (error) {
-      self.$log.error("The query failed!", error);
+
+      self.hasActiveQuery = false;
+      self.hasQueryError = true;
+
+      if (error.data) {
+        self.queryError = "Query Error: \n" + error.data.message;
+      } else {
+        self.queryError = "The server sent no response! Check console."
+      }
+
+      // log the error
+      self.$log.error("The query failed", error);
     };
 
     // Give the model factory a query string. Async call success or failure.
