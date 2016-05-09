@@ -116,29 +116,31 @@ export class MainController {
 
     //remove svg when query button pressed
     this.svg.selectAll("*").remove();
+
     //remove legend when query button pressed
     d3.select("#encoding-legend")
       .selectAll("*")
       .remove();
 
     let success = function (model) {
-      //remove the text upon success
       self.hasActiveQuery = false;
-      self.$log.debug("The query succeeded");
       self.model = model;
       self.createMatrixAndUi(model);
     };
 
     let failure = function (error) {
-      //upon failure, update text mesage to the the error message
+
       self.hasActiveQuery = false;
       self.hasQueryError = true;
-      self.queryError = "Query Error: \n" + error.data.message;
-      //self.queryText.text(error.data.message)
 
-      //log the error
+      if (error.data) {
+        self.queryError = "Query Error: \n" + error.data.message;
+      } else {
+        self.queryError = "The server sent no response! Check console."
+      }
+
+      // log the error
       self.$log.error("The query failed", error);
-      self.$log.debug("This is the debug part", error);
     };
 
     // Give the model factory a query string. Async call success or failure.
