@@ -68,7 +68,13 @@ export class cmDataRow extends cmMatrixRow {
 
       } else if (this.matrix.isLabelCell(i)) {
 
-        cmDataRow.createLabelInCell(cell, label, this.colWidth, this.matrix.rowHeight);
+        cell.setData({
+          name: label,
+          isVertical: 0,
+          attributeIndex: -1
+        });
+
+        cell.isAttributeCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
 

@@ -45,13 +45,25 @@ export class cmLabelRow extends cmMatrixRow {
 
       } else if (this.matrix.isDataCell(i)) {
 
-        cmLabelRow.createColNodeLabel(cell, majorColLabels[dataIndex], rowHeight, this.matrix.colWidth);
+        cell.setData({
+          name: majorColLabels[dataIndex],
+          isVertical: 1,
+          attributeIndex: -1
+        });
+
+        cell.isAttributeCell = true;
 
         for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
           let minorCell = cell.minorCells[j];
-          cmLabelRow.createColNodeLabel(minorCell, minorColLabels[dataIndex][j], rowHeight, this.matrix.colWidth);
-        }
 
+          minorCell.setData({
+            name: minorColLabels[dataIndex][j],
+            isVertical: 1,
+            attributeIndex: -1
+          });
+
+          minorCell.isAttributeCell = true;
+        }
       }
     }
 

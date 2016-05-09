@@ -21,15 +21,15 @@ export class cmAttributeControls extends SvgGroupElement {
   }
 
   static createLabel(group, name, isVertical, width, height) {
-    if (!isVertical) {
+    if (isVertical) {
       group.append("text")
-        .attr("transform", "translate(" + width / 2 + "," + height + ")")
         .text(name)
+        .attr("transform", "translate(" + width * 2 + " ," + height / 2 + ")rotate(270)")
         .classed("matrix-view-attribute-label", true)
     } else {
       group.append("text")
+        .attr("transform", "translate(" + width / 2 + "," + height + ")")
         .text(name)
-        .attr("transform", "translate(" + (height * 2) + " ," + width / 2 + ")rotate(270)")
         .classed("matrix-view-attribute-label", true)
     }
   }
@@ -39,7 +39,7 @@ export class cmAttributeControls extends SvgGroupElement {
 
     if (isVertical) {
       group = group.append("g")
-        .attr("transform", "translate(" + (height * 2) + ", " + width + ")rotate(270)");
+        .attr("transform", "translate(" + (width * 2) + ", " + height + ")rotate(270)");
     } else {
       group = group.append("g")
         .attr("transform", "translate(0, " + height + ")");
@@ -54,8 +54,8 @@ export class cmAttributeControls extends SvgGroupElement {
     };
 
     this.outline = group.append("rect")
-      .attr("width", width)
-      .attr("height", height)
+      .attr("width", isVertical ? height : width)
+      .attr("height", isVertical ? width : height)
       .classed("matrix-view-attribute-controls", true)
       .on("mouseenter", mouseEnter)
       .on("mouseleave", mouseLeave);

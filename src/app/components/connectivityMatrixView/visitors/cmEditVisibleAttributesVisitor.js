@@ -40,7 +40,7 @@ export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
     if (!isVertical) {
 
       // Position group.
-      group.attr("transform", "translate(" + 0 + ", " + (height) + ")");
+      group.attr("transform", "translate(" + 0 + ", " + (height * 2) + ")");
 
       // Add the icon.
       div.append("i")
@@ -50,7 +50,7 @@ export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
 
     } else {
 
-      group.attr("transform", "translate(" + width + ", " + 0 + ")");
+      group.attr("transform", "translate(" + width * 2 + ", " + 0 + ")");
 
       div.append("i")
         .classed("fa", true)

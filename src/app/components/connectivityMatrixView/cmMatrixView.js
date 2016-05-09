@@ -15,6 +15,7 @@ import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
 import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributesVisitor"
+import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
 import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
@@ -235,12 +236,18 @@ export class cmMatrixView extends SvgGroupElement {
       this.applyVisitor(visitor);
     }
 
+    visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+    this.applyVisitor(visitor);
+
     // Create controls for all attributes.
     let sortRows = this.onSortRowsByAttribute.bind(this);
     let sortCols = this.onSortColsByAttribute.bind(this);
     let hideRows = this.onHideAttributeRow.bind(this);
     let hideCols = this.onHideAttributeCol.bind(this);
-    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols, this.colWidthLabel, this.rowHeight);
+
+    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols,
+      this.colWidthLabel, this.rowHeight, this.colWidthAttr, this.rowHeight, this.colWidth, this.colWidthAttr);
+
     this.applyVisitor(visitor);
 
     // Create controls for editing visible attributes.
