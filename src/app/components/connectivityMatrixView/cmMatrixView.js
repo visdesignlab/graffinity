@@ -122,7 +122,7 @@ export class cmMatrixView extends SvgGroupElement {
     }
 
     this.colWidthAttr = 80;
-    this.colWidthLabel = 30;
+    this.colWidthLabel = 50;
     for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       if (this.isControlCell(i) || this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
@@ -161,18 +161,18 @@ export class cmMatrixView extends SvgGroupElement {
     // Create the labels row
     let majorColLabels = model.getMajorColLabels();
     let minorColLabels = model.getMinorColLabels();
-    let labelRowHeight = 30;
+    this.labelRowHeight = this.colWidthLabel;
     let labelRow = new cmLabelRow(svg,
       this.allRows.length,
       this.colNodeIndexes,
       this.numHeaderCols,
       this.colWidth,
-      labelRowHeight,
+      this.labelRowHeight,
       majorColLabels,
       minorColLabels,
       this,
       attributes);
-    this.addRow(labelRow, labelRowHeight);
+    this.addRow(labelRow, this.labelRowHeight);
 
     // Create each of the data rows!
     let modelRows = model.getCurrentRows();
@@ -240,7 +240,7 @@ export class cmMatrixView extends SvgGroupElement {
     let sortCols = this.onSortColsByAttribute.bind(this);
     let hideRows = this.onHideAttributeRow.bind(this);
     let hideCols = this.onHideAttributeCol.bind(this);
-    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols);
+    visitor = new cmAttributeLabelVisitor(this.colWidthAttr, this.rowHeight, sortRows, sortCols, hideRows, hideCols, this.colWidthLabel, this.rowHeight);
     this.applyVisitor(visitor);
 
     // Create controls for editing visible attributes.

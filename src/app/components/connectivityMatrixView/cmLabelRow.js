@@ -33,6 +33,16 @@ export class cmLabelRow extends cmMatrixRow {
 
         cell.isAttributeLabelCell = true;
 
+      } else if (this.matrix.isLabelCell(i)) {
+
+        cell.setData({
+          name: "id",
+          isVertical: 0,
+          attributeIndex: -1
+        });
+
+        cell.isAttributeLabelCell = true;
+
       } else if (this.matrix.isDataCell(i)) {
 
         cmLabelRow.createColNodeLabel(cell, majorColLabels[dataIndex], rowHeight, this.matrix.colWidth);

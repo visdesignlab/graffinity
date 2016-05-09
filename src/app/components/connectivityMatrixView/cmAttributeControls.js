@@ -23,13 +23,13 @@ export class cmAttributeControls extends SvgGroupElement {
   static createLabel(group, name, isVertical, width, height) {
     if (!isVertical) {
       group.append("text")
-        .attr("transform", "translate(" + width / 2 + ",0)")
+        .attr("transform", "translate(" + width / 2 + "," + height + ")")
         .text(name)
         .classed("matrix-view-attribute-label", true)
     } else {
       group.append("text")
         .text(name)
-        .attr("transform", "translate(" + height + " ," + width / 2 + ")rotate(270)")
+        .attr("transform", "translate(" + (height * 2) + " ," + width / 2 + ")rotate(270)")
         .classed("matrix-view-attribute-label", true)
     }
   }
@@ -39,7 +39,10 @@ export class cmAttributeControls extends SvgGroupElement {
 
     if (isVertical) {
       group = group.append("g")
-        .attr("transform", "translate(" + height + ", " + width + ")rotate(270)");
+        .attr("transform", "translate(" + (height * 2) + ", " + width + ")rotate(270)");
+    } else {
+      group = group.append("g")
+        .attr("transform", "translate(0, " + height + ")");
     }
 
     let mouseLeave = function () {
@@ -81,15 +84,15 @@ export class cmAttributeControls extends SvgGroupElement {
         self.sortAscending = !self.sortAscending;
       });
 
-    this.controls.append("i")
-      .classed("fa", true)
-      .classed("fa-close", true)
-      .attr("float", "left")
-      .on("click", function () {
-        self.onHide(self.index);
-      });
-
-
+    if (this.onHide) {
+      this.controls.append("i")
+        .classed("fa", true)
+        .classed("fa-close", true)
+        .attr("float", "left")
+        .on("click", function () {
+          self.onHide(self.index);
+        });
+    }
   }
 
   toggleControlVisible(visible) {
