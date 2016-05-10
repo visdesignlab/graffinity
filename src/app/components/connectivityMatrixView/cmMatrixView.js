@@ -629,7 +629,7 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   /**
-   * Toggles visibility of colIndex.
+   * Toggles visibility of colIndex for all major and minor rows.
    */
   updateCol(colIndex, isColIndexVisible) {
     if (isColIndexVisible) {
@@ -646,6 +646,9 @@ export class cmMatrixView extends SvgGroupElement {
 
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].majorCells[colIndex].setVisible(isColIndexVisible);
+      for(var j=0; j<this.allRows[i].minorRows.length; ++j) {
+        this.allRows[i].minorRows[j].majorCells[colIndex].setVisible(isColIndexVisible);
+      }
     }
   }
 
