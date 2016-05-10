@@ -1,4 +1,4 @@
-export class cmNodeFilterModalController {
+export class uiNodeFilterModalController {
   constructor($uibModalInstance, title, ids, attributes, selection) {
     'ngInject';
     this.$uibModalInstance = $uibModalInstance;

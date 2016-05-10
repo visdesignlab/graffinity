@@ -1,4 +1,4 @@
-export class cmAttributeModalController {
+export class uiAttributeModalController {
   constructor($uibModalInstance, title, attributes, selection) {
     'ngInject';
     this.$uibModalInstance = $uibModalInstance;

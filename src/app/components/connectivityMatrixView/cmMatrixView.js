@@ -45,10 +45,11 @@ import {UtilsD3} from "../utils/utilsd3"
  *
  */
 export class cmMatrixView extends SvgGroupElement {
-  constructor(svg, model, $log, $uibModal, scope, viewState) {
+  constructor(svg, model, $log, $uibModal, scope, viewState, uiModals) {
     super(svg);
     this.$log = $log;
     this.$uibModal = $uibModal;
+    this.uiModals = uiModals;
     this.$scope = scope;
     this.viewState = viewState;
     this.$log.debug(this.$scope, this.viewState);
@@ -244,9 +245,9 @@ export class cmMatrixView extends SvgGroupElement {
     let sortCols = this.onSortColsByAttribute.bind(this);
     let hideRows = this.onHideAttributeRow.bind(this);
     let hideCols = this.onHideAttributeCol.bind(this);
-
+    let filterNodes = this.onFilterNodes.bind(this);
     visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols,
-      this.colWidthLabel, this.rowHeight, this.colWidthAttr, this.rowHeight, this.colWidth, this.colWidthAttr);
+      this.colWidthLabel, this.rowHeight, this.colWidthAttr, this.rowHeight, this.colWidth, this.colWidthAttr, filterNodes);
 
     this.applyVisitor(visitor);
 
@@ -469,31 +470,43 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes) {
-    var modalInstance = this.$uibModal.open({
-      animation: true,
-      templateUrl: '/app/components/connectivityMatrixView/modals/cmAttributeModalController.html',
-      controller: 'cmAttributeModalController',
-      controllerAs: 'modalController',
-      size: 'sm',
-      resolve: {
-        title: function () {
-          return "Select attributes";
-        },
-        attributes: function () {
-          return attributes;
-        },
-        selection: function () {
-          return isAttributeVisible;
-        }
-      }
-    });
 
     let modalSuccess = function (selection) {
       updateVisibleAttributes(selection, isAttributeVisible);
     };
 
     modalSuccess = modalSuccess.bind(this);
-    modalInstance.result.then(modalSuccess);
+
+    this.uiModals.getSelectionFromList("Select attributes", attributes, isAttributeVisible, modalSuccess);
+  }
+
+  /**
+   * Called when the user clicked on the 'filter' icon of node ids.
+   */
+  onFilterNodes() {
+    // Flatten nodeIndexes into a single array of ints.
+    let nodeIndexLists = this.rowNodeIndexes.concat(this.colNodeIndexes);
+    let nodeIndexes = [];
+    for (var i = 0; i < nodeIndexLists.length; ++i) {
+      for (var j = 0; j < nodeIndexLists[i].length; ++j) {
+        let index = nodeIndexLists[i][j];
+        if (nodeIndexes.indexOf(index) == -1) {
+          nodeIndexes.push(index);
+        }
+      }
+    }
+
+    // "selected" nodes are visible. Unselected nodes are currently hidden.
+    let isNodeSelected = this.viewState.getHiddenNodesAsSelection(nodeIndexes);
+
+    // Tell viewState the user updated visible nodes. This causes viewState to broadcast changes and ultimately
+    // updates the nodes this is displaying.
+    let modalSuccess = function (selection) {
+      this.viewState.setHiddenNodesFromSelection(selection);
+    };
+    modalSuccess = modalSuccess.bind(this);
+
+    this.uiModals.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
   }
 
   onHideAttributeRow(attributeIndex) {

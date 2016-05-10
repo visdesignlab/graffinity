@@ -8,7 +8,6 @@ export class MainController {
     'ngInject';
 
     this.viewState = viewState;
-
     this.$scope = $scope;
     this.$log = $log;
     this.toastr = toastr;

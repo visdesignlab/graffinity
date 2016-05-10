@@ -2,7 +2,7 @@ import {cmCellVisitor} from "./cmCellVisitors";
 import {cmAttributeControls} from "../cmAttributeControls";
 
 export class cmAttributeLabelVisitor extends cmCellVisitor {
-  constructor(onSortRows, onSortCols, onHideRow, onHideCol, labelColWidth, labelColHeight, attrColWidth, attrColHeight, attrRowWidth, attrRowHeight) {
+  constructor(onSortRows, onSortCols, onHideRow, onHideCol, labelColWidth, labelColHeight, attrColWidth, attrColHeight, attrRowWidth, attrRowHeight, onFilterNodes) {
     super();
     this.labelColWidth = labelColWidth;
     this.labelColHeight = labelColHeight;
@@ -17,6 +17,7 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
     this.callbacks.onSortCols = onSortCols;
     this.callbacks.onHideRow = onHideRow;
     this.callbacks.onHideCol = onHideCol;
+    this.callbacks.onFilterNodes = onFilterNodes;
   }
 
   apply(cell) {
@@ -38,8 +39,8 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
       } else {
         // Because the matrix header is symmetric, the "id" label of rows/cols is in the same cell. Here we create both
         // controls for labels in the same cell.
-        cell.controls.push(new cmAttributeControls(group, name, true, this.attrRowWidth, this.labelColWidth, this.callbacks.onSortRows, onHide, index));
-        cell.controls.push(new cmAttributeControls(group, name, false, this.labelColWidth, this.labelColHeight, this.callbacks.onSortRows, onHide, index));
+        cell.controls.push(new cmAttributeControls(group, name, true, this.attrRowWidth, this.labelColWidth, this.callbacks.onSortRows, onHide, index, this.callbacks.onFilterNodes));
+        cell.controls.push(new cmAttributeControls(group, name, false, this.labelColWidth, this.labelColHeight, this.callbacks.onSortRows, onHide, index, this.callbacks.onFilterNodes));
       }
     }
   }

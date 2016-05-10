@@ -13,10 +13,10 @@ import { cmResource } from '../app/components/connectivityMatrix/cmResource.serv
 import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
 import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFactory.service';
 import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
-import { cmNodeFilterModalController } from "../app/components/connectivityMatrixView/modals/cmNodeFilterModal.controller"
-import { cmAttributeModalController } from "../app/components/connectivityMatrixView/modals/cmAttributeModal.controller"
+import { uiNodeFilterModalController } from "../app/components/modals/modals/uiNodeFilterModal.controller"
+import { uiAttributeModalController } from "../app/components/modals/modals/uiAttributeModal.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
-
+import { uiModals } from "../app/components/modals/uiModals.service";
 import { ViewState } from "../app/components/viewState/viewState.service";
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
@@ -34,8 +34,9 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('cmMatrixViewFactory', cmMatrixViewFactory)
   .service('viewState', ViewState)
   .controller('MainController', MainController)
-  .controller('cmAttributeModalController', cmAttributeModalController)
-  .controller('cmNodeFilterModalController', cmNodeFilterModalController)
+  .controller('uiAttributeModalController', uiAttributeModalController)
+  .controller('uiNodeFilterModalController', uiNodeFilterModalController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
-  .directive('queryDirective', QueryDirective);
+  .directive('queryDirective', QueryDirective)
+  .service('uiModals', uiModals);
