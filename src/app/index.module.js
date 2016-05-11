@@ -15,6 +15,7 @@ import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFa
 import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
 import { uiNodeFilterModalController } from "../app/components/modals/modals/uiNodeFilterModal.controller"
 import { uiAttributeModalController } from "../app/components/modals/modals/uiAttributeModal.controller"
+import { uiHistogramFilterModalController } from "../app/components/modals/modals/uiHistogramFilterModal.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
 import { uiModals } from "../app/components/modals/uiModals.service";
 import { ViewState } from "../app/components/viewState/viewState.service";
@@ -36,6 +37,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .controller('MainController', MainController)
   .controller('uiAttributeModalController', uiAttributeModalController)
   .controller('uiNodeFilterModalController', uiNodeFilterModalController)
+  .controller('uiHistogramFilterModalController', uiHistogramFilterModalController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)

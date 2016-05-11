@@ -4,7 +4,7 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 
 export class MainController {
-  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState) {
+  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState, uiModals) {
     'ngInject';
 
     this.viewState = viewState;
@@ -13,6 +13,7 @@ export class MainController {
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
+    this.uiModals = uiModals;
 
     this.ui = {};
 
@@ -52,7 +53,8 @@ export class MainController {
 
   createMatrix(model, encoding) {
     this.svg.selectAll("*").remove();
-    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState);
+    this.model = model;
+    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
     this.onEncodingChanged(encoding);
   }
 
@@ -155,4 +157,36 @@ export class MainController {
     }
     this.matrix.setSortOrders(rowPerm, colPerm);
   }
+
+  openNodeAttributeFilter(attribute) {
+    let nodeIndexes = this.model.getFlattenedNodeIndexes();
+    let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
+    let range = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
+    let self = this;
+    let callback = function(range) {
+      self.$log.debug(range);
+    };
+    this.uiModals.getValueRange("Select range of " + attribute, nodeAttributes, range, callback);
+  }
+
+  openNodeIndexFilter() {
+    this.openNodeAttributeFilter("area");
+    /*
+    let nodeIndexes = this.model.getFlattenedNodeIndexes();
+
+    // "selected" nodes are visible. Unselected nodes are currently hidden.
+    let isNodeSelected = this.viewState.getHiddenNodesAsSelection(nodeIndexes);
+
+    // Tell viewState the user updated visible nodes. This causes viewState to broadcast changes and ultimately
+    // updates the nodes this is displaying.
+    let modalSuccess = function (selection) {
+      this.viewState.setHiddenNodesFromSelection(selection);
+    };
+    modalSuccess = modalSuccess.bind(this);
+
+    this.uiModals.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
+    */
+  }
+
+
 }

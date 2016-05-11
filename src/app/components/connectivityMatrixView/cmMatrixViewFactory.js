@@ -11,8 +11,8 @@ export class cmMatrixViewFactory {
   }
 
 
-  createConnectivityMatrix(svg, model, scope, viewState) {
-    return new cmMatrixView(svg, model, this.$log, this.$uibModal, scope, viewState, this.uiModals);
+  createConnectivityMatrix(svg, model, scope, viewState, mainController) {
+    return new cmMatrixView(svg, model, this.$log, this.$uibModal, scope, viewState, this.uiModals, mainController);
   }
 
 }

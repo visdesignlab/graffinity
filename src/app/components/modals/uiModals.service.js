@@ -28,4 +28,28 @@ export class uiModals {
     modalInstance.result.then(callback);
   }
 
+  getValueRange(title, values, range, callback) {
+
+    let modalInstance = this.$uibModal.open({
+      animation: true,
+      templateUrl: '/app/components/modals/modals/uiHistogramFilterModal.html',
+      controller: 'uiHistogramFilterModalController',
+      controllerAs: 'modalController',
+      size: 'sm',
+      resolve: {
+        title: function () {
+          return title;
+        },
+        values: function () {
+          return values;
+        },
+        range: function () {
+          return range;
+        }
+      }
+    });
+
+    modalInstance.result.then(callback);
+
+  }
 }

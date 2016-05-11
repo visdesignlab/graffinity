@@ -1,0 +1,19 @@
+<div class="modal-header">
+  <h3 class="modal-title">{{modalController.title}}</h3>
+</div>
+<div class="modal-body">
+  <div ng-show="modalController.errorMessage">
+    {{modalController.errorMessage}}
+  </div>
+  <div>
+    Min value: <input type="number" ng-model="modalController.range[0]"></input>
+  </div>
+  <div>
+    Max value: <input type="number" ng-model="modalController.range[1]"></input>
+  </div>
+  <svg> </svg>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-click="modalController.ok()">OK</button>
+  <button class="btn btn-warning" type="button" ng-click="modalController.cancel()">Cancel</button>
+</div>

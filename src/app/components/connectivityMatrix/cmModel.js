@@ -317,6 +317,20 @@ export class cmModel {
     return scalarMatrix;
   }
 
+  getFlattenedNodeIndexes() {
+    let nodeIndexLists = this.getRowNodeIndexes().concat(this.getColNodeIndexes());
+    let nodeIndexes = [];
+    for (var i = 0; i < nodeIndexLists.length; ++i) {
+      for (var j = 0; j < nodeIndexLists[i].length; ++j) {
+        let index = nodeIndexLists[i][j];
+        if (nodeIndexes.indexOf(index) == -1) {
+          nodeIndexes.push(index);
+        }
+      }
+    }
+    return nodeIndexes;
+  }
+
   getMinorLabels(indexes) {
     var self = this;
     var minorLabels = [];

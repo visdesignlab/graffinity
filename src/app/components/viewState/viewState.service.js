@@ -7,26 +7,6 @@ export class ViewState {
     this.$log = $log;
   }
 
-  hideNodes(nodeIndexes) {
-    // this.$log.debug("hiding nodes", nodeIndexes);
-
-    for (var i = 0; i < nodeIndexes.length; ++i) {
-      this.isNodeHidden[nodeIndexes[i]] = true;
-    }
-
-    this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeHidden);
-  }
-
-  showNodes(nodeIndexes) {
-    // this.$log.debug("showing nodes", nodeIndexes);
-
-    for (var i = 0; i < nodeIndexes.length; ++i) {
-      this.isNodeHidden[nodeIndexes[i]] = false;
-    }
-
-    this.$scope.$broadcast('showNodes', nodeIndexes, this.isNodeHidden);
-  }
-
   /**
    * Converts a list of nodeIndexes to an object used as a dictionary.
    * object[nodeIndex] = !isNodeHidden[nodeIndex]
@@ -37,6 +17,24 @@ export class ViewState {
       selection[nodeIndexes[i]] = !this.isNodeHidden[nodeIndexes[i]];
     }
     return selection;
+  }
+
+  hideNodes(nodeIndexes) {
+    // this.$log.debug("hiding nodes", nodeIndexes);
+
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+      this.isNodeHidden[nodeIndexes[i]] = true;
+    }
+
+    this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeHidden);
+  }
+
+  openNodeIndexFilter() {
+
+  }
+
+  setCurrentModel(model) {
+    this.model = model;
   }
 
   /**
@@ -56,4 +54,16 @@ export class ViewState {
     this.hideNodes(hideNodes);
     this.showNodes(showNodes);
   }
+
+  showNodes(nodeIndexes) {
+    // this.$log.debug("showing nodes", nodeIndexes);
+
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+      this.isNodeHidden[nodeIndexes[i]] = false;
+    }
+
+    this.$scope.$broadcast('showNodes', nodeIndexes, this.isNodeHidden);
+  }
+
+
 }

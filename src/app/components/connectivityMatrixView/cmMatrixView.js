@@ -45,12 +45,13 @@ import {UtilsD3} from "../utils/utilsd3"
  *
  */
 export class cmMatrixView extends SvgGroupElement {
-  constructor(svg, model, $log, $uibModal, scope, viewState, uiModals) {
+  constructor(svg, model, $log, $uibModal, scope, viewState, uiModals, mainController) {
     super(svg);
     this.$log = $log;
     this.$uibModal = $uibModal;
     this.uiModals = uiModals;
     this.$scope = scope;
+    this.mainController = mainController;
     this.viewState = viewState;
     this.$log.debug(this.$scope, this.viewState);
 
@@ -484,29 +485,9 @@ export class cmMatrixView extends SvgGroupElement {
    * Called when the user clicked on the 'filter' icon of node ids.
    */
   onFilterNodes() {
-    // Flatten nodeIndexes into a single array of ints.
-    let nodeIndexLists = this.rowNodeIndexes.concat(this.colNodeIndexes);
-    let nodeIndexes = [];
-    for (var i = 0; i < nodeIndexLists.length; ++i) {
-      for (var j = 0; j < nodeIndexLists[i].length; ++j) {
-        let index = nodeIndexLists[i][j];
-        if (nodeIndexes.indexOf(index) == -1) {
-          nodeIndexes.push(index);
-        }
-      }
-    }
+    this.mainController.openNodeIndexFilter();
+    // flatten nodeIndexes into a single array of ints.
 
-    // "selected" nodes are visible. Unselected nodes are currently hidden.
-    let isNodeSelected = this.viewState.getHiddenNodesAsSelection(nodeIndexes);
-
-    // Tell viewState the user updated visible nodes. This causes viewState to broadcast changes and ultimately
-    // updates the nodes this is displaying.
-    let modalSuccess = function (selection) {
-      this.viewState.setHiddenNodesFromSelection(selection);
-    };
-    modalSuccess = modalSuccess.bind(this);
-
-    this.uiModals.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
   }
 
   onHideAttributeRow(attributeIndex) {
@@ -587,7 +568,6 @@ export class cmMatrixView extends SvgGroupElement {
       this.applyVisitor(visitor);
 
       this.legend = undefined;
-
     } else if (encoding == "colormap") {
       preprocessor = new cmColorMapPreprocessor();
       preprocessor.setNodeFilter(this.viewState.isNodeHidden);
@@ -646,7 +626,7 @@ export class cmMatrixView extends SvgGroupElement {
 
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].majorCells[colIndex].setVisible(isColIndexVisible);
-      for(var j=0; j<this.allRows[i].minorRows.length; ++j) {
+      for (var j = 0; j < this.allRows[i].minorRows.length; ++j) {
         this.allRows[i].minorRows[j].majorCells[colIndex].setVisible(isColIndexVisible);
       }
     }
