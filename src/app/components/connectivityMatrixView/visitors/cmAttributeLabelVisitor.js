@@ -2,7 +2,7 @@ import {cmCellVisitor} from "./cmCellVisitors";
 import {cmAttributeControls} from "../cmAttributeControls";
 
 export class cmAttributeLabelVisitor extends cmCellVisitor {
-  constructor(onSortRows, onSortCols, onHideRow, onHideCol, labelColWidth, labelColHeight, attrColWidth, attrColHeight, attrRowWidth, attrRowHeight, onFilterNodes) {
+  constructor(onSortRows, onSortCols, onHideRow, onHideCol, labelColWidth, labelColHeight, attrColWidth, attrColHeight, attrRowWidth, attrRowHeight, onFilterNodes, onFilterAttributes) {
     super();
     this.labelColWidth = labelColWidth;
     this.labelColHeight = labelColHeight;
@@ -18,6 +18,7 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
     this.callbacks.onHideRow = onHideRow;
     this.callbacks.onHideCol = onHideCol;
     this.callbacks.onFilterNodes = onFilterNodes;
+    this.callbacks.onFilterAttributes = onFilterAttributes;
   }
 
   apply(cell) {
@@ -35,7 +36,7 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
 
         let width = isVertical ? this.attrRowWidth : this.attrColWidth;
         let height = isVertical ? this.attrRowHeight : this.attrColHeight;
-        cell.controls.push(new cmAttributeControls(group, name, isVertical, width, height, onSort, onHide, index));
+        cell.controls.push(new cmAttributeControls(group, name, isVertical, width, height, onSort, onHide, index, this.callbacks.onFilterAttributes));
       } else {
         // Because the matrix header is symmetric, the "id" label of rows/cols is in the same cell. Here we create both
         // controls for labels in the same cell.

@@ -2,7 +2,7 @@ export class ViewState {
   constructor($rootScope, $log) {
     "ngInject";
     this.isNodeHidden = {};
-    this.callbacks = {};
+    this.filterRanges = {};
     this.$scope = $rootScope;
     this.$log = $log;
   }
@@ -19,18 +19,15 @@ export class ViewState {
     return selection;
   }
 
+  /**
+   *
+   */
   hideNodes(nodeIndexes) {
-    // this.$log.debug("hiding nodes", nodeIndexes);
-
     for (var i = 0; i < nodeIndexes.length; ++i) {
       this.isNodeHidden[nodeIndexes[i]] = true;
     }
 
     this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeHidden);
-  }
-
-  openNodeIndexFilter() {
-
   }
 
   setCurrentModel(model) {
@@ -56,14 +53,10 @@ export class ViewState {
   }
 
   showNodes(nodeIndexes) {
-    // this.$log.debug("showing nodes", nodeIndexes);
-
     for (var i = 0; i < nodeIndexes.length; ++i) {
       this.isNodeHidden[nodeIndexes[i]] = false;
     }
 
     this.$scope.$broadcast('showNodes', nodeIndexes, this.isNodeHidden);
   }
-
-
 }

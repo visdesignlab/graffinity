@@ -28,7 +28,7 @@ export class uiModals {
     modalInstance.result.then(callback);
   }
 
-  getValueRange(title, values, range, callback) {
+  getValueRange(title, values, range, nodeIndexes, attribute, callback) {
 
     let modalInstance = this.$uibModal.open({
       animation: true,
@@ -45,6 +45,10 @@ export class uiModals {
         },
         range: function () {
           return range;
+        }, nodeIndexes: function () {
+          return nodeIndexes;
+        }, attribute: function () {
+          return attribute;
         }
       }
     });

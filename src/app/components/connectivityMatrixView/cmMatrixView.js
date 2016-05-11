@@ -247,8 +247,9 @@ export class cmMatrixView extends SvgGroupElement {
     let hideRows = this.onHideAttributeRow.bind(this);
     let hideCols = this.onHideAttributeCol.bind(this);
     let filterNodes = this.onFilterNodes.bind(this);
+    let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
     visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols,
-      this.colWidthLabel, this.rowHeight, this.colWidthAttr, this.rowHeight, this.colWidth, this.colWidthAttr, filterNodes);
+      this.colWidthLabel, this.rowHeight, this.colWidthAttr, this.rowHeight, this.colWidth, this.colWidthAttr, filterNodes, filterAttributes);
 
     this.applyVisitor(visitor);
 

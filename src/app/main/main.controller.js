@@ -158,20 +158,52 @@ export class MainController {
     this.matrix.setSortOrders(rowPerm, colPerm);
   }
 
+  /**
+   * Called when the user wants to filter nodes by a quantitative attributes. Opens a modal containing a
+   * histogram of 'attribute' for all nodes.
+   */
   openNodeAttributeFilter(attribute) {
+
+    // Get lists of all nodes and their attributes
     let nodeIndexes = this.model.getFlattenedNodeIndexes();
     let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
-    let range = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
+
+    // Get the range for the current attribute, or create one if it doesn't exist.
+    let range = this.viewState.filterRanges[attribute];
+    if (range == undefined) {
+      range = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
+    }
+
+    // When the modal is finished, save the range.
     let self = this;
-    let callback = function(range) {
-      self.$log.debug(range);
+    let callback = function (result) {
+      let attribute = result.attribute;
+      let range = result.range;
+      let nodeValues = result.values;
+      let nodeIndexes = result.nodeIndexes;
+
+      let hideNodes = [];
+      let showNodes = [];
+      for(var i=0; i<nodeValues.length; ++i) {
+        if (nodeValues[i] < range[0] || nodeValues[i] > range[1]) {
+          hideNodes.push(nodeIndexes[i]);
+        } else {
+          showNodes.push(nodeIndexes[i]);
+        }
+      }
+      self.viewState.hideNodes(hideNodes);
+      self.viewState.showNodes(showNodes);
+      self.viewState.filterRanges[attribute] = range;
     };
-    this.uiModals.getValueRange("Select range of " + attribute, nodeAttributes, range, callback);
+
+    // Open the modal.
+    this.uiModals.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
   }
 
+  /**
+   * Called when the user clicks 'filter' for the node Ids. Opens a modal containing a checklist of nodes ids.
+   */
   openNodeIndexFilter() {
-    this.openNodeAttributeFilter("area");
-    /*
     let nodeIndexes = this.model.getFlattenedNodeIndexes();
 
     // "selected" nodes are visible. Unselected nodes are currently hidden.
@@ -185,8 +217,5 @@ export class MainController {
     modalSuccess = modalSuccess.bind(this);
 
     this.uiModals.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
-    */
   }
-
-
 }

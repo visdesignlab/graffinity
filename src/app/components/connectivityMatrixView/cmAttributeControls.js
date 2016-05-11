@@ -73,8 +73,7 @@ export class cmAttributeControls extends SvgGroupElement {
       .classed("fa-filter", true)
       .attr("float", "left")
       .on("click", function () {
-        // console.log("hello " + self.name + " filtered");
-        self.onFilter();
+        self.onFilter(self.name);
       });
 
     this.controls.append("i")

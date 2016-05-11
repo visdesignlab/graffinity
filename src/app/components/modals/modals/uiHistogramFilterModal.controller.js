@@ -8,7 +8,7 @@ export class uiHistogramFilterModalController {
    * @param values - attribute values for all nodes in the model
    * @param range - array [minValue, maxValue] that the user wants to see
    */
-  constructor($uibModalInstance, $log, $timeout, title, values, range) {
+  constructor($uibModalInstance, $log, $timeout, title, values, range, attribute, nodeIndexes) {
     'ngInject';
     this.$uibModalInstance = $uibModalInstance;
     this.$log = $log;
@@ -16,6 +16,8 @@ export class uiHistogramFilterModalController {
     this.values = values;
     this.range = angular.copy(range); // copy so that we don't mess with the state if user clicks dismiss!
     this.errorMessage = "";
+    this.attribute = attribute;
+    this.nodeIndexes = nodeIndexes;
 
 
     /*
@@ -27,8 +29,6 @@ export class uiHistogramFilterModalController {
     $timeout(function () {
       self.activateUi()
     }, 0);
-
-
   }
 
   /**
@@ -53,7 +53,12 @@ export class uiHistogramFilterModalController {
       return;
     }
 
-    this.$uibModalInstance.close(this.range);
+    this.$uibModalInstance.close({
+      attribute: this.attribute,
+      range: this.range,
+      nodeIndexes: this.nodeIndexes,
+      values: this.values
+    });
   }
 
   /**
