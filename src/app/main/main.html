@@ -79,6 +79,9 @@
 
     <!-- Columns holding the matrix -->
     <span class="col-lg-4">
+      <span ng-show="main.hasActiveQuery">Query is loading...</span>
+      <span ng-show="main.hasQueryError">{{main.queryError}}</span>
+
       <svg id="my-svg" width="1024" height="1024"></svg>
     </span>
   </div>

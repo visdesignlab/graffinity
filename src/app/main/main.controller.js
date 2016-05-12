@@ -14,6 +14,9 @@ export class MainController {
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
+    this.hasActiveQuery = false;
+    this.hasQueryError = false;
+    this.queryError = "";
 
     this.ui = {};
 
