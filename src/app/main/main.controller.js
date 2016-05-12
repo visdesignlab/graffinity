@@ -4,7 +4,7 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 
 export class MainController {
-  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState, uiModals) {
+  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState, modalService) {
     'ngInject';
 
     this.viewState = viewState;
@@ -13,7 +13,7 @@ export class MainController {
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
-    this.uiModals = uiModals;
+    this.modalService = modalService;
 
     this.ui = {};
 
@@ -184,7 +184,7 @@ export class MainController {
 
       let hideNodes = [];
       let showNodes = [];
-      for(var i=0; i<nodeValues.length; ++i) {
+      for (var i = 0; i < nodeValues.length; ++i) {
         if (nodeValues[i] < range[0] || nodeValues[i] > range[1]) {
           hideNodes.push(nodeIndexes[i]);
         } else {
@@ -197,7 +197,7 @@ export class MainController {
     };
 
     // Open the modal.
-    this.uiModals.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
+    this.modalService.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
   }
 
   /**
@@ -216,6 +216,6 @@ export class MainController {
     };
     modalSuccess = modalSuccess.bind(this);
 
-    this.uiModals.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
+    this.modalService.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
   }
 }

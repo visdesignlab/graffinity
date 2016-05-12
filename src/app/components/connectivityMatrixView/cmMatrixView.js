@@ -45,11 +45,11 @@ import {UtilsD3} from "../utils/utilsd3"
  *
  */
 export class cmMatrixView extends SvgGroupElement {
-  constructor(svg, model, $log, $uibModal, scope, viewState, uiModals, mainController) {
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
     super(svg);
     this.$log = $log;
     this.$uibModal = $uibModal;
-    this.uiModals = uiModals;
+    this.modalService = modalService;
     this.$scope = scope;
     this.mainController = mainController;
     this.viewState = viewState;
@@ -479,7 +479,7 @@ export class cmMatrixView extends SvgGroupElement {
 
     modalSuccess = modalSuccess.bind(this);
 
-    this.uiModals.getSelectionFromList("Select attributes", attributes, isAttributeVisible, modalSuccess);
+    this.modalService.getSelectionFromList("Select attributes", attributes, isAttributeVisible, modalSuccess);
   }
 
   /**

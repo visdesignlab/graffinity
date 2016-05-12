@@ -1,8 +1,8 @@
 /*globals d3
  */
-import {visHistogram} from "../../vis/visHistogram.js"
+import {visHistogram} from "../vis/visHistogram.js"
 
-export class uiHistogramFilterModalController {
+export class ModalHistogramFilterController {
   /**
    * Object for letting user define a filter range of a quantitative attribute.
    * @param $uibModalInstance - the modal that gets created (managed by angular-bootstrap)
@@ -21,7 +21,7 @@ export class uiHistogramFilterModalController {
     this.title = title;
     this.values = values;
     this.range = angular.copy(range); // copy so that we don't mess with the state if user clicks dismiss!
-    this.errorMessage = "";
+    this.errorMessage = ""; // will be set in this.ok() to tell the user they have made an invalid selection
     this.attribute = attribute;
     this.nodeIndexes = nodeIndexes;
     this.numBins = 20;
@@ -29,7 +29,7 @@ export class uiHistogramFilterModalController {
     /*
      * This is a hack! We cannot access the modal's DOM elements here because 'this' (an angular controller) gets
      * instantiated before its DOM elements. Here, we're telling angular to call activateUi after the current digest
-     * finishes. (This implies that the modal's DOM stuff will be created by the time we call activateUi!)
+     * finishes. This implies that the modal's DOM stuff will be created before activateUi runs!
      */
     let self = this;
     $timeout(function () {

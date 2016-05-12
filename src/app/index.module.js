@@ -13,11 +13,10 @@ import { cmResource } from '../app/components/connectivityMatrix/cmResource.serv
 import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
 import { cmMatrixFactory } from '../app/components/connectivityMatrix/cmMatrixFactory.service';
 import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFactory.service';
-import { uiNodeFilterModalController } from "../app/components/modals/modals/uiNodeFilterModal.controller"
-import { uiAttributeModalController } from "../app/components/modals/modals/uiAttributeModal.controller"
-import { uiHistogramFilterModalController } from "../app/components/modals/modals/uiHistogramFilterModal.controller"
+import { ModalListFilterController } from "../app/components/modals/modalListFilter.controller.js"
+import { ModalHistogramFilterController } from "../app/components/modals/modalHistogramFilter.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
-import { uiModals } from "../app/components/modals/uiModals.service";
+import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
@@ -35,10 +34,9 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('cmMatrixViewFactory', cmMatrixViewFactory)
   .service('viewState', ViewState)
   .controller('MainController', MainController)
-  .controller('uiAttributeModalController', uiAttributeModalController)
-  .controller('uiNodeFilterModalController', uiNodeFilterModalController)
-  .controller('uiHistogramFilterModalController', uiHistogramFilterModalController)
+  .controller('ModalListFilterController', ModalListFilterController)
+  .controller('ModalHistogramFilterController', ModalHistogramFilterController)
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)
-  .service('uiModals', uiModals);
+  .service('modalService', ModalService);
