@@ -20,12 +20,17 @@ export class MainController {
     this.hasQueryError = false;
     this.queryError = "";
 
+    this.matrixClass = "col-lg-11";
+    this.nodeLinkClass = "";
+
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
 
     // If true, enable manual controls of what nodes are shown/hidden.
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
+
+    this.ui.debugNodeLinkLayout = true;
 
     this.svg = d3.select("#my-svg")
       .append("g")
@@ -203,6 +208,21 @@ export class MainController {
       colPerm = reorder.permutation(matrix[0].length);
     }
     this.matrix.setSortOrders(rowPerm, colPerm);
+  }
+
+  /**
+   * Called when the node-link view gets toggled. This will either collapse or expand the far right column which
+   * contains the node-link directive.
+   */
+  onToggleNodeLinkView() {
+    // This causes an animated transition because of the '.row span' definition in main.css
+    if (this.nodeLinkClass != "") {
+      this.nodeLinkClass = "";
+      this.matrixClass = "col-lg-11";
+    } else {
+      this.nodeLinkClass = "col-lg-3";
+      this.matrixClass = "col-lg-8";
+    }
   }
 
   /**

@@ -2,3 +2,20 @@
   border-bottom: thin solid grey;
   padding-top: 5px;
 }
+
+/* This controls the animation for changing column widths with ng-class */
+.row span {
+    -webkit-transition: width 0.3s ease, margin 0.3s ease;
+    -moz-transition: width 0.3s ease, margin 0.3s ease;
+    -o-transition: width 0.3s ease, margin 0.3s ease;
+    transition: width 0.3s ease, margin 0.3s ease;
+}
+
+/* The matrix view is wrapped in a dark grey outline */
+.column-matrix {
+  outline: thin solid grey;
+}
+
+.control-header {
+  margin-top: 15px;
+}

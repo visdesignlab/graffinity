@@ -78,14 +78,21 @@
         <button ng-click="main.onDebugNodeHiding(main.ui.debugNodeHidingId, false)">Hide</button>
       </div>
 
+      <div class="control-header" ng-show="main.ui.debugNodeLinkLayout">
+        <button ng-click="main.onToggleNodeLinkView()">Toggle node-link</button>
+      </div>
+
     </span>
 
     <!-- Columns holding the matrix -->
-    <span class="col-lg-4">
+    <span ng-class="main.matrixClass" class="column-matrix">
       <span ng-show="main.hasActiveQuery">Query is loading...</span>
       <span ng-show="main.hasQueryError">{{main.queryError}}</span>
-
       <svg id="my-svg" width="1024" height="1024"></svg>
+    </span>
+
+    <span ng-class="main.nodeLinkClass" ng-show="main.nodeLinkClass">
+      <span>The node-link view will go here!</span>
     </span>
   </div>
 </div>
