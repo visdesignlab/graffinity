@@ -64,17 +64,20 @@
         </ui-select>
       </div>
 
+      <!-- Legend of matrix cell encodings -->
       <div class="control-header" ng-show="main.ui.hasLegend">
         <b>Legend</b>
         <svg id="encoding-legend">
         </svg>
       </div>
 
+      <!-- Controls for debugging and manually hiding/showing node ids. Disabled by default-->
       <div class="control-header" ng-show="main.ui.debugNodeHiding">
-        <input type="text" name="input" ng-model="main.ui.nodeId">
-        <button ng-click="main.onDebugNodeHiding(main.ui.nodeId, true)">Show</button>
-        <button ng-click="main.onDebugNodeHiding(main.ui.nodeId, false)">Hide</button>
+        <input type="text" name="input" ng-model="main.ui.debugNodeHidingId">
+        <button ng-click="main.onDebugNodeHiding(main.ui.debugNodeHidingId, true)">Show</button>
+        <button ng-click="main.onDebugNodeHiding(main.ui.debugNodeHidingId, false)">Hide</button>
       </div>
+
     </span>
 
     <!-- Columns holding the matrix -->

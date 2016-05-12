@@ -14,32 +14,42 @@ export class MainController {
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
+
+    // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
     this.queryError = "";
 
+    // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
 
-    this.ui.debugNodeHiding = true;
-    this.ui.nodeId = 168;
+    // If true, enable manual controls of what nodes are shown/hidden.
+    this.ui.debugNodeHiding = false;
+    this.ui.debugNodeHidingId = 168;
 
     this.svg = d3.select("#my-svg")
       .append("g")
       .attr("transform", "translate(20, 20)");
 
-    let useLargeResult = true;
-    useLargeResult = false;
+    let useLargeResult = false;
+
+    // uncomment this to use a larger default data set.
+    // useLargeResult = true;
+
     let jsonGraph = mock.output.graph;
     let jsonMatrix = mock.output.matrix;
+
     if (useLargeResult) {
       jsonGraph = mock.largeResult.graph;
       jsonMatrix = mock.largeResult.matrix;
     }
 
+    // Populate the model with default dataset
     let graph = cmGraphFactory.createFromJsonObject(jsonGraph);
     let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = cmModelFactory.createModel(graph, matrix);
 
+    // Wait until after the current digest cycle to activate the ui.
     let self = this;
     $timeout(function () {
       self.createMatrixAndUi(self.model)
@@ -95,15 +105,21 @@ export class MainController {
     this.createMatrix(this.model, this.ui.selectedEncoding);
   }
 
+  /**
+   * Called when we enter a node into the debugging contorls.
+   */
   onDebugNodeHiding(nodeId, makeVisible) {
     if (!makeVisible) {
       this.viewState.hideNodes([parseInt(nodeId)]);
     } else {
       this.viewState.showNodes([parseInt(nodeId)]);
     }
-
   }
 
+  /**
+   * Called when the user changes the encoding dropdown box. This tells the matrix to change cell encodings and
+   * updates the legend displayed in the sidebar.
+   */
   onEncodingChanged(encoding) {
     this.matrix.setEncoding(encoding);
 
@@ -124,6 +140,9 @@ export class MainController {
     }
   }
 
+  /**
+   * Sends a query to the database.
+   */
   onQuerySubmitted(query) {
     let self = this;
 
@@ -146,7 +165,7 @@ export class MainController {
     };
 
     let failure = function (error) {
-      // upon failure, update text mesage to the the error message
+      // upon failure, update text message to the the error message
       self.hasActiveQuery = false;
       self.hasQueryError = true;
       self.queryError = "Query Error: \n" + error.data.message;
@@ -157,7 +176,7 @@ export class MainController {
       if (error.data) {
         self.queryError = "Query Error: \n" + error.data.message;
       } else {
-        self.queryError = "The server sent no response! Check console."
+        self.queryError = "The server sent no response! Check console.";
       }
     };
 
