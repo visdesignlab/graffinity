@@ -35,7 +35,7 @@ export class uiModals {
       templateUrl: '/app/components/modals/modals/uiHistogramFilterModal.html',
       controller: 'uiHistogramFilterModalController',
       controllerAs: 'modalController',
-      size: 'sm',
+      size: 'lg',
       resolve: {
         title: function () {
           return title;
@@ -45,9 +45,11 @@ export class uiModals {
         },
         range: function () {
           return range;
-        }, nodeIndexes: function () {
+        },
+        nodeIndexes: function () {
           return nodeIndexes;
-        }, attribute: function () {
+        },
+        attribute: function () {
           return attribute;
         }
       }
