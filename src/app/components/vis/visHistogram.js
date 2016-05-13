@@ -11,6 +11,8 @@ export class visHistogram {
    * They should *not* be done like this, because it breaks the reference by creating a new array.
    * range = [minValue, maxValue]
    */
+
+  //this is a git push test -- Urness
   constructor($scope, $log, parent, width, height, numBins, values, range) {
     this.$scope = $scope;
     this.$log = $log;
