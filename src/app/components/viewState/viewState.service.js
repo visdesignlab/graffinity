@@ -53,6 +53,10 @@ export class ViewState {
   }
 
   showNodes(nodeIndexes) {
+    if (nodeIndexes.length == 0) {
+      return;
+    }
+
     for (var i = 0; i < nodeIndexes.length; ++i) {
       this.isNodeHidden[nodeIndexes[i]] = false;
     }

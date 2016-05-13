@@ -231,13 +231,20 @@ export class MainController {
 
       let hideNodes = [];
       let showNodes = [];
+
+      // hideNodes  is a list of nodes that fall outside of the desired range
+      // showNodes is a list of nodes that were previously hidden, but now fall inside the desired range.
       for (var i = 0; i < nodeValues.length; ++i) {
         if (nodeValues[i] < range[0] || nodeValues[i] > range[1]) {
           hideNodes.push(nodeIndexes[i]);
         } else {
-          showNodes.push(nodeIndexes[i]);
+          if (self.viewState.isNodeHidden[nodeIndexes[i]]) {
+            showNodes.push(nodeIndexes[i]);
+          }
         }
       }
+
+      // Update the view
       self.viewState.hideNodes(hideNodes);
       self.viewState.showNodes(showNodes);
       self.viewState.filterRanges[attribute] = range;
