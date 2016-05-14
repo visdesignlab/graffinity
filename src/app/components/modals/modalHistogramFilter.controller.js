@@ -24,7 +24,7 @@ export class ModalHistogramFilterController {
     this.errorMessage = ""; // will be set in this.ok() to tell the user they have made an invalid selection
     this.attribute = attribute;
     this.nodeIndexes = nodeIndexes;
-    this.numBins = 20;
+    this.numBins = 10;
 
     /*
      * This is a hack! We cannot access the modal's DOM elements here because 'this' (an angular controller) gets
