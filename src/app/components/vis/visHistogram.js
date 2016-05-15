@@ -82,15 +82,84 @@ export class visHistogram {
         .attr("transform", "translate(" + margin.left + "," + self.chartHeight + ")")
         .call(xAxis);
 
+    // let clickCallback = this.onHistogramClicked.bind(this);
+    // parent.append("rect")
+    //   .attr("width", width)
+    //   .attr("height", height)
+    //   .attr("fill", "transparent")
+    //   .attr("stroke-width", "1")
+    //   .attr("stroke", "black")
+    //   .on("click", clickCallback);
 
-    let clickCallback = this.onHistogramClicked.bind(this);
-    parent.append("rect")
-      .attr("width", width)
-      .attr("height", height)
-      .attr("fill", "transparent")
+    // Draw the brush
+    let brushMove = this.brushMove.bind(this);
+    let brushEnd = this.brushEnd.bind(this);
+
+    this.brush = d3.svg.brush()
+        .x(xScale)
+        .on("brush", brushMove)
+        .on("brushend", brushEnd)
+
+    this.parent.append("g")
+      .attr("class", "brush")
+      .attr("transform", "translate(" + margin.left + ", 0)")
+      .call(this.brush)
+      .selectAll("rect")
+      .attr("stroke","#fff")
+      .attr("stroke-opacity", ".6")
       .attr("stroke-width", "1")
-      .attr("stroke", "black")
-      .on("click", clickCallback);
+      .attr("fill-opacity",".1")
+      .attr("height", self.chartHeight);
+
+  }
+
+  closest (num) {
+    let curr = this.tickArray[0];
+    let diff = Math.abs (num - curr);
+    for (let val = 0; val < this.tickArray.length; val++) {
+        let newDiff = Math.abs (num - this.tickArray[val]);
+        if (newDiff < diff) {
+            diff = newDiff;
+            curr = this.tickArray[val];
+        }
+    }
+    return curr;
+}
+
+  brushMove(){
+    let b = this.brush.extent();
+    //this.$log.debug("brush moved" + b);
+    let closest = this.closest.bind(this);
+
+    let localBrushStartValue = (this.brush.empty()) ? this.minVal : closest(b[0]),
+        localBrushEndValue = (this.brush.empty()) ? this.maxVal : closest(b[1]);
+
+    d3.select("g.brush").call((this.brush.empty()) ? this.brush.clear() : this.brush.extent([localBrushStartValue, localBrushEndValue]));
+
+    // Fade all values in the histogram not within the brush
+    let self = this;
+
+    d3.selectAll(".bar").style("opacity", function(d, i) {
+      return d.x >= localBrushStartValue && d.x < localBrushEndValue || self.brush.empty() ? "1" : ".4";
+    });
+  }
+
+  brushEnd(){
+    let b = this.brush.extent();
+    let closest = this.closest.bind(this);
+
+    let localBrushStartValue = (this.brush.empty()) ? this.minVal : closest(b[0]),
+        localBrushEndValue = (this.brush.empty()) ? this.maxVal : closest(b[1]);
+
+    let self = this;
+    d3.selectAll(".bar").style("opacity", function(d, i) {
+      return d.x >= localBrushStartValue && d.x < localBrushEndValue || self.brush.empty() ? "1" : ".4";
+    });
+
+    //update range here
+    this.$log.debug(localBrushStartValue + " " + localBrushEndValue);
+    this.range[0] = localBrushStartValue;
+    this.range[1] = localBrushEndValue;
   }
 
   onHistogramClicked() {
