@@ -11,9 +11,12 @@
   <!-- These divs hold manually input fields. TODO: delete them after the histogram is in place! -->
   <div>
     Min value: <input type="number" ng-model="modalController.range[0]"></input>
+    Number of bins: <input type="number" ng-model="modalController.numBins"></input>
   </div>
   <div>
     Max value: <input type="number" ng-model="modalController.range[1]"></input>
+  </div>
+  <div>
   </div>
   <!-- This is the svg that will hold the histogram. It doesn't have a width and height yet.
   These get assigned in ModalHistogramFilterController::activateUi() -->
