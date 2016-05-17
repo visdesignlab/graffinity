@@ -51,7 +51,6 @@ export class cmGraph {
     }
   }
 
-
   activateNodeAttributes(attributes) {
     var result = [];
     result.attributes = [];
