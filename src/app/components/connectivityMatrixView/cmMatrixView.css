@@ -8,6 +8,12 @@
   fill: transparent;
 }
 
+.matrix-view-cell-selected {
+  stroke: black;
+  stroke-width: 2px;
+  fill: transparent;
+}
+
 .matrix-view-histogram-bar {
   fill: gray;
 }
@@ -21,6 +27,8 @@
 .matrix-view-highlight-rect {
   fill: none;
   stroke: black;
+  rx: 3px;
+  ry: 3px;
 }
 
 .matrix-view-attribute-controls {

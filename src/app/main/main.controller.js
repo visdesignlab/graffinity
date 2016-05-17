@@ -146,6 +146,17 @@ export class MainController {
   }
 
   /**
+   * This gets called when the user clicks on a cell in the matrix view. It will populate the node-link view with a list
+   * of paths. These paths are already filtered.
+   * Function must end with a $scope.$apply in order to update the css layout.
+   */
+  onPathsSelected(paths) {
+    this.$log.debug("MainController.onPathsSelected ", paths);
+    this.setNodeLinkVisibility(true);
+    this.$scope.$apply();
+  }
+
+  /**
    * Sends a query to the database.
    */
   onQuerySubmitted(query) {
@@ -215,14 +226,7 @@ export class MainController {
    * contains the node-link directive.
    */
   onToggleNodeLinkView() {
-    // This causes an animated transition because of the '.row span' definition in main.css
-    if (this.nodeLinkClass != "") {
-      this.nodeLinkClass = "";
-      this.matrixClass = "col-lg-11";
-    } else {
-      this.nodeLinkClass = "col-lg-3";
-      this.matrixClass = "col-lg-8";
-    }
+    this.setNodeLinkVisibility(this.nodeLinkClass == "");
   }
 
   /**
@@ -284,5 +288,19 @@ export class MainController {
     modalSuccess = modalSuccess.bind(this);
 
     this.modalService.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
+  }
+
+  /**
+   * Makes the node-link view visible by expanding it from the right side of the screen.
+   * This causes an animated transition because of the '.row span' definition in main.css
+   */
+  setNodeLinkVisibility(visible) {
+    if (!visible) {
+      this.nodeLinkClass = "";
+      this.matrixClass = "col-lg-11";
+    } else {
+      this.nodeLinkClass = "col-lg-3";
+      this.matrixClass = "col-lg-8";
+    }
   }
 }

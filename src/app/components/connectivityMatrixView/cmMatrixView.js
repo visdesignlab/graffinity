@@ -411,8 +411,17 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
-    let paths = cell.getPathList();
-    this.$log.log("cell clicked", cell, paths, Utils.getFilteredPaths(paths, true, this.viewState.isNodeHidden));
+    let paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden)
+    this.$log.log("cell clicked", cell, paths);
+    if(!this.selectedCell) {
+      this.selectedCell = cell;
+      cell.getGroup().classed("matrix-view-cell-selected", true);
+    } else {
+      this.selectedCell.getGroup().classed("matrix-view-cell-selected", false);
+      this.selectedCell = cell;
+      this.selectedCell.getGroup().classed("matrix-view-cell-selected", true);
+    }
+    this.mainController.onPathsSelected(paths);
   }
 
   onCellMouseOver(cell) {
