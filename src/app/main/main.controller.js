@@ -4,7 +4,8 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 
 export class MainController {
-  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState, modalService) {
+  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
+              viewState, modalService, NodeLinkViewFactory) {
     'ngInject';
 
     this.viewState = viewState;
@@ -14,7 +15,6 @@ export class MainController {
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
-
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
@@ -53,6 +53,9 @@ export class MainController {
     let graph = cmGraphFactory.createFromJsonObject(jsonGraph);
     let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = cmModelFactory.createModel(graph, matrix);
+
+    this.nodeLinkSvg = d3.select("#node-link-svg");
+    this.nodeLinkView = NodeLinkViewFactory.createNodeLinkView(this.nodeLinkSvg, this.model, this.$scope, this.viewState, this);
 
     // Wait until after the current digest cycle to activate the ui.
     let self = this;
@@ -153,6 +156,7 @@ export class MainController {
   onPathsSelected(paths) {
     this.$log.debug("MainController.onPathsSelected ", paths);
     this.setNodeLinkVisibility(true);
+    this.nodeLinkView.setSelectedPaths(paths);
     this.$scope.$apply();
   }
 

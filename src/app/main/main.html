@@ -84,6 +84,8 @@
 
     </span>
 
+    <!-- TODO: Update the width/height of the svg elements here and in the nodeLinkView-->
+
     <!-- Columns holding the matrix -->
     <span ng-class="main.matrixClass" class="column-matrix">
       <span ng-show="main.hasActiveQuery">Query is loading...</span>
@@ -91,8 +93,9 @@
       <svg id="my-svg" width="1024" height="1024"></svg>
     </span>
 
+    <!-- Columns holding the node link view -->
     <span ng-class="main.nodeLinkClass" ng-show="main.nodeLinkClass">
-      <span>The node-link view will go here!</span>
+      <svg id="node-link-svg"></svg>
     </span>
   </div>
 </div>
