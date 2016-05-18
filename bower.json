@@ -21,7 +21,8 @@
     "graphlib": "*",
     "colorbrewer": "*",
     "ui-select": "angular-ui-select#~0.16.1",
-    "fontawesome": "4.6.1"
+    "fontawesome": "4.6.1",
+    "dagre": "~0.7.4"
   },
   "devDependencies": {
     "angular-mocks": "~1.4.2"

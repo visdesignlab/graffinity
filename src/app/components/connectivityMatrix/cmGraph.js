@@ -1,6 +1,9 @@
 /*global
  graphlib
  */
+
+import {Utils} from "../utils/utils"
+
 export class cmGraph {
 
   constructor(jsonGraph) {
@@ -183,6 +186,16 @@ export class cmGraph {
     return result;
   }
 
+  getCategoricalNodeAttrNames() {
+    var names = [];
+    for (var i = 0; i < this.nodeAttributes.length; ++i) {
+      if (this.nodeAttributes[i].isCategorical) {
+        names.push(this.nodeAttributes[i].name);
+      }
+    }
+    return names;
+  }
+
   getEdges() {
     var edges = this.graph.edges();
     var list = [];
@@ -200,8 +213,52 @@ export class cmGraph {
     return this.graph.node(id);
   }
 
+  getNodeIdName() {
+    return this.nodeAttributes[this.idAttributeIndex].name;
+  }
+
   getNodes() {
     return this.graph.nodes();
+  }
+
+  getQuantNodeAttrNames() {
+    var names = [];
+    for (var i = 0; i < this.nodeAttributes.length; ++i) {
+      if (this.nodeAttributes[i].isQuantitative) {
+        names.push(this.nodeAttributes[i].name);
+      }
+    }
+    return names;
+  }
+
+  getSubgraph(paths) {
+    let nodes = Utils.getNodesFromPaths(paths);
+
+    // graph that we're creating
+    let subgraph = new graphlib.Graph({multigraph: true});
+
+    // existing graph
+    let graph = this.graph;
+
+    // if a node is in paths, add it to the subgraph
+    graph.nodes().forEach(function (key) {
+      let id = parseInt(key);
+      if (nodes.indexOf(id) != -1) {
+        let value = graph.node(key);
+        subgraph.setNode(id, value);
+      }
+    });
+
+    // if an edge's source and target nodes in paths, add it to the subgraph
+    graph.edges().forEach(function (key) {
+      let isSourceInPaths = nodes.indexOf(parseInt(key.v)) != -1;
+      let isTargetInPaths = nodes.indexOf(parseInt(key.w)) != -1;
+      if (isSourceInPaths && isTargetInPaths) {
+        subgraph.setEdge(key.v, key.w, graph.edge(key));
+      }
+    });
+
+    return subgraph;
   }
 
   parseNodeId(node, nodeAttributes, idAttributeIndex) {
@@ -218,29 +275,5 @@ export class cmGraph {
       }
     }
     return result;
-  }
-
-  getQuantNodeAttrNames() {
-    var names = [];
-    for (var i = 0; i < this.nodeAttributes.length; ++i) {
-      if (this.nodeAttributes[i].isQuantitative) {
-        names.push(this.nodeAttributes[i].name);
-      }
-    }
-    return names;
-  }
-
-  getCategoricalNodeAttrNames() {
-    var names = [];
-    for (var i = 0; i < this.nodeAttributes.length; ++i) {
-      if (this.nodeAttributes[i].isCategorical) {
-        names.push(this.nodeAttributes[i].name);
-      }
-    }
-    return names;
-  }
-
-  getNodeIdName() {
-    return this.nodeAttributes[this.idAttributeIndex].name;
   }
 }
