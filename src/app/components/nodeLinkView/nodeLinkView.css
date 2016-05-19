@@ -1,0 +1,17 @@
+/* These are copied from pathfinder's style.css */
+
+g.node rect {
+  fill: #c8c8c8;
+  stroke: #505050;
+}
+
+g.node text {
+  font-size: 11px;
+  alignment-baseline: middle;
+  text-anchor: middle;
+}
+
+g.link path {
+  stroke: #505050;
+  fill: none;
+}

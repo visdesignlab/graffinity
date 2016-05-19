@@ -15,6 +15,8 @@ export class MainController {
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
+    this.$timeout = $timeout;
+
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
@@ -156,8 +158,11 @@ export class MainController {
   onPathsSelected(paths) {
     this.$log.debug("MainController.onPathsSelected ", paths);
     this.setNodeLinkVisibility(true);
-    this.nodeLinkView.setSelectedPaths(paths);
     this.$scope.$apply();
+    let self = this;
+    this.$timeout(function() {
+      self.nodeLinkView.setSelectedPaths(paths);
+    }, 0);
   }
 
   /**

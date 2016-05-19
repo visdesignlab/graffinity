@@ -237,6 +237,9 @@ export class cmGraph {
     // graph that we're creating
     let subgraph = new graphlib.Graph({multigraph: true});
 
+    // the subgraph's graph is an object used by dagre layout.
+    subgraph.setGraph({});
+
     // existing graph
     let graph = this.graph;
 
