@@ -161,6 +161,8 @@ export class MainController {
       // remove the text upon success
       self.hasActiveQuery = false;
       self.model = model;
+      self.viewState.setCurrentModel(model);
+      self.viewState.reset();
       self.createMatrixAndUi(model);
     };
 

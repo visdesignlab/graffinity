@@ -30,6 +30,11 @@ export class ViewState {
     this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeHidden);
   }
 
+  reset() {
+    this.isNodeHidden = {};
+    this.filterRanges = {};
+  }
+
   setCurrentModel(model) {
     this.model = model;
   }
