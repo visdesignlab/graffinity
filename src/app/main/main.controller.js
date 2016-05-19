@@ -78,6 +78,7 @@ export class MainController {
     this.svg.selectAll("*").remove();
     this.model = model;
     this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+    this.nodeLinkView.setModel(model);
     this.onEncodingChanged(encoding);
   }
 
@@ -156,11 +157,10 @@ export class MainController {
    * Function must end with a $scope.$apply in order to update the css layout.
    */
   onPathsSelected(paths) {
-    this.$log.debug("MainController.onPathsSelected ", paths);
     this.setNodeLinkVisibility(true);
     this.$scope.$apply();
     let self = this;
-    this.$timeout(function() {
+    this.$timeout(function () {
       self.nodeLinkView.setSelectedPaths(paths);
     }, 0);
   }
