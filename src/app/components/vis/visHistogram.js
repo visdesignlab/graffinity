@@ -1,3 +1,5 @@
+/*globals d3
+ */
 export class visHistogram {
   /**
    * Class for representing a histogram.
