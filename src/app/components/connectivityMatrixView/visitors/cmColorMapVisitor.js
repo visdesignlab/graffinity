@@ -62,9 +62,11 @@ export class cmColorMapVisitor extends cmCellVisitor {
     let group = cell.getGroup();
     if (paths.length) {
 
+      // Shrink the rect by 1x1 so that it doesn't take up the entire cell. This is for pretty selection.
       group.append("rect")
-        .attr("width", this.width)
-        .attr("height", this.height)
+        .attr("width", this.width - 2)
+        .attr("height", this.height - 2)
+        .attr("transform", "translate(1, 1)")
         .attr("rx", this.rx)
         .attr("ry", this.ry)
         .style("stroke", color)

@@ -11,7 +11,9 @@
 .matrix-view-cell-selected {
   stroke: black;
   stroke-width: 2px;
-  fill: transparent;
+  fill: none;
+  rx: 3px;
+  ry: 3px;
 }
 
 .matrix-view-histogram-bar {

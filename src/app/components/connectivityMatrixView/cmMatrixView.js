@@ -411,16 +411,21 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
-    let paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden)
-    this.$log.log("cell clicked", cell, paths);
-    if(!this.selectedCell) {
-      this.selectedCell = cell;
-      cell.getGroup().classed("matrix-view-cell-selected", true);
-    } else {
-      this.selectedCell.getGroup().classed("matrix-view-cell-selected", false);
-      this.selectedCell = cell;
-      this.selectedCell.getGroup().classed("matrix-view-cell-selected", true);
+    // Create rect that will draw outline around selected cell.
+    if (!this.cellSelectedRect) {
+      this.cellSelectedRect = this.svg.append("rect")
+        .attr("width", this.colWidth)
+        .attr("height", this.rowHeight)
+        .classed("matrix-view-cell-selected", true);
     }
+
+    // Position rect around the cell.
+    this.selectedCell = cell;
+    let transform = cmMatrixView.getCellTransform(cell);
+    this.cellSelectedRect.attr("transform", transform);
+
+    // Tell other views that we changed selection.
+    let paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
     this.mainController.onPathsSelected(paths);
   }
 

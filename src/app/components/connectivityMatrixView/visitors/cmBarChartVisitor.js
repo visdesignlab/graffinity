@@ -53,13 +53,15 @@ export class cmBarChartVisitor extends cmCellVisitor {
   constructor(preprocessor, width, height) {
     super();
 
+    // Width is shrunk by 2 so that we can offset rect by 1 in each direction.
     this.xScale = d3.scale.ordinal()
       .domain(reorder.permutation(preprocessor.maxNumHops))
-      .rangeRoundBands([0, width], 0.1);
+      .rangeRoundBands([0, width - 2], 0.1);
 
+    // Height is shrunk by 3: 2 for the selection offset + 1 so bars with height 1px appear in the glyph.
     this.yScale = d3.scale.linear()
       .domain([0, preprocessor.maxDomainValue])
-      .range([height, 1]);
+      .range([height, 3]);
 
     this.preprocessor = preprocessor;
 
@@ -103,8 +105,10 @@ export class cmBarChartVisitor extends cmCellVisitor {
       return;
     }
 
-    // Create the mini-bar chart.
-    let encoding = group.append("g");
+    // Create the mini-bar chart. Here we offset by 1px for selection.
+    let encoding = group.append("g")
+      .attr("transform", "translate(1, 1)");
+
     encoding.selectAll("rect")
       .data(list)
       .enter()
@@ -114,13 +118,14 @@ export class cmBarChartVisitor extends cmCellVisitor {
       })
       .attr("width", self.xScale.rangeBand())
       .attr('height', function (d) {
-        return self.height - self.yScale(d);
+        return (self.height - 2) - self.yScale(d);
       })
       .attr("class", "matrix-view-histogram-bar");
 
-    group.append("rect")
-      .attr("width", this.width)
-      .attr("height", this.height)
+    // Width and height get shrunk by 2 for selection.
+    encoding.append("rect")
+      .attr("width", this.width - 2)
+      .attr("height", this.height - 2)
       .attr("rx", 2)
       .attr("ry", 2)
       .style("stroke", "lightgray")
