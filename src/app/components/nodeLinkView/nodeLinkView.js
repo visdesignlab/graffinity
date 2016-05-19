@@ -170,7 +170,6 @@ export class NodeLinkView {
    */
   setSelectedPaths(paths) {
     this.clear();
-    console.log(paths);
     this.paths = paths;
 
     this.graph = this.model.getCmGraph().getSubgraph(paths);
