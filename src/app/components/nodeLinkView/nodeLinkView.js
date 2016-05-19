@@ -13,10 +13,12 @@ export class NodeLinkView {
     this.mainController = mainController;
 
     // Parameters for dagre
-    this.nodeWidth = 50;
-    this.nodeHeight = 25;
+    this.nodeWidth = 45;
+    this.nodeHeight = 20;
     this.nodeRx = 5;
     this.nodeRy = 5;
+    this.graphNodeSep = 15;
+    this.graphRankSep = 15;
     this.rankdir = "LR";
 
     this.graphGroup = this.svg.append("g");
@@ -49,18 +51,26 @@ export class NodeLinkView {
    * Computes a dagre layout of the graph. Convert the layout into an svg. Positions the graph inside the column.
    */
   render(graph) {
-    this.$log.debug("rendering graph", graph);
-    this.$log.debug("subgraph will have " + graph.nodes().length + " nodes and " + graph.edges().length + "  edges");
 
+    // get the column containing the svg
     let element = d3.select("#node-link-column")[0][0];
-    let width = element.clientWidth;
+
+    // How much room do we have available in the column? Use this to size the svg.
+    // padding is of the form '0px 15px.'
+    // get the horizontal form of it
+    // use that to determine width
+    let padding = d3.select("#node-link-column").style("padding");
+    padding = padding.split(' ')[1];
+    padding = parseInt(padding);
+    let width = element.clientWidth - padding;
     let height = 960;
-    this.$log.debug(element);
     this.svg.attr("width", width);
     this.svg.attr("height", height);
+
     // Prepare to render the graph.
     let self = this;
 
+    // Set the node sizes
     graph.nodes().forEach(function (key) {
       let node = graph.node(key);
       node.rx = self.nodeRx;
@@ -68,17 +78,19 @@ export class NodeLinkView {
       node.width = self.nodeWidth;
       node.height = self.nodeHeight;
     });
-    graph.graph().rankdir = "LR";
 
     // Compute layout
+    graph.graph().rankdir = "LR";
+    graph.graph().nodesep = this.graphNodeSep;
+    graph.graph().ranksep = this.graphRankSep;
     dagre.layout(graph);
 
-    this.renderNodes(this.graphGroup, graph);
     this.renderLinks(this.graphGroup, graph);
+    this.renderNodes(this.graphGroup, graph);
 
-
-    var xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2 + 20;
-    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + (graph.graph().height / 2) + ")");
+    let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
+    let yCenterOffset = (this.svg.attr("height") - graph.graph().height) / 2;
+    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + yCenterOffset + ")");
   }
 
   /**
