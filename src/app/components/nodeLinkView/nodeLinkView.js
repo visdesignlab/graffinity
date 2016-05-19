@@ -1,11 +1,14 @@
+/*globals d3, dagre
+ */
 export class NodeLinkView {
   /**
    * Class for displaying node-link diagram of the currently selected paths.
    */
-  constructor(svg, model, scope, viewState, mainController) {
+  constructor(svg, model, $log, scope, viewState, mainController) {
     this.model = model;
     this.scope = scope;
     this.svg = svg;
+    this.$log = $log;
     this.viewState = viewState;
     this.mainController = mainController;
 
@@ -26,6 +29,10 @@ export class NodeLinkView {
    */
   render(graph) {
     this.$log.debug("rendering graph", graph);
+    let description = "subgraph will have " + graph.nodes().length + " nodes and " + graph.edges().length + "  edges";
+    this.svg.append('text')
+      .attr("transform", "translate(30, 30)")
+      .text(description);
   }
 
   /**
@@ -41,8 +48,9 @@ export class NodeLinkView {
   setSelectedPaths(paths) {
     this.clear();
     this.paths = paths;
-    this.svg.append('text')
-      .attr("transform", "translate(30, 30)")
-      .text(paths);
+
+
+    this.graph = this.model.getCmGraph().getSubgraph(paths);
+    this.render(this.graph);
   }
 }

@@ -7,6 +7,7 @@ Utils = (function () {
     compareLists: compareLists,
     createMap: createMap,
     deleteCol: deleteCol,
+    getEdgesFromPaths: getEdgesFromPaths,
     getFilteredPaths: getFilteredPaths,
     getNumHops: getNumHops,
     getNodesFromPaths: getNodesFromPaths,
@@ -53,6 +54,19 @@ Utils = (function () {
     }
 
     return map;
+  }
+
+  function getEdgesFromPaths(paths) {
+    var edges = [];
+    for (var i = 0; i < paths.length; ++i) {
+      var path = paths[i];
+      for (var j = 0; j < path.length; ++j) {
+        if (j % 2 == 1) {
+          edges.push(path[j]);
+        }
+      }
+    }
+    return getUniqueValues(edges);
   }
 
   function getFilteredPaths(paths, hasNodeFilter, isNodeHidden) {
