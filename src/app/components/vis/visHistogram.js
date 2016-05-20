@@ -141,6 +141,11 @@ export class visHistogram {
 
   }
 
+  setNumBins(num)
+  {
+    this.$log.debug("set this up" + num);
+  }
+
   //returns the tick mark of the tickArray that is closest to the input parameter num
   //used for snapping the brush to the closest value in the histogram
   closest (num) {
