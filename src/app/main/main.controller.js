@@ -147,6 +147,7 @@ export class MainController {
       .attr("transform", "translate(1, 4)");
 
     let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
+    this.$log.debug("the width of the matrix legend is", width);
     if (this.matrix.legend) {
       this.matrix.legend.createView(group, width, width);
       this.ui.hasLegend = true;
@@ -186,11 +187,22 @@ export class MainController {
       .selectAll("*")
       .remove();
 
+    /**
+     * Called when the query is finished loading.
+     * Updating self.hasActiveQuery makes the matrix's row visible. We need to let the digest finish before creating
+     * the matrix. That's why the timeout is wrapped around createMatrixAndUi.
+     */
     let success = function (model) {
-      // remove the text upon success
+      // Turn off the query loading screen.
       self.hasActiveQuery = false;
+
+      // Update the model
       self.model = model;
-      self.createMatrixAndUi(model);
+
+      // Actually create the matrix
+      self.$timeout(function () {
+        self.createMatrixAndUi(model);
+      }, 0);
     };
 
     let failure = function (error) {

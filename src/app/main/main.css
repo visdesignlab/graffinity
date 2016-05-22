@@ -5,10 +5,10 @@
 
 /* This controls the animation for changing column widths with ng-class */
 .row span {
-    -webkit-transition: width 0.3s ease, margin 0.3s ease;
-    -moz-transition: width 0.3s ease, margin 0.3s ease;
-    -o-transition: width 0.3s ease, margin 0.3s ease;
-    transition: width 0.3s ease, margin 0.3s ease;
+  -webkit-transition: width 0.3s ease, margin 0.3s ease;
+  -moz-transition: width 0.3s ease, margin 0.3s ease;
+  -o-transition: width 0.3s ease, margin 0.3s ease;
+  transition: width 0.3s ease, margin 0.3s ease;
 }
 
 /* The matrix view is wrapped in a dark grey outline */
@@ -18,4 +18,12 @@
 
 .control-header {
   margin-top: 15px;
+}
+
+.query-status-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  background: transparent;
 }

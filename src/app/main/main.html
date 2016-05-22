@@ -6,7 +6,7 @@
   </div>
 
   <!-- Row holding the controls (left-most col) and matrix (right-ish cols) -->
-  <div class="row">
+  <div class="row animate-show" ng-show="!main.hasActiveQuery && !main.hasQueryError">
 
     <!-- Column holding global matrix controls -->
     <span class="col-lg-1" id="controls-column">
@@ -87,15 +87,21 @@
     <!-- TODO: Update the width/height of the svg elements here and in the nodeLinkView-->
 
     <!-- Columns holding the matrix -->
+
     <span ng-class="main.matrixClass" class="column-matrix">
-      <span ng-show="main.hasActiveQuery">Query is loading...</span>
-      <span ng-show="main.hasQueryError">{{main.queryError}}</span>
-      <svg id="my-svg" width="1024" height="1024"></svg>
+
+      <svg ng-show="!main.hasActiveQuery && !main.hasQueryError" id="my-svg" width="1024" height="1024"></svg>
     </span>
 
     <!-- Columns holding the node link view -->
     <span ng-class="main.nodeLinkClass" ng-show="main.nodeLinkClass" id="node-link-column">
       <svg id="node-link-svg"></svg>
     </span>
+  </div>
+
+  <!-- Row the replaces the matrix when there is a query running or query error. -->
+  <div ng-show="main.hasActiveQuery || main.hasQueryError" class="jumbotron row query-status-row">
+    <p ng-show="main.hasActiveQuery">Query is loading...</p>
+    <p ng-show="main.hasQueryError">{{main.queryError}}</p>
   </div>
 </div>
