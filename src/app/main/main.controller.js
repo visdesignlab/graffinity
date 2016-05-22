@@ -179,6 +179,10 @@ export class MainController {
     self.hasActiveQuery = true;
     self.hasQueryError = false;
 
+    // Reset the node-link view
+    self.setNodeLinkVisibility(false);
+    self.nodeLinkView.clear();
+
     // remove svg when query button pressed
     this.svg.selectAll("*").remove();
 
