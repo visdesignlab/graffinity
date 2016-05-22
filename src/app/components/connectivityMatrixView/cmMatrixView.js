@@ -69,6 +69,7 @@ export class cmMatrixView extends SvgGroupElement {
     row.setPosition(0, y);
     this.allRows.push(row);
     this.rowHeights.push(rowHeight);
+    this.addChild(row);
   }
 
   applyVisitor(visitor) {
@@ -460,6 +461,7 @@ export class cmMatrixView extends SvgGroupElement {
    * Function called to completely reset this object's state and create a new matrix in the svg.
    */
   setModel(model) {
+    this.clearChildren();
     this.model = model;
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.colNodeIndexes = model.getColNodeIndexes();

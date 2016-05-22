@@ -1,7 +1,24 @@
+/**
+ * Class for easy manipulation of svg groups.
+ *
+ * this.children are other SvgGroupElements whose DOM elements contained by this group element.
+ */
 export class SvgGroupElement {
   constructor(group) {
     this.group = group;
-    this.positionInitialized = false;
+    this.useAnimation = true;
+    this.children = [];
+  }
+
+  clearChildren() {
+    for(var i=0; i<this.children.length; ++i) {
+      this.children[i].clearChildren();
+    }
+    this.children = [];
+  }
+
+  addChild(groupElement) {
+    this.children.push(groupElement);
   }
 
   getGroup() {
@@ -9,14 +26,25 @@ export class SvgGroupElement {
   }
 
   setPosition(x, y, hideAfterMove) {
-    if (!this.positionInitialized) {
-      this.positionInitialized = true;
-      this.group.attr("transform", "translate(" + x + ", " + y + ")")
+    let transform = "translate( " + x + ", " + y + ") ";
+
+    // Does this group already have a transform attribute defined?
+    // If not, set it for the first time.
+
+    if (this.group.attr("transform") == undefined) {
+      this.group.attr("transform", transform);
     } else {
-      if (!hideAfterMove) {
-        this.group.transition().duration(500).attr("transform", "translate(" + x + ", " + y + ")");
-      } else {
-        this.group.transition().duration(500).attr("transform", "translate(" + x + ", " + y + ")");
+      // Default is to animate transitions
+      let duration = 500;
+
+      if (!this.useAnimation) {
+        duration = 0;
+      }
+
+      // Actually do the transition
+      this.group.transition().duration(duration).attr("transform", transform);
+
+      if (hideAfterMove) {
         this.group.transition().delay(500).style("display", "none");
       }
     }
@@ -24,5 +52,12 @@ export class SvgGroupElement {
 
   setVisible(visible) {
     this.group.style("display", visible ? "block" : "none");
+  }
+
+  setUseAnimation(useAnimation) {
+    this.useAnimation = useAnimation;
+    for (var i = 0; i < this.children.length; ++i) {
+      this.children[i].setUseAnimation(useAnimation);
+    }
   }
 }

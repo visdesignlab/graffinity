@@ -104,6 +104,7 @@ export class cmMatrixRow extends SvgGroupElement {
     let group = this.group;
     for (var i = 0; i < totalNumCols; ++i) {
       this.majorCells[i] = new cmMatrixCell(group, i, !this.isMinorRow, true, i < numHeaderCols);
+      this.addChild(this.majorCells[i]);
     }
   }
 
@@ -118,6 +119,7 @@ export class cmMatrixRow extends SvgGroupElement {
           minorCell.setVisible(false);
           minorCell.setPosition(0, 0);
           majorCol.addMinorCell(minorCell);
+          majorCol.addChild(minorCell);
         }
       }
     }
@@ -203,7 +205,7 @@ export class cmMatrixRow extends SvgGroupElement {
     let numColumns = colWidths.length;
     let xPosition = 0;
     for (var i = 0; i < numColumns; ++i) {
-      this.majorCells[i].getGroup().transition().duration(500).attr("transform", "translate(" + xPosition + ",0)");
+      this.majorCells[i].setPosition(xPosition, 0);
       xPosition += colWidths[i];
     }
 

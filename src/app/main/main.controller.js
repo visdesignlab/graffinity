@@ -91,10 +91,15 @@ export class MainController {
     this.createReorderControls();
     this.createEncodingControls();
     this.createMatrix(model, this.ui.selectedEncoding);
+
+    // Disable animation of the matrix so that its initial position is the sorted one.
+    this.matrix.setUseAnimation(false);
+    this.onSortOrderChanged("optimal leaf");
+    this.matrix.setUseAnimation(true);
   }
 
   createReorderControls() {
-    this.ui.orders = ["initial", "random", "optimal leaf"];
+    this.ui.orders = ["optimal leaf", "database", "random"];
   }
 
   createEncodingControls() {
@@ -147,7 +152,7 @@ export class MainController {
       .attr("transform", "translate(1, 4)");
 
     let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
-    this.$log.debug("the width of the matrix legend is", width);
+
     if (this.matrix.legend) {
       this.matrix.legend.createView(group, width, width);
       this.ui.hasLegend = true;
@@ -243,10 +248,11 @@ export class MainController {
       let order = reorder.optimal_leaf_order();
       rowPerm = order.distanceMatrix(distRows)(matrix);
       colPerm = order.distanceMatrix(distCols)(transpose);
-    } else if (order == 'initial') {
+    } else if (order == 'database') {
       rowPerm = reorder.permutation(matrix.length);
       colPerm = reorder.permutation(matrix[0].length);
     }
+
     this.matrix.setSortOrders(rowPerm, colPerm);
   }
 
