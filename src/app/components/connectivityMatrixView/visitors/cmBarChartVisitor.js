@@ -114,11 +114,11 @@ export class cmBarChartVisitor extends cmCellVisitor {
       .enter()
       .append("rect")
       .attr("transform", function (d, i) {
-        return "translate(" + self.xScale(i) + "," + self.yScale(d) + ")";
+        return "translate(" + self.xScale(i) + "," + (self.yScale(d) - 2) + ")";
       })
       .attr("width", self.xScale.rangeBand())
       .attr('height', function (d) {
-        return (self.height - 2) - self.yScale(d);
+        return (self.height) - self.yScale(d);
       })
       .attr("class", "matrix-view-histogram-bar");
 
