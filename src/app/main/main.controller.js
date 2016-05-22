@@ -77,7 +77,11 @@ export class MainController {
   createMatrix(model, encoding) {
     this.svg.selectAll("*").remove();
     this.model = model;
-    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+    if (!this.matrix) {
+      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+    } else {
+      this.matrix.setModel(model);
+    }
     this.nodeLinkView.setModel(model);
     this.onEncodingChanged(encoding);
   }
