@@ -6,12 +6,6 @@ export class visHistogram {
    *
    * Variables are passed by reference.
    *
-   * Changes to range should be done like this:
-   * range[0] = minValue
-   * range[1] = maxValue
-   *
-   * They should *not* be done like this, because it breaks the reference by creating a new array.
-   * range = [minValue, maxValue]
    */
 
   constructor($scope, $log, parent, width, height, numBins, values, range) {
@@ -24,127 +18,174 @@ export class visHistogram {
     this.values = values;
     this.range = range;
 
-    this.$log.debug("Creating visHistogram", width, height, numBins, values, range);
     //margin allows text from axis not to go out of bounds left,right, and below.
-    let margin = {top: 5, right: 30, bottom: 30, left: 30};
+    this.margin = {top: 5, right: 30, bottom: 15, left: 30};
+
     let self = this;
 
-    self.chartWidth = this.width - margin.left - margin.right;
-    self.chartHeight = this.height - margin.top - margin.bottom;
+    this.chartWidth = this.width - this.margin.left - this.margin.right;
+    this.chartHeight = this.height - this.margin.top - this.margin.bottom;
 
     this.maxVal = d3.max(this.values);
     this.minVal = d3.min(this.values);
 
+    this.numBins = numBins;
+
+    this.generateHistogram();
+
+    this.xScale = d3.scale.linear()
+      .domain([d3.min(this.values), d3.max(this.values)])
+      .range([0, self.chartWidth]);
+
+    this.generateYAxis();
+    this.drawHistogramBars();
+    this.drawAxes();
+    this.generateBrush();
+  }
+
+  // creates brush that will respond to user clicks.
+  // selects range of values to filter the display
+  generateBrush()
+  {
+    let brushMove = this.brushMove.bind(this);
+    let brushEnd = this.brushEnd.bind(this);
+
+    this.brush = d3.svg.brush()
+      .x(this.xScale)
+      .on("brush", brushMove)
+      .on("brushend", brushEnd)
+
+    let arc = d3.svg.arc()
+      .outerRadius(this.chartHeight / 10)
+      .startAngle(0)
+      .endAngle(function (d, i) {
+        return i ? -Math.PI : Math.PI;
+      });
+
+
+    let brushg = this.parent.append("g")
+      .attr("class", "brush")
+      .attr("transform", "translate(" + self.margin.left + "," + self.margin.top + ")")
+      .call(this.brush)
+
+    brushg.selectAll(".resize").append("path")
+      .attr("transform", "translate(0," + self.chartHeight / 2 + ")")
+      .attr("d", arc)
+      .attr("fill", "#666")
+      .attr("fill-opacity", ".8")
+      .attr("stroke-width", "1")
+      .attr("stroke", "#000");
+
+    brushg.selectAll("rect")
+      .attr("stroke", "#fff")
+      .attr("stroke-opacity", ".6")
+      .attr("stroke-width", "1")
+      .attr("fill-opacity", ".1")
+      .attr("height", self.chartHeight);
+  }
+
+  generateYAxis()
+  {
+    //create y-axis; using 4 tick marks
+    let maxHistValue = d3.max(this.hist, function (d) {
+      return d.y;
+    });
+
+    let yBinScale = d3.scale.linear().domain([0, 4]).range([0, maxHistValue]);
+    this.yTickArray = d3.range(5).map(yBinScale);
+
+    this.yScale = d3.scale.linear()
+      .domain([0, d3.max(this.hist, function (d) {
+      return d.y;
+      })])
+      .range([this.chartHeight, 0]);
+  }
+
+
+  generateHistogram()
+  {
     //create the numBins bins for the horizontal axis of histogram
-    let binScale = d3.scale.linear().domain([0, numBins]).range([this.minVal, this.maxVal]);
-    this.tickArray = d3.range(numBins + 1).map(binScale);
-
-
-    let xScale = d3.scale.linear()
-        .domain([d3.min(this.values), d3.max(this.values)])
-        .range([0, self.chartWidth]);
+    let binScale = d3.scale.linear().domain([0, this.numBins]).range([this.minVal, this.maxVal]);
+    this.tickArray = d3.range(this.numBins + 1).map(binScale);
 
     // Generate a histogram using uniformly-spaced bins.
-    let hist = d3.layout.histogram()
+    this.hist = d3.layout.histogram()
         .bins(this.tickArray)
         (this.values);
+  }
 
-    //create y-axis; using 4 tick marks
-    let maxHistValue = d3.max(hist, function(d) { return d.y; });
-    let yBinScale = d3.scale.linear().domain([0, 4]).range([0, maxHistValue]);
-    let yTickArray = d3.range(5).map(yBinScale);
 
-    let yScale = d3.scale.linear()
-        .domain([0, d3.max(hist, function(d) { return d.y; })])
-        .range([self.chartHeight, 0]);
-
-    let xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("bottom")
-        .tickValues(this.tickArray)
-        .tickFormat(d3.format(".3s"));
+  drawAxes()
+  {
+     let xAxis = d3.svg.axis()
+      .scale(this.xScale)
+      .orient("bottom")
+      .tickValues(this.tickArray)
+      .tickFormat(d3.format(".3s"));
 
     let yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("left")
-        .tickValues(yTickArray)
-        .tickFormat(d3.format("3d"));
+      .scale(this.yScale)
+      .orient("left")
+      .tickValues(this.yTickArray)
+      .tickFormat(d3.format("3d"));
+
+    //place the x and y axis on the histogram
+    this.parent.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + self.margin.left + "," + (self.margin.top + self.chartHeight) + ")")
+      .call(xAxis);
+
+    this.parent.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + self.margin.left + "," + self.margin.top + ")")
+      .call(yAxis);
+  }
+
+  drawHistogramBars()
+  {
+    self = this;
 
     //draw bars on histogram
     let bar = this.parent.selectAll(".bar")
-        .data(hist)
+        .data(this.hist)
         .enter().append("g")
         .attr("class", "bar")
-        .attr("transform", function(d) {return "translate(" + (margin.left+xScale(d.x)) + "," + (margin.top+ yScale(d.y)) + ")"; });
+        .attr("transform", function(d) {return "translate(" + (self.margin.left+self.xScale(d.x)) + "," + (self.margin.top+ self.yScale(d.y)) + ")"; });
 
     bar.append("rect")
         .attr("x", 1)
-        .attr("width", xScale(this.minVal+hist[0].dx)-1)
-        .attr("height", function(d) {return (self.chartHeight - yScale(d.y)); })
+        .attr("width", self.xScale(this.minVal+this.hist[0].dx)-1)
+        .attr("height", function(d) {return (self.chartHeight - self.yScale(d.y)); })
         .style("fill", "steelblue");     // set the fill colour ;
 
     //place label of value within the bar
     bar.append("text")
         .attr("dy", ".75em")
         .attr("y", 6)
-        .attr("x", xScale(this.minVal+hist[0].dx) / 2)  //put label in middle of bar
+        .attr("x", this.xScale(this.minVal+this.hist[0].dx) / 2)  //put label in middle of bar
         .attr("text-anchor", "middle")
         .style("fill", "#fff")    // set the fill colour ;
         .text(function(d) { return d.y; }); //label is the value of the count
-
-    //place the x and y axis on the histogram
-    this.parent.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(" + margin.left + "," + (margin.top + self.chartHeight) + ")")
-        .call(xAxis);
-
-    this.parent.append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        .call(yAxis);
-
-    // Draw the brush
-    let brushMove = this.brushMove.bind(this);
-    let brushEnd = this.brushEnd.bind(this);
-
-    this.brush = d3.svg.brush()
-        .x(xScale)
-        .on("brush", brushMove)
-        .on("brushend", brushEnd)
-
-    let arc = d3.svg.arc()
-      .outerRadius(height / 15)
-      .startAngle(0)
-      .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
-
-
-    let brushg = this.parent.append("g")
-      .attr("class", "brush")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-      .call(this.brush)
-
-    brushg.selectAll(".resize").append("path")
-      .attr("transform", "translate(0," +  self.chartHeight / 2 + ")")
-      .attr("d", arc)
-      .attr("fill","#666")
-      .attr("fill-opacity",".8")
-      .attr("stroke-width", "1")
-      .attr("stroke","#000");
-
-
-    brushg.selectAll("rect")
-      .attr("stroke","#fff")
-      .attr("stroke-opacity", ".6")
-      .attr("stroke-width", "1")
-      .attr("fill-opacity",".1")
-      .attr("height", self.chartHeight);
-
   }
 
-  setNumBins(num)
+  // mutator method called when the text box is changed
+  // updates the axes and redraws the histogram apporpriately
+  setNumBins(inputNumBins)
   {
-    this.$log.debug("set this up" + num);
+    this.numBins = inputNumBins;
+    this.generateHistogram();
+    this.generateYAxis();
+
+    this.parent.selectAll("g.x.axis").remove();
+    this.parent.selectAll("g.y.axis").remove();
+    this.parent.selectAll("g.bar").remove();
+    this.parent.selectAll("g.brush").remove();
+
+    this.drawHistogramBars();
+    this.drawAxes();
+    this.generateBrush(); //redraw brush on top (over bars) so it is easier to interact with.
   }
+
 
   //returns the tick mark of the tickArray that is closest to the input parameter num
   //used for snapping the brush to the closest value in the histogram
