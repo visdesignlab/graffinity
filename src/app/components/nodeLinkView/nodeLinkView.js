@@ -19,8 +19,11 @@ export class NodeLinkView {
     this.nodeRy = 5;
     this.graphNodeSep = 15;
     this.graphRankSep = 15;
+    this.graphMarginTop = 80;
     this.rankdir = "LR";
 
+    // Settings for positioning the graph
+    this.graphYOffset = 20;
     this.graphGroup = this.svg.append("g");
   }
 
@@ -83,14 +86,14 @@ export class NodeLinkView {
     graph.graph().rankdir = "LR";
     graph.graph().nodesep = this.graphNodeSep;
     graph.graph().ranksep = this.graphRankSep;
+    graph.graph().margintop = this.graphMarginTop;
     dagre.layout(graph);
 
     this.renderLinks(this.graphGroup, graph);
     this.renderNodes(this.graphGroup, graph);
 
     let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
-    let yCenterOffset = (this.svg.attr("height") - graph.graph().height) / 2;
-    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + yCenterOffset + ")");
+    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + this.graphYOffset + ")");
   }
 
   /**
