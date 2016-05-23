@@ -16,6 +16,8 @@ import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
 import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributesVisitor"
 import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
+import {cmHoverVisitor} from "./visitors/cmHoverVisitor"
+
 import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
@@ -133,8 +135,10 @@ export class cmMatrixView extends SvgGroupElement {
   connectToViewState(scope) {
     let onHideNodes = this.onHideNodes.bind(this);
     let onShowNodes = this.onShowNodes.bind(this);
+    let onHoverNodes = this.onHoverNodes.bind(this);
     scope.$on("hideNodes", onHideNodes);
     scope.$on("showNodes", onShowNodes);
+    scope.$on("hoverNode", onHoverNodes);
   }
 
   getAttributeColIndex(viewColIndex) {
@@ -278,18 +282,13 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
-    // Create rect that will draw outline around selected cell.
-    if (!this.cellSelectedRect) {
-      this.cellSelectedRect = this.svg.append("rect")
-        .attr("width", this.colWidth)
-        .attr("height", this.rowHeight)
-        .classed("matrix-view-cell-selected", true);
+
+    if (this.selectedCell) {
+      this.selectedCell.interactionGroup.classed("selected", false);
     }
 
-    // Position rect around the cell.
     this.selectedCell = cell;
-    let transform = cmMatrixView.getCellTransform(cell);
-    this.cellSelectedRect.attr("transform", transform);
+    cell.interactionGroup.classed("selected", true);
 
     // Tell other views that we changed selection.
     let paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
@@ -387,6 +386,26 @@ export class cmMatrixView extends SvgGroupElement {
     this.createAttributeEncodings();
     this.setEncoding(this.encoding);
     this.updatePositions(this.rowPerm, this.colPerm);
+  }
+
+  /**
+   * Called when the mouse is on top of a node in another view.
+   */
+  onHoverNodes(event, nodeIndexes) {
+    nodeIndexes = parseInt(nodeIndexes);
+
+    if (!this.hoverVisitor) {
+      this.hoverVisitor = new cmHoverVisitor();
+    }
+
+    if (nodeIndexes) {
+      this.hoverVisitor.setNodes(nodeIndexes);
+      this.hoverVisitor.isHovered = true;
+    } else {
+      this.hoverVisitor.isHovered = false;
+    }
+
+    this.applyVisitor(this.hoverVisitor);
   }
 
   /**
@@ -609,8 +628,7 @@ export class cmMatrixView extends SvgGroupElement {
     this.connectToViewState(this.$scope);
 
     // highlights need to be created after the row groups
-    this.highlights = [];
-    this.cellSelectedRect = null;
+    this.highlights = [];1
     this.createHighlights();
   }
 

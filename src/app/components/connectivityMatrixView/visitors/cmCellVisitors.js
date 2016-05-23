@@ -23,8 +23,11 @@ export class cmCellVisitor {
     let self = this;
     let group = cell.getGroup();
 
-    group.append("rect")
-      .attr("class", "matrix-view-interactive-cell")
+    cell.interactionGroup = group.append("g")
+      .classed("matrix-view-interaction-group", true);
+
+    cell.interactionGroup
+      .append("rect")
       .attr("width", this.width)
       .attr("height", this.height)
       .attr("rx", this.rx)

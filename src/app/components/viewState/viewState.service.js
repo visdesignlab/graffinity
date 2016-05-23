@@ -52,6 +52,10 @@ export class ViewState {
     this.showNodes(showNodes);
   }
 
+  setHoveredNode(node) {
+    this.$scope.$broadcast('hoverNode', node);
+  }
+
   showNodes(nodeIndexes) {
     for (var i = 0; i < nodeIndexes.length; ++i) {
       this.isNodeHidden[nodeIndexes[i]] = false;

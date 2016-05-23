@@ -23,8 +23,24 @@ export class NodeLinkView {
     this.rankdir = "LR";
 
     // Settings for positioning the graph
-    this.graphYOffset = 20;
+    this.graphYOffset = 80;
     this.graphGroup = this.svg.append("g");
+  }
+
+  /**
+   * Used to set mouseenter/mouseleave events on nodes.
+   */
+  addHoverCallbacks(group, selector) {
+    let self = this;
+    group.selectAll(selector)
+      .on("mouseenter", function (d) {
+        d3.select(this).classed("hovered", true);
+        self.viewState.setHoveredNode(d);
+      })
+      .on("mouseleave", function () {
+        d3.select(this).classed("hovered", false);
+        self.viewState.setHoveredNode(null);
+      });
   }
 
   /**
@@ -138,7 +154,10 @@ export class NodeLinkView {
    */
   renderNodes(parent, graph) {
     // Create groups that will hold the nodes.
-    this.nodes = parent.selectAll("g.node")
+    this.nodeGroup = parent.append("g")
+      .classed("nodeGroup", true);
+
+    this.nodes = this.nodeGroup.selectAll("g.node")
       .data(graph.nodes())
       .enter()
       .append("g")
@@ -146,6 +165,7 @@ export class NodeLinkView {
         return NodeLinkView.getNodeTopLeftAsTransform(d, graph);
       })
       .classed("node", true);
+
 
     // Create node rectangles
     this.nodes.append("rect")
@@ -171,6 +191,10 @@ export class NodeLinkView {
       .attr("transform", function (d) {
         return NodeLinkView.getNodeCenterAsTransform(d, graph);
       });
+
+    this.addHoverCallbacks(this.nodeGroup, "g.node");
+    this.addHoverCallbacks(this.nodeGroup, "g.text");
+
   }
 
   /**

@@ -11,6 +11,14 @@ g.node text {
   text-anchor: middle;
 }
 
+g.node.hovered rect {
+  fill: #FFC800;
+}
+
+g.node.selected rect {
+  fill: #ff6400;
+}
+
 g.link path {
   stroke: #505050;
   fill: none;
