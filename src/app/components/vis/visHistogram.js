@@ -30,7 +30,7 @@ export class visHistogram {
 
     this.numBins = numBins;
 
-    this.createHisotgramData();
+    this.createHistogramData();
 
     this.xScale = d3.scale.linear()
       .domain([d3.min(this.values), d3.max(this.values)])
@@ -177,7 +177,7 @@ export class visHistogram {
   /**
    * Generate histogram with this.numBins bins.
    */
-  createHisotgramData() {
+  createHistogramData() {
     // Create the numBins bins for the horizontal axis of histogram
     let binScale = d3.scale.linear().domain([0, this.numBins]).range([this.minValue, this.maxValue]);
     this.tickArray = d3.range(this.numBins + 1).map(binScale);
@@ -229,7 +229,7 @@ export class visHistogram {
    */
   setNumBins(inputNumBins) {
     this.numBins = inputNumBins;
-    this.createHisotgramData();
+    this.createHistogramData();
     this.createYAxis();
 
     this.parent.selectAll("g.x.axis").remove();
