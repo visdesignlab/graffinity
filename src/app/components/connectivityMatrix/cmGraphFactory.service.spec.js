@@ -74,4 +74,13 @@ describe('cmGraphFactory', () => {
     $httpBackend.flush();
   }));
 
+  it('getSubgraph', inject(($httpBackend, $q, cmGraphFactory)=> {
+    requestAndCreateGraph($httpBackend, $q, cmGraphFactory).then(function (graph) {
+      let paths = [[120, 3, 1, 4, 5107]];
+      let subgraph = graph.getSubgraph(paths);
+      expect(subgraph.nodes().length).toEqual(3);
+      expect(subgraph.edges().length).toEqual(2);
+    });
+    $httpBackend.flush();
+  }));
 });

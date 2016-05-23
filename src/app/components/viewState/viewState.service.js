@@ -57,6 +57,10 @@ export class ViewState {
     this.showNodes(showNodes);
   }
 
+  setHoveredNode(node) {
+    this.$scope.$broadcast('hoverNode', node);
+  }
+
   showNodes(nodeIndexes) {
     if (nodeIndexes.length == 0) {
       return;

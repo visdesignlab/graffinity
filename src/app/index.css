@@ -5,19 +5,10 @@
   padding: 0.2em 0;
 }
 
-.thumbnail {
-  height: 200px;
-}
-
-.thumbnail img.pull-right {
-  width: 50px;
-}
-
 .dot {
   fill: none;
   stroke: #333;
   stroke-width: 1px;
-
 }
 
 .axis path,
@@ -28,6 +19,12 @@
   stroke-width: 1px;
 }
 
-.control-header {
-  margin-top: 15px;
+.fa {
+  display: inline;
+  background: transparent;
+}
+
+.fa:hover {
+  color: white;
+  cursor: pointer;
 }

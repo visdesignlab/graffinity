@@ -18,6 +18,7 @@ import { ModalHistogramFilterController } from "../app/components/modals/modalHi
 import { QueryDirective } from "../app/components/query/query.directive";
 import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
+import { NodeLinkViewFactory } from '../app/components/nodeLinkView/nodeLinkViewFactory.service';
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
@@ -32,6 +33,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service('cmMatrixFactory', cmMatrixFactory)
   .service('cmModelFactory', cmModelFactory)
   .service('cmMatrixViewFactory', cmMatrixViewFactory)
+  .service('NodeLinkViewFactory', NodeLinkViewFactory)
   .service('viewState', ViewState)
   .controller('MainController', MainController)
   .controller('ModalListFilterController', ModalListFilterController)

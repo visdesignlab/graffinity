@@ -4,7 +4,8 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 
 export class MainController {
-  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory, viewState, modalService) {
+  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
+              viewState, modalService, NodeLinkViewFactory) {
     'ngInject';
 
     this.viewState = viewState;
@@ -14,11 +15,15 @@ export class MainController {
     this.cmModelFactory = cmModelFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
+    this.$timeout = $timeout;
 
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
     this.queryError = "";
+
+    this.matrixClass = "col-lg-11";
+    this.nodeLinkClass = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -27,6 +32,8 @@ export class MainController {
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
 
+    this.ui.debugNodeLinkLayout = true;
+
     this.svg = d3.select("#my-svg")
       .append("g")
       .attr("transform", "translate(20, 20)");
@@ -34,7 +41,7 @@ export class MainController {
     let useLargeResult = false;
 
     // uncomment this to use a larger default data set.
-    // useLargeResult = true;
+    useLargeResult = true;
 
     let jsonGraph = mock.output.graph;
     let jsonMatrix = mock.output.matrix;
@@ -48,6 +55,9 @@ export class MainController {
     let graph = cmGraphFactory.createFromJsonObject(jsonGraph);
     let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = cmModelFactory.createModel(graph, matrix);
+
+    this.nodeLinkSvg = d3.select("#node-link-svg");
+    this.nodeLinkView = NodeLinkViewFactory.createNodeLinkView(this.nodeLinkSvg, this.model, this.$scope, this.viewState, this);
 
     // Wait until after the current digest cycle to activate the ui.
     let self = this;
@@ -67,7 +77,12 @@ export class MainController {
   createMatrix(model, encoding) {
     this.svg.selectAll("*").remove();
     this.model = model;
-    this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+    if (!this.matrix) {
+      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+    } else {
+      this.matrix.setModel(model);
+    }
+    this.nodeLinkView.setModel(model);
     this.onEncodingChanged(encoding);
   }
 
@@ -76,10 +91,15 @@ export class MainController {
     this.createReorderControls();
     this.createEncodingControls();
     this.createMatrix(model, this.ui.selectedEncoding);
+
+    // Disable animation of the matrix so that its initial position is the sorted one.
+    this.matrix.setUseAnimation(false);
+    this.onSortOrderChanged("optimal leaf");
+    this.matrix.setUseAnimation(true);
   }
 
   createReorderControls() {
-    this.ui.orders = ["initial", "random", "optimal leaf"];
+    this.ui.orders = ["optimal leaf", "database", "random"];
   }
 
   createEncodingControls() {
@@ -132,12 +152,27 @@ export class MainController {
       .attr("transform", "translate(1, 4)");
 
     let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
+
     if (this.matrix.legend) {
       this.matrix.legend.createView(group, width, width);
       this.ui.hasLegend = true;
     } else {
       this.ui.hasLegend = false;
     }
+  }
+
+  /**
+   * This gets called when the user clicks on a cell in the matrix view. It will populate the node-link view with a list
+   * of paths. These paths are already filtered.
+   * Function must end with a $scope.$apply in order to update the css layout.
+   */
+  onPathsSelected(paths) {
+    this.setNodeLinkVisibility(true);
+    this.$scope.$apply();
+    let self = this;
+    this.$timeout(function () {
+      self.nodeLinkView.setSelectedPaths(paths);
+    }, 0);
   }
 
   /**
@@ -149,6 +184,10 @@ export class MainController {
     self.hasActiveQuery = true;
     self.hasQueryError = false;
 
+    // Reset the node-link view
+    self.setNodeLinkVisibility(false);
+    self.nodeLinkView.clear();
+
     // remove svg when query button pressed
     this.svg.selectAll("*").remove();
 
@@ -157,13 +196,24 @@ export class MainController {
       .selectAll("*")
       .remove();
 
+    /**
+     * Called when the query is finished loading.
+     * Updating self.hasActiveQuery makes the matrix's row visible. We need to let the digest finish before creating
+     * the matrix. That's why the timeout is wrapped around createMatrixAndUi.
+     */
     let success = function (model) {
-      // remove the text upon success
+      // Turn off the query loading screen.
       self.hasActiveQuery = false;
+
+      // Update the model
       self.model = model;
       self.viewState.setCurrentModel(model);
       self.viewState.reset();
-      self.createMatrixAndUi(model);
+
+      // Actually create the matrix
+      self.$timeout(function () {
+        self.createMatrixAndUi(model);
+      }, 0);
     };
 
     let failure = function (error) {
@@ -200,11 +250,20 @@ export class MainController {
       let order = reorder.optimal_leaf_order();
       rowPerm = order.distanceMatrix(distRows)(matrix);
       colPerm = order.distanceMatrix(distCols)(transpose);
-    } else if (order == 'initial') {
+    } else if (order == 'database') {
       rowPerm = reorder.permutation(matrix.length);
       colPerm = reorder.permutation(matrix[0].length);
     }
+
     this.matrix.setSortOrders(rowPerm, colPerm);
+  }
+
+  /**
+   * Called when the node-link view gets toggled. This will either collapse or expand the far right column which
+   * contains the node-link directive.
+   */
+  onToggleNodeLinkView() {
+    this.setNodeLinkVisibility(this.nodeLinkClass == "");
   }
 
   /**
@@ -273,5 +332,19 @@ export class MainController {
     modalSuccess = modalSuccess.bind(this);
 
     this.modalService.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
+  }
+
+  /**
+   * Makes the node-link view visible by expanding it from the right side of the screen.
+   * This causes an animated transition because of the '.row span' definition in main.css
+   */
+  setNodeLinkVisibility(visible) {
+    if (!visible) {
+      this.nodeLinkClass = "";
+      this.matrixClass = "col-lg-11";
+    } else {
+      this.nodeLinkClass = "col-lg-3";
+      this.matrixClass = "col-lg-8";
+    }
   }
 }
