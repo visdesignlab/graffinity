@@ -57,7 +57,7 @@ export class visHistogram {
 
     // Fade all values in the histogram not within the brush
     let self = this;
-    d3.selectAll(".bar").style("opacity", function (d, i) {
+    d3.selectAll(".bar").style("opacity", function (d) {
       return d.x >= localBrushStartValue && d.x < localBrushEndValue || self.brush.empty() ? "1" : ".4";
     });
 
