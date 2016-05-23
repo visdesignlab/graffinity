@@ -27,3 +27,12 @@
   height: 100px;
   background: transparent;
 }
+
+.main-icon-control {
+  padding: 3px;
+}
+
+.main-icon-control:hover {
+  background: #6D6C6C;
+  border-radius: 3px;
+}
