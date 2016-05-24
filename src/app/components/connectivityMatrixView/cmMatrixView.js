@@ -60,7 +60,9 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowHeight = 15;
     this.svg = svg;
 
+    this.isInitialized = false;
     this.setModel(model);
+    this.isInitialized = true;
   }
 
   addRow(row, rowHeight) {
@@ -485,15 +487,19 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.colNodeIndexes = model.getColNodeIndexes();
 
-    let attributes = ['area', 'locations'];
+    let attributes = model.graph.getQuantNodeAttrNames();
     this.attributes = attributes;
     this.numControlCols = 1;
 
-    this.isAttributeColVisible = {};
-    this.isAttributeRowVisible = {};
-    for (var i = 0; i < attributes.length; ++i) {
-      this.isAttributeColVisible[attributes[i]] = true;
-      this.isAttributeRowVisible[attributes[i]] = true;
+    // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
+    // attributes that the user already selected.
+    if (!this.isInitialized) {
+      this.isAttributeColVisible = {};
+      this.isAttributeRowVisible = {};
+      for (var i = 0; i < attributes.length; ++i) {
+        this.isAttributeColVisible[attributes[i]] = false;
+        this.isAttributeRowVisible[attributes[i]] = false;
+      }
     }
 
     this.numAttributeCols = attributes.length;
@@ -510,7 +516,6 @@ export class cmMatrixView extends SvgGroupElement {
     this.allRows = [];
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
-
 
     // Create state for whether cols are unrolled and visible.
     this.isMajorColUnrolled = [];
@@ -558,7 +563,6 @@ export class cmMatrixView extends SvgGroupElement {
         this.colWidths[i] = this.colWidthLabel;
       }
     }
-
 
     // Controls row is the only one with a onColControlsClicked callback.
     let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
@@ -628,8 +632,19 @@ export class cmMatrixView extends SvgGroupElement {
     this.connectToViewState(this.$scope);
 
     // highlights need to be created after the row groups
-    this.highlights = [];1
+    this.highlights = [];
     this.createHighlights();
+
+    // Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
+    // do not change between queries.
+    for (i = 0; i < attributes.length; ++i) {
+      if (!this.isAttributeColVisible[attributes[i]]) {
+        this.onHideAttributeCol(i);
+      }
+      if (!this.isAttributeRowVisible[attributes[i]]) {
+        this.onHideAttributeRow(i);
+      }
+    }
   }
 
   /** Used for externally setting sort orders.
