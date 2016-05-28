@@ -1,3 +1,4 @@
+/*global d3 */
 export class ViewState {
   constructor($rootScope, $log) {
     "ngInject";
@@ -5,6 +6,23 @@ export class ViewState {
     this.filterRanges = {};
     this.$scope = $rootScope;
     this.$log = $log;
+  }
+
+  /**
+   * Get the range for the current attribute, or create one if it doesn't exist.
+   */
+  getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes) {
+    let rangeList = this.filterRanges[attribute];
+    if (rangeList == undefined) {
+      this.filterRanges[attribute] = [];
+      rangeList = this.filterRanges[attribute];
+    }
+
+    if (rangeList[nodeAttributeGroup] == undefined) {
+      this.filterRanges[attribute][nodeAttributeGroup] = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
+    }
+
+    return this.filterRanges[attribute][nodeAttributeGroup];
   }
 
   /**
@@ -37,6 +55,10 @@ export class ViewState {
 
   setCurrentModel(model) {
     this.model = model;
+  }
+
+  setFilterRange(attribute, nodeAttributeGroup, range) {
+    this.filterRanges[attribute][nodeAttributeGroup] = range;
   }
 
   /**

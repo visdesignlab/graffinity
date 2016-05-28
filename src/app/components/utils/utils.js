@@ -9,6 +9,7 @@ Utils = (function () {
     deleteCol: deleteCol,
     getEdgesFromPaths: getEdgesFromPaths,
     getFilteredPaths: getFilteredPaths,
+    getFlattenedLists: getFlattenedLists,
     getNumHops: getNumHops,
     getNodesFromPaths: getNodesFromPaths,
     getUniqueValues: getUniqueValues,
@@ -83,6 +84,16 @@ Utils = (function () {
     } else {
       return paths;
     }
+  }
+
+  function getFlattenedLists(listOfLists) {
+    let list = [];
+    for (var i = 0; i < listOfLists.length; ++i) {
+      for (var j = 0; j < listOfLists[i].length; ++j) {
+        list.push(listOfLists[i][j]);
+      }
+    }
+    return list;
   }
 
   function getNodesFromPaths(paths) {

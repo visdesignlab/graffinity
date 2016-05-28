@@ -2,6 +2,7 @@
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
+import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -271,19 +272,11 @@ export class MainController {
    * Called when the user wants to filter nodes by a quantitative attributes. Opens a modal containing a
    * histogram of 'attribute' for all nodes.
    */
-  //TODO - rename nodesToFiler -> nodeIndexes
-  openNodeAttributeFilter(attribute, nodesToFilter, nodeAttributeGroup) {
-    this.$log.debug("mainwindow.openNodeAttributeFilter", attribute, nodesToFilter, nodeAttributeGroup);
-
+  openNodeAttributeFilter(attribute, nodeIndexes, nodeAttributeGroup) {
     // Get lists of all nodes and their attributes
-    let nodeIndexes = this.model.getFlattenedNodeIndexes();
+    nodeIndexes = Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexes));
     let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
-
-    // Get the range for the current attribute, or create one if it doesn't exist.
-    let range = this.viewState.filterRanges[attribute];
-    if (range == undefined) {
-      range = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
-    }
+    let range = this.viewState.getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes);
 
     // When the modal is finished, save the range.
     let self = this;
@@ -311,7 +304,7 @@ export class MainController {
       // Update the view
       self.viewState.hideNodes(hideNodes);
       self.viewState.showNodes(showNodes);
-      self.viewState.filterRanges[attribute] = range;
+      self.viewState.setFilterRange(attribute, nodeAttributeGroup, range);
     };
 
     // Open the modal.
