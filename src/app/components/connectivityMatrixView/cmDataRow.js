@@ -2,7 +2,7 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmDataRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
     this.unrollControls = [];
     this.rollupControls = [];
@@ -61,7 +61,8 @@ export class cmDataRow extends cmMatrixRow {
           values: rowNodeAttributes[attributeIndex],
           orientation: 0,
           attributeIndex: attributeIndex,
-          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          attributeNodeGroup: attributeNodeGroup
         };
 
         cell.setData(data);

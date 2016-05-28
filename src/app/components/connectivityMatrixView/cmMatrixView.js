@@ -95,13 +95,17 @@ export class cmMatrixView extends SvgGroupElement {
     // Create visual encodings for all the quantitative attributes.
     let isNodeHidden = this.viewState.isNodeHidden;
     for (var i = 0; i < this.attributes.length; ++i) {
-      let preprocessor = new cmScatterPlot1DPreprocessor(i);
-      preprocessor.setNodeFilter(isNodeHidden);
-      this.applyVisitor(preprocessor);
-      let valueRange = preprocessor.getValueRange();
-      visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
-      visitor.setNodeFilter(isNodeHidden);
-      this.applyVisitor(visitor);
+      for(var j=0; j<this.numAttributeNodeGroups; ++j) {
+        let preprocessor = new cmScatterPlot1DPreprocessor(i);
+        preprocessor.setAttributeNodeGroup(j);
+        preprocessor.setNodeFilter(isNodeHidden);
+        this.applyVisitor(preprocessor);
+        let valueRange = preprocessor.getValueRange();
+        visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
+        visitor.setNodeFilter(isNodeHidden);
+        visitor.setAttributeNodeGroup(j);
+        this.applyVisitor(visitor);
+      }
     }
 
     visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
@@ -621,7 +625,7 @@ export class cmMatrixView extends SvgGroupElement {
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
 
       // If row has minor rows, then we want the controls to be visible!
       if (modelRows[i].getNumChildren() > 0) {

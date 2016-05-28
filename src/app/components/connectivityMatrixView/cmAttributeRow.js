@@ -37,7 +37,8 @@ export class cmAttributeRow extends cmMatrixRow {
           values: colNodeAttributes[colIndex],
           nodeIndexes: colNodeIndexes[colIndex],
           isVertical: true,
-          attributeIndex: attributeIndex
+          attributeIndex: attributeIndex,
+          attributeNodeGroup: attributeNodeGroup
         };
 
         cell.isAttributeCell = true;
@@ -49,7 +50,8 @@ export class cmAttributeRow extends cmMatrixRow {
             values: [colNodeAttributes[colIndex][j]],
             isVertical: true,
             attributeIndex: attributeIndex,
-            nodeIndexes: [colNodeIndexes[colIndex][j]]
+            nodeIndexes: [colNodeIndexes[colIndex][j]],
+            attributeNodeGroup: attributeNodeGroup
           };
 
           cell.minorCells[j].isAttributeCell = true;
