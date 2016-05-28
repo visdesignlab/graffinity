@@ -16,9 +16,8 @@ export class cmScatterPlot1DPreprocessor extends cmAttributeCellVisitor {
 
   apply(cell) {
     if (this.shouldVisitCell(cell)) {
-      let filteredValues = this.getFilteredValues(this.hasNodeFilter, this.isNodeHidden, cell.data.nodeIndexes, cell.data.values);
-      for (var i = 0; i < filteredValues.length; ++i) {
-        this.values.push(filteredValues[i]);
+      for (var i = 0; i < cell.data.values.length; ++i) {
+        this.values.push(cell.data.values[i]);
       }
     }
   }
@@ -42,7 +41,7 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
   apply(cell) {
     if (this.shouldVisitCell(cell)) {
       let data = cell.data;
-      let values = this.getFilteredValues(this.hasNodeFilter, this.isNodeHidden, cell.data.nodeIndexes, cell.data.values);
+      let values = cell.data.values;
       let group = cell.getGroup()
         .append("g");
       if (data.isVertical) {

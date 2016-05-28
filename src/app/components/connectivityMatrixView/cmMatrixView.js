@@ -95,7 +95,7 @@ export class cmMatrixView extends SvgGroupElement {
     // Create visual encodings for all the quantitative attributes.
     let isNodeHidden = this.viewState.isNodeHidden;
     for (var i = 0; i < this.attributes.length; ++i) {
-      for(var j=0; j<this.numAttributeNodeGroups; ++j) {
+      for (var j = 0; j < this.numAttributeNodeGroups; ++j) {
         let preprocessor = new cmScatterPlot1DPreprocessor(i);
         preprocessor.setAttributeNodeGroup(j);
         preprocessor.setNodeFilter(isNodeHidden);
@@ -205,6 +205,27 @@ export class cmMatrixView extends SvgGroupElement {
 
   getDataRowIndex(viewRowIndex) {
     return viewRowIndex - this.numHeaderRows;
+  }
+
+  /**
+   * Returns a matrix of scalar values that can be fed to reorder.js.
+   */
+  getMajorRowsAndColsAsScalarMatrix() {
+    let matrix = [];
+    for (var i = 0; i < this.allRows.length; ++i) {
+      if (this.isDataRow(i)) {
+        let row = [];
+        for (var j = 0; j < this.allRows[i].majorCells.length; ++j) {
+          if (this.isDataCell(j)) {
+            let paths = this.allRows[i].majorCells[j].getPathList();
+            let filteredPaths = Utils.getFilteredPaths(paths, true, this.viewState.isNodeHidden);
+            row.push(filteredPaths.length);
+          }
+        }
+        matrix.push(row);
+      }
+    }
+    return matrix;
   }
 
   /**

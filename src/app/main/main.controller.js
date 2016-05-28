@@ -239,7 +239,7 @@ export class MainController {
   }
 
   onSortOrderChanged(order) {
-    let matrix = this.model.getCurrentScalarMatrix();
+    let matrix = this.matrix.getMajorRowsAndColsAsScalarMatrix();
     let rowPerm = undefined;
     let colPerm = undefined;
     if (order == 'random') {

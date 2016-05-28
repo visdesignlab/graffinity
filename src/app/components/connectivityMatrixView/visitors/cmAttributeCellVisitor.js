@@ -8,24 +8,6 @@ export class cmAttributeCellVisitor extends cmCellVisitor {
   }
 
   /**
-   *
-   */
-  getFilteredValues(hasNodeFilter, isNodeHidden, nodeIndexes, values) {
-    if (hasNodeFilter) {
-      let filteredValues = [];
-      for (var i = 0; i < nodeIndexes.length; ++i) {
-        if (!isNodeHidden[nodeIndexes[i]]) {
-          filteredValues.push(values[i]);
-        }
-      }
-      return filteredValues;
-    }
-    else {
-      return values;
-    }
-  }
-
-  /**
    * Set the group that this is looking for.
    */
   setAttributeNodeGroup(attributeNodeGroup) {
