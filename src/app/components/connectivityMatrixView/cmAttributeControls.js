@@ -1,6 +1,6 @@
 import {SvgGroupElement} from "./svgGroupElement"
 export class cmAttributeControls extends SvgGroupElement {
-  constructor(parent, name, isVertical, width, height, onSort, onHide, index, onFilter) {
+  constructor(parent, name, isVertical, width, height, onSort, onHide, index, onFilter, filterNodeIndexes, filterAttributeGroup) {
     super(parent);
 
     let group = this.getGroup();
@@ -16,6 +16,8 @@ export class cmAttributeControls extends SvgGroupElement {
     this.onHide = onHide;
     this.index = index;
     this.onFilter = onFilter;
+    this.filterNodeIndexes = filterNodeIndexes;
+    this.filterAttributeGroup = filterAttributeGroup;
     cmAttributeControls.createLabel(group, name, isVertical, width, height);
 
     this.createInteractionRect(group, isVertical, width, height);
@@ -73,7 +75,7 @@ export class cmAttributeControls extends SvgGroupElement {
       .classed("fa-filter", true)
       .attr("float", "left")
       .on("click", function () {
-        self.onFilter(self.name);
+        self.onFilter(self.name, self.filterNodeIndexes, self.filterAttributeGroup);
       });
 
     this.controls.append("i")

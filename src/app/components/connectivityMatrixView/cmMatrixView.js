@@ -60,6 +60,11 @@ export class cmMatrixView extends SvgGroupElement {
     this.rowHeight = 15;
     this.svg = svg;
 
+    this.colAttributeNodeGroup = 0;
+    this.rowAttributeNodeGroup = 1;
+    this.numAttributeNodeGroups = 2;
+
+
     this.isInitialized = false;
     this.setModel(model);
     this.isInitialized = true;
@@ -497,8 +502,8 @@ export class cmMatrixView extends SvgGroupElement {
       this.isAttributeColVisible = {};
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = false;
-        this.isAttributeRowVisible[attributes[i]] = false;
+        this.isAttributeColVisible[attributes[i]] = true;
+        this.isAttributeRowVisible[attributes[i]] = true;
       }
     }
 
@@ -583,7 +588,10 @@ export class cmMatrixView extends SvgGroupElement {
         false,
         colNodeAttributes[i],
         this,
-        i, attributes[i]);
+        i,
+        attributes[i],
+        this.colAttributeNodeGroup
+      );
 
       this.addRow(attributeRow, this.rowHeightAttr);
     }
@@ -601,7 +609,9 @@ export class cmMatrixView extends SvgGroupElement {
       majorColLabels,
       minorColLabels,
       this,
-      attributes);
+      attributes,
+      this.rowNodeIndexes,
+      this.rowAttributeNodeGroup);
     this.addRow(labelRow, this.labelRowHeight);
 
     // Create each of the data rows!

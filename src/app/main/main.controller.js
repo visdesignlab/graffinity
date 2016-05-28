@@ -75,6 +75,7 @@ export class MainController {
   }
 
   createMatrix(model, encoding) {
+    this.svg.attr("viewBox", "0, 0, 1024, 1024");
     this.svg.selectAll("*").remove();
     this.model = model;
     if (!this.matrix) {
@@ -270,7 +271,9 @@ export class MainController {
    * Called when the user wants to filter nodes by a quantitative attributes. Opens a modal containing a
    * histogram of 'attribute' for all nodes.
    */
-  openNodeAttributeFilter(attribute) {
+  //TODO - rename nodesToFiler -> nodeIndexes
+  openNodeAttributeFilter(attribute, nodesToFilter, nodeAttributeGroup) {
+    this.$log.debug("mainwindow.openNodeAttributeFilter", attribute, nodesToFilter, nodeAttributeGroup);
 
     // Get lists of all nodes and their attributes
     let nodeIndexes = this.model.getFlattenedNodeIndexes();

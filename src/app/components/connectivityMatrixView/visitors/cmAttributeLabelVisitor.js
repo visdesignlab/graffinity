@@ -36,7 +36,7 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
 
         let width = isVertical ? this.attrRowWidth : this.attrColWidth;
         let height = isVertical ? this.attrRowHeight : this.attrColHeight;
-        cell.controls.push(new cmAttributeControls(group, name, isVertical, width, height, onSort, onHide, index, this.callbacks.onFilterAttributes));
+        cell.controls.push(new cmAttributeControls(group, name, isVertical, width, height, onSort, onHide, index, this.callbacks.onFilterAttributes, cell.data.nodeIndexes, cell.data.attributeNodeGroup));
       } else {
         // Because the matrix header is symmetric, the "id" label of rows/cols is in the same cell. Here we create both
         // controls for labels in the same cell.

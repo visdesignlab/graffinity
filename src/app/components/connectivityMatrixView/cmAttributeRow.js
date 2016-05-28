@@ -3,7 +3,7 @@ import {cmMatrixRow} from "./cmMatrixRow"
 export class cmAttributeRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colNodeAttributes, matrix,
-              attributeIndex, attributeLabel) {
+              attributeIndex, attributeLabel, attributeNodeGroup) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
 
     this.createMinorCells(numHeaderCols, colNodeIndexes, false);
@@ -21,7 +21,9 @@ export class cmAttributeRow extends cmMatrixRow {
         data = {
           name: attributeLabel,
           isVertical: true,
-          attributeIndex: attributeIndex
+          attributeIndex: attributeIndex,
+          nodeIndexes: colNodeIndexes,
+          attributeNodeGroup: attributeNodeGroup
         };
 
         cell.isAttributeLabelCell = true;
