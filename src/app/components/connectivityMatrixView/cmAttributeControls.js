@@ -1,13 +1,21 @@
 import {SvgGroupElement} from "./svgGroupElement"
+
 export class cmAttributeControls extends SvgGroupElement {
+  /**
+   * Class for controlling the quantitative attributes
+   */
   constructor(parent, name, isVertical, width, height, onSort, onHide, index, onFilter, filterNodeIndexes, filterAttributeGroup) {
     super(parent);
 
     let group = this.getGroup();
 
-    if (!isVertical) {
-      group = group.append("g").attr("transform", "translate(0," + height + ")");
-    }
+    // uncomment to draw outline of this label
+    //group.append("rect")
+    //  .attr("width", width)
+    //  .attr("height", height)
+    //  .style("outline", "thin solid grey")
+    //  .attr("fill", "none");
+
     this.width = width;
     this.height = height;
     this.name = name;
@@ -18,23 +26,10 @@ export class cmAttributeControls extends SvgGroupElement {
     this.onFilter = onFilter;
     this.filterNodeIndexes = filterNodeIndexes;
     this.filterAttributeGroup = filterAttributeGroup;
+
     cmAttributeControls.createLabel(group, name, isVertical, width, height);
 
     this.createInteractionRect(group, isVertical, width, height);
-  }
-
-  static createLabel(group, name, isVertical, width, height) {
-    if (isVertical) {
-      group.append("text")
-        .text(name)
-        .attr("transform", "translate(" + width * 2 + " ," + height / 2 + ")rotate(270)")
-        .classed("matrix-view-attribute-label", true)
-    } else {
-      group.append("text")
-        .attr("transform", "translate(" + width / 2 + "," + height + ")")
-        .text(name)
-        .classed("matrix-view-attribute-label", true)
-    }
   }
 
   createInteractionRect(group, isVertical, width, height) {
@@ -42,10 +37,7 @@ export class cmAttributeControls extends SvgGroupElement {
 
     if (isVertical) {
       group = group.append("g")
-        .attr("transform", "translate(" + (width * 2) + ", " + height + ")rotate(270)");
-    } else {
-      group = group.append("g")
-        .attr("transform", "translate(0, " + height + ")");
+        .attr("transform", "translate(0" + ", " + height + ")rotate(270)");
     }
 
     let mouseLeave = function () {
@@ -95,6 +87,20 @@ export class cmAttributeControls extends SvgGroupElement {
         .on("click", function () {
           self.onHide(self.index);
         });
+    }
+  }
+
+  static createLabel(group, name, isVertical, width, height) {
+    if (isVertical) {
+      group.append("text")
+        .text(name)
+        .attr("transform", "translate(" + 0 + " ," + height / 2 + ")rotate(270)")
+        .classed("matrix-view-attribute-label", true)
+    } else {
+      group.append("text")
+        .attr("transform", "translate(" + width / 2 + "," + 0 + ")")
+        .text(name)
+        .classed("matrix-view-attribute-label", true)
     }
   }
 

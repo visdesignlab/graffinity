@@ -6,6 +6,7 @@ import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {cmAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
+import {cmNodeLabelVisitor} from "./visitors/cmNodeLabelVisitor"
 import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
@@ -118,9 +119,14 @@ export class cmMatrixView extends SvgGroupElement {
     let hideCols = this.onHideAttributeCol.bind(this);
     let filterNodes = this.onFilterNodes.bind(this);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
-    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols,
-      this.colWidthLabel, this.rowHeight, this.colWidthAttr, this.rowHeight, this.colWidth, this.colWidthAttr, filterNodes, filterAttributes);
 
+    // create labels for all the quantitative attribute columns/rows
+    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
+      this.labelRowHeight, this.colWidthAttr, filterNodes, filterAttributes);
+    this.applyVisitor(visitor);
+
+    // create labels for the 'labels' or 'id' column/row
+    visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight, this.labelRowHeight, this.colWidthLabel, filterNodes, filterAttributes);
     this.applyVisitor(visitor);
 
     // Create controls for editing visible attributes.
