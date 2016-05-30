@@ -171,6 +171,7 @@ export class cmAttributeControls extends SvgGroupElement {
   static createDataScent(group, isVertical, scentWidth, scentHeight, attributeValues) {
     // TODO - put call to scent histogram constructor here.
     // TODO - fix gulp errors
+    // TODO - delete this ugly red box
     group.append("rect")
       .attr("width", scentWidth)
       .attr("height", scentHeight)

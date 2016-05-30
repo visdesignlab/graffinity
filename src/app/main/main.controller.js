@@ -2,7 +2,6 @@
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
-import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -69,11 +68,11 @@ export class MainController {
       self.createMatrixAndUi(self.model);
     }, 1);
 
+    // If debugging, then automatically manipulate the GUI.
     $timeout(function () {
       if (self.ui.debugRowFilterScents) {
         let attribute = "area";
-        let nodeIndexes = self.model.getRowNodeIndexes();
-        nodeIndexes = Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexes));
+        let nodeIndexes = self.model.getFlattenedRowNodeIndexes();
         let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
         self.viewState.getOrCreateFilterRange(attribute, 1, nodeAttributes);
         self.viewState.setFilterRange(attribute, 1, [92616600, 269473560]);
@@ -84,8 +83,7 @@ export class MainController {
     $timeout(function () {
       if (self.ui.debugColFilterScents) {
         let attribute = "area";
-        let nodeIndexes = self.model.getColNodeIndexes();
-        nodeIndexes = Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexes));
+        let nodeIndexes = self.model.getFlattenedColNodeIndexes();
         let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
         self.viewState.getOrCreateFilterRange(attribute, 0, nodeAttributes);
         self.viewState.setFilterRange(attribute, 0, [216139000, 216139002]); // values selected to show only 1 col

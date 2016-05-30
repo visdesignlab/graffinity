@@ -317,9 +317,17 @@ export class cmModel {
     return scalarMatrix;
   }
 
+  getFlattenedColNodeIndexes() {
+    return Utils.getUniqueValues(Utils.getFlattenedLists(this.getColNodeIndexes()));
+  }
+
   getFlattenedNodeIndexes() {
     let nodeIndexLists = this.getRowNodeIndexes().concat(this.getColNodeIndexes());
     return Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexLists));
+  }
+
+  getFlattenedRowNodeIndexes() {
+    return Utils.getUniqueValues(Utils.getFlattenedLists(this.getRowNodeIndexes()));
   }
 
   getMinorLabels(indexes) {

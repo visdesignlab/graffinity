@@ -21,7 +21,6 @@ export class cmAttributeLabelVisitor extends cmCellVisitor {
 
   apply(cell) {
     if (cell.isAttributeLabelCell && cell.data.attributeIndex != -1) {
-      console.log(cell);
       cell.controls = [];
       let isVertical = cell.data.isVertical;
       let name = cell.data.name;
