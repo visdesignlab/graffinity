@@ -1,4 +1,5 @@
 import {cmMatrixRow} from "./cmMatrixRow"
+import {Utils} from "../utils/utils"
 
 export class cmAttributeRow extends cmMatrixRow {
 
@@ -13,7 +14,6 @@ export class cmAttributeRow extends cmMatrixRow {
       let data = {};
       let cell = this.majorCells[i];
 
-
       // This assumes that the attribute row's labels will start in the same column as the data matrix's row labels.
       if (this.matrix.isLabelCell(i)) {
 
@@ -23,7 +23,8 @@ export class cmAttributeRow extends cmMatrixRow {
           isVertical: true,
           attributeIndex: attributeIndex,
           nodeIndexes: colNodeIndexes,
-          attributeNodeGroup: attributeNodeGroup
+          attributeNodeGroup: attributeNodeGroup,
+          attributeValues: Utils.getFlattenedLists(colNodeAttributes)
         };
 
         cell.isAttributeLabelCell = true;

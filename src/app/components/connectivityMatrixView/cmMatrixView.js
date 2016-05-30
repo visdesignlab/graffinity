@@ -6,6 +6,7 @@ import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {cmAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
+import {cmAttributeLabelScentVisitor} from "./visitors/cmAttributeLabelScentVisitor"
 import {cmNodeLabelVisitor} from "./visitors/cmNodeLabelVisitor"
 import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
@@ -64,7 +65,6 @@ export class cmMatrixView extends SvgGroupElement {
     this.colAttributeNodeGroup = 0;
     this.rowAttributeNodeGroup = 1;
     this.numAttributeNodeGroups = 2;
-
 
     this.isInitialized = false;
     this.setModel(model);
@@ -153,9 +153,11 @@ export class cmMatrixView extends SvgGroupElement {
     let onHideNodes = this.onHideNodes.bind(this);
     let onShowNodes = this.onShowNodes.bind(this);
     let onHoverNodes = this.onHoverNodes.bind(this);
+    let onQuantitativeAttributeFilterUpdate = this.onQuantitativeAttributeFilterUpdate.bind(this);
     scope.$on("hideNodes", onHideNodes);
     scope.$on("showNodes", onShowNodes);
     scope.$on("hoverNode", onHoverNodes);
+    scope.$on("updateQuantitativeAttributeFilter", onQuantitativeAttributeFilterUpdate);
   }
 
   getAttributeColIndex(viewColIndex) {
@@ -394,12 +396,10 @@ export class cmMatrixView extends SvgGroupElement {
   }
 
   /**
-   * Called when the user clicked on the 'filter' icon of node ids.
+   * Called when the user clicked on the 'filter' icon of node ids. Main controller will get new filter.
    */
   onFilterNodes() {
     this.mainController.openNodeIndexFilter();
-    // flatten nodeIndexes into a single array of ints.
-
   }
 
   onHideAttributeRow(attributeIndex) {
@@ -474,6 +474,16 @@ export class cmMatrixView extends SvgGroupElement {
     this.updatePositions(shiftedRowPerm, this.colPerm);
   }
 
+  /**
+   * Called when the user changes the filter on a set of nodes. This will draw a scent of the filter on the attribute
+   * control cells.
+   */
+  onQuantitativeAttributeFilterUpdate(event, attribute, attributeNodeGroup, range) {
+    this.$log.debug("Updating the quant attribute filter", attribute, attributeNodeGroup, range);
+    let visitor = new cmAttributeLabelScentVisitor(this.attributes.indexOf(attribute), attributeNodeGroup, range);
+    this.applyVisitor(visitor);
+  }
+
   setEncoding(encoding) {
     this.encoding = encoding;
     let preprocessor = undefined;
@@ -522,6 +532,9 @@ export class cmMatrixView extends SvgGroupElement {
     this.model = model;
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.colNodeIndexes = model.getColNodeIndexes();
+
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
 
     let attributes = model.graph.getQuantNodeAttrNames();
     this.attributes = attributes;
@@ -642,7 +655,8 @@ export class cmMatrixView extends SvgGroupElement {
       this,
       attributes,
       this.rowNodeIndexes,
-      this.rowAttributeNodeGroup);
+      this.rowAttributeNodeGroup,
+      rowAttributes);
     this.addRow(labelRow, this.labelRowHeight);
 
     // Create each of the data rows!

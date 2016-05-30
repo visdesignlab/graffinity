@@ -1,8 +1,10 @@
 import {cmMatrixRow} from "./cmMatrixRow"
+import {Utils} from "../Utils/utils";
 
 export class cmLabelRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels,
+              matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup, rowNodeAttributes) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);
 
     this.unrollControls = [];
@@ -30,7 +32,8 @@ export class cmLabelRow extends cmMatrixRow {
           isVertical: 0,
           attributeIndex: attributeIndex,
           nodeIndexes: rowNodeIndexes,
-          attributeNodeGroup: attributeNodeGroup
+          attributeNodeGroup: attributeNodeGroup,
+          attributeValues: Utils.getFlattenedLists(rowNodeAttributes[attributeIndex])
         });
 
         cell.isAttributeLabelCell = true;
