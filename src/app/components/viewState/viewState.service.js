@@ -13,18 +13,18 @@ export class ViewState {
   /**
    * Get the range for the current attribute, or create one if it doesn't exist.
    */
-  getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes) {
+  getOrCreateFilterRange(attribute, attributeNodeGroup, nodeAttributes) {
     let rangeList = this.filterRanges[attribute];
     if (rangeList == undefined) {
       this.filterRanges[attribute] = [];
       rangeList = this.filterRanges[attribute];
     }
 
-    if (rangeList[nodeAttributeGroup] == undefined) {
-      this.filterRanges[attribute][nodeAttributeGroup] = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
+    if (rangeList[attributeNodeGroup] == undefined) {
+      this.filterRanges[attribute][attributeNodeGroup] = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
     }
 
-    return this.filterRanges[attribute][nodeAttributeGroup];
+    return this.filterRanges[attribute][attributeNodeGroup];
   }
 
   /**
@@ -54,7 +54,7 @@ export class ViewState {
     this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeIDFiltered);
   }
 
-  static isNodeVisibleInAllFilters(nodeIndex, attributeNodeGroup, filterRanges, model, isNodeIDFiltered) {
+  isNodeVisibleInAllFilters(nodeIndex, attributeNodeGroup, filterRanges, model, isNodeIDFiltered) {
     let visible = true;
     if (!isNodeIDFiltered[nodeIndex]) {
       let attributes = Object.keys(filterRanges);
@@ -95,13 +95,13 @@ export class ViewState {
 
     let wasNodeVisible = [];
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      wasNodeVisible.push(ViewState.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
+      wasNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
     }
 
     this.filterRanges[attribute][attributeNodeGroup] = range;
     let isNodeVisible = [];
     for (i = 0; i < nodeIndexes.length; ++i) {
-      isNodeVisible.push(ViewState.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
+      isNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
     }
 
     for (i = 0; i < nodeIndexes.length; ++i) {

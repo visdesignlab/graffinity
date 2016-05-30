@@ -168,9 +168,9 @@ export class cmAttributeControls extends SvgGroupElement {
   /**
    * Returns a histogram scent of the data.
    */
-  static createDataScent(group, isVertical, scentWidth, scentHeight, attributeValues) {
+  static createDataScent(group, isVertical, scentWidth, scentHeight) {
+    // TODO - attributeValues is passed as last parameter - add it to the list for access. I removed it to shut up gulp.
     // TODO - put call to scent histogram constructor here.
-    // TODO - fix gulp errors
     // TODO - delete this ugly red box
     group.append("rect")
       .attr("width", scentWidth)
@@ -182,9 +182,9 @@ export class cmAttributeControls extends SvgGroupElement {
   /**
    * Updates the filter displayed in the scent.
    */
-  setAttributeFilterRange(filterRange) {
+  setAttributeFilterRange() {
+    // TODO - add parameter called 'filterRange.' I removed it to shut up gulp. It is already passed in here.
     // TODO - call this.scent.setFilterRange(filterRange) to update the visual encoding of the current filter.
-    // TODO - fix gulp errors
   }
 
   /**
