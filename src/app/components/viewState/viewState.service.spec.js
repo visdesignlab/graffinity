@@ -1,6 +1,6 @@
 import {mock} from '../connectivityMatrix/mock'
 import {Utils} from '../utils/utils'
-import {ViewState} from "./viewState.service.js"
+
 describe('cmModelFactory', () => {
   beforeEach(angular.mock.module('connectivityMatrixJs'));
 
@@ -81,7 +81,7 @@ describe('cmModelFactory', () => {
       let expectedVisibility = [false, true, false, false, false];
       for (var i = 0; i < rowNodeIndexes.length; ++i) {
         let nodeIndex = rowNodeIndexes[i];
-        let visible = ViewState.isNodeVisibleInAllFilters(nodeIndex, rowAttributeNodeGroup, viewState.filterRanges, viewState.model, viewState.isNodeHidden);
+        let visible = viewState.isNodeVisibleInAllFilters(nodeIndex, rowAttributeNodeGroup, viewState.filterRanges, viewState.model, viewState.isNodeIDFiltered);
         expect(visible).toEqual(expectedVisibility[i]);
       }
 
@@ -89,7 +89,7 @@ describe('cmModelFactory', () => {
       expectedVisibility = [false, false, false, false, false];
       for (i = 0; i < rowNodeIndexes.length; ++i) {
         let nodeIndex = rowNodeIndexes[i];
-        let visible = ViewState.isNodeVisibleInAllFilters(nodeIndex, rowAttributeNodeGroup, viewState.filterRanges, viewState.model, viewState.isNodeHidden);
+        let visible = viewState.isNodeVisibleInAllFilters(nodeIndex, rowAttributeNodeGroup, viewState.filterRanges, viewState.model, viewState.isNodeIDFiltered);
         expect(visible).toEqual(expectedVisibility[i]);
       }
 
@@ -97,7 +97,7 @@ describe('cmModelFactory', () => {
       expectedVisibility = [false, true, false, false, false];
       for (i = 0; i < rowNodeIndexes.length; ++i) {
         let nodeIndex = rowNodeIndexes[i];
-        let visible = ViewState.isNodeVisibleInAllFilters(nodeIndex, rowAttributeNodeGroup, viewState.filterRanges, viewState.model, viewState.isNodeHidden);
+        let visible = viewState.isNodeVisibleInAllFilters(nodeIndex, rowAttributeNodeGroup, viewState.filterRanges, viewState.model, viewState.isNodeHidden);
         expect(visible).toEqual(expectedVisibility[i]);
       }
     }
