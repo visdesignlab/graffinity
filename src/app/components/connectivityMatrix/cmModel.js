@@ -253,6 +253,10 @@ export class cmModel {
     self.current.rowNodeIndexes = newRowNodeIndexes;
   }
 
+  getAvailableIntermediateNodeStats() {
+    return [['count']]; // list of lists to match col node index format.
+  }
+
   getColNodeIndexes() {
     var self = this;
     return self.current.colNodeIndexes;
@@ -266,6 +270,12 @@ export class cmModel {
   getCmMatrix() {
     var self = this;
     return self.matrix;
+  }
+
+  // TODO - enable people to collapse these rows by attributes.
+  getCurrentIntermediateNodeRows() {
+    var self = this;
+    return self.current.intermediateRows;
   }
 
   getCurrentMatrix() {
@@ -330,6 +340,11 @@ export class cmModel {
     return Utils.getUniqueValues(Utils.getFlattenedLists(this.getRowNodeIndexes()));
   }
 
+  getIntermediateNodeIndexes() {
+    let self = this;
+    return self.intermediateNodeIndexes;
+  }
+
   getMinorLabels(indexes) {
     var self = this;
     var minorLabels = [];
@@ -381,7 +396,6 @@ export class cmModel {
     return attributes;
   }
 
-
   getNodeAttr(nodeIndexes, attribute) {
     var self = this;
     var attributes = [nodeIndexes.length];
@@ -415,7 +429,6 @@ export class cmModel {
     return Utils.getNodesFromPaths(paths);
 
   }
-
 
   /**
    * Returns a list of indexes into nodeIndexes - the returned list is sorted by attribute.
@@ -520,6 +533,7 @@ export class cmModel {
     self.resetMatrix();
     self.resetRows();
     self.resetCols();
+    self.resetIntermediateNodes();
   }
 
   resetCols() {
@@ -548,6 +562,43 @@ export class cmModel {
       row.activate(currentRowNodeIndex, matrix[i], colNodeIndexes);
       self.rows[currentRowNodeIndex] = row;
     }
+  }
+
+  // TODO - this should match resetRows in terms of what gets created.
+  resetIntermediateNodes() {
+    let self = this;
+    let matrix = self.current.matrix;
+    let nodeIndexes = [];
+    for (let i = 0; i < matrix.length; ++i) {
+      for (let j = 0; j < matrix[i].length; ++j) {
+        nodeIndexes = nodeIndexes.concat(Utils.getIntermediateNodesFromPaths(matrix[i][j]));
+      }
+    }
+
+    let intermediateNodeCount = {};
+
+    for (i = 0; i < nodeIndexes.length; ++i) {
+      let nodeIndex = nodeIndexes[i];
+      if (intermediateNodeCount[nodeIndex] == undefined) {
+        intermediateNodeCount[nodeIndex] = 1;
+      } else {
+        intermediateNodeCount[nodeIndex] += 1;
+      }
+    }
+
+    self.intermediateNodeCount = intermediateNodeCount;
+    self.intermediateNodeIndexes = Utils.getUniqueValues(nodeIndexes);
+    self.intermediateRows = [];
+
+    for (var i = 0; i < self.intermediateNodeIndexes.length; ++i) {
+      var currentRowNodeIndex = self.intermediateNodeIndexes[i];
+      var row = new cmModelRow();
+      row.activate(currentRowNodeIndex, [self.intermediateNodeCount[currentRowNodeIndex]], ['count']);
+      self.intermediateRows.push(row);
+    }
+
+    self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);
+    self.current.intermediateRows = angular.copy(self.intermediateRows);
   }
 
   resetMatrix() {

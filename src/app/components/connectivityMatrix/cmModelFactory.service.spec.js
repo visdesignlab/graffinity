@@ -335,4 +335,37 @@ describe('cmModelFactory', () => {
     $httpBackend.flush();
   }));
 
+  it('cmModel - getIntermediateNodes', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+      var intermediateNodeIndexes = model.getIntermediateNodeIndexes();
+      expect(intermediateNodeIndexes.length).toEqual(2);
+      expect(Object.keys(model.intermediateNodeCount).length).toEqual(2);
+    });
+    $httpBackend.flush();
+  }));
+
+  it('cmModel - getCurrentIntermediateNodeRows', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+      var rows = model.getCurrentIntermediateNodeRows();
+      expect(rows.length).toEqual(2);
+    });
+    $httpBackend.flush();
+  }));
+
+  it('cmModel - getAvailableIntermediateNodeStats', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+      var stats = model.getAvailableIntermediateNodeStats();
+      expect(stats[0].length).toEqual(1);
+    });
+    $httpBackend.flush();
+  }));
+
+  it('cmModel - showing node stats in a row', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+      var rows = model.getCurrentIntermediateNodeRows();
+      var stats = model.getAvailableIntermediateNodeStats();
+      expect(rows[0].getValuesAsList(stats)[0] == 1);
+    });
+    $httpBackend.flush();
+  }));
 });

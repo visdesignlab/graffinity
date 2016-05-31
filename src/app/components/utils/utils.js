@@ -10,6 +10,7 @@ Utils = (function () {
     getEdgesFromPaths: getEdgesFromPaths,
     getFilteredPaths: getFilteredPaths,
     getFlattenedLists: getFlattenedLists,
+    getIntermediateNodesFromPaths: getIntermediateNodesFromPaths,
     getNumHops: getNumHops,
     getNodesFromPaths: getNodesFromPaths,
     getUniqueValues: getUniqueValues,
@@ -94,6 +95,19 @@ Utils = (function () {
       }
     }
     return list;
+  }
+
+  function getIntermediateNodesFromPaths(paths) {
+    var nodes = [];
+    for (var i = 0; i < paths.length; ++i) {
+      var path = paths[i];
+      for (var j = 2; j < path.length - 1; ++j) {
+        if (j % 2 == 0) {
+          nodes.push(path[j]);
+        }
+      }
+    }
+    return getUniqueValues(nodes);
   }
 
   function getNodesFromPaths(paths) {
