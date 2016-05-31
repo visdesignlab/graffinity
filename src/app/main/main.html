@@ -88,9 +88,8 @@
 
     <!-- Columns holding the matrix -->
 
-    <span ng-class="main.matrixClass" class="column-matrix">
-
-      <svg ng-show="!main.hasActiveQuery && !main.hasQueryError" id="my-svg" width="1024" height="1024"></svg>
+    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" ng-class="main.matrixClass" class="column-matrix"
+          id="matrices-row">
     </span>
 
     <!-- Columns holding the node link view -->

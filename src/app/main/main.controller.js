@@ -38,9 +38,6 @@ export class MainController {
     this.ui.debugRowFilterScents = false;
     this.ui.debugColFilterScents = false;
 
-    this.svg = d3.select("#my-svg")
-      .append("g")
-      .attr("transform", "translate(20, 20)");
 
     let useLargeResult = false;
 
@@ -101,13 +98,14 @@ export class MainController {
   }
 
   createMatrix(model, encoding) {
-    this.svg.attr("viewBox", "0, 0, 1024, 1024");
     this.svg.selectAll("*").remove();
     this.model = model;
     if (!this.matrix) {
-      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+      this.nodeList = this.cmMatrixViewFactory.createNodeListView(this.svg, model, this.$scope, this.viewState, this);
+      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.nodeListSvg, model, this.$scope, this.viewState, this);
     } else {
       this.matrix.setModel(model);
+      this.nodeList.setModel(model);
     }
     this.nodeLinkView.setModel(model);
     this.viewState.setCurrentModel(model);
@@ -115,6 +113,24 @@ export class MainController {
   }
 
   createMatrixAndUi(model) {
+
+    let matrixContainer = d3.select("#matrices-row");
+    let width = matrixContainer[0][0].clientWidth;
+    let matrixWidth = width * 0.58;
+    let nodeListWidth = width * 0.20;
+
+    this.svg = matrixContainer.append("svg")
+      .attr("width", matrixWidth)
+      .attr("height", 1024)
+      .append("g")
+      .attr("transform", "translate(0, 20)");
+
+    this.nodeListSvg = matrixContainer.append("svg")
+      .attr("width", nodeListWidth)
+      .attr("height", 1024)
+      .append("g")
+      .attr("transform", "translate(0, 20)");
+
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
     this.createEncodingControls();
@@ -329,8 +345,8 @@ export class MainController {
       this.nodeLinkClass = "";
       this.matrixClass = "col-lg-11";
     } else {
-      this.nodeLinkClass = "col-lg-3";
-      this.matrixClass = "col-lg-8";
+      this.nodeLinkClass = "col-lg-2";
+      this.matrixClass = "col-lg-9";
     }
   }
 
