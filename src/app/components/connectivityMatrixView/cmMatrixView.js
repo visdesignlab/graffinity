@@ -35,76 +35,6 @@ import {Utils} from "../utils/utils"
  */
 export class cmMatrixView extends cmMatrixBase {
 
-
-  /**
-   * Fills this.attributes with the model's quantitative attributes.
-   * Creates this.isAttributeRow/Col visible.
-   */
-  initAttributeState(model) {
-    let attributes = model.graph.getQuantNodeAttrNames();
-    this.attributes = attributes;
-
-    // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
-    // attributes that the user already selected.
-    if (!this.isInitialized) {
-      this.isAttributeColVisible = {};
-      this.isAttributeRowVisible = {};
-      for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = true;
-        this.isAttributeRowVisible[attributes[i]] = true;
-      }
-    }
-  }
-
-  /**
-   * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
-   */
-  initAttributeNodeGroups() {
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
-  }
-
-  /**
-   * Fills this.isMajorColUnrolled, this.isMinorColVisible
-   */
-  initColStates() {
-    this.isMajorColUnrolled = [];
-    this.isMinorColVisible = [];
-    for (let i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
-      this.isMajorColUnrolled[i] = false;
-      this.isMinorColVisible[i] = [];
-      if (this.isDataCell(i)) {
-        let dataIndex = this.getDataColIndex(i);
-        for (let j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
-          this.isMinorColVisible[i][j] = true;
-        }
-      }
-    }
-  }
-
-  /**
-   * Fills this.colWidths using the data/view/attribute indexes.
-   */
-  initColWidths() {
-    for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i) || this.isDataCell(i)) {
-        this.colWidths[i] = this.colWidth;
-      } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = this.colWidthAttr;
-      } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = this.colWidthLabel;
-      }
-    }
-  }
-
-  /**
-   * Initializes this.row/col indexes.
-   */
-  initNodeIndexes(model) {
-    this.rowNodeIndexes = model.getRowNodeIndexes();
-    this.colNodeIndexes = model.getColNodeIndexes();
-  }
-
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
    */
@@ -196,6 +126,75 @@ export class cmMatrixView extends cmMatrixBase {
   }
 
   /**
+   * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
+   */
+  initAttributeNodeGroups() {
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
+  }
+
+  /**
+   * Fills this.attributes with the model's quantitative attributes.
+   * Creates this.isAttributeRow/Col visible.
+   */
+  initAttributeState(model) {
+    let attributes = model.graph.getQuantNodeAttrNames();
+    this.attributes = attributes;
+
+    // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
+    // attributes that the user already selected.
+    if (!this.isInitialized) {
+      this.isAttributeColVisible = {};
+      this.isAttributeRowVisible = {};
+      for (var i = 0; i < attributes.length; ++i) {
+        this.isAttributeColVisible[attributes[i]] = true;
+        this.isAttributeRowVisible[attributes[i]] = true;
+      }
+    }
+  }
+
+  /**
+   * Fills this.isMajorColUnrolled, this.isMinorColVisible
+   */
+  initColStates() {
+    this.isMajorColUnrolled = [];
+    this.isMinorColVisible = [];
+    for (let i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
+      this.isMajorColUnrolled[i] = false;
+      this.isMinorColVisible[i] = [];
+      if (this.isDataCell(i)) {
+        let dataIndex = this.getDataColIndex(i);
+        for (let j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
+          this.isMinorColVisible[i][j] = true;
+        }
+      }
+    }
+  }
+
+  /**
+   * Fills this.colWidths using the data/view/attribute indexes.
+   */
+  initColWidths() {
+    for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
+      if (this.isControlCell(i) || this.isDataCell(i)) {
+        this.colWidths[i] = this.colWidth;
+      } else if (this.isAttributeCell(i)) {
+        this.colWidths[i] = this.colWidthAttr;
+      } else if (this.isLabelCell(i)) {
+        this.colWidths[i] = this.colWidthLabel;
+      }
+    }
+  }
+
+  /**
+   * Initializes this.row/col indexes.
+   */
+  initNodeIndexes(model) {
+    this.rowNodeIndexes = model.getRowNodeIndexes();
+    this.colNodeIndexes = model.getColNodeIndexes();
+  }
+
+  /**
    * Creates indexes for the data/header/attribute/label rows and cols.
    */
   initViewIndexes(attributes) {
@@ -230,6 +229,4 @@ export class cmMatrixView extends cmMatrixBase {
       }
     }
   }
-
 }
-

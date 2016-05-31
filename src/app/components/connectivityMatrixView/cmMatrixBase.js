@@ -736,4 +736,3 @@ export class cmMatrixBase extends SvgGroupElement {
     this.updateAttributes(selection, this.isAttributeColVisible, updateCol);
   }
 }
-
