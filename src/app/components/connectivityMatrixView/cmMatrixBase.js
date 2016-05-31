@@ -60,11 +60,20 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.colWidth = 15;
     this.rowHeight = 15;
+    this.colWidthAttr = 80;
+    this.colWidthLabel = 50;
+    this.labelRowHeight = this.colWidthLabel;
+    this.rowHeightAttr = 80;
+
     this.svg = svg;
 
     this.colAttributeNodeGroup = 0;
     this.rowAttributeNodeGroup = 1;
     this.numAttributeNodeGroups = 2;
+
+    this.rowHeights = [];
+    this.colWidths = [];
+    this.allRows = [];
 
     this.isInitialized = false;
     this.setModel(model);
@@ -521,184 +530,6 @@ export class cmMatrixBase extends SvgGroupElement {
       this.applyVisitor(visitor);
 
       this.legend = new cmColorMapLegend(visitor);
-    }
-  }
-
-  /**
-   * Function called to completely reset this object's state and create a new matrix in the svg.
-   */
-  setModel(model) {
-    this.clearChildren();
-    this.model = model;
-    this.rowNodeIndexes = model.getRowNodeIndexes();
-    this.colNodeIndexes = model.getColNodeIndexes();
-
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
-
-    let attributes = model.graph.getQuantNodeAttrNames();
-    this.attributes = attributes;
-    this.numControlCols = 1;
-
-    // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
-    // attributes that the user already selected.
-    if (!this.isInitialized) {
-      this.isAttributeColVisible = {};
-      this.isAttributeRowVisible = {};
-      for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = true;
-        this.isAttributeRowVisible[attributes[i]] = true;
-      }
-    }
-
-    this.numAttributeCols = attributes.length;
-    this.numLabelCols = 1;
-    this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
-
-    this.numControlRows = 1;
-    this.numAttributeRows = attributes.length;
-    this.numLabelRows = 1;
-    this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
-
-    this.rowHeights = [];
-    this.colWidths = [];
-    this.allRows = [];
-    this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
-    this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
-
-    // Create state for whether cols are unrolled and visible.
-    this.isMajorColUnrolled = [];
-    this.isMinorColVisible = [];
-    for (i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
-      this.isMajorColUnrolled[i] = false;
-      this.isMinorColVisible[i] = [];
-      if (this.isDataCell(i)) {
-        let dataIndex = this.getDataColIndex(i);
-        for (var j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
-          this.isMinorColVisible[i][j] = true;
-        }
-      }
-    }
-
-    // Populate the row/col node attributes.
-    // rowNodeAttributes[i][j] = attributes[j] for row[i]
-    // colNodeAttributes[i][j] = attributes[i] for col[j]
-    let colNodeAttributes = [];
-    let rowAttributes = [];
-    for (i = 0; i < attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, attributes[i]);
-      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, attributes[i]);
-    }
-
-    let rowNodeAttributes = rowAttributes[0];
-    if (attributes.length > 1) {
-      for (i = 1; i < attributes.length; ++i) {
-        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
-      }
-    } else {
-      for (i = 0; i < rowNodeAttributes.length; ++i) {
-        rowNodeAttributes[i] = [rowNodeAttributes[i]];
-      }
-    }
-
-    this.colWidthAttr = 80;
-    this.colWidthLabel = 50;
-    for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i) || this.isDataCell(i)) {
-        this.colWidths[i] = this.colWidth;
-      } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = this.colWidthAttr;
-      } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = this.colWidthLabel;
-      }
-    }
-
-    // Controls row is the only one with a onColControlsClicked callback.
-    let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-      this.rowHeight, model.areColsCollapsed, this);
-
-    let callback = this.onColControlsClicked.bind(this);
-    row.setColClickCallback(callback);
-    this.addRow(row, this.rowHeight);
-
-    this.rowHeightAttr = 80;
-    for (i = 0; i < attributes.length; ++i) {
-      let attributeRow = new cmAttributeRow(this.svg,
-        this.allRows.length,
-        this.colNodeIndexes,
-        this.numHeaderCols,
-        this.colWidth,
-        this.rowHeightAttr,
-        false,
-        colNodeAttributes[i],
-        this,
-        i,
-        attributes[i],
-        this.colAttributeNodeGroup
-      );
-
-      this.addRow(attributeRow, this.rowHeightAttr);
-    }
-
-    // Create the labels row
-    let majorColLabels = model.getMajorColLabels();
-    let minorColLabels = model.getMinorColLabels();
-    this.labelRowHeight = this.colWidthLabel;
-    let labelRow = new cmLabelRow(this.svg,
-      this.allRows.length,
-      this.colNodeIndexes,
-      this.numHeaderCols,
-      this.colWidth,
-      this.labelRowHeight,
-      majorColLabels,
-      minorColLabels,
-      this,
-      attributes,
-      this.rowNodeIndexes,
-      this.rowAttributeNodeGroup,
-      rowAttributes);
-    this.addRow(labelRow, this.labelRowHeight);
-
-    // Create each of the data rows!
-    let modelRows = model.getCurrentRows();
-    let majorRowLabels = model.getMajorRowLabels();
-    let minorRowLabels = model.getMinorRowLabels();
-
-    for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
-
-      // If row has minor rows, then we want the controls to be visible!
-      if (modelRows[i].getNumChildren() > 0) {
-        callback = this.onRowControlsClicked.bind(this);
-        dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
-      }
-
-      dataRow.setLabelColWidth(this.colWidthLabel);
-      this.addRow(dataRow, this.rowHeight);
-    }
-
-    // Data is all set. Now create encodings and controls.
-    this.setEncoding("colormap");
-    this.createAttributeEncodings();
-
-    // Put stuff in the correct place.
-    this.updatePositions(this.rowPerm, this.colPerm);
-    this.connectToViewState(this.$scope);
-
-    // highlights need to be created after the row groups
-    this.highlights = [];
-    this.createHighlights();
-
-    // Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
-    // do not change between queries.
-    for (i = 0; i < attributes.length; ++i) {
-      if (!this.isAttributeColVisible[attributes[i]]) {
-        this.onHideAttributeCol(i);
-      }
-      if (!this.isAttributeRowVisible[attributes[i]]) {
-        this.onHideAttributeRow(i);
-      }
     }
   }
 

@@ -112,8 +112,7 @@ export class cmMatrixView extends cmMatrixBase {
       }
     }
 
-    this.colWidthAttr = 80;
-    this.colWidthLabel = 50;
+
     for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       if (this.isControlCell(i) || this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
@@ -132,7 +131,6 @@ export class cmMatrixView extends cmMatrixBase {
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
 
-    this.rowHeightAttr = 80;
     for (i = 0; i < attributes.length; ++i) {
       let attributeRow = new cmAttributeRow(this.svg,
         this.allRows.length,
@@ -154,7 +152,6 @@ export class cmMatrixView extends cmMatrixBase {
     // Create the labels row
     let majorColLabels = model.getMajorColLabels();
     let minorColLabels = model.getMinorColLabels();
-    this.labelRowHeight = this.colWidthLabel;
     let labelRow = new cmLabelRow(this.svg,
       this.allRows.length,
       this.colNodeIndexes,
