@@ -474,12 +474,6 @@ export class cmMatrixBase extends SvgGroupElement {
     this.updatePositions(this.rowPerm, shiftedColPerm);
   }
 
-  onSortRowsByAttribute(attribute, ascending) {
-    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
-    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
-    this.updatePositions(shiftedRowPerm, this.colPerm);
-  }
-
   /**
    * Called when the user changes the filter on a set of nodes. This will draw a scent of the filter on the attribute
    * control cells.

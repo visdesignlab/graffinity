@@ -215,6 +215,12 @@ export class cmMatrixView extends cmMatrixBase {
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
   }
 
+  onSortRowsByAttribute(attribute, ascending) {
+    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
+    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
+    this.updatePositions(shiftedRowPerm, this.colPerm);
+  }
+
   /**
    * Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
    * do not change between queries.

@@ -101,8 +101,8 @@ export class MainController {
     this.svg.selectAll("*").remove();
     this.model = model;
     if (!this.matrix) {
-      this.nodeList = this.cmMatrixViewFactory.createNodeListView(this.svg, model, this.$scope, this.viewState, this);
-      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.nodeListSvg, model, this.$scope, this.viewState, this);
+      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+      this.nodeList = this.cmMatrixViewFactory.createNodeListView(this.nodeListSvg, model, this.$scope, this.viewState, this);
     } else {
       this.matrix.setModel(model);
       this.nodeList.setModel(model);

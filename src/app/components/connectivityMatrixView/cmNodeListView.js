@@ -2,10 +2,10 @@
  */
 
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmControlRow} from "./cmControlRow"
+//import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
-import {cmAttributeRow} from "./cmAttributeRow"
+//import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
 
 /**
@@ -61,35 +61,9 @@ export class cmNodeListView extends cmMatrixBase {
       }
     }
 
-    // Controls row is the only one with a onColControlsClicked callback.
-    let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-      this.rowHeight, model.areColsCollapsed, this);
-
-    let callback = this.onColControlsClicked.bind(this);
-    row.setColClickCallback(callback);
-    this.addRow(row, this.rowHeight);
-
-    for (i = 0; i < this.attributes.length; ++i) {
-      let attributeRow = new cmAttributeRow(this.svg,
-        this.allRows.length,
-        this.colNodeIndexes,
-        this.numHeaderCols,
-        this.colWidth,
-        this.rowHeightAttr,
-        false,
-        colNodeAttributes[i],
-        this,
-        i,
-        this.attributes[i],
-        this.colAttributeNodeGroup
-      );
-
-      this.addRow(attributeRow, this.rowHeightAttr);
-    }
-
     // Create the labels row
-    let majorColLabels = model.getMajorColLabels();
-    let minorColLabels = model.getMinorColLabels();
+    let majorColLabels = model.getIntermediateNodeIndexes();
+    let minorColLabels = model.getIntermediateNodeIndexes();
     let labelRow = new cmLabelRow(this.svg,
       this.allRows.length,
       this.colNodeIndexes,
@@ -106,9 +80,9 @@ export class cmNodeListView extends cmMatrixBase {
     this.addRow(labelRow, this.labelRowHeight);
 
     // Create each of the data rows!
-    let modelRows = model.getCurrentRows();
-    let majorRowLabels = model.getMajorRowLabels();
-    let minorRowLabels = model.getMinorRowLabels();
+    let modelRows = model.getCurrentIntermediateNodeRows();
+    let majorRowLabels = model.getIntermediateNodeIndexes();
+    let minorRowLabels = model.getIntermediateNodeIndexes();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
@@ -116,7 +90,7 @@ export class cmNodeListView extends cmMatrixBase {
 
       // If row has minor rows, then we want the controls to be visible!
       if (modelRows[i].getNumChildren() > 0) {
-        callback = this.onRowControlsClicked.bind(this);
+        let callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
 
@@ -129,8 +103,7 @@ export class cmNodeListView extends cmMatrixBase {
    * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
    */
   initAttributeNodeGroups() {
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), 2);
   }
 
   /**
@@ -190,8 +163,8 @@ export class cmNodeListView extends cmMatrixBase {
    * Initializes this.row/col indexes.
    */
   initNodeIndexes(model) {
-    this.rowNodeIndexes = model.getRowNodeIndexes();
-    this.colNodeIndexes = model.getColNodeIndexes();
+    this.rowNodeIndexes = model.getIntermediateNodeIndexes();
+    this.colNodeIndexes = [];
   }
 
   /**
@@ -203,8 +176,8 @@ export class cmNodeListView extends cmMatrixBase {
     this.numLabelCols = 1;
     this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
 
-    this.numControlRows = 1;
-    this.numAttributeRows = attributes.length;
+    this.numControlRows = 0;
+    this.numAttributeRows = 0;
     this.numLabelRows = 1;
     this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
 
@@ -213,6 +186,12 @@ export class cmNodeListView extends cmMatrixBase {
     this.allRows = [];
     this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
+  }
+
+  onSortRowsByAttribute(attribute, ascending) {
+    let rowPerm = this.model.getIntermediateIndexesSortedByAttr(attribute, ascending);
+    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
+    this.updatePositions(shiftedRowPerm, this.colPerm);
   }
 
   /**

@@ -514,6 +514,11 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending);
   }
 
+  getIntermediateIndexesSortedByAttr(attribute, ascending) {
+    var self = this;
+    return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
+  }
+
   getColsSortedByAttr(attribute, ascending) {
     var self = this;
     return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
@@ -595,6 +600,7 @@ export class cmModel {
       var row = new cmModelRow();
       row.activate(currentRowNodeIndex, [self.intermediateNodeCount[currentRowNodeIndex]], ['count']);
       self.intermediateRows.push(row);
+      self.intermediateNodeIndexes[i] = [self.intermediateNodeIndexes[i]];
     }
 
     self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);
