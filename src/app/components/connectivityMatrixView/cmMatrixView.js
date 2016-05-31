@@ -35,21 +35,14 @@ import {Utils} from "../utils/utils"
  */
 export class cmMatrixView extends cmMatrixBase {
 
+
   /**
-   * Function called to completely reset this object's state and create a new matrix in the svg.
+   * Fills this.attributes with the model's quantitative attributes.
+   * Creates this.isAttributeRow/Col visible.
    */
-  setModel(model) {
-    this.clearChildren();
-    this.model = model;
-    this.rowNodeIndexes = model.getRowNodeIndexes();
-    this.colNodeIndexes = model.getColNodeIndexes();
-
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
-
+  initAttributeState(model) {
     let attributes = model.graph.getQuantNodeAttrNames();
     this.attributes = attributes;
-    this.numControlCols = 1;
 
     // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
     // attributes that the user already selected.
@@ -61,65 +54,80 @@ export class cmMatrixView extends cmMatrixBase {
         this.isAttributeRowVisible[attributes[i]] = true;
       }
     }
+  }
 
-    this.numAttributeCols = attributes.length;
-    this.numLabelCols = 1;
-    this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
+  /**
+   * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
+   */
+  initAttributeNodeGroups() {
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
+  }
 
-    this.numControlRows = 1;
-    this.numAttributeRows = attributes.length;
-    this.numLabelRows = 1;
-    this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
-
-    this.rowHeights = [];
-    this.colWidths = [];
-    this.allRows = [];
-    this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
-    this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
-
-    // Create state for whether cols are unrolled and visible.
+  /**
+   * Fills this.isMajorColUnrolled, this.isMinorColVisible
+   */
+  initColStates() {
     this.isMajorColUnrolled = [];
     this.isMinorColVisible = [];
-    for (i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
+    for (let i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
       this.isMajorColUnrolled[i] = false;
       this.isMinorColVisible[i] = [];
       if (this.isDataCell(i)) {
         let dataIndex = this.getDataColIndex(i);
-        for (var j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
+        for (let j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
           this.isMinorColVisible[i][j] = true;
         }
       }
     }
+  }
 
-    // Populate the row/col node attributes.
-    // rowNodeAttributes[i][j] = attributes[j] for row[i]
-    // colNodeAttributes[i][j] = attributes[i] for col[j]
-    let colNodeAttributes = [];
-    let rowAttributes = [];
-    for (i = 0; i < attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, attributes[i]);
-      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, attributes[i]);
-    }
-
-    let rowNodeAttributes = rowAttributes[0];
-    if (attributes.length > 1) {
-      for (i = 1; i < attributes.length; ++i) {
-        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
-      }
-    } else {
-      for (i = 0; i < rowNodeAttributes.length; ++i) {
-        rowNodeAttributes[i] = [rowNodeAttributes[i]];
-      }
-    }
-
-
-    for (i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
+  /**
+   * Fills this.colWidths using the data/view/attribute indexes.
+   */
+  initColWidths() {
+    for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       if (this.isControlCell(i) || this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
       } else if (this.isAttributeCell(i)) {
         this.colWidths[i] = this.colWidthAttr;
       } else if (this.isLabelCell(i)) {
         this.colWidths[i] = this.colWidthLabel;
+      }
+    }
+  }
+
+  /**
+   * Initializes this.row/col indexes.
+   */
+  initNodeIndexes(model) {
+    this.rowNodeIndexes = model.getRowNodeIndexes();
+    this.colNodeIndexes = model.getColNodeIndexes();
+  }
+
+  /**
+   * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
+   */
+  createRows(model) {
+
+    // Populate the row/col node attributes.
+    // rowNodeAttributes[i][j] = attributes[j] for row[i]
+    // colNodeAttributes[i][j] = attributes[i] for col[j]
+    let colNodeAttributes = [];
+    let rowAttributes = [];
+    for (var i = 0; i < this.attributes.length; ++i) {
+      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
+      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
+    }
+
+    let rowNodeAttributes = rowAttributes[0];
+    if (this.attributes.length > 1) {
+      for (i = 1; i < this.attributes.length; ++i) {
+        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
+      }
+    } else {
+      for (i = 0; i < rowNodeAttributes.length; ++i) {
+        rowNodeAttributes[i] = [rowNodeAttributes[i]];
       }
     }
 
@@ -131,7 +139,7 @@ export class cmMatrixView extends cmMatrixBase {
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
 
-    for (i = 0; i < attributes.length; ++i) {
+    for (i = 0; i < this.attributes.length; ++i) {
       let attributeRow = new cmAttributeRow(this.svg,
         this.allRows.length,
         this.colNodeIndexes,
@@ -142,7 +150,7 @@ export class cmMatrixView extends cmMatrixBase {
         colNodeAttributes[i],
         this,
         i,
-        attributes[i],
+        this.attributes[i],
         this.colAttributeNodeGroup
       );
 
@@ -161,7 +169,7 @@ export class cmMatrixView extends cmMatrixBase {
       majorColLabels,
       minorColLabels,
       this,
-      attributes,
+      this.attributes,
       this.rowNodeIndexes,
       this.rowAttributeNodeGroup,
       rowAttributes);
@@ -185,26 +193,39 @@ export class cmMatrixView extends cmMatrixBase {
       dataRow.setLabelColWidth(this.colWidthLabel);
       this.addRow(dataRow, this.rowHeight);
     }
+  }
 
-    // Data is all set. Now create encodings and controls.
-    this.setEncoding("colormap");
-    this.createAttributeEncodings();
+  /**
+   * Creates indexes for the data/header/attribute/label rows and cols.
+   */
+  initViewIndexes(attributes) {
+    this.numControlCols = 1;
+    this.numAttributeCols = attributes.length;
+    this.numLabelCols = 1;
+    this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
 
-    // Put stuff in the correct place.
-    this.updatePositions(this.rowPerm, this.colPerm);
-    this.connectToViewState(this.$scope);
+    this.numControlRows = 1;
+    this.numAttributeRows = attributes.length;
+    this.numLabelRows = 1;
+    this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
 
-    // highlights need to be created after the row groups
-    this.highlights = [];
-    this.createHighlights();
+    this.rowHeights = [];
+    this.colWidths = [];
+    this.allRows = [];
+    this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
+    this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
+  }
 
-    // Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
-    // do not change between queries.
-    for (i = 0; i < attributes.length; ++i) {
-      if (!this.isAttributeColVisible[attributes[i]]) {
+  /**
+   * Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
+   * do not change between queries.
+   */
+  updateAttributeView() {
+    for (var i = 0; i < this.attributes.length; ++i) {
+      if (!this.isAttributeColVisible[this.attributes[i]]) {
         this.onHideAttributeCol(i);
       }
-      if (!this.isAttributeRowVisible[attributes[i]]) {
+      if (!this.isAttributeRowVisible[this.attributes[i]]) {
         this.onHideAttributeRow(i);
       }
     }

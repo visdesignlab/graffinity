@@ -1,10 +1,6 @@
-/*global reorder, d3
+/*global reorder
  */
 import {SvgGroupElement} from "./svgGroupElement"
-import {cmControlRow} from "./cmControlRow"
-import {cmLabelRow} from "./cmLabelRow"
-import {cmDataRow} from "./cmDataRow"
-import {cmAttributeRow} from "./cmAttributeRow"
 import {cmAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
 import {cmAttributeLabelScentVisitor} from "./visitors/cmAttributeLabelScentVisitor"
 import {cmNodeLabelVisitor} from "./visitors/cmNodeLabelVisitor"
@@ -71,6 +67,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.rowAttributeNodeGroup = 1;
     this.numAttributeNodeGroups = 2;
 
+    this.highlights = [];
     this.rowHeights = [];
     this.colWidths = [];
     this.allRows = [];
@@ -531,6 +528,39 @@ export class cmMatrixBase extends SvgGroupElement {
 
       this.legend = new cmColorMapLegend(visitor);
     }
+  }
+
+  /**
+   * Function called to completely reset this object's state and create a new matrix in the svg.
+   */
+  setModel(model) {
+    this.model = model;
+
+    // Delete old stuff
+    this.clearChildren();
+
+    // Prepare internal state for creating the svg table
+    this.initNodeIndexes(model);
+    this.initAttributeNodeGroups();
+    this.initAttributeState(model);
+    this.initViewIndexes(this.attributes);
+    this.initColStates();
+    this.initColWidths();
+
+    // Create all rows of the matrix - this binds data to the svg elements.
+    this.createRows(model);
+
+    // Data is ready - create encodings
+    this.setEncoding("colormap");
+    this.createAttributeEncodings();
+
+    // Put stuff in the correct place.
+    this.updatePositions(this.rowPerm, this.colPerm);
+    this.connectToViewState(this.$scope);
+
+    // this must be called after rows are created.
+    this.createHighlights();
+    this.updateAttributeView();
   }
 
   /** Used for externally setting sort orders.
