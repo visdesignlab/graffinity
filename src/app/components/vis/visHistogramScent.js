@@ -6,6 +6,7 @@ export class visHistogramScent {
    * Class for representing a histogram.
    */
   constructor($scope, parent, width, height, numBins, isVertical, values) {
+
     this.$scope = $scope;
     this.parent = parent;
     this.numBins = numBins;
@@ -57,6 +58,8 @@ export class visHistogramScent {
 
       this.createHistogramBarsHorizontal();
     }
+
+    //draw black line around histogram
     this.parent.append("rect")
       .attr("width", this.width)
       .attr("height", this.height)
@@ -65,8 +68,10 @@ export class visHistogramScent {
 
   }
 
+
+
    /**
-   * Create bars of the histogram.
+   * Create bars vertical of the histogram.
    */
   createHistogramBarsVertical() {
      let self = this;
@@ -77,9 +82,10 @@ export class visHistogramScent {
       .enter()
       .append("g")
       .attr("class", "bar")
+      .attr("id", 1)
       .attr("transform", function (d) {
-        console.log(self.xScale(d.dx))  //draws upper left corner of bar, so must subtract more 
-        return "translate(" + (self.yScale(d.y)) + "," + (self.height - self.xScale(d.dx) - self.xScale(d.x)) + ")";
+        //draws upper left corner of bar, so must subtract width of bar (self.xScale(d.dx)) for vertical bars
+        return "translate(" + (self.yScale(d.y)) + "," + (self.height - self.xScale(d.dx + d.x)) + ")";
       });
 
     bar.append("rect")
@@ -93,7 +99,7 @@ export class visHistogramScent {
 
 
   /**
-   * Create bars of the histogram.
+   * Create horizontal bars of the histogram.
    */
   createHistogramBarsHorizontal() {
     let self = this;
@@ -119,7 +125,7 @@ export class visHistogramScent {
 
 
   /**
-   * Generate histogram with this.numBins bins.
+   * Generate histogram with numBins bins.
    */
   createHistogramData() {
     // Create the numBins bins for the horizontal axis of histogram
@@ -130,5 +136,16 @@ export class visHistogramScent {
     this.histogramData = d3.layout.histogram()
       .bins(this.tickArray)
       (this.values);
+  }
+
+    /**
+   * set the range for which histogram values should be highlighted.
+   * all other bars are given opacity of .1
+   */
+  setFilterRange(filterRange) {
+    d3.selectAll(".bar").style("opacity", function (d) {
+       return d.x >= filterRange[0] && d.x < filterRange[1] ? "1" : ".1";
+     });
+
   }
 }
