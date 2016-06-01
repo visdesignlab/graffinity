@@ -1,4 +1,5 @@
 import {SvgGroupElement} from "./svgGroupElement"
+import {visHistogramScent} from "../vis/visHistogramScent.js"
 
 /**
  * Class that displays quantitative attributes row/col controls.
@@ -171,11 +172,17 @@ export class cmAttributeControls extends SvgGroupElement {
   static createDataScent(group, isVertical, scentWidth, scentHeight, attributeValues) {
     // TODO - put call to scent histogram constructor here.
     // TODO - delete this ugly red box
-    group.append("rect")
-      .attr("width", scentWidth)
-      .attr("height", scentHeight)
-      .attr("fill", "transparent")
-      .style("outline", "thin solid red");
+    // group.append("rect")
+    //   .attr("width", scentWidth)
+    //   .attr("height", scentHeight)
+    //   .attr("fill", "transparent")
+    //   .style("outline", "thin solid red");
+
+    // TODO -- create histogram class; and call constructor here
+    this.numBins = 10
+    this.histogram = new visHistogramScent(this.$scope, group, scentWidth, scentHeight, this.numBins, isVertical, attributeValues);
+
+
   }
 
   /**
