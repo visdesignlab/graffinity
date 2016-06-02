@@ -91,6 +91,7 @@ export class cmMatrixView extends SvgGroupElement {
   createAttributeEncodings() {
     let visitor = new cmClearVisitor();
     visitor.setClearAttributeCells(true);
+    visitor.setClearAttributeLabelCells(true);
     this.applyVisitor(visitor);
 
     // Create visual encodings for all the quantitative attributes.
@@ -421,7 +422,6 @@ export class cmMatrixView extends SvgGroupElement {
   onHideNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, true);
     this.updateDataCols(nodeIndexes, true);
-    this.createAttributeEncodings();
     this.setEncoding(this.encoding);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
@@ -457,7 +457,6 @@ export class cmMatrixView extends SvgGroupElement {
   onShowNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, false);
     this.updateDataCols(nodeIndexes, false);
-    this.createAttributeEncodings();
     this.setEncoding(this.encoding);
     this.updatePositions(this.rowPerm, this.colPerm);
   }

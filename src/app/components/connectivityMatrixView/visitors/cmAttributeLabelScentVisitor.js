@@ -10,7 +10,7 @@ export class cmAttributeLabelScentVisitor extends cmCellVisitor {
 
   apply(cell) {
     if (cell.isAttributeLabelCell
-      && cell.data.attributeIndex != this.attributeIndex
+      && cell.data.attributeIndex == this.attributeIndex
       && cell.data.attributeNodeGroup == this.attributeNodeGroup) {
 
       if (!cell.controls) {

@@ -143,9 +143,8 @@ export class visHistogramScent {
    * all other bars are given opacity of .1
    */
   setFilterRange(filterRange) {
-    d3.selectAll(".bar").style("opacity", function (d) {
+    this.parent.selectAll(".bar").style("opacity", function (d) {
        return d.x >= filterRange[0] && d.x < filterRange[1] ? "1" : ".1";
      });
-
   }
 }
