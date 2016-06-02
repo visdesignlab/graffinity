@@ -147,8 +147,8 @@ export class cmMatrixView extends cmMatrixBase {
       this.isAttributeColVisible = {};
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = true;
-        this.isAttributeRowVisible[attributes[i]] = true;
+        this.isAttributeColVisible[attributes[i]] = false;
+        this.isAttributeRowVisible[attributes[i]] = false;
       }
     }
   }

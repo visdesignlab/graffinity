@@ -98,14 +98,15 @@ export class MainController {
   }
 
   createMatrix(model, encoding) {
-    this.svg.selectAll("*").remove();
+    // this.svg.selectAll("*").remove();
     this.model = model;
     if (!this.matrix) {
-      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
-      this.nodeList = this.cmMatrixViewFactory.createNodeListView(this.nodeListSvg, model, this.$scope, this.viewState, this);
+      //this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+      this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
+      // this.nodeList = this.cmMatrixViewFactory.createNodeListView(this.nodeListSvg, model, this.$scope, this.viewState, this);
     } else {
-      this.matrix.setModel(model);
-      this.nodeList.setModel(model);
+      // this.matrix.setModel(model);
+      // this.nodeList.setModel(model);
     }
     this.nodeLinkView.setModel(model);
     this.viewState.setCurrentModel(model);
@@ -114,22 +115,23 @@ export class MainController {
 
   createMatrixAndUi(model) {
 
-    let matrixContainer = d3.select("#matrices-row");
-    let width = matrixContainer[0][0].clientWidth;
-    let matrixWidth = width * 0.58;
-    let nodeListWidth = width * 0.20;
+    this.matrixContainer = d3.select("#matrices-row");
+    //let width = matrixContainer[0][0].clientWidth;
+    //le/t matrixWidth = width * 0.58;
+    // let nodeListWidth = width * 0.20;
 
-    this.svg = matrixContainer.append("svg")
-      .attr("width", matrixWidth)
-      .attr("height", 1024)
-      .append("g")
-      .attr("transform", "translate(0, 20)");
 
-    this.nodeListSvg = matrixContainer.append("svg")
-      .attr("width", nodeListWidth)
-      .attr("height", 1024)
-      .append("g")
-      .attr("transform", "translate(0, 20)");
+    //this.svg = matrixContainer.append("svg")
+    //  .attr("width", matrixWidth)
+    //  .attr("height", 1024)
+    //  .append("g")
+    //  .attr("transform", "translate(0, 20)");
+
+    //this.nodeListSvg = matrixContainer.append("svg")
+    //  .attr("width", nodeListWidth)
+    //  .attr("height", 1024)
+    //  .append("g")
+    //  .attr("transform", "translate(0, 20)");
 
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
@@ -137,9 +139,9 @@ export class MainController {
     this.createMatrix(model, this.ui.selectedEncoding);
 
     // Disable animation of the matrix so that its initial position is the sorted one.
-    this.matrix.setUseAnimation(false);
-    this.onSortOrderChanged("optimal leaf");
-    this.matrix.setUseAnimation(true);
+    //this.matrix.setUseAnimation(false);
+    //this.onSortOrderChanged("optimal leaf");
+    //this.matrix.setUseAnimation(true);
   }
 
   createReorderControls() {
@@ -185,7 +187,7 @@ export class MainController {
    * updates the legend displayed in the sidebar.
    */
   onEncodingChanged(encoding) {
-    this.matrix.setEncoding(encoding);
+    //this.matrix.setEncoding(encoding);
     this.updateLegend();
   }
 
@@ -217,7 +219,7 @@ export class MainController {
     self.nodeLinkView.clear();
 
     // remove svg when query button pressed
-    this.svg.selectAll("*").remove();
+    // this.svg.selectAll("*").remove();
 
     // remove legend when query button pressed
     d3.select("#encoding-legend")
@@ -361,12 +363,12 @@ export class MainController {
       .attr("transform", "translate(1, 4)");
 
     let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
-
-    if (this.matrix.legend) {
-      this.matrix.legend.createView(group, width, width);
-      this.ui.hasLegend = true;
-    } else {
-      this.ui.hasLegend = false;
-    }
+    //
+    //if (this.matrix.legend) {
+    //  this.matrix.legend.createView(group, width, width);
+    //  this.ui.hasLegend = true;
+    //} else {
+    //  this.ui.hasLegend = false;
+    //}
   }
 }
