@@ -1,18 +1,19 @@
 import {cmMatrixView} from "./cmMatrixView"
+import {cmMatrixTopHeader} from "./cmMatrixTopHeader"
 export class cmMatrixManager {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-
+    this.$log = $log;
     this.topHeaderLabelRowHeight = 25;
     this.topHeaderElementStyle = {
-      width: "512px",
+      width: "768px",
       height: "50px",
       left: "50px"
     };
 
     this.matrixElementStyle = {
-      width: "512px",
-      height: "512px",
+      width: "768px",
+      height: "600px",
       top: "-" + this.topHeaderLabelRowHeight + "px"
     };
 
@@ -49,19 +50,22 @@ export class cmMatrixManager {
       .attr({width: 1024, height: 1024});
 
     this.matrix = new cmMatrixView(this.matrixSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
-    this.topHeader = new cmMatrixView(this.topHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+    this.topHeader = new cmMatrixTopHeader(this.topHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+    this.topHeader.manager = this;
+    this.topHeaderElementStyle.height = this.topHeader.getHeight() + "px";
     this.leftHeader = new cmMatrixView(this.leftHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
     this.updateElementPositions();
+
+    this.$scope = scope;
+    this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
   }
 
   updateElementPositions() {
-    this.topHeaderElement.style(this.topHeaderElementStyle);
+    this.$log.debug("updating positions");
+    this.topHeaderElementStyle.height = this.topHeader.getHeight() + 5 + "px";
+    this.topHeaderElement.transition().duration(500).style(this.topHeaderElementStyle);
     this.leftHeaderElement.style(this.leftHeaderElementStyle);
-    this.matrixElement.style(this.matrixElementStyle);
-  }
-
-  setMatrixModel(model) {
-
+    this.matrixElement.transition().duration(500).style(this.matrixElementStyle);
   }
 
 }

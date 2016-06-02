@@ -1,40 +1,13 @@
-/*global reorder, d3
+/*global reorder d3
  */
 
 import {cmMatrixBase} from "./cmMatrixBase"
 import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
-import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
 
-/**
- * Manages the matrix svg.
- *
- * Call stack for hiding major data cols:
- * - updateDataCols - identifies which columns need to be hidden
- * -- updateCol - toggles visibility of major cols
- * - updatePositions
- *
- * Stack for hiding minor data cols:
- * - updateDataCols
- * -- set state of isMinorColVisible
- * -- updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible)
- * - updatePositions
- *
- * Stack for hiding major rows:
- * - updateDataRows
- * -- updateRow - toggles visibilty of major rows
- * - updatePositions
- *
- * Stack for hiding minor cols:
- * - updateDataRows
- * -- this.allRows[rowIndex].hide/showMinorRow(minorRowIndex)
- * - updatePositions
- *
- */
-export class cmMatrixView extends cmMatrixBase {
-
+export class cmMatrixTopHeader extends cmMatrixBase {
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
    */
@@ -61,68 +34,49 @@ export class cmMatrixView extends cmMatrixBase {
       }
     }
 
-    //// Controls row is the only one with a onColControlsClicked callback.
-    //let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-    //  this.rowHeight, model.areColsCollapsed, this);
+    // Controls row is the only one with a onColControlsClicked callback.
+    let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+      this.rowHeight, model.areColsCollapsed, this);
 
-    //let callback = this.onColControlsClicked.bind(this);
-    //row.setColClickCallback(callback);
-    //this.addRow(row, this.rowHeight);
+    let callback = this.onColControlsClicked.bind(this);
+    row.setColClickCallback(callback);
+    this.addRow(row, this.rowHeight);
 
-    //for (i = 0; i < this.attributes.length; ++i) {
-    //  let attributeRow = new cmAttributeRow(this.svg,
-    //    this.allRows.length,
-    //    this.colNodeIndexes,
-    //    this.numHeaderCols,
-    //    this.colWidth,
-    //    this.rowHeightAttr,
-    //    false,
-    //    colNodeAttributes[i],
-    //    this,
-    //    i,
-    //    this.attributes[i],
-    //    this.colAttributeNodeGroup
-    //  );
-    //
-    //  this.addRow(attributeRow, this.rowHeightAttr);
-    //}
-    //
-    //// Create the labels row
-    //let majorColLabels = model.getMajorColLabels();
-    //let minorColLabels = model.getMinorColLabels();
-    //let labelRow = new cmLabelRow(this.svg,
-    //  this.allRows.length,
-    //  this.colNodeIndexes,
-    //  this.numHeaderCols,
-    //  this.colWidth,
-    //  this.labelRowHeight,
-    //  majorColLabels,
-    //  minorColLabels,
-    //  this,
-    //  this.attributes,
-    //  this.rowNodeIndexes,
-    //  this.rowAttributeNodeGroup,
-    //  rowAttributes);
-    //this.addRow(labelRow, this.labelRowHeight);
+    for (i = 0; i < this.attributes.length; ++i) {
+      let attributeRow = new cmAttributeRow(this.svg,
+        this.allRows.length,
+        this.colNodeIndexes,
+        this.numHeaderCols,
+        this.colWidth,
+        this.rowHeightAttr,
+        false,
+        colNodeAttributes[i],
+        this,
+        i,
+        this.attributes[i],
+        this.colAttributeNodeGroup
+      );
 
-    // Create each of the data rows!
-    let modelRows = model.getCurrentRows();
-    let majorRowLabels = model.getMajorRowLabels();
-    let minorRowLabels = model.getMinorRowLabels();
-
-    for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
-
-      // If row has minor rows, then we want the controls to be visible!
-      if (modelRows[i].getNumChildren() > 0) {
-        let callback = this.onRowControlsClicked.bind(this);
-        dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
-      }
-
-      dataRow.setLabelColWidth(this.colWidthLabel);
-      this.addRow(dataRow, this.rowHeight);
+      this.addRow(attributeRow, this.rowHeightAttr);
     }
+
+    // Create the labels row
+    let majorColLabels = model.getMajorColLabels();
+    let minorColLabels = model.getMinorColLabels();
+    let labelRow = new cmLabelRow(this.svg,
+      this.allRows.length,
+      this.colNodeIndexes,
+      this.numHeaderCols,
+      this.colWidth,
+      this.labelRowHeight,
+      majorColLabels,
+      minorColLabels,
+      this,
+      this.attributes,
+      this.rowNodeIndexes,
+      this.rowAttributeNodeGroup,
+      rowAttributes);
+    this.addRow(labelRow, this.labelRowHeight);
   }
 
   /**
@@ -148,7 +102,7 @@ export class cmMatrixView extends cmMatrixBase {
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {
         this.isAttributeColVisible[attributes[i]] = false;
-        this.isAttributeRowVisible[attributes[i]] = false;
+        this.isAttributeRowVisible[attributes[i]] = true;
       }
     }
   }
@@ -203,9 +157,9 @@ export class cmMatrixView extends cmMatrixBase {
     this.numLabelCols = 1;
     this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
 
-    this.numControlRows = 0;
-    this.numAttributeRows = 0;
-    this.numLabelRows = 0;
+    this.numControlRows = 1;
+    this.numAttributeRows = attributes.length;
+    this.numLabelRows = 1;
     this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
 
     this.rowHeights = [];

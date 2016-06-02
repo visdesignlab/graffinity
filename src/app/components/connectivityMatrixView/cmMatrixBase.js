@@ -72,9 +72,16 @@ export class cmMatrixBase extends SvgGroupElement {
     this.colWidths = [];
     this.allRows = [];
 
+    this.setUseAnimation(false);
     this.isInitialized = false;
     this.setModel(model);
     this.isInitialized = true;
+    this.setUseAnimation(true);
+
+    let self = this;
+    this.$scope.$on("updatePositions", function(event, rowPerm, colPerm) {
+      self.updatePositions(rowPerm, colPerm);
+    })
   }
 
   addRow(row, rowHeight) {
@@ -219,6 +226,14 @@ export class cmMatrixBase extends SvgGroupElement {
 
   getDataRowIndex(viewRowIndex) {
     return viewRowIndex - this.numHeaderRows;
+  }
+
+  getHeight() {
+    let total = 0;
+    for (var i = 0; i < this.rowHeights.length; ++i) {
+      total += this.rowHeights[i];
+    }
+    return total;
   }
 
   /**
@@ -387,13 +402,15 @@ export class cmMatrixBase extends SvgGroupElement {
 
   onEditVisibleAttributeRows() {
     let updateColAttributes = this.updateColAttributes.bind(this);
-    this.onEditVisibleAttributes(this.attributes, this.isAttributeRowVisible, updateColAttributes);
+    let event = "changeMatrixHeight";
+    this.onEditVisibleAttributes(this.attributes, this.isAttributeRowVisible, updateColAttributes, event);
   }
 
-  onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes) {
+  onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes, event) {
 
     let modalSuccess = function (selection) {
       updateVisibleAttributes(selection, isAttributeVisible);
+      this.$scope.$broadcast(event);
     };
 
     modalSuccess = modalSuccess.bind(this);
@@ -414,6 +431,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.isAttributeRowVisible[attribute] = false;
     this.updateRow(viewIndex, false);
     this.updatePositions(this.rowPerm, this.colPerm);
+    this.$scope.$broadcast("changeMatrixHeight");
   }
 
   onHideAttributeCol(attributeIndex) {
@@ -471,7 +489,7 @@ export class cmMatrixBase extends SvgGroupElement {
   onSortColsByAttribute(attribute, ascending) {
     let colPerm = this.model.getColsSortedByAttr(attribute, ascending);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
-    this.updatePositions(this.rowPerm, shiftedColPerm);
+    this.$scope.$broadcast("updatePositions", this.rowPerm, shiftedColPerm);
   }
 
   /**
