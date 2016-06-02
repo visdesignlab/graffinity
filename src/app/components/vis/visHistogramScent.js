@@ -22,6 +22,7 @@ export class visHistogramScent {
 
     if (isVertical)
     {
+      // margin allows for histogram to be properly placed -- note can change the right to 2 if you want histogram farther way from 1D scatterplots
       this.margin = {top: 5, right: 0, bottom: 5, left: 0};
 
       this.chartWidth = this.width - this.margin.left - this.margin.right;
@@ -40,7 +41,7 @@ export class visHistogramScent {
       this.createHistogramBarsVertical();
     }
     else {
-      // margin allows for histogram to be properly placed
+      // margin allows for histogram to be properly placed-- note can change the bottom to 2 if you want histogram farther way from 1D scatterplots
       this.margin = {top: 0, right: 5, bottom: 0, left: 5};
       this.chartWidth = this.width - this.margin.left - this.margin.right;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
@@ -81,7 +82,7 @@ export class visHistogramScent {
       .append("g")
       .attr("class", "bar")
       .attr("transform", function (d) {
-        return "translate(" + (self.margin.left + self.xScale(d.x)) + "," + (self.yScale(d.y)) + ")";
+        return "translate(" + (self.margin.left + self.xScale(d.x)) + "," + (self.yScale(d.y) - self.margin.bottom) + ")";
       });
 
     bar.append("rect")
@@ -108,8 +109,7 @@ export class visHistogramScent {
       .attr("id", 1)
       .attr("transform", function (d) {
         //draws upper left corner of bar, so must subtract width of bar (self.xScale(d.dx)) for vertical bars
-        //TODO consider replacing (self.yScale(d.y))  with (self.yScale(d.y)-self.margin.bottom/2) to translate histogram a bit more father away from 1-d scatterplots on vertical histograms
-        return "translate(" + (self.yScale(d.y)) + "," + (self.margin.top + self.chartHeight - self.xScale(d.dx + d.x)) + ")";
+        return "translate(" + (self.yScale(d.y) - self.margin.right) + "," + (self.margin.top + self.chartHeight - self.xScale(d.dx + d.x)) + ")";
       });
 
     bar.append("rect")
