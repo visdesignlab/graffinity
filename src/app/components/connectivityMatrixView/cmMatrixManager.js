@@ -33,10 +33,10 @@ export class cmMatrixManager {
     this.matrixElement = element.append("div")
       .classed("matrix-view-center", true)
       .on("scroll", function () {
-        let left = $(this).scrollLeft();
-        let top = $(this).scrollTop();
-        $("#matrix-view-header-top").scrollLeft(left);
-        $("#matrix-view-header-left").scrollTop(top);
+        let left = angular.element(this).scrollLeft();
+        let top = angular.element(this).scrollTop();
+        angular.element("#matrix-view-header-top").scrollLeft(left);
+        angular.element("#matrix-view-header-left").scrollTop(top);
       });
 
     this.topHeaderSvg = this.topHeaderElement.append("svg")
