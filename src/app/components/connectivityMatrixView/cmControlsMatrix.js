@@ -6,14 +6,16 @@ import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
-
-export class cmMatrixTopHeader extends cmMatrixBase {
+import {cmControlsMatrixRow} from "./cmControlsMatrixRow"
+import {cmControlsMatrixControlsRow} from "./cmControlsMatrixControlsRow"
+import {cmControlsMatrixColHeaderRow} from "./cmControlsMatrixColHeaderRow"
+export class cmControlsMatrix extends cmMatrixBase {
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
    */
   createRows(model) {
 
-    // Populate the row/col node attributes.
+    //// Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
     let colNodeAttributes = [];
@@ -35,15 +37,13 @@ export class cmMatrixTopHeader extends cmMatrixBase {
     }
 
     // Controls row is the only one with a onColControlsClicked callback.
-    let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+    let row = new cmControlsMatrixControlsRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
       this.rowHeight, model.areColsCollapsed, this);
 
-    let callback = this.onColControlsClicked.bind(this);
-    row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
 
     for (i = 0; i < this.attributes.length; ++i) {
-      let attributeRow = new cmAttributeRow(this.svg,
+      let attributeRow = new cmControlsMatrixRow(this.svg,
         this.allRows.length,
         this.colNodeIndexes,
         this.numHeaderCols,
@@ -60,10 +60,9 @@ export class cmMatrixTopHeader extends cmMatrixBase {
       this.addRow(attributeRow, this.rowHeightAttr);
     }
 
-    // Create the labels row
     let majorColLabels = model.getMajorColLabels();
     let minorColLabels = model.getMinorColLabels();
-    let labelRow = new cmLabelRow(this.svg,
+    let labelRow = new cmControlsMatrixColHeaderRow(this.svg,
       this.allRows.length,
       this.colNodeIndexes,
       this.numHeaderCols,
@@ -101,7 +100,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
       this.isAttributeColVisible = {};
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = false;
+        this.isAttributeColVisible[attributes[i]] = true;
         this.isAttributeRowVisible[attributes[i]] = true;
       }
     }
@@ -135,7 +134,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
       } else if (this.isAttributeCell(i)) {
         this.colWidths[i] = this.colWidthAttr;
       } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = 0;
+        this.colWidths[i] = this.colWidthLabel;
       }
     }
   }

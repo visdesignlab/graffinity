@@ -1,7 +1,13 @@
 .matrix-view-header-top {
   overflow: hidden;
   position: relative;
-  left: 50px;
+  display: inline-block;
+}
+
+.matrix-view-header-controls {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
 }
 
 .matrix-view-header-left {

@@ -17,18 +17,18 @@ export class cmAttributeRow extends cmMatrixRow {
       // This assumes that the attribute row's labels will start in the same column as the data matrix's row labels.
       if (this.matrix.isLabelCell(i)) {
 
-        // Put the label in it.
-        data = {
-          name: attributeLabel,
-          isVertical: true,
-          attributeIndex: attributeIndex,
-          nodeIndexes: colNodeIndexes,
-          attributeNodeGroup: attributeNodeGroup,
-          attributeValues: Utils.getFlattenedLists(colNodeAttributes)
-        };
-
-        cell.isAttributeLabelCell = true;
-        cell.setData(data);
+        //// Put the label in it.
+        //data = {
+        //  name: attributeLabel,
+        //  isVertical: true,
+        //  attributeIndex: attributeIndex,
+        //  nodeIndexes: colNodeIndexes,
+        //  attributeNodeGroup: attributeNodeGroup,
+        //  attributeValues: Utils.getFlattenedLists(colNodeAttributes)
+        //};
+        //
+        //cell.isAttributeLabelCell = true;
+        //cell.setData(data);
 
       } else if (this.matrix.isDataCell(i)) {
 

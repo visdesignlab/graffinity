@@ -79,9 +79,21 @@ export class cmMatrixBase extends SvgGroupElement {
     this.setUseAnimation(true);
 
     let self = this;
-    this.$scope.$on("updatePositions", function(event, rowPerm, colPerm) {
+    this.$scope.$on("updatePositions", function (event, rowPerm, colPerm) {
       self.updatePositions(rowPerm, colPerm);
-    })
+    });
+
+    this.$scope.$on("hideAttributeRow", function (event, attributeIndex) {
+      self.onHideAttributeRow(attributeIndex, true);
+    });
+
+    this.$scope.$on("hideAttributeCol", function (event, attributeIndex) {
+      self.onHideAttributeCol(attributeIndex, true);
+    });
+
+    this.$scope.$on("changeVisibleAttributeRows", function (event, selection) {
+      self.updateColAttributes(selection);
+    });
   }
 
   addRow(row, rowHeight) {
@@ -175,6 +187,26 @@ export class cmMatrixBase extends SvgGroupElement {
 
   getAttributeColIndex(viewColIndex) {
     return viewColIndex - this.numControlCols;
+  }
+
+  getAttributeColWidths() {
+    let total = 0;
+    for (var i = 0; i < this.colWidths.length; ++i) {
+      if (this.isAttributeCell(i) || this.isLabelCell(i) || this.isControlCell(i)) {
+        total += this.colWidths[i];
+      }
+    }
+    this.$log.error("getting attribute col widths", total);
+    return total;
+  }
+
+  getAttributeRowHeights() {
+    let total = 0;
+    for(var i=0; i<this.rowHeights.length; ++i) {
+      if(this.isAttributeRow(i) || this.isControlRow(i) || this.isLabelRow(i) ) {
+        total += this.rowHeights[i];
+      }
+    }
   }
 
   static getAvailableEncodings() {
@@ -397,20 +429,23 @@ export class cmMatrixBase extends SvgGroupElement {
 
   onEditVisibleAttributeCols() {
     let updateRowAttributes = this.updateRowAttributes.bind(this);
-    this.onEditVisibleAttributes(this.attributes, this.isAttributeColVisible, updateRowAttributes);
+    let resizeEvent = "changeMatrixHeight";
+    this.onEditVisibleAttributes(this.attributes, this.isAttributeColVisible, updateRowAttributes, resizeEvent);
   }
 
   onEditVisibleAttributeRows() {
     let updateColAttributes = this.updateColAttributes.bind(this);
-    let event = "changeMatrixHeight";
-    this.onEditVisibleAttributes(this.attributes, this.isAttributeRowVisible, updateColAttributes, event);
+    let resizeEvent = "changeMatrixHeight";
+    let visibilityEvent = "changeVisibleAttributeRows";
+    this.onEditVisibleAttributes(this.attributes, this.isAttributeRowVisible, updateColAttributes, resizeEvent, visibilityEvent);
   }
 
-  onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes, event) {
+  onEditVisibleAttributes(attributes, isAttributeVisible, updateVisibleAttributes, resizeEvent, visibilityEvent) {
 
     let modalSuccess = function (selection) {
       updateVisibleAttributes(selection, isAttributeVisible);
-      this.$scope.$broadcast(event);
+      this.$scope.$broadcast(visibilityEvent, selection, isAttributeVisible);
+      this.$scope.$broadcast(resizeEvent);
     };
 
     modalSuccess = modalSuccess.bind(this);
@@ -425,21 +460,28 @@ export class cmMatrixBase extends SvgGroupElement {
     this.mainController.openNodeIndexFilter();
   }
 
-  onHideAttributeRow(attributeIndex) {
+  onHideAttributeRow(attributeIndex, isReceiver) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeRowVisible[attribute] = false;
     this.updateRow(viewIndex, false);
     this.updatePositions(this.rowPerm, this.colPerm);
+    if (!isReceiver) {
+      this.$scope.$broadcast("hideAttributeRow", attributeIndex);
+    }
     this.$scope.$broadcast("changeMatrixHeight");
   }
 
-  onHideAttributeCol(attributeIndex) {
+  onHideAttributeCol(attributeIndex, isReceiver) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeColVisible[attribute] = false;
     this.updateCol(viewIndex, false);
     this.updatePositions(this.rowPerm, this.colPerm);
+    if (!isReceiver) {
+      this.$scope.$broadcast("hideAttributeCol", attributeIndex);
+    }
+    this.$scope.$broadcast("changeMatrixHeight");
   }
 
   onHideNodes(event, nodeIndexes) {

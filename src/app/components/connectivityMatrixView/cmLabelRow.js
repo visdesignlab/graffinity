@@ -18,35 +18,35 @@ export class cmLabelRow extends cmMatrixRow {
       let dataIndex = this.matrix.getDataColIndex(i);
       if (this.matrix.isControlCell(i)) {
 
-        cell.isEditAttributeCell = true;
-        cell.setData({
-          isVertical: false
-        });
+        //cell.isEditAttributeCell = true;
+        //cell.setData({
+        //  isVertical: false
+        //});
 
       } else if (this.matrix.isAttributeCell(i)) {
 
-        let attributeIndex = this.matrix.getAttributeColIndex(i);
+        //let attributeIndex = this.matrix.getAttributeColIndex(i);
 
-        cell.setData({
-          name: attributeLabels[attributeIndex],
-          isVertical: 0,
-          attributeIndex: attributeIndex,
-          nodeIndexes: rowNodeIndexes,
-          attributeNodeGroup: attributeNodeGroup,
-          attributeValues: Utils.getFlattenedLists(rowNodeAttributes[attributeIndex])
-        });
-
-        cell.isAttributeLabelCell = true;
+        //cell.setData({
+        //  name: attributeLabels[attributeIndex],
+        //  isVertical: 0,
+        //  attributeIndex: attributeIndex,
+        //  nodeIndexes: rowNodeIndexes,
+        //  attributeNodeGroup: attributeNodeGroup,
+        //  attributeValues: Utils.getFlattenedLists(rowNodeAttributes[attributeIndex])
+        //});
+        //
+        //cell.isAttributeLabelCell = true;
 
       } else if (this.matrix.isLabelCell(i)) {
-
-        cell.setData({
-          name: "id",
-          isVertical: 0,
-          attributeIndex: -1
-        });
-
-        cell.isAttributeLabelCell = true;
+        //
+        //cell.setData({
+        //  name: "id",
+        //  isVertical: 0,
+        //  attributeIndex: -1
+        //});
+        //
+        //cell.isAttributeLabelCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
 
