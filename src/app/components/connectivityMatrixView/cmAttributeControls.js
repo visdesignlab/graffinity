@@ -133,6 +133,8 @@ export class cmAttributeControls extends SvgGroupElement {
       .classed("fa-sort", true)
       .attr("float", "left")
       .on("click", function () {
+        console.error("sort clicked");
+        console.error(self);
         self.onSort(self.name, self.sortAscending);
         self.sortAscending = !self.sortAscending;
       });

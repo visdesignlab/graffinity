@@ -6,7 +6,7 @@ import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
-
+import {cmMatrixRow} from "./cmMatrixRow"
 export class cmMatrixTopHeader extends cmMatrixBase {
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
@@ -130,7 +130,9 @@ export class cmMatrixTopHeader extends cmMatrixBase {
    */
   initColWidths() {
     for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i) || this.isDataCell(i)) {
+      if (this.isControlCell(i)) {
+        this.colWidths[i] = 0;
+      } else if (this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
       } else if (this.isAttributeCell(i)) {
         this.colWidths[i] = this.colWidthAttr;
@@ -182,10 +184,10 @@ export class cmMatrixTopHeader extends cmMatrixBase {
   updateAttributeView() {
     for (var i = 0; i < this.attributes.length; ++i) {
       if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i);
+        this.onHideAttributeCol(i, true);
       }
       if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i);
+        this.onHideAttributeRow(i, true);
       }
     }
   }

@@ -11,11 +11,8 @@
 }
 
 .matrix-view-header-left {
-  width: 50px;
   overflow: hidden;
   position: relative;
-  top: -50px;
-  display: inline-block;
 }
 
 .matrix-view-center {

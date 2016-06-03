@@ -94,6 +94,10 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$scope.$on("changeVisibleAttributeRows", function (event, selection) {
       self.updateColAttributes(selection);
     });
+
+    this.$scope.$on("changeVisibleAttributeCols", function (event, selection) {
+      self.updateRowAttributes(selection);
+    });
   }
 
   addRow(row, rowHeight) {
@@ -196,14 +200,13 @@ export class cmMatrixBase extends SvgGroupElement {
         total += this.colWidths[i];
       }
     }
-    this.$log.error("getting attribute col widths", total);
     return total;
   }
 
   getAttributeRowHeights() {
     let total = 0;
-    for(var i=0; i<this.rowHeights.length; ++i) {
-      if(this.isAttributeRow(i) || this.isControlRow(i) || this.isLabelRow(i) ) {
+    for (var i = 0; i < this.rowHeights.length; ++i) {
+      if (this.isAttributeRow(i) || this.isControlRow(i) || this.isLabelRow(i)) {
         total += this.rowHeights[i];
       }
     }
@@ -430,7 +433,8 @@ export class cmMatrixBase extends SvgGroupElement {
   onEditVisibleAttributeCols() {
     let updateRowAttributes = this.updateRowAttributes.bind(this);
     let resizeEvent = "changeMatrixHeight";
-    this.onEditVisibleAttributes(this.attributes, this.isAttributeColVisible, updateRowAttributes, resizeEvent);
+    let visibilityEvent = "changeVisibleAttributeCols";
+    this.onEditVisibleAttributes(this.attributes, this.isAttributeColVisible, updateRowAttributes, resizeEvent, visibilityEvent);
   }
 
   onEditVisibleAttributeRows() {
@@ -534,12 +538,18 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$scope.$broadcast("updatePositions", this.rowPerm, shiftedColPerm);
   }
 
+  onSortRowsByAttribute(attribute, ascending) {
+    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
+    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
+    this.updatePositions(shiftedRowPerm, this.colPerm);
+    this.$scope.$broadcast("updatePositions", shiftedRowPerm, this.colPerm);
+  }
+
   /**
    * Called when the user changes the filter on a set of nodes. This will draw a scent of the filter on the attribute
    * control cells.
    */
   onQuantitativeAttributeFilterUpdate(event, attribute, attributeNodeGroup, range) {
-    this.$log.debug("Updating the quant attribute filter", attribute, attributeNodeGroup, range);
     let visitor = new cmAttributeLabelScentVisitor(this.attributes.indexOf(attribute), attributeNodeGroup, range);
     this.applyVisitor(visitor);
   }
@@ -761,7 +771,6 @@ export class cmMatrixBase extends SvgGroupElement {
     this.colPerm = colPerm;
     this.colInv = reorder.inverse_permutation(this.colPerm);
     let xPositions = cmMatrixBase.getColXPositions(this.colPerm, this.colWidths);
-
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].setPosition(0, yPositions[this.rowInv[i]]);
       this.allRows[i].setColPositions(this.colInv, xPositions);
@@ -773,15 +782,19 @@ export class cmMatrixBase extends SvgGroupElement {
    * Should be followed by this.updatePositions.
    */
   updateRow(rowIndex, isRowIndexVisible) {
-    this.allRows[rowIndex].setVisible(isRowIndexVisible);
-    if (isRowIndexVisible) {
-      if (this.isAttributeRow(rowIndex)) {
-        this.rowHeights[rowIndex] = this.rowHeightAttr;
-      } else if (this.isDataRow(rowIndex)) {
-        this.rowHeights[rowIndex] = this.rowHeight;
+
+    let row = this.allRows[rowIndex];
+    if (row) {
+      row.setVisible(isRowIndexVisible);
+      if (isRowIndexVisible) {
+        if (this.isAttributeRow(rowIndex)) {
+          this.rowHeights[rowIndex] = this.rowHeightAttr;
+        } else if (this.isDataRow(rowIndex)) {
+          this.rowHeights[rowIndex] = this.rowHeight;
+        }
+      } else {
+        this.rowHeights[rowIndex] = 0;
       }
-    } else {
-      this.rowHeights[rowIndex] = 0;
     }
   }
 
