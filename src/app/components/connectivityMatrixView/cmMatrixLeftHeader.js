@@ -2,10 +2,7 @@
  */
 
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmControlRow} from "./cmControlRow"
-import {cmLabelRow} from "./cmLabelRow"
 import {cmDataAttributeRow} from "./cmDataAttributeRow"
-import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
 import {cmMatrixRow} from "./cmMatrixRow"
 
@@ -50,7 +47,7 @@ export class cmMatrixLeftHeader extends cmMatrixBase {
 
     let colNodeAttributes = [];
     let rowAttributes = [];
-    for (var i = 0; i < this.attributes.length; ++i) {
+    for (i = 0; i < this.attributes.length; ++i) {
       colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
     }

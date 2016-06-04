@@ -74,8 +74,6 @@ export class cmMatrixManager {
 
     this.$scope = scope;
     this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
-
-    console.log(angular.element(element)[0][0].clientHeight);
   }
 
   getMajorRowsAndColsAsScalarMatrix() {
@@ -112,8 +110,8 @@ export class cmMatrixManager {
     this.matrixElementStyle.width = this.topHeaderElementStyle.width;
 
 
-    this.matrixSvg.attr("width", this.matrix.getWidth());
-    this.matrixSvg.attr("height", this.matrix.getHeight());
+    this.matrixSvg.attr("width", this.matrix.getMaxUnrolledWidth());
+    this.matrixSvg.attr("height", this.matrix.getMaxUnrolledHeight());
     this.controlsHeaderElement.transition().duration(500).style(this.controlsElementStyle);
     this.topHeaderElement.transition().duration(500).style(this.topHeaderElementStyle);
     this.leftHeaderElement.transition().duration(500).style(this.leftHeaderElementStyle);

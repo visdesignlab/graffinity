@@ -2,10 +2,7 @@
  */
 
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmControlRow} from "./cmControlRow"
-import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
-import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
 import {cmMatrixRow} from "./cmMatrixRow"
 
@@ -48,7 +45,7 @@ export class cmMatrixView extends cmMatrixBase {
     // colNodeAttributes[i][j] = attributes[i] for col[j]
     let colNodeAttributes = [];
     let rowAttributes = [];
-    for (var i = 0; i < this.attributes.length; ++i) {
+    for (i = 0; i < this.attributes.length; ++i) {
       colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
     }
@@ -115,7 +112,7 @@ export class cmMatrixView extends cmMatrixBase {
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this);
 
       // If row has minor rows, then we want the controls to be visible!
       if (modelRows[i].getNumChildren() > 0) {

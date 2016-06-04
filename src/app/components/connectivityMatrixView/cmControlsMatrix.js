@@ -2,9 +2,6 @@
  */
 
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmControlRow} from "./cmControlRow"
-import {cmLabelRow} from "./cmLabelRow"
-import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
 import {cmControlsMatrixRow} from "./cmControlsMatrixRow"
 import {cmControlsMatrixControlsRow} from "./cmControlsMatrixControlsRow"

@@ -361,12 +361,12 @@ export class MainController {
       .attr("transform", "translate(1, 4)");
 
     let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
-    //
-    //if (this.matrix.legend) {
-    //  this.matrix.legend.createView(group, width, width);
-    //  this.ui.hasLegend = true;
-    //} else {
-    //  this.ui.hasLegend = false;
-    //}
+
+    if (this.matrixManager.matrix.legend) {
+      this.matrixManager.matrix.legend.createView(group, width, width);
+      this.ui.hasLegend = true;
+    } else {
+      this.ui.hasLegend = false;
+    }
   }
 }

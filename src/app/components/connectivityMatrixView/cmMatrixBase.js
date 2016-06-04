@@ -113,9 +113,9 @@ export class cmMatrixBase extends SvgGroupElement {
       }
     });
 
-    this.$scope.$on("colControlsClicked", function (event, rowIndex, unrolling, sender) {
+    this.$scope.$on("colControlsClicked", function (event, colIndex, unrolling, sender) {
       if (sender != self) {
-        self.onColControlsClicked(rowIndex, unrolling, true);
+        self.onColControlsClicked(colIndex, unrolling, true);
       }
     });
   }
@@ -311,6 +311,17 @@ export class cmMatrixBase extends SvgGroupElement {
     }
     return matrix;
   }
+
+  getMaxUnrolledHeight() {
+    return (this.rowNodeIndexes.length * this.rowHeight) +
+      (Utils.getFlattenedLists(this.rowNodeIndexes).length * this.rowHeight);
+  }
+
+  getMaxUnrolledWidth() {
+    return (this.colNodeIndexes.length * this.colWidth) +
+      (Utils.getFlattenedLists(this.colNodeIndexes).length * this.colWidth);
+  }
+
 
   /**
    * Returns the number of visible minor cols inside colIndex.

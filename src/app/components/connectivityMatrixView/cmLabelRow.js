@@ -1,10 +1,8 @@
 import {cmMatrixRow} from "./cmMatrixRow"
-import {Utils} from "../utils/utils";
 
 export class cmLabelRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels,
-              matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup, rowNodeAttributes) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);
 
     this.unrollControls = [];

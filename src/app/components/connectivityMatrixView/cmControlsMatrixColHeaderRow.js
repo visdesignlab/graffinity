@@ -15,7 +15,7 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
 
     for (var i = 0; i < numMajorCells; ++i) {
       let cell = this.getMajorCell(i);
-      let dataIndex = this.matrix.getDataColIndex(i);
+
       if (this.matrix.isControlCell(i)) {
 
         cell.isEditAttributeCell = true;
@@ -48,29 +48,7 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
 
         cell.isAttributeLabelCell = true;
 
-      } //else if (this.matrix.isDataCell(i)) {
-
-
-      //  cell.setData({
-      //    name: majorColLabels[dataIndex],
-      //    isVertical: 1,
-      //    attributeIndex: -1
-      //  });
-      //
-      //  cell.isAttributeCell = true;
-      //  for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
-      //    let minorCell = cell.minorCells[j];
-      //
-      //    minorCell.setData({
-      //      name: minorColLabels[dataIndex][j],
-      //      isVertical: 1,
-      //      attributeIndex: -1
-      //    });
-      //
-      //    minorCell.isAttributeCell = true;
-      //  }
-      //}
-      //}
+      }
 
       this.colNodeIndexes = colNodeIndexes;
     }

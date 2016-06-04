@@ -6,7 +6,7 @@ import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
-import {cmMatrixRow} from "./cmMatrixRow"
+
 export class cmMatrixTopHeader extends cmMatrixBase {
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
@@ -71,11 +71,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
       this.labelRowHeight,
       majorColLabels,
       minorColLabels,
-      this,
-      this.attributes,
-      this.rowNodeIndexes,
-      this.rowAttributeNodeGroup,
-      rowAttributes);
+      this);
     this.addRow(labelRow, this.labelRowHeight);
   }
 

@@ -1,4 +1,4 @@
-/* global d3
+/* global
  */
 import {cmMatrixRow} from "./cmMatrixRow"
 
