@@ -1,6 +1,11 @@
+html, body {
+  height: 100%;
+}
+
 .top-row {
-  border-bottom: thin solid grey;
   padding-top: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
 }
 
 /* This controls the animation for changing column widths with ng-class */
@@ -13,7 +18,12 @@
 
 /* The matrix view is wrapped in a dark grey outline */
 .column-matrix {
-  outline: thin solid grey;
+  border-width: 1px;
+  border-right-style: solid;
+  border-left-style: solid;
+  border-color: grey;
+  height: 980px;
+  overflow: hidden;
 }
 
 .control-header {

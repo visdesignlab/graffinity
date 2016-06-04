@@ -363,6 +363,14 @@ export class cmMatrixBase extends SvgGroupElement {
     return x;
   }
 
+  getWidth() {
+    let width = 0;
+    for (var i = 0; i < this.colWidths.length; ++i) {
+      width += this.colWidths[i];
+    }
+    return width;
+  }
+
   isAttributeCell(colIndex) {
     return colIndex >= this.numControlCols && colIndex < (this.numAttributeCols + this.numControlCols);
   }

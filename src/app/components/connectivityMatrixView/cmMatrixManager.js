@@ -7,6 +7,7 @@ export class cmMatrixManager {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
     this.$log = $log;
+    this.element = element;
     this.topHeaderLabelRowHeight = 25;
 
     this.controlsElementStyle = {};
@@ -73,6 +74,8 @@ export class cmMatrixManager {
 
     this.$scope = scope;
     this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
+
+    console.log(angular.element(element)[0][0].clientHeight);
   }
 
   getMajorRowsAndColsAsScalarMatrix() {
@@ -95,7 +98,8 @@ export class cmMatrixManager {
     for (let i = 0; i < this.matrices.length; ++i) {
       this.matrices[i].setModel(model);
     }
-    //this.updateElementPositions();
+
+    this.updateElementPositions();
   }
 
   updateElementPositions() {
@@ -103,8 +107,13 @@ export class cmMatrixManager {
     this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + 5 + "px";
     this.controlsElementStyle.height = this.controlsHeader.getHeight() + 5 + "px";
     this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
-    this.matrixElementStyle.height = this.leftHeaderElementStyle.height;
+    this.matrixElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() + 5 + "px";
+    this.leftHeaderElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() + 5 + "px";
     this.matrixElementStyle.width = this.topHeaderElementStyle.width;
+
+
+    this.matrixSvg.attr("width", this.matrix.getWidth());
+    this.matrixSvg.attr("height", this.matrix.getHeight());
     this.controlsHeaderElement.transition().duration(500).style(this.controlsElementStyle);
     this.topHeaderElement.transition().duration(500).style(this.topHeaderElementStyle);
     this.leftHeaderElement.transition().duration(500).style(this.leftHeaderElementStyle);
