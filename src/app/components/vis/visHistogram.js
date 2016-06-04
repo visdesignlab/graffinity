@@ -52,12 +52,12 @@ export class visHistogram {
     let localBrushStartValue = (this.brush.empty()) ? this.minValue : getClosestTickValue(extent[0]);
     let localBrushEndValue = (this.brush.empty()) ? this.maxValue : getClosestTickValue(extent[1]);
 
-    d3.select("g.brush")
+    this.parent.select("g.brush")
       .call((this.brush.empty()) ? this.brush.clear() : this.brush.extent([localBrushStartValue, localBrushEndValue]));
 
     // Fade all values in the histogram not within the brush
     let self = this;
-    d3.selectAll(".bar").style("opacity", function (d) {
+    this.parent.selectAll(".bar").style("opacity", function (d) {
       return d.x >= localBrushStartValue && d.x < localBrushEndValue || self.brush.empty() ? "1" : ".4";
     });
 

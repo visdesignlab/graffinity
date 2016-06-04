@@ -1,4 +1,5 @@
 import {SvgGroupElement} from "./svgGroupElement"
+import {visHistogramScent} from "../vis/visHistogramScent.js"
 
 /**
  * Class that displays quantitative attributes row/col controls.
@@ -168,23 +169,15 @@ export class cmAttributeControls extends SvgGroupElement {
   /**
    * Returns a histogram scent of the data.
    */
-  static createDataScent(group, isVertical, scentWidth, scentHeight) {
-    // TODO - put call to scent histogram constructor here.
-    // TODO - delete this ugly red box
-    group.append("rect")
-      .attr("width", scentWidth)
-      .attr("height", scentHeight)
-      .attr("fill", "transparent")
-      .style("outline", "thin solid red");
+  static createDataScent(group, isVertical, scentWidth, scentHeight, attributeValues) {
+    return new visHistogramScent(this.$scope, group, scentWidth, scentHeight, 10, isVertical, attributeValues);
   }
 
   /**
    * Updates the filter displayed in the scent.
    */
-  setAttributeFilterRange() {
-    // TODO - add parameter called 'filterRange.' I removed it to shut up gulp. It is already passed in here.
-    // TODO - call this.scent.setFilterRange(filterRange) to update the visual encoding of the current filter.
-    // this.scent.setFilterRange(filterRange)
+  setAttributeFilterRange(filterRange) {
+    this.scent.setFilterRange(filterRange)
   }
 
   /**
