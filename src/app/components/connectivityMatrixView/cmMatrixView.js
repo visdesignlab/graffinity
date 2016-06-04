@@ -32,7 +32,6 @@ import {cmMatrixRow} from "./cmMatrixRow"
  *
  */
 export class cmMatrixView extends cmMatrixBase {
-
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
    */

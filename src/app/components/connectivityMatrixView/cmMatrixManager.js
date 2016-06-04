@@ -61,7 +61,6 @@ export class cmMatrixManager {
     this.controlsHeaderSvg = this.controlsHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
 
-
     this.topHeader = new cmMatrixTopHeader(this.topHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
     this.topHeaderElementStyle.height = this.topHeader.getHeight() + "px";
     this.leftHeader = new cmMatrixLeftHeader(this.leftHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
@@ -100,22 +99,61 @@ export class cmMatrixManager {
     this.updateElementPositions();
   }
 
+  /**
+   * Positions and resizes the 4 divs holding different parts of the matrices.
+   */
   updateElementPositions() {
+    // Do not check for overflow of header height. Assume we always have enough space for it.
     this.topHeaderElementStyle.height = this.topHeader.getHeight() + 5 + "px";
+    this.controlsElementStyle.height = this.topHeaderElementStyle.height;
+
+    // Again, not checking for overflow of left-header width.
     this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + 5 + "px";
-    this.controlsElementStyle.height = this.controlsHeader.getHeight() + 5 + "px";
     this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
-    this.matrixElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50 + "px";
-    this.leftHeaderElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50 + "px";
-    this.matrixElementStyle.width = this.topHeaderElementStyle.width;
 
+    // Bound the matrix's height by screen size.
+    let matrixHeight = this.matrix.getHeight() + 30;
+    let clientHeight = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50;
+    if (matrixHeight > clientHeight) {
+      matrixHeight = clientHeight;
+    }
 
-    this.matrixSvg.attr("width", this.matrix.getMaxUnrolledWidth());
-    this.matrixSvg.attr("height", this.matrix.getMaxUnrolledHeight());
-    this.controlsHeaderElement.transition().duration(500).style(this.controlsElementStyle);
-    this.topHeaderElement.transition().duration(500).style(this.topHeaderElementStyle);
-    this.leftHeaderElement.transition().duration(500).style(this.leftHeaderElementStyle);
-    this.matrixElement.transition().duration(500).style(this.matrixElementStyle);
+    this.matrixElementStyle.height = matrixHeight + "px";
+    this.leftHeaderElementStyle.height = matrixHeight + "px";
+
+    // Bound matrix's width by screen size.
+    let matrixWidth = this.matrix.getWidth() + 30;
+    let clientWidth = angular.element(this.element)[0][0].clientWidth - this.controlsHeader.getAttributeColWidths() - 30;
+    if (matrixWidth > clientWidth) {
+      matrixWidth = clientWidth;
+    }
+
+    this.matrixElementStyle.width = matrixWidth + "px";
+    this.topHeaderElementStyle.width = matrixWidth + "px";
+
+    // The matrix'x svg needs to be large enough to hold everything.
+    this.matrixSvg.transition()
+      .duration(500).attr({
+      width: this.matrix.getWidth(),
+      height: this.matrix.getHeight()
+    });
+
+    // The divs need to expand/collapse depending on matrix size.
+    this.controlsHeaderElement.transition()
+      .duration(500)
+      .style(this.controlsElementStyle);
+
+    this.topHeaderElement.transition()
+      .duration(500)
+      .style(this.topHeaderElementStyle);
+
+    this.leftHeaderElement.transition()
+      .duration(500)
+      .style(this.leftHeaderElementStyle);
+
+    this.matrixElement.transition()
+      .duration(500)
+      .style(this.matrixElementStyle);
   }
 
 }

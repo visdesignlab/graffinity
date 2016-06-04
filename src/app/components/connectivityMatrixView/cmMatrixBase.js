@@ -285,6 +285,7 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   getHeight() {
+    console.log(this);
     let total = 0;
     for (var i = 0; i < this.rowHeights.length; ++i) {
       total += this.rowHeights[i];
@@ -478,6 +479,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.updatePositions(this.rowPerm, this.colPerm);
     if (!isReceiver) {
       this.$scope.$broadcast("colControlsClicked", colIndex, unrolling, this);
+      this.$scope.$broadcast("changeMatrixHeight");
     }
   }
 
@@ -594,6 +596,7 @@ export class cmMatrixBase extends SvgGroupElement {
       this.updatePositions(this.rowPerm, this.colPerm);
       if (!isReceiver) {
         this.$scope.$broadcast("rowControlsClicked", rowIndex, unrolling, this);
+        this.$scope.$broadcast("changeMatrixHeight");
       }
     }
   }
