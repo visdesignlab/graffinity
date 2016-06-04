@@ -4,7 +4,7 @@
 import {cmMatrixBase} from "./cmMatrixBase"
 import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
-import {cmDataRow} from "./cmDataRow"
+import {cmDataAttributeRow} from "./cmDataAttributeRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
 import {cmMatrixRow} from "./cmMatrixRow"
@@ -45,7 +45,7 @@ export class cmMatrixLeftHeader extends cmMatrixBase {
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
     for(var i=0; i<this.numHeaderCols; ++i) {
-      this.addRow(new cmMatrixRow(this.svg, i, this.colNodeIndexes, this.numHeaderCols), 0);
+      this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }
 
     let colNodeAttributes = [];
@@ -116,7 +116,7 @@ export class cmMatrixLeftHeader extends cmMatrixBase {
     let minorRowLabels = model.getMinorRowLabels();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+      let dataRow = new cmDataAttributeRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
         this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
 
       // If row has minor rows, then we want the controls to be visible!
@@ -227,10 +227,10 @@ export class cmMatrixLeftHeader extends cmMatrixBase {
   updateAttributeView() {
     for (var i = 0; i < this.attributes.length; ++i) {
       if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i, true);
+        this.onHideAttributeCol(i, true, true);
       }
       if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i, true);
+        this.onHideAttributeRow(i, true, true);
       }
     }
   }

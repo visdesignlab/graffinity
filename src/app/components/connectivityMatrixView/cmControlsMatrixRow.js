@@ -5,9 +5,9 @@ export class cmControlsMatrixRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colNodeAttributes, matrix,
               attributeIndex, attributeLabel, attributeNodeGroup) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
+    super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
 
-    this.createMinorCells(numHeaderCols, colNodeIndexes, false);
+    // this.createMinorCells(numHeaderCols, colNodeIndexes, false);
 
     // For each of the major cells...
     for (var i = 0; i < this.majorCells.length; ++i) {

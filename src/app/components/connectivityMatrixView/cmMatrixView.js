@@ -7,6 +7,7 @@ import {cmLabelRow} from "./cmLabelRow"
 import {cmDataRow} from "./cmDataRow"
 import {cmAttributeRow} from "./cmAttributeRow"
 import {Utils} from "../utils/utils"
+import {cmMatrixRow} from "./cmMatrixRow"
 
 /**
  * Manages the matrix svg.
@@ -39,7 +40,9 @@ export class cmMatrixView extends cmMatrixBase {
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
    */
   createRows(model) {
-
+    for (var i = 0; i < this.numHeaderCols; ++i) {
+      this.addRow(new cmMatrixRow(this.svg, i, this.colNodeIndexes, this.numHeaderCols), 0);
+    }
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
@@ -120,6 +123,7 @@ export class cmMatrixView extends cmMatrixBase {
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
 
+      this.colWidthLabel = 0;
       dataRow.setLabelColWidth(this.colWidthLabel);
       this.addRow(dataRow, this.rowHeight);
     }
@@ -176,14 +180,13 @@ export class cmMatrixView extends cmMatrixBase {
    */
   initColWidths() {
     for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i) || this.isDataCell(i)) {
+      if (this.isDataCell(i)) {
         this.colWidths[i] = this.colWidth;
-      } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = this.colWidthAttr;
-      } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = this.colWidthLabel;
+      } else {
+        this.colWidths[i] = 0;
       }
     }
+    this.colWidthAttr = 0;
   }
 
   /**
@@ -203,7 +206,7 @@ export class cmMatrixView extends cmMatrixBase {
     this.numLabelCols = 1;
     this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
 
-    this.numControlRows = 0;
+    this.numControlRows = attributes.length + 1 + 1;
     this.numAttributeRows = 0;
     this.numLabelRows = 0;
     this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
@@ -215,18 +218,18 @@ export class cmMatrixView extends cmMatrixBase {
     this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
   }
 
-  /**
-   * Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
-   * do not change between queries.
-   */
+  ///**
+  // * Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
+  // * do not change between queries.
+  // */
   updateAttributeView() {
-    for (var i = 0; i < this.attributes.length; ++i) {
-      if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i);
-      }
-      if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i);
-      }
-    }
+  //  for (var i = 0; i < this.attributes.length; ++i) {
+  //    if (!this.isAttributeColVisible[this.attributes[i]]) {
+  //      this.onHideAttributeCol(i, true);
+  //    }
+  //    if (!this.isAttributeRowVisible[this.attributes[i]]) {
+  //      this.onHideAttributeRow(i, true);
+  //    }
+  //  }
   }
 }

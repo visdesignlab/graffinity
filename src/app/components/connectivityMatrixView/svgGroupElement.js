@@ -15,6 +15,7 @@ export class SvgGroupElement {
       this.children[i].clearChildren();
     }
     this.children = [];
+    this.group.selectAll("*").remove();
   }
 
   addChild(groupElement) {

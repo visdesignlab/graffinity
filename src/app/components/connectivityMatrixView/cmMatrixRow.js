@@ -163,21 +163,25 @@ export class cmMatrixRow extends SvgGroupElement {
   /**
    * Updates state then tells the matrix that this is rolling up.
    */
-  onRollupRowClicked() {
+  onRollupRowClicked(skipCallback) {
     this.unrolled = false;
     this.updateControls(this.unrolled);
     this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
-    this.unrollRowCallback(this.rowIndex);
+    if (!skipCallback) {
+      this.unrollRowCallback(this.rowIndex);
+    }
   }
 
   /**
    * Updates state then tells the matrix that this is unrolling.
    */
-  onUnrollRowClicked() {
+  onUnrollRowClicked(skipCallback) {
     this.unrolled = true;
     this.updateControls(this.unrolled);
     this.updateMinorRows(this.unrolled, this.isMinorRowVisible);
-    this.unrollRowCallback(this.rowIndex);
+    if (!skipCallback) {
+      this.unrollRowCallback(this.rowIndex, this.unrolled);
+    }
   }
 
   setDebugVisible(visible) {
@@ -191,7 +195,9 @@ export class cmMatrixRow extends SvgGroupElement {
   setColPositions(colInv, positions) {
     let numColumns = positions.length;
     for (var i = 0; i < numColumns; ++i) {
-      this.majorCells[i].setPosition(positions[colInv[i]], 0);
+      if (this.majorCells[i]) {
+        this.majorCells[i].setPosition(positions[colInv[i]], 0);
+      }
     }
     if (!this.isMinorRow) {
       let numMinorRows = this.getNumMinorRows();
@@ -205,8 +211,10 @@ export class cmMatrixRow extends SvgGroupElement {
     let numColumns = colWidths.length;
     let xPosition = 0;
     for (var i = 0; i < numColumns; ++i) {
-      this.majorCells[i].setPosition(xPosition, 0);
-      xPosition += colWidths[i];
+      if (this.majorCells[i]) {
+        this.majorCells[i].setPosition(xPosition, 0);
+        xPosition += colWidths[i];
+      }
     }
 
     if (!this.isMinorRow) {
@@ -235,29 +243,34 @@ export class cmMatrixRow extends SvgGroupElement {
    * In #1 - don't care about whether the minor is visible or not.
    */
   updateMinorCols(colIndex, minorColWidth, isColIndexUnrolled, isMinorCellVisible) {
-    let minorCells = this.majorCells[colIndex].minorCells;
-    let position = minorColWidth;
+    let majorCell = this.majorCells[colIndex];
+    if (majorCell) {
+      let minorCells = majorCell.minorCells;
+      if (minorCells) {
+        let position = minorColWidth;
 
-    for (var i = 0; i < minorCells.length; ++i) {
-      let cell = minorCells[i];
+        for (var i = 0; i < minorCells.length; ++i) {
+          let cell = minorCells[i];
 
-      if (!isColIndexUnrolled) {
-        cell.setPosition(0, 0, true);
-      } else {
-        if (isMinorCellVisible[colIndex][i]) {
-          cell.setVisible(true);
-          cell.setPosition(position, 0);
-          position += minorColWidth;
-        } else {
-          cell.setVisible(false);
+          if (!isColIndexUnrolled) {
+            cell.setPosition(0, 0, true);
+          } else {
+            if (isMinorCellVisible[colIndex][i]) {
+              cell.setVisible(true);
+              cell.setPosition(position, 0);
+              position += minorColWidth;
+            } else {
+              cell.setVisible(false);
+            }
+          }
         }
-      }
-    }
 
-    if (!this.isMinorRow) {
-      let numMinorRows = this.getNumMinorRows();
-      for (i = 0; i < numMinorRows; ++i) {
-        this.minorRows[i].updateMinorCols(colIndex, minorColWidth, isColIndexUnrolled, isMinorCellVisible)
+        if (!this.isMinorRow) {
+          let numMinorRows = this.getNumMinorRows();
+          for (i = 0; i < numMinorRows; ++i) {
+            this.minorRows[i].updateMinorCols(colIndex, minorColWidth, isColIndexUnrolled, isMinorCellVisible)
+          }
+        }
       }
     }
   }

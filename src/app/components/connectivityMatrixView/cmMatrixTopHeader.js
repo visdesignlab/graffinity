@@ -129,6 +129,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
    * Fills this.colWidths using the data/view/attribute indexes.
    */
   initColWidths() {
+    this.colWidthAttr = 0;
     for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
       if (this.isControlCell(i)) {
         this.colWidths[i] = 0;
@@ -184,10 +185,10 @@ export class cmMatrixTopHeader extends cmMatrixBase {
   updateAttributeView() {
     for (var i = 0; i < this.attributes.length; ++i) {
       if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i, true);
+        this.onHideAttributeCol(i, true, true);
       }
       if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i, true);
+        this.onHideAttributeRow(i, true, true);
       }
     }
   }

@@ -83,20 +83,40 @@ export class cmMatrixBase extends SvgGroupElement {
       self.updatePositions(rowPerm, colPerm);
     });
 
-    this.$scope.$on("hideAttributeRow", function (event, attributeIndex) {
-      self.onHideAttributeRow(attributeIndex, true);
+    this.$scope.$on("hideAttributeRow", function (event, attributeIndex, sender) {
+      if (sender != self) {
+        self.onHideAttributeRow(attributeIndex, true);
+      }
     });
 
-    this.$scope.$on("hideAttributeCol", function (event, attributeIndex) {
-      self.onHideAttributeCol(attributeIndex, true);
+    this.$scope.$on("hideAttributeCol", function (event, attributeIndex, sender) {
+      if (sender != self) {
+        self.onHideAttributeCol(attributeIndex, true);
+      }
     });
 
-    this.$scope.$on("changeVisibleAttributeRows", function (event, selection) {
-      self.updateColAttributes(selection);
+    this.$scope.$on("changeVisibleAttributeRows", function (event, selection, sender) {
+      if (sender != self) {
+        self.updateColAttributes(selection);
+      }
     });
 
-    this.$scope.$on("changeVisibleAttributeCols", function (event, selection) {
-      self.updateRowAttributes(selection);
+    this.$scope.$on("changeVisibleAttributeCols", function (event, selection, sender) {
+      if (sender != self) {
+        self.updateRowAttributes(selection);
+      }
+    });
+
+    this.$scope.$on("rowControlsClicked", function (event, rowIndex, unrolling, sender) {
+      if (sender != self) {
+        self.onRowControlsClicked(rowIndex, unrolling, true);
+      }
+    });
+
+    this.$scope.$on("colControlsClicked", function (event, rowIndex, unrolling, sender) {
+      if (sender != self) {
+        self.onColControlsClicked(rowIndex, unrolling, true);
+      }
     });
   }
 
@@ -424,10 +444,13 @@ export class cmMatrixBase extends SvgGroupElement {
   /** Callback when user clicks on the column controls.
    * Updates width of the column and unrolls its children.
    */
-  onColControlsClicked(colIndex, unrolling) {
+  onColControlsClicked(colIndex, unrolling, isReceiver) {
     this.isMajorColUnrolled[colIndex] = unrolling;
     this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
     this.updatePositions(this.rowPerm, this.colPerm);
+    if (!isReceiver) {
+      this.$scope.$broadcast("colControlsClicked", colIndex, unrolling, this);
+    }
   }
 
   onEditVisibleAttributeCols() {
@@ -448,7 +471,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     let modalSuccess = function (selection) {
       updateVisibleAttributes(selection, isAttributeVisible);
-      this.$scope.$broadcast(visibilityEvent, selection, isAttributeVisible);
+      this.$scope.$broadcast(visibilityEvent, selection, this);
       this.$scope.$broadcast(resizeEvent);
     };
 
@@ -464,28 +487,37 @@ export class cmMatrixBase extends SvgGroupElement {
     this.mainController.openNodeIndexFilter();
   }
 
-  onHideAttributeRow(attributeIndex, isReceiver) {
+  onHideAttributeRow(attributeIndex, isReceiver, skipUpdate) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeRowVisible[attribute] = false;
     this.updateRow(viewIndex, false);
-    this.updatePositions(this.rowPerm, this.colPerm);
-    if (!isReceiver) {
-      this.$scope.$broadcast("hideAttributeRow", attributeIndex);
+
+    if (!skipUpdate) {
+      this.updatePositions(this.rowPerm, this.colPerm);
     }
-    this.$scope.$broadcast("changeMatrixHeight");
+
+    if (!isReceiver) {
+      this.$scope.$broadcast("hideAttributeRow", attributeIndex, this);
+      this.$scope.$broadcast("changeMatrixHeight");
+    }
+
   }
 
-  onHideAttributeCol(attributeIndex, isReceiver) {
+  onHideAttributeCol(attributeIndex, isReceiver, skipUpdate) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
     this.isAttributeColVisible[attribute] = false;
     this.updateCol(viewIndex, false);
-    this.updatePositions(this.rowPerm, this.colPerm);
-    if (!isReceiver) {
-      this.$scope.$broadcast("hideAttributeCol", attributeIndex);
+
+    if (!skipUpdate) {
+      this.updatePositions(this.rowPerm, this.colPerm);
     }
-    this.$scope.$broadcast("changeMatrixHeight");
+
+    if (!isReceiver) {
+      this.$scope.$broadcast("hideAttributeCol", attributeIndex, this);
+      this.$scope.$broadcast("changeMatrixHeight");
+    }
   }
 
   onHideNodes(event, nodeIndexes) {
@@ -519,9 +551,24 @@ export class cmMatrixBase extends SvgGroupElement {
   /**
    * Unroll the row and expands its height.
    */
-  onRowControlsClicked(rowIndex) {
-    this.rowHeights[rowIndex] = this.allRows[rowIndex].getCurrentHeight();
-    this.updatePositions(this.rowPerm, this.colPerm);
+  onRowControlsClicked(rowIndex, unrolling, isReceiver) {
+    let row = this.allRows[rowIndex];
+
+    if (isReceiver && row) {
+      if (unrolling) {
+        row.onUnrollRowClicked(true);
+      } else {
+        row.onRollupRowClicked(true);
+      }
+    }
+
+    if (row) {
+      this.rowHeights[rowIndex] = row.getCurrentHeight();
+      this.updatePositions(this.rowPerm, this.colPerm);
+      if (!isReceiver) {
+        this.$scope.$broadcast("rowControlsClicked", rowIndex, unrolling, this);
+      }
+    }
   }
 
   onShowNodes(event, nodeIndexes) {
@@ -767,7 +814,6 @@ export class cmMatrixBase extends SvgGroupElement {
     this.rowPerm = rowPerm;
     let yPositions = cmMatrixBase.getRowYPositions(this.rowPerm, this.rowHeights);
     this.rowInv = reorder.inverse_permutation(this.rowPerm);
-
     this.colPerm = colPerm;
     this.colInv = reorder.inverse_permutation(this.colPerm);
     let xPositions = cmMatrixBase.getColXPositions(this.colPerm, this.colWidths);
@@ -782,7 +828,6 @@ export class cmMatrixBase extends SvgGroupElement {
    * Should be followed by this.updatePositions.
    */
   updateRow(rowIndex, isRowIndexVisible) {
-
     let row = this.allRows[rowIndex];
     if (row) {
       row.setVisible(isRowIndexVisible);

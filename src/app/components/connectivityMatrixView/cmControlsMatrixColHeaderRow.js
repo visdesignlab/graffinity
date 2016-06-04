@@ -5,13 +5,13 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels,
               matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup, rowNodeAttributes) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);
+    super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, false, matrix);
 
     this.unrollControls = [];
     this.rollupControls = [];
 
     var numMajorCells = this.getNumMajorCells();
-    this.createMinorCells(numHeaderCols, colNodeIndexes);
+    //this.createMinorCells(numHeaderCols, colNodeIndexes);
 
     for (var i = 0; i < numMajorCells; ++i) {
       let cell = this.getMajorCell(i);

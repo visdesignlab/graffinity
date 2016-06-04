@@ -100,14 +100,12 @@ export class MainController {
   createMatrix(model, encoding) {
     // this.svg.selectAll("*").remove();
     this.model = model;
-    if (!this.matrix) {
-      //this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
-      this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
-      // this.nodeList = this.cmMatrixViewFactory.createNodeListView(this.nodeListSvg, model, this.$scope, this.viewState, this);
+    if (!this.matrixManager) {
+      this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
     } else {
-      // this.matrix.setModel(model);
-      // this.nodeList.setModel(model);
+      this.matrixManager.setModel(model)
     }
+
     this.nodeLinkView.setModel(model);
     this.viewState.setCurrentModel(model);
     this.onEncodingChanged(encoding);
@@ -117,8 +115,8 @@ export class MainController {
 
     this.matrixContainer = d3.select("#matrices-row");
     //let width = matrixContainer[0][0].clientWidth;
-    //le/t matrixWidth = width * 0.58;
-    // let nodeListWidth = width * 0.20;
+    //let matrixWidth = width * 0.58;
+    //let nodeListWidth = width * 0.20;
 
 
     //this.svg = matrixContainer.append("svg")
@@ -139,9 +137,9 @@ export class MainController {
     this.createMatrix(model, this.ui.selectedEncoding);
 
     // Disable animation of the matrix so that its initial position is the sorted one.
-    //this.matrix.setUseAnimation(false);
-    //this.onSortOrderChanged("optimal leaf");
-    //this.matrix.setUseAnimation(true);
+    this.matrixManager.setUseAnimation(false);
+    this.onSortOrderChanged("optimal leaf");
+    this.matrixManager.setUseAnimation(true);
   }
 
   createReorderControls() {
@@ -187,7 +185,7 @@ export class MainController {
    * updates the legend displayed in the sidebar.
    */
   onEncodingChanged(encoding) {
-    //this.matrix.setEncoding(encoding);
+    this.matrixManager.matrix.setEncoding(encoding);
     this.updateLegend();
   }
 
@@ -267,7 +265,7 @@ export class MainController {
   }
 
   onSortOrderChanged(order) {
-    let matrix = this.matrix.getMajorRowsAndColsAsScalarMatrix();
+    let matrix = this.matrixManager.getMajorRowsAndColsAsScalarMatrix();
     let rowPerm = undefined;
     let colPerm = undefined;
     if (order == 'random') {
@@ -285,7 +283,7 @@ export class MainController {
       colPerm = reorder.permutation(matrix[0].length);
     }
 
-    this.matrix.setSortOrders(rowPerm, colPerm);
+    this.matrixManager.setSortOrders(rowPerm, colPerm);
   }
 
   /**

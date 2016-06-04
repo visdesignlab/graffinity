@@ -17,13 +17,13 @@ export class cmMatrixManager {
     };
 
     this.matrixElementStyle = {
-      width: "768px",
+      width: "50px",
       height: "600px"
     };
 
     this.leftHeaderElementStyle = {
       width: "50px",
-      height: (parseInt(this.matrixElementStyle.height) + this.topHeaderLabelRowHeight) + "px"
+      height: "200px"
     };
 
     this.controlsHeaderElement = element.append("div")
@@ -34,25 +34,25 @@ export class cmMatrixManager {
       .attr("id", "matrix-view-header-top")
       .classed("matrix-view-header-top", true);
 
-    //
-    this.leftHeaderElement = element.append("div")
+    this.bottomDiv = element.append("div");
+    this.leftHeaderElement = this.bottomDiv.append("div")
       .attr("id", "matrix-view-header-left")
       .classed("matrix-view-header-left", true);
     //
-    //this.matrixElement = element.append("div")
-    //  .classed("matrix-view-center", true)
-    //  .on("scroll", function () {
-    //    let left = angular.element(this).scrollLeft();
-    //    let top = angular.element(this).scrollTop();
-    //    angular.element("#matrix-view-header-top").scrollLeft(left);
-    //    angular.element("#matrix-view-header-left").scrollTop(top);
-    //  });
+    this.matrixElement = this.bottomDiv.append("div")
+      .classed("matrix-view-center", true)
+      .on("scroll", function () {
+        let left = angular.element(this).scrollLeft();
+        let top = angular.element(this).scrollTop();
+        angular.element("#matrix-view-header-top").scrollLeft(left);
+        angular.element("#matrix-view-header-left").scrollTop(top);
+      });
 
     this.topHeaderSvg = this.topHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
 
-    //this.matrixSvg = this.matrixElement.append("svg")
-    //  .attr({width: 1024, height: 1024});
+    this.matrixSvg = this.matrixElement.append("svg")
+      .attr({width: 1024, height: 1024});
     //
     this.leftHeaderSvg = this.leftHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
@@ -61,28 +61,54 @@ export class cmMatrixManager {
       .attr({width: 1024, height: 1024});
 
 
-    //this.matrix = new cmMatrixView(this.matrixSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
     this.topHeader = new cmMatrixTopHeader(this.topHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
-    this.topHeader.manager = this;
     this.topHeaderElementStyle.height = this.topHeader.getHeight() + "px";
     this.leftHeader = new cmMatrixLeftHeader(this.leftHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
     this.controlsHeader = new cmControlsMatrix(this.controlsHeaderSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+    this.matrix = new cmMatrixView(this.matrixSvg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+
+    this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
+
     this.updateElementPositions();
 
     this.$scope = scope;
     this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
   }
 
+  getMajorRowsAndColsAsScalarMatrix() {
+    return this.matrix.getMajorRowsAndColsAsScalarMatrix();
+  }
+
+  setUseAnimation(useAnimation) {
+    for (let i = 0; i < this.matrices.length; ++i) {
+      this.matrices[i].setUseAnimation(useAnimation);
+    }
+  }
+
+  setSortOrders(rowPerm, colPerm) {
+    for (let i = 0; i < this.matrices.length; ++i) {
+      this.matrices[i].setSortOrders(rowPerm, colPerm);
+    }
+  }
+
+  setModel(model) {
+    for (let i = 0; i < this.matrices.length; ++i) {
+      this.matrices[i].setModel(model);
+    }
+    //this.updateElementPositions();
+  }
+
   updateElementPositions() {
-    this.$log.debug("updating positions");
     this.topHeaderElementStyle.height = this.topHeader.getHeight() + 5 + "px";
     this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + 5 + "px";
     this.controlsElementStyle.height = this.controlsHeader.getHeight() + 5 + "px";
     this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
+    this.matrixElementStyle.height = this.leftHeaderElementStyle.height;
+    this.matrixElementStyle.width = this.topHeaderElementStyle.width;
     this.controlsHeaderElement.transition().duration(500).style(this.controlsElementStyle);
     this.topHeaderElement.transition().duration(500).style(this.topHeaderElementStyle);
-    this.leftHeaderElement.style(this.leftHeaderElementStyle);
-    //this.matrixElement.transition().duration(500).style(this.matrixElementStyle);
+    this.leftHeaderElement.transition().duration(500).style(this.leftHeaderElementStyle);
+    this.matrixElement.transition().duration(500).style(this.matrixElementStyle);
   }
 
 }

@@ -13,14 +13,15 @@
 .matrix-view-header-left {
   overflow: hidden;
   position: relative;
+  display: inline-block;
 }
 
 .matrix-view-center {
   display: inline-block;
   overflow-x: auto;
   overflow-y: auto;
-  position: relative;
-  padding: 2px;
+  height: 230px;
+  width: 538px;
 }
 
 /* Children of g.matrix-view-interaction-group get manipulated on hovererd/selected events */
