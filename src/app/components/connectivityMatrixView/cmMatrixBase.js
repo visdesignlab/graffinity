@@ -80,6 +80,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     let self = this;
     this.$scope.$on("updatePositions", function (event, rowPerm, colPerm) {
+      console.log("updatePositions", self, rowPerm.length, colPerm.length);
       self.updatePositions(rowPerm, colPerm);
     });
 
@@ -285,7 +286,6 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   getHeight() {
-    console.log(this);
     let total = 0;
     for (var i = 0; i < this.rowHeights.length; ++i) {
       total += this.rowHeights[i];
@@ -609,13 +609,13 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onSortColsByAttribute(attribute, ascending) {
-    let colPerm = this.model.getColsSortedByAttr(attribute, ascending);
+    let colPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.colNodeIndexes, attribute, ascending);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
     this.$scope.$broadcast("updatePositions", this.rowPerm, shiftedColPerm);
   }
 
   onSortRowsByAttribute(attribute, ascending) {
-    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
+    let rowPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.rowNodeIndexes, attribute, ascending);
     let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
     this.updatePositions(shiftedRowPerm, this.colPerm);
     this.$scope.$broadcast("updatePositions", shiftedRowPerm, this.colPerm);

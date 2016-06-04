@@ -23,7 +23,7 @@ export class MainController {
     this.hasQueryError = false;
     this.queryError = "";
 
-    this.matrixClass = "col-lg-11";
+    this.matrixClass = "col-lg-9";
     this.nodeLinkClass = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
@@ -102,6 +102,7 @@ export class MainController {
     this.model = model;
     if (!this.matrixManager) {
       this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
+      this.nodeListManager = this.cmMatrixViewFactory.createNodeListManager(this.nodeListContainer, model, this.$scope, this.viewState, this);
     } else {
       this.matrixManager.setModel(model)
     }
@@ -114,22 +115,7 @@ export class MainController {
   createMatrixAndUi(model) {
 
     this.matrixContainer = d3.select("#matrices-row");
-    //let width = matrixContainer[0][0].clientWidth;
-    //let matrixWidth = width * 0.58;
-    //let nodeListWidth = width * 0.20;
-
-
-    //this.svg = matrixContainer.append("svg")
-    //  .attr("width", matrixWidth)
-    //  .attr("height", 1024)
-    //  .append("g")
-    //  .attr("transform", "translate(0, 20)");
-
-    //this.nodeListSvg = matrixContainer.append("svg")
-    //  .attr("width", nodeListWidth)
-    //  .attr("height", 1024)
-    //  .append("g")
-    //  .attr("transform", "translate(0, 20)");
+    this.nodeListContainer = d3.select("#node-list-col")
 
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
@@ -343,10 +329,22 @@ export class MainController {
   setNodeLinkVisibility(visible) {
     if (!visible) {
       this.nodeLinkClass = "";
-      this.matrixClass = "col-lg-11";
-    } else {
-      this.nodeLinkClass = "col-lg-2";
       this.matrixClass = "col-lg-9";
+
+      // Let the resize event finish before expanding the matrix.
+      let self = this;
+      this.$timeout(function () {
+        self.matrixManager.updateElementPositions();
+      }, 300);
+
+    } else {
+
+      // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
+      // getting pushed onto different lines.
+      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 7);
+
+      this.nodeLinkClass = "col-lg-2";
+      this.matrixClass = "col-lg-7";
     }
   }
 

@@ -357,7 +357,7 @@ export class cmModel {
 
   getMajorLabels(indexes, attr) {
     var self = this;
-    if (attr.length > 0) {
+    if (attr && attr.length > 0) {
       return self.getViewLabels(indexes, attr);
     } else {
       return self.getNodeAttr(indexes, self.getCmGraph().getNodeIdName());
