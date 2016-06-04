@@ -314,13 +314,21 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   getMaxUnrolledHeight() {
-    return (this.rowNodeIndexes.length * this.rowHeight) +
-      (Utils.getFlattenedLists(this.rowNodeIndexes).length * this.rowHeight);
+    let flattened = Utils.getFlattenedLists(this.rowNodeIndexes);
+    if (flattened.length == this.rowNodeIndexes.length) {
+      return flattened.length * this.rowHeight;
+    } else {
+      return (this.rowNodeIndexes.length * this.rowHeight) + (flattened.length * this.rowHeight);
+    }
   }
 
   getMaxUnrolledWidth() {
-    return (this.colNodeIndexes.length * this.colWidth) +
-      (Utils.getFlattenedLists(this.colNodeIndexes).length * this.colWidth);
+    let flattened = Utils.getFlattenedLists(this.colNodeIndexes);
+    if (flattened.length == this.colNodeIndexes.length) {
+      return flattened.length * this.colWidth;
+    } else {
+      return (this.colNodeIndexes.length * this.rowHeight) + (flattened.length * this.colWidth);
+    }
   }
 
 

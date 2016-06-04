@@ -105,8 +105,8 @@ export class cmMatrixManager {
     this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + 5 + "px";
     this.controlsElementStyle.height = this.controlsHeader.getHeight() + 5 + "px";
     this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
-    this.matrixElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() + 5 + "px";
-    this.leftHeaderElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() + 5 + "px";
+    this.matrixElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50 + "px";
+    this.leftHeaderElementStyle.height = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50 + "px";
     this.matrixElementStyle.width = this.topHeaderElementStyle.width;
 
 
