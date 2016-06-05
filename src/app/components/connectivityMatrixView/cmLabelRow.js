@@ -2,8 +2,9 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmLabelRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix,
+              areColsCollapsed) {
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix, areColsCollapsed);
 
     this.unrollControls = [];
     this.rollupControls = [];
@@ -55,17 +56,19 @@ export class cmLabelRow extends cmMatrixRow {
         });
 
         cell.isAttributeCell = true;
+        if (this.areColsCollapsed) {
+          for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
+            let minorCell = cell.minorCells[j];
+            if (minorCell) {
+              minorCell.setData({
+                name: minorColLabels[dataIndex][j],
+                isVertical: 1,
+                attributeIndex: -1
+              });
 
-        for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
-          let minorCell = cell.minorCells[j];
-
-          minorCell.setData({
-            name: minorColLabels[dataIndex][j],
-            isVertical: 1,
-            attributeIndex: -1
-          });
-
-          minorCell.isAttributeCell = true;
+              minorCell.isAttributeCell = true;
+            }
+          }
         }
       }
     }

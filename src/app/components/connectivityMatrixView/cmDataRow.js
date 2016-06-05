@@ -2,8 +2,9 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmDataRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label,
+              minorLabels, rowNodeAttributes, matrix, areColsCollapsed) {
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
     this.unrollControls = [];
     this.rollupControls = [];
 
@@ -87,10 +88,10 @@ export class cmDataRow extends cmMatrixRow {
 
         cell.setData(data);
 
-        if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
-          throw "something fucked up in col node indexes and minor cells";
-        }
-
+        if (this.areColsCollapsed)
+          if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
+            throw "something fucked up in col node indexes and minor cells";
+          }
         for (var j = 0; j < this.majorCells[i].minorCells.length; ++j) {
 
           data = {
@@ -98,7 +99,9 @@ export class cmDataRow extends cmMatrixRow {
             modelRow: modelRow
           };
 
-          cell.minorCells[j].setData(data);
+          if (cell.minorCells[j]) {
+            cell.minorCells[j].setData(data);
+          }
         }
       }
     }

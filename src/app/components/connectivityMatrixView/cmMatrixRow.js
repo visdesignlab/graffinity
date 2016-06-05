@@ -13,7 +13,7 @@ import {cmMatrixCell} from "./cmMatrixCell"
  */
 export class cmMatrixRow extends SvgGroupElement {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed) {
     let group = null;
     if (!isMinorRow) {
       group = svg.append("g")
@@ -23,7 +23,7 @@ export class cmMatrixRow extends SvgGroupElement {
         .attr("data-minor-row", rowIndex);
     }
     super(group);
-
+    this.areColsCollapsed = areColsCollapsed;
     this.currentHeight = rowHeight; // for position other rows relative to this one.
     this.rowHeight = rowHeight;     // for expanding child rows
     this.isMinorRow = isMinorRow;   // for positioning and traversal
@@ -112,6 +112,9 @@ export class cmMatrixRow extends SvgGroupElement {
     for (var i = 0; i < colNodeIndexes.length + numHeaderCols; ++i) {
       if (i >= numHeaderCols) {
         let currColNodeIndexes = colNodeIndexes[i - numHeaderCols];
+        if(currColNodeIndexes.length == 1) {
+          return;
+        }
         for (var j = 0; j < currColNodeIndexes.length; ++j) {
           let majorCol = this.getMajorCell(i);
           let majorGroup = majorCol.getGroup();

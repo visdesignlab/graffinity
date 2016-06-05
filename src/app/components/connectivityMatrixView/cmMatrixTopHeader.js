@@ -41,7 +41,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
     let callback = this.onColControlsClicked.bind(this);
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
-
+    console.log("are cols collapsed", model.areColsCollapsed);
     for (i = 0; i < this.attributes.length; ++i) {
       let attributeRow = new cmAttributeRow(this.svg,
         this.allRows.length,
@@ -54,7 +54,8 @@ export class cmMatrixTopHeader extends cmMatrixBase {
         this,
         i,
         this.attributes[i],
-        this.colAttributeNodeGroup
+        this.colAttributeNodeGroup,
+        model.areColsCollapsed
       );
 
       this.addRow(attributeRow, this.rowHeightAttr);
@@ -71,7 +72,8 @@ export class cmMatrixTopHeader extends cmMatrixBase {
       this.labelRowHeight,
       majorColLabels,
       minorColLabels,
-      this);
+      this,
+      model.areColsCollapsed);
     this.addRow(labelRow, this.labelRowHeight);
   }
 

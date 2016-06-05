@@ -3,8 +3,8 @@ import {cmMatrixRow} from "./cmMatrixRow"
 export class cmAttributeRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colNodeAttributes, matrix,
-              attributeIndex, attributeLabel, attributeNodeGroup) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
+              attributeIndex, attributeLabel, attributeNodeGroup, areColsCollapsed) {
+    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
 
     this.createMinorCells(numHeaderCols, colNodeIndexes, false);
 
@@ -45,17 +45,19 @@ export class cmAttributeRow extends cmMatrixRow {
         cell.setData(data);
 
         // Put the attributes in all of the minor cells.
-        for (var j = 0; j < colNodeIndexes[colIndex].length; ++j) {
-          data = {
-            values: [colNodeAttributes[colIndex][j]],
-            isVertical: true,
-            attributeIndex: attributeIndex,
-            nodeIndexes: [colNodeIndexes[colIndex][j]],
-            attributeNodeGroup: attributeNodeGroup
-          };
-
-          cell.minorCells[j].isAttributeCell = true;
-          cell.minorCells[j].setData(data);
+        if (this.areColsCollapsed) {
+          for (var j = 0; j < colNodeIndexes[colIndex].length; ++j) {
+            data = {
+              values: [colNodeAttributes[colIndex][j]],
+              isVertical: true,
+              attributeIndex: attributeIndex,
+              nodeIndexes: [colNodeIndexes[colIndex][j]],
+              attributeNodeGroup: attributeNodeGroup
+            };
+            let minorCell = cell.minorCells[j];
+            minorCell.isAttributeCell = true;
+            minorCell.setData(data);
+          }
         }
       }
     }
