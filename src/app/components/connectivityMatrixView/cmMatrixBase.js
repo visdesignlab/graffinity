@@ -454,79 +454,22 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellMouseOver(cell) {
-
-    // Position highlight rectangles.
-    let width = this.getWidth();
-    let height = this.getHeight();
     let transform = cmMatrixBase.getCellTransform(cell);
 
-    let rect = cell.getGroup().select(".matrix-view-interaction-group").select("rect");
+    let rect = cell.getGroup()
+      .select(".matrix-view-interaction-group")
+      .select("rect");
+
     let cellWidth = parseInt(rect.attr("width"));
     let cellHeight = parseInt(rect.attr("height"));
-    this.$scope.$broadcast("positionHighlights", width, cellHeight, cellWidth, height, transform, this.gridPosition);
 
-  }
-
-  onPositionHighlights(event, horizontalBoxWidth, horizontalBoxHeight, verticalBoxWidth, verticalBoxHeight, position, gridPosition) {
-    // If first time, then create highlight rectangles.
-
-    if (this.gridPosition[1] == gridPosition[1]) {
-      this.highlights[0].style("display", "block");
-      this.highlights[0].attr("x1", 0)
-        .attr("x2", horizontalBoxWidth)
-        .attr("y1", position.translate[1])
-        .attr("y2", position.translate[1]);
-
-      this.highlights[1].style("display", "block");
-      this.highlights[1].attr("x1", 0)
-        .attr("x2", horizontalBoxWidth)
-        .attr("y1", position.translate[1] + horizontalBoxHeight)
-        .attr("y2", position.translate[1] + horizontalBoxHeight);
-    }
-
-    if (this.gridPosition[0] == gridPosition[0]) {
-      this.highlights[2].style("display", "block");
-      this.highlights[2].attr("x1", position.translate[0])
-        .attr("x2", position.translate[0])
-        .attr("y1", 0)
-        .attr("y2", verticalBoxHeight);
-
-      this.highlights[3].style("display", "block");
-      this.highlights[3].attr("x1", position.translate[0] + verticalBoxWidth)
-        .attr("x2", position.translate[0] + verticalBoxWidth)
-        .attr("y1", 0)
-        .attr("y2", verticalBoxHeight);
-    }
-
-    //    .attr("height", verticalBoxHeight)
-    //    .attr("transform", "translate(" + position.translate[0] + ",0)");
-    //}
-    //this.highlights.forEach(function (highlight) {
-    //  highlight.style("display", "block");
-    //});
-    //
-    //this.highlights[0]
-    //  .attr("width", horizontalBoxWidth)
-    //  .attr("height", horizontalBoxHeight)
-    //  .attr("transform", "translate(0," + position.translate[1] + ")");
-    //
-    //this.highlights[1]
-    //  .attr("width", verticalBoxWidth)
-    //  .attr("height", verticalBoxHeight)
-    //  .attr("transform", "translate(" + position.translate[0] + ",0)");
-
+    this.$scope.$broadcast("positionHighlights", cellWidth, cellHeight, transform, this.gridPosition);
   }
 
   onCellMouseOut() {
     // Hide highlights.
 
     this.$scope.$broadcast("hideHighlights");
-  }
-
-  onHideHighlights() {
-    this.highlights.forEach(function (highlight) {
-      highlight.style("display", "none");
-    });
   }
 
   /** Callback when user clicks on the column controls.
@@ -609,6 +552,12 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
+  onHideHighlights() {
+    this.highlights.forEach(function (highlight) {
+      highlight.style("display", "none");
+    });
+  }
+
   onHideNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, true);
     this.updateDataCols(nodeIndexes, true);
@@ -634,6 +583,41 @@ export class cmMatrixBase extends SvgGroupElement {
     }
 
     this.applyVisitor(this.hoverVisitor);
+  }
+
+  /**
+   * Adjusts positions of highlight lines.
+   */
+  onPositionHighlights(event, cellWidth, cellHeight, position, gridPosition) {
+    // If first time, then create highlight rectangles.
+
+    if (this.gridPosition[1] == gridPosition[1]) {
+      this.highlights[0].style("display", "block");
+      this.highlights[0].attr("x1", 0)
+        .attr("x2", this.getWidth())
+        .attr("y1", position.translate[1])
+        .attr("y2", position.translate[1]);
+
+      this.highlights[1].style("display", "block");
+      this.highlights[1].attr("x1", 0)
+        .attr("x2", this.getWidth())
+        .attr("y1", position.translate[1] + cellHeight)
+        .attr("y2", position.translate[1] + cellHeight);
+    }
+
+    if (this.gridPosition[0] == gridPosition[0]) {
+      this.highlights[2].style("display", "block");
+      this.highlights[2].attr("x1", position.translate[0])
+        .attr("x2", position.translate[0])
+        .attr("y1", 0)
+        .attr("y2", this.getHeight());
+
+      this.highlights[3].style("display", "block");
+      this.highlights[3].attr("x1", position.translate[0] + cellWidth)
+        .attr("x2", position.translate[0] + cellWidth)
+        .attr("y1", 0)
+        .attr("y2", this.getHeight());
+    }
   }
 
   /**
