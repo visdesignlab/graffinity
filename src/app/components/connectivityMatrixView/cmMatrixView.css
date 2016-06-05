@@ -10,6 +10,12 @@
   display: inline-block;
 }
 
+.matrix-view-bottom-row {
+  position: relative;
+  overflow: hidden;
+  top: -5px;
+}
+
 .matrix-view-header-left {
   overflow: hidden;
   position: relative;
@@ -26,7 +32,7 @@
 
 /* Children of g.matrix-view-interaction-group get manipulated on hovererd/selected events */
 g.matrix-view-interaction-group {
-
+  cursor: pointer;
 }
 
 g.matrix-view-interaction-group rect {
@@ -60,9 +66,7 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-highlight-rect {
   fill: none;
-  stroke: black;
-  rx: 3px;
-  ry: 3px;
+  stroke: #FFC800;
 }
 
 .matrix-view-attribute-controls {

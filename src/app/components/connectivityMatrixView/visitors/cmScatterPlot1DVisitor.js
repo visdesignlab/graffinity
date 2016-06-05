@@ -46,6 +46,12 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
         .append("g");
       if (data.isVertical) {
         new ScatterPlot1D(group, 15, 80, this.radius, values, this.valueRange, data.orientation);
+
+        // uncomment this to create interaction group for mouse hovering
+        //this.width = 15;
+        //this.height = 80;
+        //this.createInteractionGroup(cell);
+
       } else {
         new ScatterPlot1D(group, 80, 15, this.radius, values, this.valueRange, data.orientation);
       }

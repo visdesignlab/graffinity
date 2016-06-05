@@ -21,7 +21,7 @@ export class cmNodeListManager {
 
     // Bottom row will hold row headers nad matrix
     this.bottomDiv = element.append("div")
-      .style("overflow", "hidden");
+      .classed("matrix-view-bottom-row", true);
 
     this.leftHeaderElement = this.bottomDiv.append("div")
       .attr("id", "node-list-view-header-left")
@@ -35,9 +35,11 @@ export class cmNodeListManager {
 
     this.controlsHeader = new cmNodeListControls(this.controlsHeaderSvg, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
+    this.controlsHeader.setGridPosition([0, 0]);
 
     this.leftHeader = new cmNodeListLeftHeader(this.leftHeaderSvg, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
+    this.leftHeader.setGridPosition([0, 1]);
 
     this.matrices = [this.leftHeader, this.controlsHeader];
     this.updateElementPositions();

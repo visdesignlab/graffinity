@@ -12,7 +12,6 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
   apply(cell) {
     if (cell.isAttributeCell && cell.data.attributeIndex == this.attributeIndex) {
       let group = cell.getGroup();
-
       if (cell.data.isVertical) {
         group.append("g")
           .attr("transform", "translate(" + this.labelRowWidth / 2 + "," + this.labelRowHeight + ")rotate(270)")
@@ -21,6 +20,9 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
           .attr("alignment-baseline", "middle")
           .attr("font-size", 8)
           .text(cell.data.name);
+        this.width = this.labelRowWidth;
+        this.height = this.labelRowHeight;
+        this.createInteractionGroup(cell);
       } else {
         group.append("g")
           .append("text")
@@ -30,6 +32,10 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
           .attr("alignment-baseline", "middle")
           .attr("font-size", 8)
           .text(cell.data.name);
+
+        this.width = this.labelColWidth;
+        this.height = this.labelColHeight;
+        this.createInteractionGroup(cell);
       }
     }
   }

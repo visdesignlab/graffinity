@@ -30,7 +30,8 @@ export class cmMatrixManager {
 
     // Bottom row will hold row headers nad matrix
     this.bottomDiv = element.append("div")
-      .style("overflow", "hidden");
+      .style("overflow", "hidden")
+      .classed("matrix-view-bottom-row", true);
 
     this.leftHeaderElement = this.bottomDiv.append("div")
       .attr("id", "matrix-view-header-left")
@@ -61,15 +62,19 @@ export class cmMatrixManager {
 
     this.controlsHeader = new cmControlsMatrix(this.controlsHeaderSvg, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
+    this.controlsHeader.setGridPosition([0, 0]);
 
     this.topHeader = new cmMatrixTopHeader(this.topHeaderSvg, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
+    this.topHeader.setGridPosition([1, 0]);
 
     this.leftHeader = new cmMatrixLeftHeader(this.leftHeaderSvg, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
+    this.leftHeader.setGridPosition([0, 1]);
 
     this.matrix = new cmMatrixView(this.matrixSvg, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
+    this.matrix.setGridPosition([1, 1]);
 
     this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
 
@@ -111,11 +116,11 @@ export class cmMatrixManager {
    */
   updateElementPositions(signal, width) {
     // Do not check for overflow of header height. Assume we always have enough space for it.
-    this.topHeaderElementStyle.height = this.topHeader.getHeight() + 5 + "px";
+    this.topHeaderElementStyle.height = this.topHeader.getHeight() + "px";
     this.controlsElementStyle.height = this.topHeaderElementStyle.height;
 
     // Again, not checking for overflow of left-header width.
-    this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + 5 + "px";
+    this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + "px";
     this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
 
     // Bound the matrix's height by screen size.

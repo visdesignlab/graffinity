@@ -72,6 +72,8 @@ export class cmMatrixBase extends SvgGroupElement {
     this.colWidths = [];
     this.allRows = [];
 
+    this.gridPosition = [];
+
     this.setUseAnimation(false);
     this.isInitialized = false;
     this.setModel(model);
@@ -118,6 +120,9 @@ export class cmMatrixBase extends SvgGroupElement {
         self.onColControlsClicked(colIndex, unrolling, true);
       }
     });
+
+    this.$scope.$on("positionHighlights", self.onPositionHighlights.bind(self));
+    this.$scope.$on("hideHighlights", self.onHideHighlights.bind(self))
   }
 
   addRow(row, rowHeight) {
@@ -155,11 +160,16 @@ export class cmMatrixBase extends SvgGroupElement {
         visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
         visitor.setNodeFilter(isNodeHidden);
         visitor.setAttributeNodeGroup(j);
+
+        // Uncomment this to enable hovering on the node attributes.
+        // visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+
         this.applyVisitor(visitor);
       }
     }
 
     visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+    visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
     this.applyVisitor(visitor);
 
     // Create controls for all attributes.
@@ -190,9 +200,13 @@ export class cmMatrixBase extends SvgGroupElement {
    * Function called to create highlight rects. These are the boxes that follow the mouse as it hovers over grid cells.
    */
   createHighlights() {
-    this.highlights[0] = this.svg.append("rect")
+    this.highlights[0] = this.svg.append("line")
       .classed("matrix-view-highlight-rect", true);
-    this.highlights[1] = this.svg.append("rect")
+    this.highlights[1] = this.svg.append("line")
+      .classed("matrix-view-highlight-rect", true);
+    this.highlights[2] = this.svg.append("line")
+      .classed("matrix-view-highlight-rect", true);
+    this.highlights[3] = this.svg.append("line")
       .classed("matrix-view-highlight-rect", true);
   }
 
@@ -441,29 +455,75 @@ export class cmMatrixBase extends SvgGroupElement {
 
   onCellMouseOver(cell) {
 
-    // If first time, then create highlight rectangles.
-    this.highlights.forEach(function (highlight) {
-      highlight.style("display", "block");
-    });
-
     // Position highlight rectangles.
-    let width = cmMatrixBase.getWidth(this.colPerm, this.colWidths);
-    let height = cmMatrixBase.getHeight(this.rowPerm, this.rowHeights);
+    let width = this.getWidth();
+    let height = this.getHeight();
     let transform = cmMatrixBase.getCellTransform(cell);
 
-    this.highlights[0]
-      .attr("width", width)
-      .attr("height", this.rowHeight)
-      .attr("transform", "translate(0," + transform.translate[1] + ")");
+    let rect = cell.getGroup().select(".matrix-view-interaction-group").select("rect");
+    let cellWidth = parseInt(rect.attr("width"));
+    let cellHeight = parseInt(rect.attr("height"));
+    this.$scope.$broadcast("positionHighlights", width, cellHeight, cellWidth, height, transform, this.gridPosition);
 
-    this.highlights[1]
-      .attr("width", this.colWidth)
-      .attr("height", height)
-      .attr("transform", "translate(" + transform.translate[0] + ",0)");
+  }
+
+  onPositionHighlights(event, horizontalBoxWidth, horizontalBoxHeight, verticalBoxWidth, verticalBoxHeight, position, gridPosition) {
+    // If first time, then create highlight rectangles.
+
+    if (this.gridPosition[1] == gridPosition[1]) {
+      this.highlights[0].style("display", "block");
+      this.highlights[0].attr("x1", 0)
+        .attr("x2", horizontalBoxWidth)
+        .attr("y1", position.translate[1])
+        .attr("y2", position.translate[1]);
+
+      this.highlights[1].style("display", "block");
+      this.highlights[1].attr("x1", 0)
+        .attr("x2", horizontalBoxWidth)
+        .attr("y1", position.translate[1] + horizontalBoxHeight)
+        .attr("y2", position.translate[1] + horizontalBoxHeight);
+    }
+
+    if (this.gridPosition[0] == gridPosition[0]) {
+      this.highlights[2].style("display", "block");
+      this.highlights[2].attr("x1", position.translate[0])
+        .attr("x2", position.translate[0])
+        .attr("y1", 0)
+        .attr("y2", verticalBoxHeight);
+
+      this.highlights[3].style("display", "block");
+      this.highlights[3].attr("x1", position.translate[0] + verticalBoxWidth)
+        .attr("x2", position.translate[0] + verticalBoxWidth)
+        .attr("y1", 0)
+        .attr("y2", verticalBoxHeight);
+    }
+
+    //    .attr("height", verticalBoxHeight)
+    //    .attr("transform", "translate(" + position.translate[0] + ",0)");
+    //}
+    //this.highlights.forEach(function (highlight) {
+    //  highlight.style("display", "block");
+    //});
+    //
+    //this.highlights[0]
+    //  .attr("width", horizontalBoxWidth)
+    //  .attr("height", horizontalBoxHeight)
+    //  .attr("transform", "translate(0," + position.translate[1] + ")");
+    //
+    //this.highlights[1]
+    //  .attr("width", verticalBoxWidth)
+    //  .attr("height", verticalBoxHeight)
+    //  .attr("transform", "translate(" + position.translate[0] + ",0)");
+
   }
 
   onCellMouseOut() {
     // Hide highlights.
+
+    this.$scope.$broadcast("hideHighlights");
+  }
+
+  onHideHighlights() {
     this.highlights.forEach(function (highlight) {
       highlight.style("display", "none");
     });
@@ -667,6 +727,13 @@ export class cmMatrixBase extends SvgGroupElement {
 
       this.legend = new cmColorMapLegend(visitor);
     }
+  }
+
+  /**
+   *
+   */
+  setGridPosition(position) {
+    this.gridPosition = position;
   }
 
   /**
