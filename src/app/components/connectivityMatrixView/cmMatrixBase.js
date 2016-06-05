@@ -80,7 +80,6 @@ export class cmMatrixBase extends SvgGroupElement {
 
     let self = this;
     this.$scope.$on("updatePositions", function (event, rowPerm, colPerm) {
-      console.log("updatePositions", self, rowPerm.length, colPerm.length);
       self.updatePositions(rowPerm, colPerm);
     });
 

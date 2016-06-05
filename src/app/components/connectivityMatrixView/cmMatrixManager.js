@@ -150,6 +150,11 @@ export class cmMatrixManager {
       height: this.matrix.getHeight()
     });
 
+    this.topHeaderSvg.transition()
+      .duration(500).attr({
+      width: this.matrix.getWidth()
+    });
+
     // The divs need to expand/collapse depending on matrix size.
     this.controlsHeaderElement.transition()
       .duration(500)

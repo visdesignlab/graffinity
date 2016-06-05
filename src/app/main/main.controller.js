@@ -104,7 +104,8 @@ export class MainController {
       this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
       this.nodeListManager = this.cmMatrixViewFactory.createNodeListManager(this.nodeListContainer, model, this.$scope, this.viewState, this);
     } else {
-      this.matrixManager.setModel(model)
+      this.matrixManager.setModel(model);
+      this.nodeListManager.setModel(model);
     }
 
     this.nodeLinkView.setModel(model);

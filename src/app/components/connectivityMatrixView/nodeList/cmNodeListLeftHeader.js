@@ -6,31 +6,6 @@ import {cmDataAttributeRow} from "../cmDataAttributeRow"
 import {Utils} from "../../utils/utils"
 import {cmMatrixRow} from "../cmMatrixRow"
 
-/**
- * Manages the matrix svg.
- *
- * Call stack for hiding major data cols:
- * - updateDataCols - identifies which columns need to be hidden
- * -- updateCol - toggles visibility of major cols
- * - updatePositions
- *
- * Stack for hiding minor data cols:
- * - updateDataCols
- * -- set state of isMinorColVisible
- * -- updateMinorCols(colIndex, colWidth, isColIndexUnrolled, isMinorColVisible)
- * - updatePositions
- *
- * Stack for hiding major rows:
- * - updateDataRows
- * -- updateRow - toggles visibilty of major rows
- * - updatePositions
- *
- * Stack for hiding minor cols:
- * - updateDataRows
- * -- this.allRows[rowIndex].hide/showMinorRow(minorRowIndex)
- * - updatePositions
- *
- */
 export class cmNodeListLeftHeader extends cmMatrixBase {
 
   /**
@@ -111,7 +86,6 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
     let modelRows = model.getCurrentIntermediateNodeRows();
     let majorRowLabels = model.getMajorLabels(model.getIntermediateNodeIndexes());
     let minorRowLabels = model.getMinorRowLabels();
-    console.log(modelRows);
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataAttributeRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
