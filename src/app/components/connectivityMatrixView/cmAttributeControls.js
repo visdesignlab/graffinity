@@ -22,8 +22,14 @@ export class cmAttributeControls extends SvgGroupElement {
   constructor(parent, name, isVertical, width, height, onSort, onHide, index, onFilter, filterNodeIndexes,
               filterAttributeGroup, attributeValues) {
     super(parent);
-
     let group = this.getGroup();
+    if(isVertical) {
+      group = group.append("g")
+        .attr("transform", "translate(" + width + ", " + 0 + ")");
+    } else {
+      group = group.append("g")
+        .attr("transform", "translate(" + 0 + ", " + height + ")");
+    }
 
     // uncomment to draw outline of this label
     //group.append("rect")

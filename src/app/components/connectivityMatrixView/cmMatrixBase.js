@@ -57,7 +57,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.colWidth = 15;
     this.rowHeight = 15;
     this.colWidthAttr = 80;
-    this.colWidthLabel = 50;
+    this.colWidthLabel = 80;
     this.labelRowHeight = this.colWidthLabel;
     this.rowHeightAttr = 80;
 
@@ -182,7 +182,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     // create labels for all the quantitative attribute columns/rows
     visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight, this.colWidthAttr, filterNodes, filterAttributes);
+      this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
     this.applyVisitor(visitor);
 
     // create labels for the 'labels' or 'id' column/row

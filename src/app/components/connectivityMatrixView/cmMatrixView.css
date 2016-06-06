@@ -30,6 +30,12 @@
   width: 538px;
 }
 
+.matrix-view-string-attribute {
+  text-anchor: start;
+  alignment-baseline: middle;
+  font-size: 10px;
+}
+
 /* Children of g.matrix-view-interaction-group get manipulated on hovererd/selected events */
 g.matrix-view-interaction-group {
   cursor: pointer;
@@ -60,8 +66,9 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-attribute-label {
   text-anchor: middle;
-  font-size: 10px;
+  font-size: 12px;
   alignment-baseline: text-before-edge;
+  font-weight: bold;
 }
 
 .matrix-view-highlight-rect {
