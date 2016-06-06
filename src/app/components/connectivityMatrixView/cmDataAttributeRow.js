@@ -3,8 +3,8 @@ import {cmDataRow} from "./cmDataRow"
 
 export class cmDataAttributeRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup) {
-    super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup, areColsCollapsed) {
+    super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
     this.unrollControls = [];
     this.rollupControls = [];
 
@@ -18,7 +18,7 @@ export class cmDataAttributeRow extends cmMatrixRow {
 
         let minorRow = new cmDataAttributeRow(this.minorRowContainer, childIndex, [], numHeaderCols, colWidth,
           rowHeight, isChildRow, modelRow, minorLabels[childIndex], childLabels,
-          cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix);
+          cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix, areColsCollapsed);
 
         minorRow.setVisible(false);
         this.addMinorRow(minorRow);
@@ -28,7 +28,7 @@ export class cmDataAttributeRow extends cmMatrixRow {
 
           minorRow = new cmDataAttributeRow(this.minorRowContainer, childIndex, [], numHeaderCols, colWidth,
             rowHeight, isChildRow, modelRow.getChildRowAt(i), minorLabels[childIndex], childLabels,
-            cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix);
+            cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix, areColsCollapsed);
 
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
@@ -90,15 +90,17 @@ export class cmDataAttributeRow extends cmMatrixRow {
         //  throw "something fucked up in col node indexes and minor cells";
         //}
         //
-        //for (var j = 0; j < this.majorCells[i].minorCells.length; ++j) {
-        //
-        //  data = {
-        //    colNodeIndexes: colNodeIndexes[dataIndex][j],
-        //    modelRow: modelRow
-        //  };
-        //
-        //  cell.minorCells[j].setData(data);
-        //}
+        if(areColsCollapsed) {
+          for (var j = 0; j < this.majorCells[i].minorCells.length; ++j) {
+
+            data = {
+              colNodeIndexes: colNodeIndexes[dataIndex][j],
+              modelRow: modelRow
+            };
+
+            cell.minorCells[j].setData(data);
+          }
+        }
       }
     }
   }

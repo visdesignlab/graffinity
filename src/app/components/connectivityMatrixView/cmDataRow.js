@@ -34,6 +34,9 @@ export class cmDataRow extends cmMatrixRow {
           this.addMinorRow(minorRow);
         }
       }
+
+      this.getMajorCell(0).getGroup().style("display", "none");
+
     }
 
     // Tag the cells in this row with correct booleans.

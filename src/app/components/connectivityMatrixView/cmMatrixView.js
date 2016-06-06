@@ -122,6 +122,7 @@ export class cmMatrixView extends cmMatrixBase {
       this.colWidthLabel = 0;
       dataRow.setLabelColWidth(this.colWidthLabel);
       this.addRow(dataRow, this.rowHeight);
+
     }
   }
 

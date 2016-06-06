@@ -155,6 +155,11 @@ export class cmMatrixManager {
       height: this.matrix.getHeight()
     });
 
+    this.leftHeaderSvg.transition()
+      .duration(500).attr({
+      height: this.matrix.getHeight()
+    });
+
     this.topHeaderSvg.transition()
       .duration(500).attr({
       width: this.matrix.getWidth()
