@@ -401,12 +401,18 @@ export class cmModel {
     return attributes;
   }
 
+  // TODO - this is a hack to get the intermediate nodes working.
   getNodeAttr(nodeIndexes, attribute) {
     var self = this;
     var attributes = [nodeIndexes.length];
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      attributes[i] = self.graph.getNode(nodeIndexes[i])[attribute];
+      if (attribute == "count") {
+        attributes[i] = this.intermediateNodeCount[nodeIndexes[i]];
+      } else {
+        attributes[i] = self.graph.getNode(nodeIndexes[i])[attribute];
+      }
     }
+    console.log(attributes);
     return attributes;
   }
 

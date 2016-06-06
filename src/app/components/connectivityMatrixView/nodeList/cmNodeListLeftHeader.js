@@ -2,7 +2,7 @@
  */
 
 import {cmMatrixBase} from "../cmMatrixBase"
-import {cmDataAttributeRow} from "../cmDataAttributeRow"
+import {cmNodeListRow} from "./cmNodeListRow"
 import {Utils} from "../../utils/utils"
 import {cmMatrixRow} from "../cmMatrixRow"
 
@@ -20,23 +20,39 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
       this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }
 
-    let colNodeAttributes = [];
     let rowAttributes = [];
-    for (i = 0; i < this.attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
+    for (i = 0; i < this.attributes.length - 1; ++i) {
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
     }
 
-    let rowNodeAttributes = rowAttributes[0];
+    let countRows = model.getCurrentIntermediateNodeRows();
+    let countRowsList = [];
+    for(var i=0; i<countRows.length; ++i) {
+      countRowsList.push(countRows[i].getAllValuesAsList([['count']])[0]);
+    }
+    rowAttributes[2] = countRowsList;
+    console.log(rowAttributes);
+
+
+    let rowNodeAttributes = [];
     if (this.attributes.length > 1) {
-      for (i = 1; i < this.attributes.length; ++i) {
-        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
+      for (i = 0; i < this.attributes.length; ++i) {
+        for(var j=0; j<rowAttributes[i].length; ++j) {
+          if(rowNodeAttributes[j]) {
+            rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]]);
+          } else {
+            rowNodeAttributes[j] = [rowAttributes[i][j]];
+          }
+        }
+
       }
     } else {
       for (i = 0; i < rowNodeAttributes.length; ++i) {
         rowNodeAttributes[i] = [rowNodeAttributes[i]];
       }
     }
+
+    console.log(rowNodeAttributes);
 
     //// Controls row is the only one with a onColControlsClicked callback.
     //let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
@@ -88,7 +104,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
     let minorRowLabels = model.getMinorRowLabels();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataAttributeRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+      let dataRow = new cmNodeListRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
         this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
 
       // If row has minor rows, then we want the controls to be visible!
@@ -106,8 +122,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
    * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
    */
   initAttributeNodeGroups() {
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
+    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), 3);
   }
 
   /**
@@ -115,7 +130,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
    * Creates this.isAttributeRow/Col visible.
    */
   initAttributeState(model) {
-    let attributes = model.graph.getQuantNodeAttrNames();
+    let attributes = model.graph.getQuantNodeAttrNames().concat(["count"]);
     this.attributes = attributes;
 
     // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
@@ -168,7 +183,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
    */
   initNodeIndexes(model) {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
-    this.colNodeIndexes = []; //model.getColNodeIndexes();
+    this.colNodeIndexes = model.getAvailableIntermediateNodeStats();
   }
 
   /**

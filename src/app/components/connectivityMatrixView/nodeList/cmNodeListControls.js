@@ -14,17 +14,32 @@ export class cmNodeListControls extends cmMatrixBase {
     //// Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
-    let colNodeAttributes = [];
+
     let rowAttributes = [];
-    for (var i = 0; i < this.attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
+    for (i = 0; i < this.attributes.length - 1; ++i) {
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
     }
+    console.log(rowAttributes);
 
-    let rowNodeAttributes = rowAttributes[0];
+    let countRows = model.getCurrentIntermediateNodeRows();
+    let countRowsList = [];
+    for(var i=0; i<countRows.length; ++i) {
+      countRowsList.push(countRows[i].getAllValuesAsList([['count']])[0]);
+    }
+    rowAttributes[2] = countRowsList;
+
+
+    let rowNodeAttributes = [];
     if (this.attributes.length > 1) {
-      for (i = 1; i < this.attributes.length; ++i) {
-        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
+      for (i = 0; i < this.attributes.length; ++i) {
+        for(var j=0; j<rowAttributes[i].length; ++j) {
+          if(rowNodeAttributes[j]) {
+            rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]]);
+          } else {
+            rowNodeAttributes[j] = [rowAttributes[i][j]];
+          }
+        }
+
       }
     } else {
       for (i = 0; i < rowNodeAttributes.length; ++i) {
@@ -55,7 +70,7 @@ export class cmNodeListControls extends cmMatrixBase {
    */
   initAttributeNodeGroups() {
     this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
+    //this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
   }
 
   /**
@@ -63,7 +78,7 @@ export class cmNodeListControls extends cmMatrixBase {
    * Creates this.isAttributeRow/Col visible.
    */
   initAttributeState(model) {
-    let attributes = model.graph.getQuantNodeAttrNames();
+    let attributes = model.graph.getQuantNodeAttrNames().concat(["count"]);
     this.attributes = attributes;
 
     // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
