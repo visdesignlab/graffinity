@@ -2,7 +2,7 @@
  */
 import {cmMatrixRow} from "./cmMatrixRow"
 
-export class cmControlsMatrixControlsRow extends cmMatrixRow {
+export class cmEditAttributeRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, areColsCollapsed, matrix) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);

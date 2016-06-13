@@ -1,38 +1,29 @@
-/*global reorder d3
- */
-
 import {cmMatrixBase} from "./cmMatrixBase"
 import {cmControlRow} from "./cmControlRow"
 import {cmLabelRow} from "./cmLabelRow"
 import {cmAttributeRow} from "./cmAttributeRow"
-import {Utils} from "../utils/utils"
 
 export class cmMatrixTopHeader extends cmMatrixBase {
+
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
+    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+
+    this.colWidthAttr = 0;
+    this.colWidthLabel = 0;
+    this.colWidthControl = 0;
+
+    this.setModel(model);
+  }
+
   /**
-   * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
+   * Creates elements in the top of the matrix:
+   *  - cmControlRow
+   *  - cmAttributeRow
+   *  - cmLabelRow
    */
   createRows(model) {
-
     // Populate the row/col node attributes.
-    // rowNodeAttributes[i][j] = attributes[j] for row[i]
-    // colNodeAttributes[i][j] = attributes[i] for col[j]
-    let colNodeAttributes = [];
-    let rowAttributes = [];
-    for (var i = 0; i < this.attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
-      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
-    }
-
-    let rowNodeAttributes = rowAttributes[0];
-    if (this.attributes.length > 1) {
-      for (i = 1; i < this.attributes.length; ++i) {
-        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
-      }
-    } else {
-      for (i = 0; i < rowNodeAttributes.length; ++i) {
-        rowNodeAttributes[i] = [rowNodeAttributes[i]];
-      }
-    }
+    let colNodeAttributes = this.colNodeAttributes;
 
     // Controls row is the only one with a onColControlsClicked callback.
     let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
@@ -42,21 +33,10 @@ export class cmMatrixTopHeader extends cmMatrixBase {
     row.setColClickCallback(callback);
     this.addRow(row, this.rowHeight);
 
-    for (i = 0; i < this.attributes.length; ++i) {
-      let attributeRow = new cmAttributeRow(this.svg,
-        this.allRows.length,
-        this.colNodeIndexes,
-        this.numHeaderCols,
-        this.colWidth,
-        this.rowHeightAttr,
-        false,
-        colNodeAttributes[i],
-        this,
-        i,
-        this.attributes[i],
-        this.colAttributeNodeGroup,
-        model.areColsCollapsed
-      );
+    for (let i = 0; i < this.attributes.length; ++i) {
+      let attributeRow = new cmAttributeRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols,
+        this.colWidth, this.rowHeightAttr, false, colNodeAttributes[i], this, i, this.attributes[i],
+        this.colAttributeNodeGroup, model.areColsCollapsed);
 
       this.addRow(attributeRow, this.rowHeightAttr);
     }
@@ -64,130 +44,11 @@ export class cmMatrixTopHeader extends cmMatrixBase {
     // Create the labels row
     let majorColLabels = model.getMajorColLabels();
     let minorColLabels = model.getMinorColLabels();
-    let labelRow = new cmLabelRow(this.svg,
-      this.allRows.length,
-      this.colNodeIndexes,
-      this.numHeaderCols,
-      this.colWidth,
-      this.labelRowHeight,
-      majorColLabels,
-      minorColLabels,
-      this,
-      model.areColsCollapsed);
+
+    let labelRow = new cmLabelRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+      this.labelRowHeight, majorColLabels, minorColLabels, this, model.areColsCollapsed);
+
     this.addRow(labelRow, this.labelRowHeight);
   }
 
-  /**
-   * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
-   */
-  initAttributeNodeGroups() {
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), this.rowAttributeNodeGroup);
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.colNodeIndexes), this.colAttributeNodeGroup);
-  }
-
-  /**
-   * Fills this.attributes with the model's quantitative attributes.
-   * Creates this.isAttributeRow/Col visible.
-   */
-  initAttributeState(model) {
-    let attributes = model.graph.getQuantNodeAttrNames();
-    this.attributes = attributes;
-
-    // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
-    // attributes that the user already selected.
-    if (!this.isInitialized) {
-      this.isAttributeColVisible = {};
-      this.isAttributeRowVisible = {};
-      for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = false;
-        this.isAttributeRowVisible[attributes[i]] = true;
-      }
-    }
-  }
-
-  /**
-   * Fills this.isMajorColUnrolled, this.isMinorColVisible
-   */
-  initColStates() {
-    this.isMajorColUnrolled = [];
-    this.isMinorColVisible = [];
-    for (let i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
-      this.isMajorColUnrolled[i] = false;
-      this.isMinorColVisible[i] = [];
-      if (this.isDataCell(i)) {
-        let dataIndex = this.getDataColIndex(i);
-        for (let j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
-          this.isMinorColVisible[i][j] = true;
-        }
-      }
-    }
-  }
-
-  /**
-   * Fills this.colWidths using the data/view/attribute indexes.
-   */
-  initColWidths() {
-    this.colWidthAttr = 0;
-    for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i)) {
-        this.colWidths[i] = 0;
-      } else if (this.isDataCell(i)) {
-        this.colWidths[i] = this.colWidth;
-      } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = this.colWidthAttr;
-      } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = 0;
-      }
-    }
-  }
-
-  /**
-   * Initializes this.row/col indexes.
-   */
-  initNodeIndexes(model) {
-    this.rowNodeIndexes = model.getRowNodeIndexes();
-    this.colNodeIndexes = model.getColNodeIndexes();
-  }
-
-  /**
-   * Creates indexes for the data/header/attribute/label rows and cols.
-   */
-  initViewIndexes(attributes) {
-    this.numControlCols = 1;
-    this.numAttributeCols = attributes.length;
-    this.numLabelCols = 1;
-    this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
-
-    this.numControlRows = 1;
-    this.numAttributeRows = attributes.length;
-    this.numLabelRows = 1;
-    this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
-
-    this.rowHeights = [];
-    this.colWidths = [];
-    this.allRows = [];
-    this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
-    this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
-  }
-
-  onSortRowsByAttribute(attribute, ascending) {
-    let rowPerm = this.model.getRowsSortedByAttr(attribute, ascending);
-    let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
-    this.updatePositions(shiftedRowPerm, this.colPerm);
-  }
-
-  /**
-   * Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
-   * do not change between queries.
-   */
-  updateAttributeView() {
-    for (var i = 0; i < this.attributes.length; ++i) {
-      if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i, true, true);
-      }
-      if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i, true, true);
-      }
-    }
-  }
 }

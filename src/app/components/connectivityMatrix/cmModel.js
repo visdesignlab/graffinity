@@ -360,12 +360,7 @@ export class cmModel {
     if (attr && attr.length > 0) {
       return self.getViewLabels(indexes, attr);
     } else {
-      // TODO - move this!
-      let nodeIds = self.getNodeAttr(indexes, self.getCmGraph().getNodeIdName());
-      for (var i = 0; i < nodeIds.length; ++i) {
-        nodeIds[i] = self.getCmGraph().getNode(nodeIds[i])["label"] + " " + nodeIds[i];
-      }
-      return nodeIds;
+      return self.getNodeAttr(indexes, self.getCmGraph().getNodeIdName());
     }
   }
 
@@ -412,7 +407,6 @@ export class cmModel {
         attributes[i] = self.graph.getNode(nodeIndexes[i])[attribute];
       }
     }
-    console.log(attributes);
     return attributes;
   }
 

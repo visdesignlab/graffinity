@@ -1,4 +1,7 @@
 /*global d3 */
+
+import {Utils} from "../utils/utils"
+
 export class ViewState {
   constructor($rootScope, $log) {
     "ngInject";
@@ -86,6 +89,9 @@ export class ViewState {
 
   setCurrentModel(model) {
     this.model = model;
+    this.setAttributeNodeGroup(Utils.getFlattenedLists(model.getRowNodeIndexes()), 0);
+    this.setAttributeNodeGroup(Utils.getFlattenedLists(model.getColNodeIndexes()), 1);
+    this.setAttributeNodeGroup(Utils.getFlattenedLists(model.getIntermediateNodeIndexes()), 2);
   }
 
   setFilterRange(attribute, attributeNodeGroup, range) {

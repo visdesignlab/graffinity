@@ -1,9 +1,5 @@
-/*global reorder, d3
- */
-
 import {cmMatrixBase} from "../cmMatrixBase"
 import {cmNodeListRow} from "./cmNodeListRow"
-import {Utils} from "../../utils/utils"
 import {cmMatrixRow} from "../cmMatrixRow"
 
 export class cmNodeListLeftHeader extends cmMatrixBase {
@@ -16,7 +12,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]
-    for(var i=0; i<this.numHeaderCols; ++i) {
+    for (var i = 0; i < this.numHeaderCols; ++i) {
       this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }
 
@@ -27,18 +23,16 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
 
     let countRows = model.getCurrentIntermediateNodeRows();
     let countRowsList = [];
-    for(var i=0; i<countRows.length; ++i) {
+    for (i = 0; i < countRows.length; ++i) {
       countRowsList.push(countRows[i].getAllValuesAsList([['count']])[0]);
     }
     rowAttributes[2] = countRowsList;
-    console.log(rowAttributes);
-
 
     let rowNodeAttributes = [];
     if (this.attributes.length > 1) {
       for (i = 0; i < this.attributes.length; ++i) {
-        for(var j=0; j<rowAttributes[i].length; ++j) {
-          if(rowNodeAttributes[j]) {
+        for (var j = 0; j < rowAttributes[i].length; ++j) {
+          if (rowNodeAttributes[j]) {
             rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]]);
           } else {
             rowNodeAttributes[j] = [rowAttributes[i][j]];
@@ -51,8 +45,6 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
         rowNodeAttributes[i] = [rowNodeAttributes[i]];
       }
     }
-
-    console.log(rowNodeAttributes);
 
     //// Controls row is the only one with a onColControlsClicked callback.
     //let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
@@ -119,13 +111,6 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
   }
 
   /**
-   * Assigns this.rowNodeIndexes and this.colNodeIndexes their own attributeNodeGroups in the view state.
-   */
-  initAttributeNodeGroups() {
-    this.viewState.setAttributeNodeGroup(Utils.getFlattenedLists(this.rowNodeIndexes), 3);
-  }
-
-  /**
    * Fills this.attributes with the model's quantitative attributes.
    * Creates this.isAttributeRow/Col visible.
    */
@@ -145,37 +130,9 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
     }
   }
 
-  /**
-   * Fills this.isMajorColUnrolled, this.isMinorColVisible
-   */
-  initColStates() {
-    this.isMajorColUnrolled = [];
-    this.isMinorColVisible = [];
-    for (let i = 0; i < this.numHeaderCols + this.colNodeIndexes.length; ++i) {
-      this.isMajorColUnrolled[i] = false;
-      this.isMinorColVisible[i] = [];
-      if (this.isDataCell(i)) {
-        let dataIndex = this.getDataColIndex(i);
-        for (let j = 0; j < this.colNodeIndexes[dataIndex].length; ++j) {
-          this.isMinorColVisible[i][j] = true;
-        }
-      }
-    }
-  }
 
-  /**
-   * Fills this.colWidths using the data/view/attribute indexes.
-   */
-  initColWidths() {
-    for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i) || this.isDataCell(i)) {
-        this.colWidths[i] = this.colWidth;
-      } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = this.colWidthAttr;
-      } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = this.colWidthLabel;
-      }
-    }
+  initAttributeData() {
+
   }
 
   /**
@@ -184,41 +141,5 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
   initNodeIndexes(model) {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     this.colNodeIndexes = model.getAvailableIntermediateNodeStats();
-  }
-
-  /**
-   * Creates indexes for the data/header/attribute/label rows and cols.
-   */
-  initViewIndexes(attributes) {
-    this.numControlCols = 1;
-    this.numAttributeCols = attributes.length;
-    this.numLabelCols = 1;
-    this.numHeaderCols = this.numControlCols + this.numAttributeCols + this.numLabelCols;
-
-    this.numControlRows = 1;
-    this.numAttributeRows = attributes.length;
-    this.numLabelRows = 1;
-    this.numHeaderRows = this.numControlRows + this.numAttributeRows + this.numLabelRows;
-
-    this.rowHeights = [];
-    this.colWidths = [];
-    this.allRows = [];
-    this.rowPerm = reorder.permutation(this.numHeaderRows + this.rowNodeIndexes.length);
-    this.colPerm = reorder.permutation(this.numHeaderCols + this.colNodeIndexes.length);
-  }
-
-  /**
-   * Update the attributes so that the previous state attributes are displayed. This assumes the model's attributes
-   * do not change between queries.
-   */
-  updateAttributeView() {
-    for (var i = 0; i < this.attributes.length; ++i) {
-      if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i, true, true);
-      }
-      if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i, true, true);
-      }
-    }
   }
 }

@@ -94,7 +94,7 @@ export class cmDataAttributeRow extends cmMatrixRow {
           for (var j = 0; j < this.majorCells[i].minorCells.length; ++j) {
 
             data = {
-              colNodeIndexes: colNodeIndexes[dataIndex][j],
+              colNodeIndexes: colNodeIndexes[i][j],
               modelRow: modelRow
             };
 
