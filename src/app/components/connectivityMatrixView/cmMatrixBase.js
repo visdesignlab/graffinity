@@ -426,6 +426,7 @@ export class cmMatrixBase extends SvgGroupElement {
       }
     }
 
+    this.rowAttributes = rowAttributes;
     this.rowNodeAttributes = rowNodeAttributes;
     this.colNodeAttributes = colNodeAttributes;
   }
@@ -702,14 +703,14 @@ export class cmMatrixBase extends SvgGroupElement {
 
     if (this.gridPosition[1] == gridPosition[1]) {
       this.highlights[0].style("display", "block");
-      this.highlights[0].attr("x1", 0)
-        .attr("x2", this.getWidth())
+      this.highlights[0].attr("x1", -1)
+        .attr("x2", this.getWidth() + 1)
         .attr("y1", position.translate[1])
         .attr("y2", position.translate[1]);
 
       this.highlights[1].style("display", "block");
-      this.highlights[1].attr("x1", 0)
-        .attr("x2", this.getWidth())
+      this.highlights[1].attr("x1", -1)
+        .attr("x2", this.getWidth() + 1)
         .attr("y1", position.translate[1] + cellHeight)
         .attr("y2", position.translate[1] + cellHeight);
     }
@@ -718,14 +719,14 @@ export class cmMatrixBase extends SvgGroupElement {
       this.highlights[2].style("display", "block");
       this.highlights[2].attr("x1", position.translate[0])
         .attr("x2", position.translate[0])
-        .attr("y1", 0)
-        .attr("y2", this.getHeight());
+        .attr("y1", -1)
+        .attr("y2", this.getHeight() + 1);
 
       this.highlights[3].style("display", "block");
       this.highlights[3].attr("x1", position.translate[0] + cellWidth)
         .attr("x2", position.translate[0] + cellWidth)
-        .attr("y1", 0)
-        .attr("y2", this.getHeight());
+        .attr("y1", -1)
+        .attr("y2", this.getHeight() + 1);
     }
   }
 

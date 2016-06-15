@@ -2,13 +2,11 @@ import {cmMatrixView} from "./cmMatrixView"
 import {cmMatrixTopHeader} from "./cmMatrixTopHeader"
 import {cmControlsMatrix} from "./cmControlsMatrix"
 import {cmMatrixLeftHeader} from "./cmMatrixLeftHeader"
-
-export class cmMatrixManager {
+import {cmWrapperBase} from "./cmWrapperBase"
+export class cmMatrixWrapper extends cmWrapperBase {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    this.$log = $log;
-    this.$scope = scope;
-    this.element = element;
+    super(element, $log, scope, mainController);
 
     // Style for the four divs displayed in this matrix.
     this.controlsElementStyle = {};
@@ -50,37 +48,44 @@ export class cmMatrixManager {
     this.controlsHeaderSvg = this.controlsHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
 
+    this.controlsHeaderGroup = this.controlsHeaderSvg.append("g");
+
     this.topHeaderSvg = this.topHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
+
+    this.topHeaderGroup = this.topHeaderSvg.append("g");
 
     this.leftHeaderSvg = this.leftHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
 
+    this.leftHeaderGroup = this.leftHeaderSvg.append("g");
+
     this.matrixSvg = this.matrixElement.append("svg")
       .attr({width: 1024, height: 1024});
 
+    this.matrixGroup = this.matrixSvg.append("g");
 
-    this.controlsHeader = new cmControlsMatrix(this.controlsHeaderSvg, model, $log, $uibModal, scope, viewState,
+    this.controlsHeader = new cmControlsMatrix(this.controlsHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
     this.controlsHeader.setGridPosition([0, 0]);
 
-    this.topHeader = new cmMatrixTopHeader(this.topHeaderSvg, model, $log, $uibModal, scope, viewState,
+    this.topHeader = new cmMatrixTopHeader(this.topHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
     this.topHeader.setGridPosition([1, 0]);
 
-    this.leftHeader = new cmMatrixLeftHeader(this.leftHeaderSvg, model, $log, $uibModal, scope, viewState,
+    this.leftHeader = new cmMatrixLeftHeader(this.leftHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
     this.leftHeader.setGridPosition([0, 1]);
 
-    this.matrix = new cmMatrixView(this.matrixSvg, model, $log, $uibModal, scope, viewState,
+    this.matrix = new cmMatrixView(this.matrixGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
     this.matrix.setGridPosition([1, 1]);
 
     this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
 
-    this.updateElementPositions();
+    this.setModel(model);
 
-    this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
+    this.updateElementPositions();
   }
 
   getMajorRowsAndColsAsScalarMatrix() {
@@ -102,6 +107,7 @@ export class cmMatrixManager {
   setModel(model) {
     for (let i = 0; i < this.matrices.length; ++i) {
       this.matrices[i].setModel(model);
+      this.matrices[i].setPosition(1, 1);
     }
 
     this.updateElementPositions();
@@ -115,12 +121,15 @@ export class cmMatrixManager {
    * Positions and resizes the 4 divs holding different parts of the matrices.
    */
   updateElementPositions(signal, width) {
+
+    let padding = 2;
+
     // Do not check for overflow of header height. Assume we always have enough space for it.
-    this.topHeaderElementStyle.height = this.topHeader.getHeight() + "px";
+    this.topHeaderElementStyle.height = this.topHeader.getHeight() + padding + "px";
     this.controlsElementStyle.height = this.topHeaderElementStyle.height;
 
     // Again, not checking for overflow of left-header width.
-    this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + "px";
+    this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + padding + "px";
     this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
 
     // Bound the matrix's height by screen size.
@@ -130,8 +139,8 @@ export class cmMatrixManager {
       matrixHeight = clientHeight;
     }
 
-    this.matrixElementStyle.height = matrixHeight + "px";
-    this.leftHeaderElementStyle.height = matrixHeight + "px";
+    this.matrixElementStyle.height = matrixHeight + padding + "px";
+    this.leftHeaderElementStyle.height = matrixHeight + padding + "px";
 
     // Bound matrix's width by screen size.
     let matrixWidth, clientWidth;
@@ -145,24 +154,24 @@ export class cmMatrixManager {
       matrixWidth = width - this.controlsHeader.getAttributeColWidths() - 40;
     }
 
-    this.matrixElementStyle.width = matrixWidth + "px";
-    this.topHeaderElementStyle.width = matrixWidth + "px";
+    this.matrixElementStyle.width = matrixWidth + padding + "px";
+    this.topHeaderElementStyle.width = matrixWidth + padding + "px";
 
     // The matrix'x svg needs to be large enough to hold everything.
     this.matrixSvg.transition()
       .duration(500).attr({
-      width: this.matrix.getWidth(),
-      height: this.matrix.getHeight()
+      width: this.matrix.getWidth() + padding,
+      height: this.matrix.getHeight() + padding
     });
 
     this.leftHeaderSvg.transition()
       .duration(500).attr({
-      height: this.matrix.getHeight()
+      height: this.matrix.getHeight() + padding
     });
 
     this.topHeaderSvg.transition()
       .duration(500).attr({
-      width: this.matrix.getWidth()
+      width: this.matrix.getWidth() + padding
     });
 
     // The divs need to expand/collapse depending on matrix size.

@@ -1,5 +1,5 @@
 import {cmMatrixRow} from "./cmMatrixRow"
-import {cmDataRow} from "./cmDataRow"
+import {cmDataRow} from "./../cmDataRow"
 
 export class cmDataAttributeRow extends cmMatrixRow {
 

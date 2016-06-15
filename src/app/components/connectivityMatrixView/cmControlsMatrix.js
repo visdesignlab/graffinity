@@ -1,7 +1,7 @@
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmControlsMatrixRow} from "./cmControlsMatrixRow"
-import {cmEditAttributeRow} from "./cmEditAttributeRow"
-import {cmControlsMatrixColHeaderRow} from "./cmControlsMatrixColHeaderRow"
+import {cmControlsMatrixRow} from "./rows/cmControlsMatrixRow"
+import {cmEditAttributeRow} from "./rows/cmEditAttributeRow"
+import {cmControlsMatrixColHeaderRow} from "./rows/cmControlsMatrixColHeaderRow"
 
 export class cmControlsMatrix extends cmMatrixBase {
 
@@ -14,7 +14,7 @@ export class cmControlsMatrix extends cmMatrixBase {
   createRows(model) {
 
     let colNodeAttributes = this.colNodeAttributes;
-    let rowAttributes = this.rowNodeAttributes;
+    let rowAttributes = this.rowAttributes;
 
     // Controls row is the only one with a onColControlsClicked callback.
     let row = new cmEditAttributeRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,

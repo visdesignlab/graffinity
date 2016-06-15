@@ -1,5 +1,5 @@
 import {cmMatrixBase} from "../cmMatrixBase"
-import {cmControlsMatrixColHeaderRow} from "../cmControlsMatrixColHeaderRow"
+import {cmControlsMatrixColHeaderRow} from "../rows/cmControlsMatrixColHeaderRow"
 
 export class cmNodeListControls extends cmMatrixBase {
   /**

@@ -1,5 +1,5 @@
 import {cmMatrixRow} from "./cmMatrixRow"
-import {Utils} from "../utils/utils";
+import {Utils} from "../../utils/utils";
 
 export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
 

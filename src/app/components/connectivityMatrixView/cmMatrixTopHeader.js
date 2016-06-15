@@ -1,7 +1,7 @@
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmControlRow} from "./cmControlRow"
-import {cmLabelRow} from "./cmLabelRow"
-import {cmAttributeRow} from "./cmAttributeRow"
+import {cmControlRow} from "./rows/cmControlRow"
+import {cmLabelRow} from "./rows/cmLabelRow"
+import {cmAttributeRow} from "./rows/cmAttributeRow"
 
 export class cmMatrixTopHeader extends cmMatrixBase {
 

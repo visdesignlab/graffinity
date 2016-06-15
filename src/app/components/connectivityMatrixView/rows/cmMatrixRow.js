@@ -1,7 +1,7 @@
 /*global d3
  */
-import {SvgGroupElement} from "./svgGroupElement"
-import {cmMatrixCell} from "./cmMatrixCell"
+import {SvgGroupElement} from "./../svgGroupElement"
+import {cmMatrixCell} from "./../cmMatrixCell"
 
 /**
  * Base class for rows displayed in the matrix.

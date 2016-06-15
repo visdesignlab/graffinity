@@ -1,6 +1,6 @@
 import {cmMatrixBase} from "../cmMatrixBase"
 import {cmNodeListRow} from "./cmNodeListRow"
-import {cmMatrixRow} from "../cmMatrixRow"
+import {cmMatrixRow} from "../rows/cmMatrixRow"
 
 export class cmNodeListLeftHeader extends cmMatrixBase {
 

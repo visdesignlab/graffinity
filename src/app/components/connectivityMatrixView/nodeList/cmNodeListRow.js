@@ -1,4 +1,4 @@
-import {cmMatrixRow} from "../cmMatrixRow"
+import {cmMatrixRow} from "../rows/cmMatrixRow"
 import {cmDataRow} from "../cmDataRow"
 
 export class cmNodeListRow extends cmMatrixRow {

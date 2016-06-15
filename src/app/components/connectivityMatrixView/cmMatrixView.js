@@ -1,6 +1,6 @@
 import {cmMatrixBase} from "./cmMatrixBase"
 import {cmDataRow} from "./cmDataRow"
-import {cmMatrixRow} from "./cmMatrixRow"
+import {cmMatrixRow} from "./rows/cmMatrixRow"
 
 export class cmMatrixView extends cmMatrixBase {
 

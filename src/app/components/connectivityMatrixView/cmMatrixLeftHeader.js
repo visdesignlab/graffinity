@@ -1,6 +1,6 @@
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmDataAttributeRow} from "./cmDataAttributeRow"
-import {cmMatrixRow} from "./cmMatrixRow"
+import {cmDataAttributeRow} from "./rows/cmDataAttributeRow"
+import {cmMatrixRow} from "./rows/cmMatrixRow"
 
 export class cmMatrixLeftHeader extends cmMatrixBase {
 

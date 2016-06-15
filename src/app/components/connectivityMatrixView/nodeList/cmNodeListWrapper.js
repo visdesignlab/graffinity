@@ -1,11 +1,10 @@
-import {cmNodeListControls} from "./nodeList/cmNodeListControls"
-import {cmNodeListLeftHeader} from "./nodeList/cmNodeListLeftHeader"
-export class cmNodeListManager {
+import {cmNodeListControls} from "./cmNodeListControls"
+import {cmNodeListLeftHeader} from "./cmNodeListLeftHeader"
+import {cmWrapperBase} from "./../cmWrapperBase"
+export class cmNodeListWrapper extends cmWrapperBase {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    this.$log = $log;
-    this.$scope = scope;
-    this.element = element;
+    super(element, $log, scope, mainController);
 
     // Style for the four divs displayed in this matrix.
     this.controlsElementStyle = {};
@@ -25,7 +24,11 @@ export class cmNodeListManager {
 
     this.leftHeaderElement = this.bottomDiv.append("div")
       .attr("id", "node-list-view-header-left")
-      .classed("matrix-view-center", true);
+      .classed("matrix-view-center", true)
+      .on("scroll", function () {
+        let left = angular.element(this).scrollLeft();
+        angular.element("#node-list-header-controls").scrollLeft(left);
+      });
 
     this.controlsHeaderSvg = this.controlsHeaderElement.append("svg")
       .attr({width: 1024, height: 1024});
@@ -41,38 +44,10 @@ export class cmNodeListManager {
       modalService, mainController);
     this.leftHeader.setGridPosition([0, 1]);
 
+
     this.matrices = [this.leftHeader, this.controlsHeader];
-    this.updateElementPositions();
-
-    this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
-  }
-
-  getMajorRowsAndColsAsScalarMatrix() {
-    return this.matrix.getMajorRowsAndColsAsScalarMatrix();
-  }
-
-  setUseAnimation(useAnimation) {
-    for (let i = 0; i < this.matrices.length; ++i) {
-      this.matrices[i].setUseAnimation(useAnimation);
-    }
-  }
-
-  setSortOrders(rowPerm, colPerm) {
-    for (let i = 0; i < this.matrices.length; ++i) {
-      this.matrices[i].setSortOrders(rowPerm, colPerm);
-    }
-  }
-
-  setModel(model) {
-    for (let i = 0; i < this.matrices.length; ++i) {
-      this.matrices[i].setModel(model);
-    }
 
     this.updateElementPositions();
-  }
-
-  setWidth(width) {
-    this.updateElementPositions(null, width)
   }
 
   /**
@@ -81,7 +56,7 @@ export class cmNodeListManager {
   updateElementPositions(signal, width) {
 
     // Do not check for overflow of header height. Assume we always have enough space for it.
-    this.controlsElementStyle.height = this.controlsHeader.getHeight() + 5 + "px";
+    this.controlsElementStyle.height = this.controlsHeader.getHeight() + "px";
 
     // Again, not checking for overflow of left-header width.
     this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + 5 + "px";
