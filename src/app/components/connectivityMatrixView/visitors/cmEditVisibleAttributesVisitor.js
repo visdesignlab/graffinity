@@ -40,21 +40,21 @@ export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
     if (!isVertical) {
 
       // Position group.
-      group.attr("transform", "translate(" + 0 + ", " + (height * 2) + ")");
+      group.attr("transform", "translate(" + 0 + ", " + (height * 3) + ")");
 
       // Add the icon.
       div.append("i")
         .classed("fa", true)
-        .classed("fa-ellipsis-h", true)
+        .classed("fa-plus", true)
         .on("click", this.editAttributeCols);
 
     } else {
 
-      group.attr("transform", "translate(" + width * 2 + ", " + 0 + ")");
+      group.attr("transform", "translate(" + width * 3 + ", " + 0 + ")");
 
       div.append("i")
         .classed("fa", true)
-        .classed("fa-ellipsis-v", true)
+        .classed("fa-plus", true)
         .on("click", this.editAttributeRows);
 
     }

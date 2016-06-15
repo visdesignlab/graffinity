@@ -253,6 +253,10 @@ export class cmModel {
     self.current.rowNodeIndexes = newRowNodeIndexes;
   }
 
+  getAvailableIntermediateNodeStats() {
+    return [['count']]; // list of lists to match col node index format.
+  }
+
   getColNodeIndexes() {
     var self = this;
     return self.current.colNodeIndexes;
@@ -266,6 +270,12 @@ export class cmModel {
   getCmMatrix() {
     var self = this;
     return self.matrix;
+  }
+
+  // TODO - enable people to collapse these rows by attributes.
+  getCurrentIntermediateNodeRows() {
+    var self = this;
+    return self.current.intermediateRows;
   }
 
   getCurrentMatrix() {
@@ -317,9 +327,22 @@ export class cmModel {
     return scalarMatrix;
   }
 
+  getFlattenedColNodeIndexes() {
+    return Utils.getUniqueValues(Utils.getFlattenedLists(this.getColNodeIndexes()));
+  }
+
   getFlattenedNodeIndexes() {
     let nodeIndexLists = this.getRowNodeIndexes().concat(this.getColNodeIndexes());
     return Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexLists));
+  }
+
+  getFlattenedRowNodeIndexes() {
+    return Utils.getUniqueValues(Utils.getFlattenedLists(this.getRowNodeIndexes()));
+  }
+
+  getIntermediateNodeIndexes() {
+    let self = this;
+    return self.intermediateNodeIndexes;
   }
 
   getMinorLabels(indexes) {
@@ -334,7 +357,7 @@ export class cmModel {
 
   getMajorLabels(indexes, attr) {
     var self = this;
-    if (attr.length > 0) {
+    if (attr && attr.length > 0) {
       return self.getViewLabels(indexes, attr);
     } else {
       return self.getNodeAttr(indexes, self.getCmGraph().getNodeIdName());
@@ -373,12 +396,16 @@ export class cmModel {
     return attributes;
   }
 
-
+  // TODO - this is a hack to get the intermediate nodes working.
   getNodeAttr(nodeIndexes, attribute) {
     var self = this;
     var attributes = [nodeIndexes.length];
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      attributes[i] = self.graph.getNode(nodeIndexes[i])[attribute];
+      if (attribute == "count") {
+        attributes[i] = this.intermediateNodeCount[nodeIndexes[i]];
+      } else {
+        attributes[i] = self.graph.getNode(nodeIndexes[i])[attribute];
+      }
     }
     return attributes;
   }
@@ -408,7 +435,6 @@ export class cmModel {
 
   }
 
-
   /**
    * Returns a list of indexes into nodeIndexes - the returned list is sorted by attribute.
    * @param {Array} nodeIndexes - list of lists of node indexes
@@ -422,19 +448,23 @@ export class cmModel {
 
     // find max values of each node index list in nodeIndexes
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      var currentNodeIndexes = nodeIndexes[i];
-      var maxAttrValue = null;
+      if (attribute) {
+        var currentNodeIndexes = nodeIndexes[i];
+        var maxAttrValue = null;
 
-      // find max values of each node in nodeIndexes[i]
-      for (var j = 0; j < currentNodeIndexes.length; ++j) {
-        var currentRowNodeIndex = currentNodeIndexes[j];
-        if (maxAttrValue == null) {
-          maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute);
-        } else {
-          maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue);
+        // find max values of each node in nodeIndexes[i]
+        for (var j = 0; j < currentNodeIndexes.length; ++j) {
+          var currentRowNodeIndex = currentNodeIndexes[j];
+          if (maxAttrValue == null) {
+            maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute);
+          } else {
+            maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue);
+          }
+
+          nodeValues.push(maxAttrValue);
         }
-
-        nodeValues.push(maxAttrValue);
+      } else {
+        nodeValues.push(nodeIndexes[i]);
       }
       sortedIndexes[i] = i;
     }
@@ -493,6 +523,11 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending);
   }
 
+  getIntermediateIndexesSortedByAttr(attribute, ascending) {
+    var self = this;
+    return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
+  }
+
   getColsSortedByAttr(attribute, ascending) {
     var self = this;
     return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
@@ -512,6 +547,7 @@ export class cmModel {
     self.resetMatrix();
     self.resetRows();
     self.resetCols();
+    self.resetIntermediateNodes();
   }
 
   resetCols() {
@@ -540,6 +576,44 @@ export class cmModel {
       row.activate(currentRowNodeIndex, matrix[i], colNodeIndexes);
       self.rows[currentRowNodeIndex] = row;
     }
+  }
+
+  // TODO - this should match resetRows in terms of what gets created.
+  resetIntermediateNodes() {
+    let self = this;
+    let matrix = self.current.matrix;
+    let nodeIndexes = [];
+    for (let i = 0; i < matrix.length; ++i) {
+      for (let j = 0; j < matrix[i].length; ++j) {
+        nodeIndexes = nodeIndexes.concat(Utils.getIntermediateNodesFromPaths(matrix[i][j]));
+      }
+    }
+
+    let intermediateNodeCount = {};
+
+    for (i = 0; i < nodeIndexes.length; ++i) {
+      let nodeIndex = nodeIndexes[i];
+      if (intermediateNodeCount[nodeIndex] == undefined) {
+        intermediateNodeCount[nodeIndex] = 1;
+      } else {
+        intermediateNodeCount[nodeIndex] += 1;
+      }
+    }
+
+    self.intermediateNodeCount = intermediateNodeCount;
+    self.intermediateNodeIndexes = Utils.getUniqueValues(nodeIndexes);
+    self.intermediateRows = [];
+
+    for (var i = 0; i < self.intermediateNodeIndexes.length; ++i) {
+      var currentRowNodeIndex = self.intermediateNodeIndexes[i];
+      var row = new cmModelRow();
+      row.activate(currentRowNodeIndex, [self.intermediateNodeCount[currentRowNodeIndex]], ['count']);
+      self.intermediateRows.push(row);
+      self.intermediateNodeIndexes[i] = [self.intermediateNodeIndexes[i]];
+    }
+
+    self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);
+    self.current.intermediateRows = angular.copy(self.intermediateRows);
   }
 
   resetMatrix() {

@@ -1,4 +1,5 @@
-import {cmMatrixView} from "./cmMatrixView"
+import {cmMatrixWrapper} from "./cmMatrixWrapper"
+import {cmNodeListWrapper} from "./nodeList/cmNodeListWrapper"
 
 export class cmMatrixViewFactory {
   constructor($log, $http, $uibModal, modalService) {
@@ -10,9 +11,13 @@ export class cmMatrixViewFactory {
     this.modalService = modalService;
   }
 
-
-  createConnectivityMatrix(svg, model, scope, viewState, mainController) {
-    return new cmMatrixView(svg, model, this.$log, this.$uibModal, scope, viewState, this.modalService, mainController);
+  createConnectivityMatrixManager(svg, model, scope, viewState, mainController) {
+    let childScope = scope.$new();
+    return new cmMatrixWrapper(svg, model, this.$log, this.$uibModal, childScope, viewState, this.modalService, mainController);
   }
 
+  createNodeListManager(svg, model, scope, viewState, mainController) {
+    let childScope = scope.$new();
+    return new cmNodeListWrapper(svg, model, this.$log, this.$uibModal, childScope, viewState, this.modalService, mainController);
+  }
 }

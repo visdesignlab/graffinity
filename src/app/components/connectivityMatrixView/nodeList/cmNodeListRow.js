@@ -1,10 +1,10 @@
-import {cmMatrixRow} from "./rows/cmMatrixRow"
+import {cmMatrixRow} from "../rows/cmMatrixRow"
+import {cmDataRow} from "../cmDataRow"
 
-export class cmDataRow extends cmMatrixRow {
+export class cmNodeListRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label,
-              minorLabels, rowNodeAttributes, matrix, areColsCollapsed) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup) {
+    super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
     this.unrollControls = [];
     this.rollupControls = [];
 
@@ -16,7 +16,7 @@ export class cmDataRow extends cmMatrixRow {
         let isChildRow = true;
         let childLabels = null;
 
-        let minorRow = new cmDataRow(this.minorRowContainer, childIndex, colNodeIndexes, numHeaderCols, colWidth,
+        let minorRow = new cmNodeListRow(this.minorRowContainer, childIndex, [], numHeaderCols, colWidth,
           rowHeight, isChildRow, modelRow, minorLabels[childIndex], childLabels,
           cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix);
 
@@ -26,7 +26,7 @@ export class cmDataRow extends cmMatrixRow {
         for (var i = 0; i < numChildren; ++i) {
           childIndex = i + 1;
 
-          minorRow = new cmDataRow(this.minorRowContainer, childIndex, colNodeIndexes, numHeaderCols, colWidth,
+          minorRow = new cmNodeListRow(this.minorRowContainer, childIndex, [], numHeaderCols, colWidth,
             rowHeight, isChildRow, modelRow.getChildRowAt(i), minorLabels[childIndex], childLabels,
             cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix);
 
@@ -34,24 +34,19 @@ export class cmDataRow extends cmMatrixRow {
           this.addMinorRow(minorRow);
         }
       }
-
-      this.getMajorCell(0).getGroup().style("display", "none");
-
     }
 
     // Tag the cells in this row with correct booleans.
     var numMajorCells = this.getNumMajorCells();
     for (i = 0; i < numMajorCells; ++i) {
       if (this.matrix.isAttributeCell(i)) {
-        //this.majorCells[i].isAttributeCell = true;
+        this.majorCells[i].isAttributeCell = true;
       } else if (this.matrix.isLabelCell(i)) {
-        //this.majorCells[i].isRowLabelCell = true;
+        this.majorCells[i].isRowLabelCell = true;
       } else if (this.matrix.isDataCell(i)) {
-        this.majorCells[i].isDataCell = true;
+        this.majorCells[i].isDataCell = false;
       }
     }
-
-    this.createMinorCells(numHeaderCols, colNodeIndexes, true);
 
     // Loop over all columns...fill with appropriate data
     for (i = 0; i < numMajorCells; ++i) {
@@ -59,27 +54,27 @@ export class cmDataRow extends cmMatrixRow {
       let data = {};
       if (this.matrix.isAttributeCell(i)) {
 
-        //let attributeIndex = this.matrix.getAttributeColIndex(i);
-        //
-        //data = {
-        //  values: rowNodeAttributes[attributeIndex],
-        //  orientation: 0,
-        //  attributeIndex: attributeIndex,
-        //  nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
-        //  attributeNodeGroup: attributeNodeGroup
-        //};
-        //
-        //cell.setData(data);
+        let attributeIndex = this.matrix.getAttributeColIndex(i);
+
+        data = {
+          values: rowNodeAttributes[attributeIndex],
+          orientation: 0,
+          attributeIndex: attributeIndex,
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          attributeNodeGroup: attributeNodeGroup
+        };
+
+        cell.setData(data);
 
       } else if (this.matrix.isLabelCell(i)) {
 
-        //cell.setData({
-        //  name: label,
-        //  isVertical: 0,
-        //  attributeIndex: -1
-        //});
-        //
-        //cell.isAttributeCell = true;
+        cell.setData({
+          name: label,
+          isVertical: 0,
+          attributeIndex: -1
+        });
+
+        cell.isAttributeCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
 
@@ -91,10 +86,10 @@ export class cmDataRow extends cmMatrixRow {
 
         cell.setData(data);
 
-        if (this.areColsCollapsed)
-          if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
-            throw "something fucked up in col node indexes and minor cells";
-          }
+        if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
+          throw "something fucked up in col node indexes and minor cells";
+        }
+
         for (var j = 0; j < this.majorCells[i].minorCells.length; ++j) {
 
           data = {
@@ -102,9 +97,7 @@ export class cmDataRow extends cmMatrixRow {
             modelRow: modelRow
           };
 
-          if (cell.minorCells[j]) {
-            cell.minorCells[j].setData(data);
-          }
+          cell.minorCells[j].setData(data);
         }
       }
     }

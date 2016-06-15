@@ -1,7 +1,12 @@
 /*global d3 */
+
+import {Utils} from "../utils/utils"
+
 export class ViewState {
   constructor($rootScope, $log) {
     "ngInject";
+    this.attributeNodeGroup = {};
+    this.isNodeIDFiltered = {};
     this.isNodeHidden = {};
     this.filterRanges = {};
     this.$scope = $rootScope;
@@ -11,18 +16,18 @@ export class ViewState {
   /**
    * Get the range for the current attribute, or create one if it doesn't exist.
    */
-  getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes) {
+  getOrCreateFilterRange(attribute, attributeNodeGroup, nodeAttributes) {
     let rangeList = this.filterRanges[attribute];
     if (rangeList == undefined) {
       this.filterRanges[attribute] = [];
       rangeList = this.filterRanges[attribute];
     }
 
-    if (rangeList[nodeAttributeGroup] == undefined) {
-      this.filterRanges[attribute][nodeAttributeGroup] = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
+    if (rangeList[attributeNodeGroup] == undefined) {
+      this.filterRanges[attribute][attributeNodeGroup] = [d3.min(nodeAttributes), d3.max(nodeAttributes)];
     }
 
-    return this.filterRanges[attribute][nodeAttributeGroup];
+    return this.filterRanges[attribute][attributeNodeGroup];
   }
 
   /**
@@ -32,9 +37,13 @@ export class ViewState {
   getHiddenNodesAsSelection(nodeIndexes) {
     let selection = {};
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      selection[nodeIndexes[i]] = !this.isNodeHidden[nodeIndexes[i]];
+      selection[nodeIndexes[i]] = !this.isNodeIDFiltered[nodeIndexes[i]];
     }
     return selection;
+  }
+
+  getAttributeNodeGroup(attributeNodeGroup) {
+    return this.attributeNodeGroup[attributeNodeGroup];
   }
 
   /**
@@ -42,27 +51,82 @@ export class ViewState {
    */
   hideNodes(nodeIndexes) {
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      this.isNodeHidden[nodeIndexes[i]] = true;
+      this.isNodeIDFiltered[nodeIndexes[i]] = true;
     }
 
-    this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeHidden);
+    this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeIDFiltered);
+  }
+
+  isNodeVisibleInAllFilters(nodeIndex, attributeNodeGroup, filterRanges, model, isNodeIDFiltered) {
+    let visible = true;
+    if (!isNodeIDFiltered[nodeIndex]) {
+      let attributes = Object.keys(filterRanges);
+      for (var i = 0; i < attributes.length; ++i) {
+        let attribute = attributes[i];
+        let filterRange = filterRanges[attribute][attributeNodeGroup];
+        let nodeAttribute = model.getNodeAttr([nodeIndex], attribute);
+        if (filterRange) {
+          if (filterRange[0] > nodeAttribute || filterRange[1] < nodeAttribute) {
+            visible = false;
+          }
+        }
+      }
+    } else {
+      visible = false;
+    }
+    return visible;
   }
 
   reset() {
+    this.isNodeIDFiltered = {};
     this.isNodeHidden = {};
     this.filterRanges = {};
   }
 
-  setCurrentModel(model) {
-    this.model = model;
+  setAttributeNodeGroup(nodeIndexes, attributeNodeGroup) {
+    this.attributeNodeGroup[attributeNodeGroup] = nodeIndexes;
   }
 
-  setFilterRange(attribute, nodeAttributeGroup, range) {
-    this.filterRanges[attribute][nodeAttributeGroup] = range;
+  setCurrentModel(model) {
+    this.model = model;
+    this.setAttributeNodeGroup(Utils.getFlattenedLists(model.getRowNodeIndexes()), 0);
+    this.setAttributeNodeGroup(Utils.getFlattenedLists(model.getColNodeIndexes()), 1);
+    this.setAttributeNodeGroup(Utils.getFlattenedLists(model.getIntermediateNodeIndexes()), 2);
+  }
+
+  setFilterRange(attribute, attributeNodeGroup, range) {
+    let nodeIndexes = this.getAttributeNodeGroup(attributeNodeGroup);
+    let showNodes = [];
+    let hideNodes = [];
+
+    let wasNodeVisible = [];
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+      wasNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
+    }
+
+    this.filterRanges[attribute][attributeNodeGroup] = range;
+    let isNodeVisible = [];
+    for (i = 0; i < nodeIndexes.length; ++i) {
+      isNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
+    }
+
+    for (i = 0; i < nodeIndexes.length; ++i) {
+      if (!wasNodeVisible[i] && isNodeVisible[i]) {
+        this.isNodeHidden[nodeIndexes[i]] = false;
+        showNodes.push(nodeIndexes[i]);
+      } else if (wasNodeVisible[i] && !isNodeVisible[i]) {
+        this.isNodeHidden[nodeIndexes[i]] = true;
+        hideNodes.push(nodeIndexes[i]);
+      }
+    }
+    //console.log("showNodes", hideNodes);
+    this.$scope.$broadcast('showNodes', showNodes);
+    this.$scope.$broadcast('hideNodes', hideNodes);
+    this.$scope.$broadcast("updateQuantitativeAttributeFilter", attribute, attributeNodeGroup, range);
   }
 
   /**
-   * Converts a nodeSelection to isNodeHidden.
+   * Converts a nodeSelection to isNodeIDFiltered.
    */
   setHiddenNodesFromSelection(selection) {
     let hideNodes = [];
@@ -89,9 +153,9 @@ export class ViewState {
     }
 
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      this.isNodeHidden[nodeIndexes[i]] = false;
+      this.isNodeIDFiltered[nodeIndexes[i]] = false;
     }
 
-    this.$scope.$broadcast('showNodes', nodeIndexes, this.isNodeHidden);
+    this.$scope.$broadcast('showNodes', nodeIndexes, this.isNodeIDFiltered);
   }
 }

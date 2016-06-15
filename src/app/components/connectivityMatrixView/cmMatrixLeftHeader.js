@@ -1,27 +1,27 @@
 import {cmMatrixBase} from "./cmMatrixBase"
-import {cmDataRow} from "./cmDataRow"
+import {cmDataAttributeRow} from "./rows/cmDataAttributeRow"
 import {cmMatrixRow} from "./rows/cmMatrixRow"
 
-export class cmMatrixView extends cmMatrixBase {
+export class cmMatrixLeftHeader extends cmMatrixBase {
 
   constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
     super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
 
-    this.colWidthAttr = 0;
-    this.colWidthLabel = 0;
-    this.colWidthControl = 0;
-
+    this.labelRowHeight = 0;
     this.rowHeightAttr = 0;
 
     this.setModel(model);
   }
 
   /**
-   * Creates cmMatrixRow (empty), cmDataRow
+   * Creates (empty) cmMatrixRows and cmDataAttributeRows
    */
   createRows(model) {
+
+    // Creates empty rows
+    // TODO - optimize this to remove empty svg elements.
     for (var i = 0; i < this.numHeaderCols; ++i) {
-      this.addRow(new cmMatrixRow(this.svg, i, this.colNodeIndexes, this.numHeaderCols), 0);
+      this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }
 
     let rowNodeAttributes = this.rowNodeAttributes;
@@ -32,20 +32,19 @@ export class cmMatrixView extends cmMatrixBase {
     let minorRowLabels = model.getMinorRowLabels();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
-      let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this);
+      let row = new cmDataAttributeRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols,
+        this.colWidth, this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i],
+        this, this.rowAttributeNodeGroup, model.areColsCollapsed);
 
       // If row has minor rows, then we want the controls to be visible!
       if (modelRows[i].getNumChildren() > 0) {
         let callback = this.onRowControlsClicked.bind(this);
-        dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
+        row.createControlsCell(this.colWidth, this.rowHeight, callback);
       }
 
-      this.colWidthLabel = 0;
-      dataRow.setLabelColWidth(this.colWidthLabel);
-      this.addRow(dataRow, this.rowHeight);
-
+      row.setLabelColWidth(this.colWidthLabel);
+      this.addRow(row, this.rowHeight);
     }
-
   }
+
 }

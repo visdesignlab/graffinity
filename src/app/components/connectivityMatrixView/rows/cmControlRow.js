@@ -15,11 +15,11 @@ export class cmControlRow extends cmMatrixRow {
       this.unrollControls[i] = group.append("g");
       if (this.matrix.isLabelCell(i)) {
 
-        this.majorCells[i].isEditAttributeCell = true;
-        let data = {
-          isVertical: true
-        };
-        this.majorCells[i].setData(data);
+        //this.majorCells[i].isEditAttributeCell = true;
+        //let data = {
+        //  isVertical: true
+        //};
+        //this.majorCells[i].setData(data);
 
       } else if (this.matrix.isDataCell(i) && areColsCollapsed) {
 

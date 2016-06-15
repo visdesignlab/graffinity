@@ -23,7 +23,7 @@ export class MainController {
     this.hasQueryError = false;
     this.queryError = "";
 
-    this.matrixClass = "col-lg-11";
+    this.matrixClass = "col-lg-9";
     this.nodeLinkClass = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
@@ -32,12 +32,12 @@ export class MainController {
     // If true, enable manual controls of what nodes are shown/hidden.
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
+    this.ui.debugNodeLinkLayout = false;
 
-    this.ui.debugNodeLinkLayout = true;
+    // Set these to true to automatically set attributes on the filter ranges. (see below)
+    this.ui.debugRowFilterScents = false;
+    this.ui.debugColFilterScents = false;
 
-    this.svg = d3.select("#my-svg")
-      .append("g")
-      .attr("transform", "translate(20, 20)");
 
     let useLargeResult = false;
 
@@ -63,9 +63,31 @@ export class MainController {
     // Wait until after the current digest cycle to activate the ui.
     let self = this;
     $timeout(function () {
-      self.createMatrixAndUi(self.model)
+      self.createMatrixAndUi(self.model);
     }, 1);
 
+    // If debugging, then automatically manipulate the GUI.
+    $timeout(function () {
+      if (self.ui.debugRowFilterScents) {
+        let attribute = "area";
+        let nodeIndexes = self.model.getFlattenedRowNodeIndexes();
+        let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
+        self.viewState.getOrCreateFilterRange(attribute, 1, nodeAttributes);
+        self.viewState.setFilterRange(attribute, 1, [92616600, 269473560]);
+        self.updateLegend();
+      }
+    }, 1);
+
+    $timeout(function () {
+      if (self.ui.debugColFilterScents) {
+        let attribute = "area";
+        let nodeIndexes = self.model.getFlattenedColNodeIndexes();
+        let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
+        self.viewState.getOrCreateFilterRange(attribute, 0, nodeAttributes);
+        self.viewState.setFilterRange(attribute, 0, [216139000, 216139002]); // values selected to show only 1 col
+        self.updateLegend();
+      }
+    }, 1);
   }
 
   createCategoricalCollapseControls(model) {
@@ -76,28 +98,35 @@ export class MainController {
   }
 
   createMatrix(model, encoding) {
-    this.svg.attr("viewBox", "0, 0, 1024, 1024");
-    this.svg.selectAll("*").remove();
+    // this.svg.selectAll("*").remove();
     this.model = model;
-    if (!this.matrix) {
-      this.matrix = this.cmMatrixViewFactory.createConnectivityMatrix(this.svg, model, this.$scope, this.viewState, this);
+    if (!this.matrixManager) {
+      this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
+      this.nodeListManager = this.cmMatrixViewFactory.createNodeListManager(this.nodeListContainer, model, this.$scope, this.viewState, this);
     } else {
-      this.matrix.setModel(model);
+      this.matrixManager.setModel(model);
+      this.nodeListManager.setModel(model);
     }
+
     this.nodeLinkView.setModel(model);
+    this.viewState.setCurrentModel(model);
     this.onEncodingChanged(encoding);
   }
 
   createMatrixAndUi(model) {
+
+    this.matrixContainer = d3.select("#matrices-row");
+    this.nodeListContainer = d3.select("#node-list-col")
+
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
     this.createEncodingControls();
     this.createMatrix(model, this.ui.selectedEncoding);
 
     // Disable animation of the matrix so that its initial position is the sorted one.
-    this.matrix.setUseAnimation(false);
+    this.matrixManager.setUseAnimation(false);
     this.onSortOrderChanged("optimal leaf");
-    this.matrix.setUseAnimation(true);
+    this.matrixManager.setUseAnimation(true);
   }
 
   createReorderControls() {
@@ -143,24 +172,8 @@ export class MainController {
    * updates the legend displayed in the sidebar.
    */
   onEncodingChanged(encoding) {
-    this.matrix.setEncoding(encoding);
-
-    d3.select("#encoding-legend")
-      .selectAll("*")
-      .remove();
-
-    let group = d3.select("#encoding-legend")
-      .append("g")
-      .attr("transform", "translate(1, 4)");
-
-    let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
-
-    if (this.matrix.legend) {
-      this.matrix.legend.createView(group, width, width);
-      this.ui.hasLegend = true;
-    } else {
-      this.ui.hasLegend = false;
-    }
+    this.matrixManager.matrix.setEncoding(encoding);
+    this.updateLegend();
   }
 
   /**
@@ -191,7 +204,7 @@ export class MainController {
     self.nodeLinkView.clear();
 
     // remove svg when query button pressed
-    this.svg.selectAll("*").remove();
+    // this.svg.selectAll("*").remove();
 
     // remove legend when query button pressed
     d3.select("#encoding-legend")
@@ -239,7 +252,7 @@ export class MainController {
   }
 
   onSortOrderChanged(order) {
-    let matrix = this.matrix.getMajorRowsAndColsAsScalarMatrix();
+    let matrix = this.matrixManager.getMajorRowsAndColsAsScalarMatrix();
     let rowPerm = undefined;
     let colPerm = undefined;
     if (order == 'random') {
@@ -257,7 +270,7 @@ export class MainController {
       colPerm = reorder.permutation(matrix[0].length);
     }
 
-    this.matrix.setSortOrders(rowPerm, colPerm);
+    this.matrixManager.setSortOrders(rowPerm, colPerm);
   }
 
   /**
@@ -283,28 +296,8 @@ export class MainController {
     let callback = function (result) {
       let attribute = result.attribute;
       let range = result.range;
-      let nodeValues = result.values;
-      let nodeIndexes = result.nodeIndexes;
-
-      let hideNodes = [];
-      let showNodes = [];
-
-      // hideNodes  is a list of nodes that fall outside of the desired range
-      // showNodes is a list of nodes that were previously hidden, but now fall inside the desired range.
-      for (var i = 0; i < nodeValues.length; ++i) {
-        if (nodeValues[i] < range[0] || nodeValues[i] > range[1]) {
-          hideNodes.push(nodeIndexes[i]);
-        } else {
-          if (self.viewState.isNodeHidden[nodeIndexes[i]]) {
-            showNodes.push(nodeIndexes[i]);
-          }
-        }
-      }
-
-      // Update the view
-      self.viewState.hideNodes(hideNodes);
-      self.viewState.showNodes(showNodes);
       self.viewState.setFilterRange(attribute, nodeAttributeGroup, range);
+      self.updateLegend();
     };
 
     // Open the modal.
@@ -337,10 +330,42 @@ export class MainController {
   setNodeLinkVisibility(visible) {
     if (!visible) {
       this.nodeLinkClass = "";
-      this.matrixClass = "col-lg-11";
+      this.matrixClass = "col-lg-9";
+
+      // Let the resize event finish before expanding the matrix.
+      let self = this;
+      this.$timeout(function () {
+        self.matrixManager.updateElementPositions();
+      }, 300);
+
     } else {
-      this.nodeLinkClass = "col-lg-3";
-      this.matrixClass = "col-lg-8";
+
+      // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
+      // getting pushed onto different lines.
+      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 7);
+
+      this.nodeLinkClass = "col-lg-2";
+      this.matrixClass = "col-lg-7";
+    }
+  }
+
+  updateLegend() {
+
+    d3.select("#encoding-legend")
+      .selectAll("*")
+      .remove();
+
+    let group = d3.select("#encoding-legend")
+      .append("g")
+      .attr("transform", "translate(1, 4)");
+
+    let width = d3.select("#select-encoding").node().getBoundingClientRect().width;
+
+    if (this.matrixManager.matrix.legend) {
+      this.matrixManager.matrix.legend.createView(group, width, width);
+      this.ui.hasLegend = true;
+    } else {
+      this.ui.hasLegend = false;
     }
   }
 }

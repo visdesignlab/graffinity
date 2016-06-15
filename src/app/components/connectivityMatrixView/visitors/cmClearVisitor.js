@@ -10,10 +10,12 @@ export class cmClearVisitor extends cmCellVisitor {
   }
 
   apply(cell) {
-    if ((cell.isDataCell && this.clearDataCells) || (cell.isAttributeCell && this.clearAttributeCells)) {
+    if ((cell.isDataCell && this.clearDataCells)
+      || (cell.isAttributeCell && this.clearAttributeCells)
+      || (cell.isAttributeLabelCell && this.clearAttributeLabelCells)) {
 
       let children = cell.getGroup()
-          .selectAll("*");
+        .selectAll("*");
 
       children = children.filter(function () {
         let attribute = d3.select(this)
@@ -27,6 +29,10 @@ export class cmClearVisitor extends cmCellVisitor {
 
   setClearAttributeCells(clearAttributeCells) {
     this.clearAttributeCells = clearAttributeCells;
+  }
+
+  setClearAttributeLabelCells(clearAttributeLabelCells) {
+    this.clearAttributeLabelCells = clearAttributeLabelCells;
   }
 
   setClearDataCells(clearDataCells) {

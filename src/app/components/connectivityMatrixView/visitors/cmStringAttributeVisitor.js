@@ -12,24 +12,29 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
   apply(cell) {
     if (cell.isAttributeCell && cell.data.attributeIndex == this.attributeIndex) {
       let group = cell.getGroup();
-
       if (cell.data.isVertical) {
+
         group.append("g")
           .attr("transform", "translate(" + this.labelRowWidth / 2 + "," + this.labelRowHeight + ")rotate(270)")
           .append("text")
-          .attr("text-anchor", "start")
-          .attr("alignment-baseline", "middle")
-          .attr("font-size", 8)
-          .text(cell.data.name);
+          .text(cell.data.name)
+          .classed("matrix-view-string-attribute", true);
+
+        this.width = this.labelRowWidth;
+        this.height = this.labelRowHeight;
+        this.createInteractionGroup(cell);
       } else {
+
         group.append("g")
           .append("text")
-          .attr("x", this.labelColWidth)
+          .text(cell.data.name)
+          .attr("x", 0)
           .attr("y", this.labelColHeight / 2)
-          .style("text-anchor", "end")
-          .attr("alignment-baseline", "middle")
-          .attr("font-size", 8)
-          .text(cell.data.name);
+          .classed("matrix-view-string-attribute", true);
+
+        this.width = this.labelColWidth;
+        this.height = this.labelColHeight;
+        this.createInteractionGroup(cell);
       }
     }
   }

@@ -1,6 +1,44 @@
+.matrix-view-header-top {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.matrix-view-header-controls {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.matrix-view-bottom-row {
+  position: relative;
+  overflow: hidden;
+  top: -5px;
+}
+
+.matrix-view-header-left {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.matrix-view-center {
+  display: inline-block;
+  overflow-x: auto;
+  overflow-y: auto;
+  height: 230px;
+  width: 538px;
+}
+
+.matrix-view-string-attribute {
+  text-anchor: start;
+  alignment-baseline: middle;
+  font-size: 10px;
+}
+
 /* Children of g.matrix-view-interaction-group get manipulated on hovererd/selected events */
 g.matrix-view-interaction-group {
-
+  cursor: pointer;
 }
 
 g.matrix-view-interaction-group rect {
@@ -28,15 +66,14 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-attribute-label {
   text-anchor: middle;
-  font-size: 10px;
+  font-size: 12px;
   alignment-baseline: text-before-edge;
+  font-weight: bold;
 }
 
 .matrix-view-highlight-rect {
   fill: none;
-  stroke: black;
-  rx: 3px;
-  ry: 3px;
+  stroke: #FFC800;
 }
 
 .matrix-view-attribute-controls {

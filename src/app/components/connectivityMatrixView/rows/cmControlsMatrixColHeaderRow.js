@@ -1,19 +1,21 @@
 import {cmMatrixRow} from "./cmMatrixRow"
+import {Utils} from "../../utils/utils";
 
-export class cmLabelRow extends cmMatrixRow {
+export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup) {
-    super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix);
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels,
+              matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup, rowNodeAttributes) {
+    super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, false, matrix);
 
     this.unrollControls = [];
     this.rollupControls = [];
 
     var numMajorCells = this.getNumMajorCells();
-    this.createMinorCells(numHeaderCols, colNodeIndexes);
+    //this.createMinorCells(numHeaderCols, colNodeIndexes);
 
     for (var i = 0; i < numMajorCells; ++i) {
       let cell = this.getMajorCell(i);
-      let dataIndex = this.matrix.getDataColIndex(i);
+
       if (this.matrix.isControlCell(i)) {
 
         cell.isEditAttributeCell = true;
@@ -30,7 +32,8 @@ export class cmLabelRow extends cmMatrixRow {
           isVertical: 0,
           attributeIndex: attributeIndex,
           nodeIndexes: rowNodeIndexes,
-          attributeNodeGroup: attributeNodeGroup
+          attributeNodeGroup: attributeNodeGroup,
+          attributeValues: Utils.getFlattenedLists(rowNodeAttributes[attributeIndex])
         });
 
         cell.isAttributeLabelCell = true;
@@ -45,31 +48,10 @@ export class cmLabelRow extends cmMatrixRow {
 
         cell.isAttributeLabelCell = true;
 
-      } else if (this.matrix.isDataCell(i)) {
-
-        cell.setData({
-          name: majorColLabels[dataIndex],
-          isVertical: 1,
-          attributeIndex: -1
-        });
-
-        cell.isAttributeCell = true;
-
-        for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
-          let minorCell = cell.minorCells[j];
-
-          minorCell.setData({
-            name: minorColLabels[dataIndex][j],
-            isVertical: 1,
-            attributeIndex: -1
-          });
-
-          minorCell.isAttributeCell = true;
-        }
       }
-    }
 
-    this.colNodeIndexes = colNodeIndexes;
+      this.colNodeIndexes = colNodeIndexes;
+    }
   }
 
   static createColNodeLabel(cell, label, rowHeight, colWidth) {
