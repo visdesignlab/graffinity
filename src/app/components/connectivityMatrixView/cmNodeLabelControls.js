@@ -1,6 +1,6 @@
 import {SvgGroupElement} from "./svgGroupElement"
 export class cmNodeLabelControls extends SvgGroupElement {
-  constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols) {
+  constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels) {
     super(parent);
 
     this.onSortRows = onSortRows;
@@ -10,11 +10,18 @@ export class cmNodeLabelControls extends SvgGroupElement {
 
     let group = this.getGroup();
 
-    cmNodeLabelControls.createLabel(group, name, true, width, height, colWidth, rowHeight);
+    if (createColumnLabels) {
+      cmNodeLabelControls.createLabel(group, name, true, width, height, colWidth, rowHeight);
+    }
+
     cmNodeLabelControls.createLabel(group, name, false, width, height, colWidth, rowHeight);
 
+    if (createColumnLabels) {
+      this.createInteractionRect(group, true, width, height, colWidth, rowHeight);
+    }
+
     this.createInteractionRect(group, false, width, height, colWidth, rowHeight);
-    this.createInteractionRect(group, true, width, height, colWidth, rowHeight);
+
   }
 
   createInteractionRect(group, isVertical, width, height, colWidth, rowHeight) {

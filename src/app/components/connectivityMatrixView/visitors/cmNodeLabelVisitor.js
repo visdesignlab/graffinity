@@ -16,6 +16,8 @@ export class cmNodeLabelVisitor extends cmCellVisitor {
     this.callbacks.onHideCol = onHideCol;
     this.callbacks.onFilterNodes = onFilterNodes;
     this.callbacks.onFilterAttributes = onFilterAttributes;
+
+    this.createColumnLabels = true;
   }
 
   apply(cell) {
@@ -26,7 +28,11 @@ export class cmNodeLabelVisitor extends cmCellVisitor {
 
       cell.controls.push(new cmNodeLabelControls(group, name, this.colWidthAttr, this.rowHeightAttr, this.colWidth,
         this.rowHeight, this.callbacks.onFilterNodes, cell.data.nodeIndexes, this.callbacks.onSortRows,
-        this.callbacks.onSortCols));
+        this.callbacks.onSortCols, this.createColumnLabels));
     }
+  }
+
+  setCreateColumnLabels(createColumnLabels) {
+    this.createColumnLabels = createColumnLabels;
   }
 }

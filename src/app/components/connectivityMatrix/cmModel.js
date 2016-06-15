@@ -448,19 +448,23 @@ export class cmModel {
 
     // find max values of each node index list in nodeIndexes
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      var currentNodeIndexes = nodeIndexes[i];
-      var maxAttrValue = null;
+      if (attribute) {
+        var currentNodeIndexes = nodeIndexes[i];
+        var maxAttrValue = null;
 
-      // find max values of each node in nodeIndexes[i]
-      for (var j = 0; j < currentNodeIndexes.length; ++j) {
-        var currentRowNodeIndex = currentNodeIndexes[j];
-        if (maxAttrValue == null) {
-          maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute);
-        } else {
-          maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue);
+        // find max values of each node in nodeIndexes[i]
+        for (var j = 0; j < currentNodeIndexes.length; ++j) {
+          var currentRowNodeIndex = currentNodeIndexes[j];
+          if (maxAttrValue == null) {
+            maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute);
+          } else {
+            maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue);
+          }
+
+          nodeValues.push(maxAttrValue);
         }
-
-        nodeValues.push(maxAttrValue);
+      } else {
+        nodeValues.push(nodeIndexes[i]);
       }
       sortedIndexes[i] = i;
     }

@@ -66,7 +66,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.rowAttributeNodeGroup = 0;
     this.colAttributeNodeGroup = 1;
-    this.numAttributeNodeGroups = 2;
+    this.numAttributeNodeGroups = 3; // TODO pull this out
 
     this.highlights = [];
     this.rowHeights = [];
@@ -189,6 +189,7 @@ export class cmMatrixBase extends SvgGroupElement {
     // create labels for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
       this.labelRowHeight, this.colWidthLabel, filterNodes, filterAttributes);
+    visitor.setCreateColumnLabels(true);
     this.applyVisitor(visitor);
 
     // Create controls for editing visible attributes.

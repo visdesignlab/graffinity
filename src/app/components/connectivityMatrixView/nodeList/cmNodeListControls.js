@@ -1,11 +1,18 @@
 import {cmMatrixBase} from "../cmMatrixBase"
 import {cmControlsMatrixColHeaderRow} from "../rows/cmControlsMatrixColHeaderRow"
 
+import {cmClearVisitor} from "../visitors/cmClearVisitor"
+import {cmAttributeLabelVisitor} from "../visitors/cmAttributeLabelVisitor"
+import {cmNodeLabelVisitor} from "../visitors/cmNodeLabelVisitor"
+import {cmEditVisibleAttributesVisitor} from "../visitors/cmEditVisibleAttributesVisitor"
 export class cmNodeListControls extends cmMatrixBase {
   /**
    * Binds data to the svg matrix - this doesn't get filled in until setEncodings gets called.
    */
   createRows(model) {
+
+    // TODO - pull this out
+    this.rowAttributeNodeGroup = 2;
 
     //// Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
@@ -84,6 +91,40 @@ export class cmNodeListControls extends cmMatrixBase {
 
   }
 
+  createAttributeEncodings() {
+    let visitor = new cmClearVisitor();
+    visitor.setClearAttributeCells(true);
+    visitor.setClearAttributeLabelCells(true);
+    this.applyVisitor(visitor);
+
+    // Create controls for all attributes.
+    let sortRows = this.onSortRowsByAttribute.bind(this);
+    let hideRows = this.onHideAttributeRow.bind(this);
+
+    // These are unused
+    let sortCols = this.onSortColsByAttribute.bind(this);
+    let hideCols = this.onHideAttributeCol.bind(this);
+
+    let filterNodes = this.onFilterNodes.bind(this);
+    let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
+
+    // create labels for all the quantitative attribute columns/rows
+    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
+      this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
+    this.applyVisitor(visitor);
+
+    // create labels for the 'labels' or 'id' column/row
+    visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
+      this.labelRowHeight, this.colWidthLabel, filterNodes, filterAttributes);
+    visitor.setCreateColumnLabels(false);
+    this.applyVisitor(visitor);
+
+    // Create controls for editing visible attributes.
+    let editAttributeCols = this.onEditVisibleAttributeCols.bind(this);
+    let editAttributeRows = this.onEditVisibleAttributeRows.bind(this);
+    visitor = new cmEditVisibleAttributesVisitor(this.colWidth, this.rowHeight, editAttributeRows, editAttributeCols);
+    this.applyVisitor(visitor);
+  }
 
   /**
    * Initializes this.row/col indexes.
