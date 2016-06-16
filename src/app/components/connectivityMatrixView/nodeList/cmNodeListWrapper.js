@@ -44,7 +44,12 @@ export class cmNodeListWrapper extends cmWrapperBase {
       modalService, mainController);
     this.leftHeader.setGridPosition([0, 1]);
 
-
+    for(var i=0; i<2; ++i) {
+      this.leftHeader.onHideAttributeCol(i, true, true);
+      this.controlsHeader.onHideAttributeCol(i, true, true);
+    }
+    this.leftHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
+    this.controlsHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
     this.matrices = [this.leftHeader, this.controlsHeader];
 
     this.updateElementPositions();
