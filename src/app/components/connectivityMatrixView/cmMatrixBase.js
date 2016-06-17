@@ -250,6 +250,14 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
+  static getAvailableMetrics(encoding) {
+    if (encoding == "colormap") {
+      return ["path count", "node count"];
+    } else {
+      return null;
+    }
+  }
+
   static getAvailableEncodings() {
     return ["colormap", "bar chart"];
   }
@@ -345,6 +353,18 @@ export class cmMatrixBase extends SvgGroupElement {
       return flattened.length * this.colWidth;
     } else {
       return (this.colNodeIndexes.length * this.rowHeight) + (flattened.length * this.colWidth);
+    }
+  }
+
+  static getMetricFunction(metric) {
+    if (metric == "path count") {
+      return function (paths) {
+        return paths.length;
+      };
+    } else if (metric == "node count") {
+      return function (paths) {
+        return Utils.getIntermediateNodesFromPaths(paths).length;
+      }
     }
   }
 
@@ -672,7 +692,7 @@ export class cmMatrixBase extends SvgGroupElement {
   onHideNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, true);
     this.updateDataCols(nodeIndexes, true);
-    this.setEncoding(this.encoding);
+    this.setEncoding(this.encoding, this.metric);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -758,7 +778,7 @@ export class cmMatrixBase extends SvgGroupElement {
   onShowNodes(event, nodeIndexes) {
     this.updateDataRows(nodeIndexes, false);
     this.updateDataCols(nodeIndexes, false);
-    this.setEncoding(this.encoding);
+    this.setEncoding(this.encoding, this.metric);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
 
@@ -784,8 +804,10 @@ export class cmMatrixBase extends SvgGroupElement {
     this.applyVisitor(visitor);
   }
 
-  setEncoding(encoding) {
+  setEncoding(encoding, metric) {
+    this.$log.debug(this, encoding, metric);
     this.encoding = encoding;
+    this.metric = metric;
     let preprocessor = undefined;
 
     let visitor = new cmClearVisitor();
@@ -811,13 +833,18 @@ export class cmMatrixBase extends SvgGroupElement {
 
       this.legend = undefined;
     } else if (encoding == "colormap") {
+
+      let metricFunction = cmMatrixBase.getMetricFunction(metric);
+
       preprocessor = new cmColorMapPreprocessor();
       preprocessor.setNodeFilter(this.viewState.isNodeHidden);
-
+      preprocessor.setMetricFunction(metricFunction);
       this.applyVisitor(preprocessor);
+
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
       visitor.setCallbacks(clicked, mouseover, mouseout);
       visitor.setNodeFilter(this.viewState.isNodeHidden);
+      visitor.setMetricFunction(metricFunction);
       this.applyVisitor(visitor);
 
       this.legend = new cmColorMapLegend(visitor);
@@ -852,7 +879,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.createRows(model);
 
     // Data is ready - create encodings
-    this.setEncoding("colormap");
+    this.setEncoding("colormap", "path count");
     this.createAttributeEncodings();
 
     // Put stuff in the correct place.

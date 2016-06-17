@@ -1,14 +1,15 @@
 /* globals d3 reorder
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
+import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
+
 import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
               viewState, modalService, NodeLinkViewFactory) {
     'ngInject';
-
     this.viewState = viewState;
     this.$scope = $scope;
     this.$log = $log;
@@ -116,7 +117,7 @@ export class MainController {
   createMatrixAndUi(model) {
 
     this.matrixContainer = d3.select("#matrices-row");
-    this.nodeListContainer = d3.select("#node-list-col")
+    this.nodeListContainer = d3.select("#node-list-col");
 
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
@@ -172,7 +173,20 @@ export class MainController {
    * updates the legend displayed in the sidebar.
    */
   onEncodingChanged(encoding) {
-    this.matrixManager.matrix.setEncoding(encoding);
+    let metrics = cmMatrixBase.getAvailableMetrics(encoding);
+    if (metrics) {
+      this.ui.metrics = angular.copy(metrics);
+      this.ui.selectedMetric = this.ui.metrics[0];
+      this.onMetricChanged(this.ui.selectedMetric, encoding);
+    } else {
+      this.ui.metrics = null;
+      this.matrixManager.matrix.setEncoding(encoding);
+      this.updateLegend();
+    }
+  }
+
+  onMetricChanged(metric, encoding) {
+    this.matrixManager.matrix.setEncoding(encoding, metric);
     this.updateLegend();
   }
 

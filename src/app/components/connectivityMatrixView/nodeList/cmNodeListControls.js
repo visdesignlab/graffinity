@@ -13,7 +13,6 @@ export class cmNodeListControls extends cmMatrixBase {
 
     // TODO - pull this out
     this.rowAttributeNodeGroup = 2;
-
     //// Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
     // colNodeAttributes[i][j] = attributes[i] for col[j]

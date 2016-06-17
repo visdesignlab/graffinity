@@ -5,7 +5,22 @@
 import {cmCellVisitor} from "./cmCellVisitors"
 import {Utils} from "../../utils/utils"
 
-export class cmColorMapPreprocessor extends cmCellVisitor {
+export class cmColorMapVisitorBase extends cmCellVisitor {
+  constructor(width, height) {
+    super(width, height);
+    this.metric = undefined;
+  }
+
+  applyMetric(paths) {
+    return this.metric(paths);
+  }
+
+  setMetricFunction(metric) {
+    this.metric = metric;
+  }
+}
+
+export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
   constructor() {
     super();
     this.setRange = [1, 1];
@@ -17,15 +32,16 @@ export class cmColorMapPreprocessor extends cmCellVisitor {
       return;
     }
     let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let value = this.applyMetric(paths);
     if (cell.isCellBetweenSets()) {
-      this.setRange[1] = Math.max(this.setRange[1], paths.length);
+      this.setRange[1] = Math.max(this.setRange[1], value);
     } else {
-      this.nodeRange[1] = Math.max(this.nodeRange[1], paths.length);
+      this.nodeRange[1] = Math.max(this.nodeRange[1], value);
     }
   }
 }
 
-export class cmColorMapVisitor extends cmCellVisitor {
+export class cmColorMapVisitor extends cmColorMapVisitorBase {
   constructor(preprocessor, width, height) {
     super(width, height);
     let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
@@ -58,7 +74,8 @@ export class cmColorMapVisitor extends cmCellVisitor {
     }
 
     let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
-    let color = this.getCellColor(cell, paths);
+    let value = this.applyMetric(paths);
+    let color = this.getCellColor(cell, value);
     let group = cell.getGroup();
     if (paths.length) {
 
@@ -80,11 +97,11 @@ export class cmColorMapVisitor extends cmCellVisitor {
     }
   }
 
-  getCellColor(cell, paths) {
+  getCellColor(cell, value) {
     if (cell.isCellBetweenSets()) {
-      return this.setColorScale(paths.length);
+      return this.setColorScale(value);
     } else {
-      return this.nodeColorScale(paths.length);
+      return this.nodeColorScale(value);
     }
   }
 

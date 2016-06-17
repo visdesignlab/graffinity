@@ -64,6 +64,20 @@
         </ui-select>
       </div>
 
+      <div class="control-header" ng-show="main.ui.metrics">
+        <b>Path metric</b>
+        <ui-select id="select-metric"
+                   ng-model="main.ui.selectedMetric"
+                   ng-change="main.onMetricChanged(main.ui.selectedMetric, main.ui.selectedEncoding)">
+          <ui-select-match placeholder="Path metric">
+            {{main.ui.selectedMetric}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.metrics track by option">
+            {{option}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
+
       <!-- Legend of matrix cell encodings -->
       <div class="control-header" ng-show="main.ui.hasLegend">
         <b>Legend</b>
