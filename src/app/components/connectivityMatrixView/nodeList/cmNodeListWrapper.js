@@ -44,22 +44,34 @@ export class cmNodeListWrapper extends cmWrapperBase {
       modalService, mainController);
     this.leftHeader.setGridPosition([0, 1]);
 
-    for(var i=0; i<2; ++i) {
+    for (var i = 0; i < 2; ++i) {
       this.leftHeader.onHideAttributeCol(i, true, true);
       this.controlsHeader.onHideAttributeCol(i, true, true);
     }
-    this.leftHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
-    this.controlsHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
+
     this.matrices = [this.leftHeader, this.controlsHeader];
+    this.updateColOrders();
 
     this.updateElementPositions();
+  }
+
+  setModel(model) {
+    // update the data displayed
+    super.setModel(model);
+    this.updateColOrders();
+  }
+
+  updateColOrders() {
+    this.setUseAnimation(false);
+    this.leftHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
+    this.controlsHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
+    this.setUseAnimation(true);
   }
 
   /**
    * Positions and resizes the 4 divs holding different parts of the matrices.
    */
   updateElementPositions(signal, width) {
-
     // Do not check for overflow of header height. Assume we always have enough space for it.
     this.controlsElementStyle.height = this.controlsHeader.getHeight() + "px";
 
