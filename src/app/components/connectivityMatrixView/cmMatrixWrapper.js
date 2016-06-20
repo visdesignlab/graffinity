@@ -151,7 +151,7 @@ export class cmMatrixWrapper extends cmWrapperBase {
         matrixWidth = clientWidth;
       }
     } else {
-      matrixWidth = width - this.controlsHeader.getAttributeColWidths() - 40;
+      matrixWidth = width - this.controlsHeader.getAttributeColWidths() - 50;
     }
 
     this.matrixElementStyle.width = matrixWidth + padding + "px";
