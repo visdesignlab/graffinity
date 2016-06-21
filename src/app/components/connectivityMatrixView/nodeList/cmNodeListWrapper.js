@@ -44,7 +44,7 @@ export class cmNodeListWrapper extends cmWrapperBase {
       modalService, mainController);
     this.leftHeader.setGridPosition([0, 1]);
 
-    for (var i = 0; i < 2; ++i) {
+    for (var i = 0; i < this.leftHeader.attributes.length -1; ++i) {
       this.leftHeader.onHideAttributeCol(i, true, true);
       this.controlsHeader.onHideAttributeCol(i, true, true);
     }
@@ -63,8 +63,12 @@ export class cmNodeListWrapper extends cmWrapperBase {
 
   updateColOrders() {
     this.setUseAnimation(false);
-    this.leftHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
-    this.controlsHeader.updatePositions(this.leftHeader.rowPerm, [0, 1, 2, 4, 3, 5]);
+    let colPerm = this.controlsHeader.colPerm;
+    let temp = colPerm[colPerm.length-1];
+    colPerm[colPerm.length-1] = colPerm[colPerm.length - 2];
+    colPerm[colPerm.length - 2] = temp;
+    this.leftHeader.updatePositions(this.leftHeader.rowPerm, colPerm);
+    this.controlsHeader.updatePositions(this.leftHeader.rowPerm, colPerm);
     this.setUseAnimation(true);
   }
 
