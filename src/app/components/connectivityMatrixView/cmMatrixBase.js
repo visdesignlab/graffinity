@@ -436,14 +436,14 @@ export class cmMatrixBase extends SvgGroupElement {
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
     }
 
-    let rowNodeAttributes = rowAttributes[0];
-    if (this.attributes.length > 1) {
-      for (i = 1; i < this.attributes.length; ++i) {
-        rowNodeAttributes = d3.zip(rowNodeAttributes, rowAttributes[i]);
-      }
-    } else {
-      for (i = 0; i < rowNodeAttributes.length; ++i) {
-        rowNodeAttributes[i] = [rowNodeAttributes[i]];
+    let rowNodeAttributes = angular.copy(rowAttributes[0]);
+    for (i = 0; i < rowNodeAttributes.length; ++i) {
+      rowNodeAttributes[i] = [rowNodeAttributes[i]];
+    }
+
+    for (i = 1; i < this.attributes.length; ++i) {
+      for (var j = 0; j < rowAttributes[i].length; ++j) {
+        rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
       }
     }
 

@@ -43,7 +43,7 @@ export class MainController {
     let useLargeResult = false;
 
     // uncomment this to use a larger default data set.
-    useLargeResult = true;
+    //useLargeResult = true;
 
     let jsonGraph = mock.output.graph;
     let jsonMatrix = mock.output.matrix;
