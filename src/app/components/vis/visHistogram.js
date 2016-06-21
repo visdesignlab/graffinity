@@ -28,12 +28,17 @@ export class visHistogram {
     this.maxValue = d3.max(this.values);
     this.minValue = d3.min(this.values);
 
+    if(this.minValue == this.maxValue) {
+      this.$log.warn(this, "Min and max values are the same. Setting minValue to 0");
+      this.minValue = 0;
+    }
+
     this.numBins = numBins;
 
     this.createHistogramData();
 
     this.xScale = d3.scale.linear()
-      .domain([d3.min(this.values), d3.max(this.values)])
+      .domain([this.minValue, this.maxValue])
       .range([0, self.chartWidth]);
 
     this.createYAxis();

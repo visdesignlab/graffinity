@@ -90,7 +90,7 @@ export class visHistogramScent {
 
     bar.append("rect")
       .attr("x", 1)
-      .attr("width", self.xScale(this.minValue + this.histogramData[0].dx))
+      .attr("width", self.xScale(this.minValue + this.histogramData[0].dx) - 1)
       .attr("height", function (d) {
         return (self.chartHeight - self.yScale(d.y));
       })
@@ -117,7 +117,7 @@ export class visHistogramScent {
 
     bar.append("rect")
       .attr("x", 1)
-      .attr("height", self.xScale(this.minValue + this.histogramData[0].dx))
+      .attr("height", self.xScale(this.minValue + this.histogramData[0].dx) - 1)
       .attr("width", function (d) {
         return (self.chartWidth - self.yScale(d.y));
       })
