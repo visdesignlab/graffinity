@@ -27,8 +27,7 @@ export class cmNodeListControls extends cmMatrixBase {
     for (var i = 0; i < countRows.length; ++i) {
       countRowsList.push(countRows[i].getAllValuesAsList([['count']])[0]);
     }
-    rowAttributes[2] = countRowsList;
-
+    rowAttributes.push(countRowsList);
 
     let rowNodeAttributes = [];
     if (this.attributes.length > 1) {

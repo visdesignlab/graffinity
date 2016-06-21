@@ -19,7 +19,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
       this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }
 
-    let rowAttributes = [];
+   let rowAttributes = [];
     for (i = 0; i < this.attributes.length - 1; ++i) {
       rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
     }
@@ -29,7 +29,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
     for (i = 0; i < countRows.length; ++i) {
       countRowsList.push(countRows[i].getAllValuesAsList([['count']])[0]);
     }
-    rowAttributes[2] = countRowsList;
+    rowAttributes.push(countRowsList);
 
     let rowNodeAttributes = [];
     if (this.attributes.length > 1) {
@@ -48,7 +48,6 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
         rowNodeAttributes[i] = [rowNodeAttributes[i]];
       }
     }
-
     //// Controls row is the only one with a onColControlsClicked callback.
     //let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
     //  this.rowHeight, model.areColsCollapsed, this);

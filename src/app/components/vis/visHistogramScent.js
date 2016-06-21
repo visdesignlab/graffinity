@@ -15,13 +15,16 @@ export class visHistogramScent {
     this.maxValue = d3.max(this.values);
     this.minValue = d3.min(this.values);
 
+    if (this.minValue == this.maxValue) {
+      this.minValue = 0;
+    }
+
     this.width = width;
     this.height = height;
 
     this.createHistogramData();
 
-    if (isVertical)
-    {
+    if (isVertical) {
       // margin allows for histogram to be properly placed -- note can change the right to 2 if you want histogram farther way from 1D scatterplots
       this.margin = {top: 5, right: 0, bottom: 5, left: 0};
 
@@ -29,8 +32,8 @@ export class visHistogramScent {
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
 
       this.xScale = d3.scale.linear()
-         .domain([d3.min(this.values), d3.max(this.values)])
-         .range([0, this.chartHeight]);
+        .domain([d3.min(this.values), d3.max(this.values)])
+        .range([0, this.chartHeight]);
 
       this.yScale = d3.scale.linear()
         .domain([0, d3.max(this.histogramData, function (d) {
@@ -47,8 +50,8 @@ export class visHistogramScent {
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
 
       this.xScale = d3.scale.linear()
-         .domain([d3.min(this.values), d3.max(this.values)])
-         .range([0, this.chartWidth]);
+        .domain([this.minValue, this.maxValue])
+        .range([0, this.chartWidth]);
 
       this.yScale = d3.scale.linear()
         .domain([0, d3.max(this.histogramData, function (d) {
@@ -69,7 +72,7 @@ export class visHistogramScent {
 
   }
 
- /**
+  /**
    * Create horizontal bars of the histogram.
    */
   createHistogramBarsHorizontal() {
@@ -87,18 +90,18 @@ export class visHistogramScent {
 
     bar.append("rect")
       .attr("x", 1)
-      .attr("width", self.xScale(this.minValue + this.histogramData[0].dx) - 1)
+      .attr("width", self.xScale(this.minValue + this.histogramData[0].dx))
       .attr("height", function (d) {
         return (self.chartHeight - self.yScale(d.y));
       })
       .style("fill", "steelblue");
   }
 
-   /**
+  /**
    * Create bars vertical of the histogram.
    */
   createHistogramBarsVertical() {
-     let self = this;
+    let self = this;
 
     //draw bars on histogram
     let bar = this.parent.selectAll(".bar")
@@ -114,7 +117,7 @@ export class visHistogramScent {
 
     bar.append("rect")
       .attr("x", 1)
-      .attr("height", self.xScale(this.minValue + this.histogramData[0].dx) - 1)
+      .attr("height", self.xScale(this.minValue + this.histogramData[0].dx))
       .attr("width", function (d) {
         return (self.chartWidth - self.yScale(d.y));
       })
@@ -142,7 +145,7 @@ export class visHistogramScent {
    */
   setFilterRange(filterRange) {
     this.parent.selectAll(".bar").style("opacity", function (d) {
-       return d.x >= filterRange[0] && d.x < filterRange[1] ? "1" : ".2";
-     });
+      return d.x >= filterRange[0] && d.x < filterRange[1] ? "1" : ".2";
+    });
   }
 }

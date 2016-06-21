@@ -69,7 +69,7 @@ mock.output = {
       "Label": "GC",
       "ID": 142
     }, {
-      "Completeness": 1.0,
+      "Completeness": .50,
       "HullArea": 150611000.0,
       "StructureID": 1,
       "Locations": 100.0,

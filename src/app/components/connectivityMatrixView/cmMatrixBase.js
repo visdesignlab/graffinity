@@ -1,4 +1,4 @@
-/*global reorder, d3
+/*global reorder
  */
 import {SvgGroupElement} from "./svgGroupElement"
 import {cmAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
@@ -805,7 +805,6 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   setEncoding(encoding, metric) {
-    this.$log.debug(this, encoding, metric);
     this.encoding = encoding;
     this.metric = metric;
     let preprocessor = undefined;
