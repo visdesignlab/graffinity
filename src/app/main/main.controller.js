@@ -39,18 +39,36 @@ export class MainController {
     this.ui.debugRowFilterScents = false;
     this.ui.debugColFilterScents = false;
 
+    // Setup a default query and dataset depending on our database.
+
+    //this.database = "marclab";
+    this.database = "flights";
 
     let useLargeResult = false;
+    //useLargeResult = true;
 
-    // uncomment this to use a larger default data set.
-    useLargeResult = true;
+    let jsonGraph = null;
+    let jsonMatrix = null;
 
-    let jsonGraph = mock.output.graph;
-    let jsonMatrix = mock.output.matrix;
+    // Populate starting data with something intelligent
+    if (this.database == "marclab") {
 
-    if (useLargeResult) {
-      jsonGraph = mock.largeResult.graph;
-      jsonMatrix = mock.largeResult.matrix;
+      if (useLargeResult) {
+        jsonGraph = mock.largeResult.graph;
+        jsonMatrix = mock.largeResult.matrix;
+      } else {
+        jsonGraph = mock.output.graph;
+        jsonMatrix = mock.output.matrix;
+      }
+
+      this.defaultQuery = "MATCH p = n-[SYNAPSE*1..2]->m WHERE n.label in ['CBb4w', 'CBb3n'] and m.label in ['GC', 'GC ON'] RETURN p limit 1000;";
+
+    } else if (this.database == "flights") {
+
+      jsonGraph = mock.flightResult.graph;
+      jsonMatrix = mock.flightResult.matrix;
+      this.defaultQuery = "MATCH p = (s)-[x:FLIGHT]->(i)-[y:FLIGHT]->(t)  WHERE s.state in ['CA', 'OR', 'WA']  AND t.state in ['CT', 'ME', 'MA', 'RI', 'NH', 'VT'] AND x.carrier = y.carrier AND x.arr_time < y.dep_time RETURN p"
+
     }
 
     // Populate the model with default dataset
@@ -115,7 +133,6 @@ export class MainController {
   }
 
   createMatrixAndUi(model) {
-
     this.matrixContainer = d3.select("#matrices-row");
     this.nodeListContainer = d3.select("#node-list-col");
 
@@ -262,7 +279,7 @@ export class MainController {
     };
 
     // Give the model factory a query string. Async call success or failure.
-    this.cmModelFactory.requestAndCreateModel(query).then(success, failure);
+    this.cmModelFactory.requestAndCreateModel(query, this.database).then(success, failure);
   }
 
   onSortOrderChanged(order) {

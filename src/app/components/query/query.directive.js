@@ -16,10 +16,11 @@ export function QueryDirective() {
 }
 
 class QueryController {
-  constructor() {
+  constructor($scope) {
     'ngInject';
-    // this.defaultQuery = "MATCH p = n-[SYNAPSE*1..2]->m WHERE n.label in ['CBb4w', 'CBb3n'] and m.label in ['GC', 'GC ON'] RETURN p;";
-    this.defaultQuery = "MATCH p = n-[SYNAPSE*1..2]->m WHERE n.label in ['CBb4w', 'CBb3n'] and m.label in ['Rod BC'] RETURN p limit 1000";
+    // the default query gets populated in main's constructor
+    this.defaultQuery = $scope.$parent.main.defaultQuery;
+
     this.cypherQuery = this.defaultQuery;
   }
 

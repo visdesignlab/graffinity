@@ -11,7 +11,7 @@ export class cmResource {
     return this.url;
   }
 
-  postRequest(query, urlExtension) {
+  postRequest(query, database, urlExtension) {
 
     if (!urlExtension) {
       urlExtension = '';
@@ -20,6 +20,7 @@ export class cmResource {
     // Create the http request
     let config = {};
     config.query = query;
+    config.graph_name = database;
 
     // Create a promise object to return.
     let deferred = this.$q.defer();

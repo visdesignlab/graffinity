@@ -12,7 +12,7 @@ export class cmModelFactory {
     this.cmMatrixFactory = cmMatrixFactory;
   }
 
-  requestAndCreateModel(query) {
+  requestAndCreateModel(query, database) {
     var self = this;
 
     // Promise that represents the response we'll be expecting from the server.
@@ -31,7 +31,7 @@ export class cmModelFactory {
     };
 
     // Send the request to the server.
-    this.cmResource.postRequest(query).then(success, failure);
+    this.cmResource.postRequest(query, database).then(success, failure);
 
     // Return the promise. It will be resolved when we hear back from the server.
     return deferred.promise;
