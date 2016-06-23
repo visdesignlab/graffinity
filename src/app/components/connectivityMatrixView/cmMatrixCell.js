@@ -27,6 +27,8 @@ export class cmMatrixCell extends SvgGroupElement {
     this.isRowLabelCell = false;
     this.isColLabelCell = false;
 
+    this.isInNodeListView = false;
+
     this.minorCells = [];
 
     this.data = {};

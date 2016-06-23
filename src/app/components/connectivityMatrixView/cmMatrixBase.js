@@ -170,7 +170,7 @@ export class cmMatrixBase extends SvgGroupElement {
     }
 
     visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
-    visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+    visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
     this.applyVisitor(visitor);
 
     // Create controls for all attributes.
@@ -572,6 +572,7 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
+    console.log(cell);
 
     if (this.selectedCell) {
       this.selectedCell.interactionGroup.classed("selected", false);
@@ -581,7 +582,17 @@ export class cmMatrixBase extends SvgGroupElement {
     cell.interactionGroup.classed("selected", true);
 
     // Tell other views that we changed selection.
-    let paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
+    let paths = [];
+    if(cell.isDataCell) {
+      paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
+    } else if (cell.isColLabelCell) {
+      paths = this.model.getPathsWithTargets(cell.data.nodeIndexes);
+    } else if (cell.isRowLabelCell && !cell.isInNodeListView) {
+      paths = this.model.getPathsWithSources(cell.data.nodeIndexes);
+    } else if (cell.isRowLabelCell && cell.isInNodeListView) {
+      paths = this.model.getPathsWithIntermediates(cell.data.nodeIndexes);
+    }
+
     this.mainController.onPathsSelected(paths);
   }
 
