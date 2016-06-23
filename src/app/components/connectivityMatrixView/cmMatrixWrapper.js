@@ -114,13 +114,13 @@ export class cmMatrixWrapper extends cmWrapperBase {
   }
 
   setWidth(width) {
-    this.updateElementPositions(null, width)
+    this.updateElementPositions(null, width, true)
   }
 
   /**
    * Positions and resizes the 4 divs holding different parts of the matrices.
    */
-  updateElementPositions(signal, width) {
+  updateElementPositions(signal, width, useAnimation) {
 
     let padding = 2;
 
@@ -157,39 +157,42 @@ export class cmMatrixWrapper extends cmWrapperBase {
     this.matrixElementStyle.width = matrixWidth + padding + "px";
     this.topHeaderElementStyle.width = matrixWidth + padding + "px";
 
+    let duration = useAnimation ? 500 : 0;
+
     // The matrix'x svg needs to be large enough to hold everything.
     this.matrixSvg.transition()
-      .duration(500).attr({
+      .duration(duration).attr({
       width: this.matrix.getWidth() + padding,
       height: this.matrix.getHeight() + padding
     });
 
     this.leftHeaderSvg.transition()
-      .duration(500).attr({
+      .duration(duration).attr({
       height: this.matrix.getHeight() + padding
     });
 
     this.topHeaderSvg.transition()
-      .duration(500).attr({
+      .duration(duration).attr({
       width: this.matrix.getWidth() + padding
     });
 
     // The divs need to expand/collapse depending on matrix size.
     this.controlsHeaderElement.transition()
-      .duration(500)
+      .duration(duration)
       .style(this.controlsElementStyle);
 
     this.topHeaderElement.transition()
-      .duration(500)
+      .duration(duration)
       .style(this.topHeaderElementStyle);
 
     this.leftHeaderElement.transition()
-      .duration(500)
+      .duration(duration)
       .style(this.leftHeaderElementStyle);
 
     this.matrixElement.transition()
-      .duration(500)
+      .duration(duration)
       .style(this.matrixElementStyle);
+
   }
 
 }
