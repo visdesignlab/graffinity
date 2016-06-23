@@ -184,9 +184,10 @@ export class NodeLinkView {
       .classed("node", true);
 
     // Create node text
+    let self = this;
     this.nodes.append("text")
       .text(function (d) {
-        return d;
+        return self.model.getMajorLabels([d])[0];
       })
       .attr("transform", function (d) {
         return NodeLinkView.getNodeCenterAsTransform(d, graph);

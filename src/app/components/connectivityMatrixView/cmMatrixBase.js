@@ -848,6 +848,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
       this.legend = new cmColorMapLegend(visitor);
     }
+
   }
 
   /**
