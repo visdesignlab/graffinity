@@ -34,10 +34,10 @@ export class cmMatrixLeftHeader extends cmMatrixBase {
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let row = new cmDataAttributeRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols,
         this.colWidth, this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i],
-        this, this.rowAttributeNodeGroup, model.areColsCollapsed);
+        this, this.rowAttributeNodeGroup, model.areColsCollapsed, model.areRowsCollapsed);
 
       // If row has minor rows, then we want the controls to be visible!
-      if (modelRows[i].getNumChildren() > 0) {
+      if (model.areRowsCollapsed) {
         let callback = this.onRowControlsClicked.bind(this);
         row.createControlsCell(this.colWidth, this.rowHeight, callback);
       }

@@ -9,9 +9,12 @@ export class cmModel {
     self.matrix = matrix;
     self.current = {};
     self.reset();
+
     self.colsCollapseAttr = "";
     self.rowCollapseAttr = "";
+
     self.areColsCollapsed = false;
+    self.areRowsCollapsed = false;
   }
 
   collapseCols(colIndexesToCollapse) {
@@ -133,6 +136,7 @@ export class cmModel {
   collapseRowsByAttr(attr) {
     var self = this;
     self.rowCollapseAttr = attr;
+    self.areRowsCollapsed = true;
     var rowNodeIndexes = self.getRowNodeIndexes();
 
     // labels[i] will contain the label of rowNodeIndexes[i].
@@ -178,6 +182,7 @@ export class cmModel {
 
   expandAllRows() {
     var self = this;
+    self.areRowsCollapsed = false;
     var rowNodeIndexes = self.current.rowNodeIndexes;
     var rowsToExpand = [];
     for (var i = 0; i < rowNodeIndexes.length; ++i) {
@@ -227,6 +232,7 @@ export class cmModel {
     var self = this;
     self.rowsAreDirty = true;
     self.rowCollapseAttr = "";
+    self.areRowsCollapsed = false;
 
     var newRowNodeIndexes = [];
     var rowNodeIndexes = self.current.rowNodeIndexes;

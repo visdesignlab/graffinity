@@ -3,7 +3,7 @@ import {cmMatrixRow} from "./rows/cmMatrixRow"
 export class cmDataRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label,
-              minorLabels, rowNodeAttributes, matrix, areColsCollapsed) {
+              minorLabels, rowNodeAttributes, matrix, areColsCollapsed, areRowsCollapsed) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
     this.unrollControls = [];
     this.rollupControls = [];
@@ -11,14 +11,15 @@ export class cmDataRow extends cmMatrixRow {
     // If this is not a minor row - there might be children. Try adding them.
     if (!isMinorRow) {
       let numChildren = modelRow.getNumChildren();
-      if (numChildren > 0) {
+
+      if (areRowsCollapsed) {
         let childIndex = 0;
         let isChildRow = true;
         let childLabels = null;
 
         let minorRow = new cmDataRow(this.minorRowContainer, childIndex, colNodeIndexes, numHeaderCols, colWidth,
           rowHeight, isChildRow, modelRow, minorLabels[childIndex], childLabels,
-          cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix);
+          cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix, areColsCollapsed, areRowsCollapsed);
 
         minorRow.setVisible(false);
         this.addMinorRow(minorRow);
@@ -28,7 +29,7 @@ export class cmDataRow extends cmMatrixRow {
 
           minorRow = new cmDataRow(this.minorRowContainer, childIndex, colNodeIndexes, numHeaderCols, colWidth,
             rowHeight, isChildRow, modelRow.getChildRowAt(i), minorLabels[childIndex], childLabels,
-            cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix);
+            cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix, areColsCollapsed, areRowsCollapsed);
 
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
@@ -51,7 +52,9 @@ export class cmDataRow extends cmMatrixRow {
       }
     }
 
-    this.createMinorCells(numHeaderCols, colNodeIndexes, true);
+    if(areColsCollapsed) {
+      this.createMinorCells(numHeaderCols, colNodeIndexes, true);
+    }
 
     // Loop over all columns...fill with appropriate data
     for (i = 0; i < numMajorCells; ++i) {

@@ -65,7 +65,7 @@ export class cmMatrixCell extends SvgGroupElement {
   }
 
   isCellBetweenSets() {
-    return this.isInMajorRow || this.isMajorCell;
+    return this.isInMajorRow && this.isMajorCell;
   }
 }
 

@@ -586,6 +586,7 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellMouseOver(cell) {
+
     let transform = cmMatrixBase.getCellTransform(cell);
 
     let rect = cell.getGroup()

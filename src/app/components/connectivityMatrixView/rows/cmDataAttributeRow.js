@@ -3,7 +3,7 @@ import {cmDataRow} from "./../cmDataRow"
 
 export class cmDataAttributeRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup, areColsCollapsed) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup, areColsCollapsed, areRowsCollapsed) {
     super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
     this.unrollControls = [];
     this.rollupControls = [];
@@ -11,7 +11,7 @@ export class cmDataAttributeRow extends cmMatrixRow {
     // If this is not a minor row - there might be children. Try adding them.
     if (!isMinorRow) {
       let numChildren = modelRow.getNumChildren();
-      if (numChildren > 0) {
+      if (areRowsCollapsed) {
         let childIndex = 0;
         let isChildRow = true;
         let childLabels = null;
@@ -71,7 +71,8 @@ export class cmDataAttributeRow extends cmMatrixRow {
         cell.setData({
           name: label,
           isVertical: 0,
-          attributeIndex: -1
+          attributeIndex: -1,
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
         });
 
         cell.isAttributeCell = true;
