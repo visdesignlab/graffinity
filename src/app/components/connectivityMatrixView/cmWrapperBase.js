@@ -7,7 +7,10 @@ export class cmWrapperBase {
     this.mainController = mainController;
     this.matrices = [];
 
-    this.$scope.$on("changeMatrixHeight", this.updateElementPositions.bind(this));
+    let self = this;
+    this.$scope.$on("changeMatrixHeight", function () {
+      self.updateElementPositions(null, null, true);
+    });
   }
 
   setUseAnimation(useAnimation) {
@@ -32,7 +35,7 @@ export class cmWrapperBase {
   }
 
   setWidth(width) {
-    this.updateElementPositions(null, width)
+    this.updateElementPositions(null, width, true)
   }
 
 }
