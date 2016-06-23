@@ -223,7 +223,7 @@ export class cmMatrixBase extends SvgGroupElement {
     let onQuantitativeAttributeFilterUpdate = this.onQuantitativeAttributeFilterUpdate.bind(this);
     scope.$on("hideNodes", onHideNodes);
     scope.$on("showNodes", onShowNodes);
-    scope.$on("hoverNode", onHoverNodes);
+    scope.$on("hoverNodes", onHoverNodes);
     scope.$on("updateQuantitativeAttributeFilter", onQuantitativeAttributeFilterUpdate);
   }
 
@@ -586,6 +586,11 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellMouseOver(cell) {
+    let nodeIndexes = cell.data.nodeIndexes;
+
+    if (nodeIndexes) {
+      this.viewState.setHoveredNodes(nodeIndexes);
+    }
 
     let transform = cmMatrixBase.getCellTransform(cell);
 
@@ -602,6 +607,7 @@ export class cmMatrixBase extends SvgGroupElement {
   onCellMouseOut() {
     // Hide highlights
     this.$scope.$broadcast("hideHighlights");
+    this.viewState.setHoveredNodes(null);
   }
 
   /** Callback when user clicks on the column controls.
@@ -701,8 +707,6 @@ export class cmMatrixBase extends SvgGroupElement {
    * Called when the mouse is on top of a node in another view.
    */
   onHoverNodes(event, nodeIndexes) {
-    nodeIndexes = parseInt(nodeIndexes);
-
     if (!this.hoverVisitor) {
       this.hoverVisitor = new cmHoverVisitor();
     }
@@ -711,6 +715,7 @@ export class cmMatrixBase extends SvgGroupElement {
       this.hoverVisitor.setNodes(nodeIndexes);
       this.hoverVisitor.isHovered = true;
     } else {
+      this.hoverVisitor.setNodes(null);
       this.hoverVisitor.isHovered = false;
     }
 

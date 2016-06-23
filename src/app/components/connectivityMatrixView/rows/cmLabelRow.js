@@ -49,6 +49,7 @@ export class cmLabelRow extends cmMatrixRow {
 
       } else if (this.matrix.isDataCell(i)) {
 
+        cell.isColLabelCell = true;
         cell.setData({
           name: majorColLabels[dataIndex],
           isVertical: 1,
@@ -61,6 +62,7 @@ export class cmLabelRow extends cmMatrixRow {
           for (var j = 0; j < colNodeIndexes[dataIndex].length; ++j) {
             let minorCell = cell.minorCells[j];
             if (minorCell) {
+              minorCell.isColLabelCell = true;
               minorCell.setData({
                 name: minorColLabels[dataIndex][j],
                 isVertical: 1,

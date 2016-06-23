@@ -71,7 +71,8 @@ export class cmNodeListRow extends cmMatrixRow {
         cell.setData({
           name: label,
           isVertical: 0,
-          attributeIndex: -1
+          attributeIndex: -1,
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
         });
 
         cell.isAttributeCell = true;

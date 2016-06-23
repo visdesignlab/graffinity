@@ -25,6 +25,9 @@ export class NodeLinkView {
     // Settings for positioning the graph
     this.graphYOffset = 80;
     this.graphGroup = this.svg.append("g");
+
+    let onHoverNodes = this.onHoverNodes.bind(this);
+    scope.$on("hoverNodes", onHoverNodes);
   }
 
   /**
@@ -35,13 +38,14 @@ export class NodeLinkView {
     group.selectAll(selector)
       .on("mouseenter", function (d) {
         d3.select(this).classed("hovered", true);
-        self.viewState.setHoveredNode(d);
+        self.viewState.setHoveredNodes([parseInt(d)]);
       })
       .on("mouseleave", function () {
         d3.select(this).classed("hovered", false);
-        self.viewState.setHoveredNode(null);
+        self.viewState.setHoveredNodes(null);
       });
   }
+
 
   /**
    * Remove everything from the svg.
@@ -64,6 +68,33 @@ export class NodeLinkView {
    */
   static getNodeCenterAsTransform(key, graph) {
     return "translate(" + (graph.node(key).width / 2) + ", " + (graph.node(key).height / 2) + ")";
+  }
+
+  /**
+   * Called when the user mouses over a node in any view. Sets nodes that match nodeIndexes to the css class 'hovered'
+   */
+  onHoverNodes(signal, nodeIndexes) {
+    // Has this been created yet?
+    if (this.nodeGroup) {
+
+      // Are we hovering or disabling hover?
+      if (nodeIndexes) {
+
+        // Find elements for each of nodeIndexes
+        let hoveredNodes = this.nodeGroup.selectAll("g.node").filter(function (d) {
+          return nodeIndexes.indexOf(parseInt(d)) != -1;
+        });
+
+        hoveredNodes.classed("hovered", true);
+
+      } else {
+
+        // Set everything to not hovered.
+        this.nodeGroup.selectAll("g.node")
+          .classed("hovered", false);
+
+      }
+    }
   }
 
   /**

@@ -10,19 +10,41 @@ export class cmHoverVisitor extends cmCellVisitor {
     this.isHovered = true;
   }
 
-  setNodes(nodeIndex) {
-    this.nodeIndex = nodeIndex;
+  setNodes(nodeIndexes) {
+    this.nodeIndexes = nodeIndexes;
   }
 
   apply(cell) {
-    if (cell.isDataCell) {
-      let paths = cell.getPathList();
-      let nodes = Utils.getNodesFromPaths(paths);
-      if (nodes.indexOf(this.nodeIndex) != -1) {
-        if (!cell.interactionGroup.classed("selected")) {
-          cell.interactionGroup
-            .classed("hovered", this.isHovered);
+
+    if ((cell.isDataCell || cell.isRowLabelCell || cell.isColLabelCell) && cell.interactionGroup) {
+      let isCellHovered = false;
+      let cellsNodes = [];
+
+      // if this is meant to set cells as hovered - we need to find out whether cell should be hovered.
+      if (this.isHovered) {
+
+        // data cells are hovered if their paths contain a node in this.nodeIndexes
+        // label cells are hovered if the intersection of their nodeIndexes and this.nodeIndexes is not null
+        if (cell.isDataCell) {
+          let paths = cell.getPathList();
+          cellsNodes = Utils.getNodesFromPaths(paths);
+        } else {
+          cellsNodes = cell.data.nodeIndexes;
         }
+
+        // determine if there's an intersection
+        for (var i = 0; i < this.nodeIndexes.length; ++i) {
+          if (cellsNodes.indexOf(this.nodeIndexes[i]) != -1) {
+            isCellHovered = true;
+            break;
+          }
+        }
+      }
+
+      // update cell's state
+      if (!cell.interactionGroup.classed("selected")) {
+        cell.interactionGroup
+          .classed("hovered", this.isHovered && isCellHovered);
       }
     }
   }
