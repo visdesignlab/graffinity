@@ -572,7 +572,6 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellClicked(cell) {
-    console.log(cell);
 
     if (this.selectedCell) {
       this.selectedCell.interactionGroup.classed("selected", false);
@@ -587,7 +586,7 @@ export class cmMatrixBase extends SvgGroupElement {
       paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
     } else if (cell.isColLabelCell) {
       paths = this.model.getPathsWithTargets(cell.data.nodeIndexes);
-    } else if (cell.isRowLabelCell && !cell.isInNodeListView) {
+    } else if (cell.isRowLabelCell) {
       paths = this.model.getPathsWithSources(cell.data.nodeIndexes);
     } else if (cell.isRowLabelCell && cell.isInNodeListView) {
       paths = this.model.getPathsWithIntermediates(cell.data.nodeIndexes);
