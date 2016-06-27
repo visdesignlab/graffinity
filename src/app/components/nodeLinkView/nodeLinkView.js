@@ -46,7 +46,6 @@ export class NodeLinkView {
       });
   }
 
-
   /**
    * Remove everything from the svg.
    */
@@ -55,52 +54,41 @@ export class NodeLinkView {
   }
 
   /**
-   * Returns the node's top-left corner as a string. Used for positioning node.rects.
+   * Adds links to the parent. They are saved in this.links.
+   *
+   * DOM structure of links:
+   *  g.link
+   *    g.link.path
    */
-  static getNodeTopLeftAsTransform(key, graph) {
-    var x = (graph.node(key).x - (graph.node(key).width / 2));
-    var y = (graph.node(key).y - (graph.node(key).height / 2));
-    return "translate(" + x + ", " + y + ")";
-  }
+  createLinks(parent, graph) {
+    // Function that will convert points into svg lines.
+    let line = d3.svg.line()
+      .x(function (d) {
+        return d.x;
+      })
+      .y(function (d) {
+        return d.y;
+      })
+      .interpolate("basis");
 
-  /**
-   * Returns the node's center as a transform string. Used for positioning node.text.
-   */
-  static getNodeCenterAsTransform(key, graph) {
-    return "translate(" + (graph.node(key).width / 2) + ", " + (graph.node(key).height / 2) + ")";
-  }
+    // Create groups to hold the links.
+    this.links = parent.selectAll("g.link")
+      .data(graph.edges())
+      .enter()
+      .append("g")
+      .classed("link", true);
 
-  /**
-   * Called when the user mouses over a node in any view. Sets nodes that match nodeIndexes to the css class 'hovered'
-   */
-  onHoverNodes(signal, nodeIndexes) {
-    // Has this been created yet?
-    if (this.nodeGroup) {
-
-      // Are we hovering or disabling hover?
-      if (nodeIndexes) {
-
-        // Find elements for each of nodeIndexes
-        let hoveredNodes = this.nodeGroup.selectAll("g.node").filter(function (d) {
-          return nodeIndexes.indexOf(parseInt(d)) != -1;
-        });
-
-        hoveredNodes.classed("hovered", true);
-
-      } else {
-
-        // Set everything to not hovered.
-        this.nodeGroup.selectAll("g.node")
-          .classed("hovered", false);
-
-      }
-    }
+    // Actually create the paths that draw the links.
+    this.links.append("path")
+      .attr("d", function (d) {
+        return line(graph.edge(d).points)
+      });
   }
 
   /**
    * Computes a dagre layout of the graph. Convert the layout into an svg. Positions the graph inside the column.
    */
-  render(graph) {
+  createNodeLinkView(graph) {
 
     // get the column containing the svg
     let element = d3.select("#node-link-column")[0][0];
@@ -136,43 +124,11 @@ export class NodeLinkView {
     graph.graph().margintop = this.graphMarginTop;
     dagre.layout(graph);
 
-    this.renderLinks(this.graphGroup, graph);
-    this.renderNodes(this.graphGroup, graph);
+    this.createLinks(this.graphGroup, graph);
+    this.createNodes(this.graphGroup, graph);
 
     let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
     this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + this.graphYOffset + ")");
-  }
-
-  /**
-   * Adds links to the parent. They are saved in this.links.
-   *
-   * DOM structure of links:
-   *  g.link
-   *    g.link.path
-   */
-  renderLinks(parent, graph) {
-    // Function that will convert points into svg lines.
-    let line = d3.svg.line()
-      .x(function (d) {
-        return d.x;
-      })
-      .y(function (d) {
-        return d.y;
-      })
-      .interpolate("basis");
-
-    // Create groups to hold the links.
-    this.links = parent.selectAll("g.link")
-      .data(graph.edges())
-      .enter()
-      .append("g")
-      .classed("link", true);
-
-    // Actually create the paths that draw the links.
-    this.links.append("path")
-      .attr("d", function (d) {
-        return line(graph.edge(d).points)
-      });
   }
 
   /**
@@ -183,7 +139,7 @@ export class NodeLinkView {
    *    g.node.rect - outline
    *    g.node.text - label
    */
-  renderNodes(parent, graph) {
+  createNodes(parent, graph) {
     // Create groups that will hold the nodes.
     this.nodeGroup = parent.append("g")
       .classed("nodeGroup", true);
@@ -230,6 +186,49 @@ export class NodeLinkView {
   }
 
   /**
+   * Returns the node's top-left corner as a string. Used for positioning node.rects.
+   */
+  static getNodeTopLeftAsTransform(key, graph) {
+    var x = (graph.node(key).x - (graph.node(key).width / 2));
+    var y = (graph.node(key).y - (graph.node(key).height / 2));
+    return "translate(" + x + ", " + y + ")";
+  }
+
+  /**
+   * Returns the node's center as a transform string. Used for positioning node.text.
+   */
+  static getNodeCenterAsTransform(key, graph) {
+    return "translate(" + (graph.node(key).width / 2) + ", " + (graph.node(key).height / 2) + ")";
+  }
+
+  /**
+   * Called when the user mouses over a node in any view. Sets nodes that match nodeIndexes to the css class 'hovered'
+   */
+  onHoverNodes(signal, nodeIndexes) {
+    // Has this been created yet?
+    if (this.nodeGroup) {
+
+      // Are we hovering or disabling hover?
+      if (nodeIndexes) {
+
+        // Find elements for each of nodeIndexes
+        let hoveredNodes = this.nodeGroup.selectAll("g.node").filter(function (d) {
+          return nodeIndexes.indexOf(parseInt(d)) != -1;
+        });
+
+        hoveredNodes.classed("hovered", true);
+
+      } else {
+
+        // Set everything to not hovered.
+        this.nodeGroup.selectAll("g.node")
+          .classed("hovered", false);
+
+      }
+    }
+  }
+
+  /**
    * This will require clearing the svg and updating the selected paths.
    */
   setModel(model) {
@@ -244,6 +243,6 @@ export class NodeLinkView {
     this.paths = paths;
 
     this.graph = this.model.getCmGraph().getSubgraph(paths);
-    this.render(this.graph);
+    this.createNodeLinkView(this.graph);
   }
 }
