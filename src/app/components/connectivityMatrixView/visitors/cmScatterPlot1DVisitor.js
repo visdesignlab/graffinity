@@ -23,7 +23,7 @@ export class cmScatterPlot1DPreprocessor extends cmAttributeCellVisitor {
   }
 
   getValueRange() {
-    return [Math.min(d3.min(this.values), 0), d3.max(this.values)];
+    return [d3.min(this.values), d3.max(this.values)];
   }
 }
 
