@@ -1,7 +1,7 @@
 /*global d3
  */
 
-import {ScatterPlot1D} from "../svg/scatterPlot1D";
+import {visScatterPlot1D} from "../../vis/visScatterPlot1D";
 import {cmAttributeCellVisitor} from "./cmAttributeCellVisitor"
 
 /**
@@ -45,7 +45,7 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
       let group = cell.getGroup()
         .append("g");
       if (data.isVertical) {
-        new ScatterPlot1D(group, 15, 80, this.radius, values, this.valueRange, data.orientation);
+        new visScatterPlot1D(group, 15, 80, this.radius, values, this.valueRange, data.orientation);
 
         // uncomment this to create interaction group for mouse hovering
         //this.width = 15;
@@ -53,7 +53,7 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
         //this.createInteractionGroup(cell);
 
       } else {
-        new ScatterPlot1D(group, 80, 15, this.radius, values, this.valueRange, data.orientation);
+        new visScatterPlot1D(group, 80, 15, this.radius, values, this.valueRange, data.orientation);
       }
     }
   }

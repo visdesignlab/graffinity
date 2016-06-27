@@ -1,15 +1,14 @@
 /*global d3
  */
 
-/** ScattPlot1D
- * TODO - put this somewhere else with other vis classes.
+/** ScatterPlot1D
  */
-export class ScatterPlot1D {
+export class visScatterPlot1D {
 
   constructor(group, width, height, radius, values, valueRange, orientation) {
     this.radius = radius;
-    if (orientation == ScatterPlot1D.getOrientations().HORIZONTAL) {
-      this.dataScale = ScatterPlot1D.createDataScale([5, width - 5], valueRange);
+    if (orientation == visScatterPlot1D.getOrientations().HORIZONTAL) {
+      this.dataScale = visScatterPlot1D.createDataScale([5, width - 5], valueRange);
       this.dataOffset = function () {
         return height / 4;
       };
@@ -20,7 +19,7 @@ export class ScatterPlot1D {
         return this.dataOffset(d);
       };
     } else {
-      this.dataScale = ScatterPlot1D.createDataScale([height - 5, 5], valueRange);
+      this.dataScale = visScatterPlot1D.createDataScale([height - 5, 5], valueRange);
       this.dataOffset = function () {
         return width / 2;
       };
@@ -37,9 +36,9 @@ export class ScatterPlot1D {
     this.yMarkPosition = this.yMarkPosition.bind(this);
     this.dataOffset = this.dataOffset.bind(this);
 
-    this.data = ScatterPlot1D.createData(values, this.radius, this.xMarkPosition, this.yMarkPosition);
-    this.marks = ScatterPlot1D.createMarks(group, this.data, this.radius);
-    this.axis = ScatterPlot1D.createAxis(group, this.dataScale, this.dataOffset, orientation);
+    this.data = visScatterPlot1D.createData(values, this.radius, this.xMarkPosition, this.yMarkPosition);
+    this.marks = visScatterPlot1D.createMarks(group, this.data, this.radius);
+    this.axis = visScatterPlot1D.createAxis(group, this.dataScale, this.dataOffset, orientation);
 
     let mouseOverCallback = this.onMouseOverGroup.bind(this);
     let mouseOutCallback = this.onMouseOutGroup.bind(this);
@@ -54,7 +53,7 @@ export class ScatterPlot1D {
   static createAxis(group, dataScale, dataOffset, orientation) {
 
     var axis = undefined;
-    if (orientation == ScatterPlot1D.getOrientations().HORIZONTAL) {
+    if (orientation == visScatterPlot1D.getOrientations().HORIZONTAL) {
 
       var xAxis = d3.svg.axis()
         .scale(dataScale)
