@@ -75,6 +75,7 @@ export class cmNodeListRow extends cmMatrixRow {
           nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
         });
 
+        cell.isInNodeListView = true;
         cell.isAttributeCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
@@ -85,6 +86,7 @@ export class cmNodeListRow extends cmMatrixRow {
           modelRow: modelRow
         };
 
+        cell.isInNodeListView = true;
         cell.setData(data);
 
         if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
@@ -97,7 +99,7 @@ export class cmNodeListRow extends cmMatrixRow {
             colNodeIndexes: colNodeIndexes[dataIndex][j],
             modelRow: modelRow
           };
-
+          cell.minorCells[j].isInNodeListView = true;
           cell.minorCells[j].setData(data);
         }
       }
