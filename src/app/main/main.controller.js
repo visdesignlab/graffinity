@@ -41,8 +41,8 @@ export class MainController {
 
     // Setup a default query and dataset depending on our database.
 
-    this.database = "marclab";
-    //this.database = "flights";
+    //this.database = "marclab";
+    this.database = "flights";
 
     let useLargeResult = false;
     //useLargeResult = true;
