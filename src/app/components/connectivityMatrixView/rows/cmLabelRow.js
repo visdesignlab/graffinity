@@ -66,7 +66,8 @@ export class cmLabelRow extends cmMatrixRow {
               minorCell.setData({
                 name: minorColLabels[dataIndex][j],
                 isVertical: 1,
-                attributeIndex: -1
+                attributeIndex: -1,
+                nodeIndexes: [colNodeIndexes[dataIndex][j]]
               });
 
               minorCell.isAttributeCell = true;

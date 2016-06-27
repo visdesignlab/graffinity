@@ -11,6 +11,7 @@ Utils = (function () {
     getFilteredPaths: getFilteredPaths,
     getFlattenedLists: getFlattenedLists,
     getIntermediateNodesFromPaths: getIntermediateNodesFromPaths,
+    getIntersection: getIntersection,
     getNumHops: getNumHops,
     getNodesFromPaths: getNodesFromPaths,
     getUniqueValues: getUniqueValues,
@@ -108,6 +109,16 @@ Utils = (function () {
       }
     }
     return getUniqueValues(nodes);
+  }
+
+  function getIntersection(a, b) {
+    let intersection = [];
+    for(let i=0; i<a.length; ++i) {
+      if(b.indexOf(a[i]) != -1) {
+        intersection.push(a[i]);
+      }
+    }
+    return intersection;
   }
 
   function getNodesFromPaths(paths) {

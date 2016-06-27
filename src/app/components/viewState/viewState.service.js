@@ -147,6 +147,10 @@ export class ViewState {
     this.$scope.$broadcast('hoverNodes', nodes);
   }
 
+  clearSelection() {
+    this.$scope.$broadcast("clearSelection");
+  }
+
   showNodes(nodeIndexes) {
     if (nodeIndexes.length == 0) {
       return;

@@ -45,7 +45,7 @@ export class MainController {
     this.database = "flights";
 
     let useLargeResult = false;
-    useLargeResult = true;
+    //useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;

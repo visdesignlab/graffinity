@@ -519,6 +519,87 @@ export class cmModel {
     return paths;
   }
 
+  /**
+   * Find any path in the current model that has a target node in nodeIndexes.
+   */
+  getPathsWithTargets(nodeIndexes) {
+
+    let self = this;
+    let paths = [];
+
+    let matrix = self.getCurrentMatrix();
+    let colNodeIndexes = self.getColNodeIndexes();
+
+    for (var i = 0; i < matrix.length; ++i) {
+      for (var j = 0; j < matrix[i].length; ++j) {
+        if (Utils.getIntersection(nodeIndexes, colNodeIndexes[j]).length != 0) {
+          let currentPaths = matrix[i][j];
+          for (let k = 0; k < currentPaths.length; ++k) {
+            let currentTarget = currentPaths[k][currentPaths[k].length - 1];
+            if (nodeIndexes.indexOf(currentTarget) != -1) {
+              paths.push(currentPaths[k]);
+            }
+          }
+        }
+      }
+    }
+
+    return paths;
+  }
+
+  /**
+   * Find any path in the current model that has an intermediate node in nodeIndexes.
+   */
+  getPathsWithIntermediates(nodeIndexes) {
+    let self = this;
+    let paths = [];
+    let matrix = self.getCurrentMatrix();
+
+    // For each cell in the matrix...
+    for (var i = 0; i < matrix.length; ++i) {
+      for (var j = 0; j < matrix[i].length; ++j) {
+        let currentPaths = matrix[i][j];
+        // For each path in the cell...
+        for (let k = 0; k < currentPaths.length; ++k) {
+          // Only add the path if it has an intermediate node that we're looking for.
+          if (Utils.getIntersection(Utils.getIntermediateNodesFromPaths([currentPaths[k]]), nodeIndexes).length) {
+            paths.push(currentPaths[k]);
+          }
+        }
+      }
+    }
+
+    return paths;
+  }
+
+  /**
+   * Find any path in the current model that has a source node in nodeIndexes.
+   */
+  getPathsWithSources(nodeIndexes) {
+
+    let self = this;
+    let paths = [];
+
+    let matrix = self.getCurrentMatrix();
+    let rowNodeIndexes = self.getRowNodeIndexes();
+
+    for (var i = 0; i < matrix.length; ++i) {
+      if (Utils.getIntersection(nodeIndexes, rowNodeIndexes[i]).length != 0) {
+        for (var j = 0; j < matrix[i].length; ++j) {
+          let currentPaths = matrix[i][j];
+          for (let k = 0; k < currentPaths.length; ++k) {
+            let currentSource = currentPaths[k][0];
+            if (nodeIndexes.indexOf(currentSource) != -1) {
+              paths.push(currentPaths[k]);
+            }
+          }
+        }
+      }
+    }
+
+    return paths;
+  }
+
   getRowNodeIndexes() {
     var self = this;
     return self.current.rowNodeIndexes;
@@ -584,7 +665,7 @@ export class cmModel {
     }
   }
 
-  // TODO - this should match resetRows in terms of what gets created.
+// TODO - this should match resetRows in terms of what gets created.
   resetIntermediateNodes() {
     let self = this;
     let matrix = self.current.matrix;

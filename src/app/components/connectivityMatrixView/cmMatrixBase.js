@@ -45,6 +45,7 @@ import {UtilsD3} from "../utils/utilsd3"
  *
  */
 export class cmMatrixBase extends SvgGroupElement {
+
   constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
     super(svg);
     this.$log = $log;
@@ -124,6 +125,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.$scope.$on("positionHighlights", self.onPositionHighlights.bind(self));
     this.$scope.$on("hideHighlights", self.onHideHighlights.bind(self))
+    this.$scope.$on("clearSelection", self.onClearSelection.bind(self))
   }
 
   addRow(row, rowHeight) {
@@ -170,7 +172,7 @@ export class cmMatrixBase extends SvgGroupElement {
     }
 
     visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
-    visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+    visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
     this.applyVisitor(visitor);
 
     // Create controls for all attributes.
@@ -573,15 +575,25 @@ export class cmMatrixBase extends SvgGroupElement {
 
   onCellClicked(cell) {
 
-    if (this.selectedCell) {
-      this.selectedCell.interactionGroup.classed("selected", false);
-    }
+    this.viewState.clearSelection();
 
     this.selectedCell = cell;
+    cell.interactionGroup.classed("hovered", false);
     cell.interactionGroup.classed("selected", true);
 
+
     // Tell other views that we changed selection.
-    let paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
+    let paths = [];
+    if (cell.isDataCell) {
+      paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
+    } else if (cell.isColLabelCell) {
+      paths = this.model.getPathsWithTargets(cell.data.nodeIndexes);
+    } else if (cell.isRowLabelCell && !cell.isInNodeListView) {
+      paths = this.model.getPathsWithSources(cell.data.nodeIndexes);
+    } else if (cell.isRowLabelCell && cell.isInNodeListView) {
+      paths = this.model.getPathsWithIntermediates(cell.data.nodeIndexes);
+    }
+
     this.mainController.onPathsSelected(paths);
   }
 
@@ -608,6 +620,12 @@ export class cmMatrixBase extends SvgGroupElement {
     // Hide highlights
     this.$scope.$broadcast("hideHighlights");
     this.viewState.setHoveredNodes(null);
+  }
+
+  onClearSelection() {
+    if (this.selectedCell) {
+      this.selectedCell.interactionGroup.classed("selected", false);
+    }
   }
 
   /** Callback when user clicks on the column controls.
