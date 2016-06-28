@@ -190,7 +190,7 @@ export class MainController {
    * updates the legend displayed in the sidebar.
    */
   onEncodingChanged(encoding) {
-    let metrics = cmMatrixBase.getAvailableMetrics(encoding);
+    let metrics = cmMatrixBase.getAvailableMetrics(encoding, this.database);
     if (metrics) {
       this.ui.metrics = angular.copy(metrics);
       this.ui.selectedMetric = this.ui.metrics[0];

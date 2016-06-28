@@ -17,8 +17,8 @@ export class NodeLinkView {
     this.nodeHeight = 20;
     this.nodeRx = 5;
     this.nodeRy = 5;
-    this.graphNodeSep = 15;
-    this.graphRankSep = 15;
+    this.graphNodeSep = 7;
+    this.graphRankSep = 7;
     this.graphMarginTop = 80;
     this.rankdir = "LR";
 

@@ -9,10 +9,11 @@ export class cmColorMapVisitorBase extends cmCellVisitor {
   constructor(width, height) {
     super(width, height);
     this.metric = undefined;
+    this.graph = undefined;
   }
 
   applyMetric(paths) {
-    return this.metric(paths);
+    return this.metric(paths, this.graph);
   }
 
   setMetricFunction(metric) {
