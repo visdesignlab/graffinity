@@ -43,7 +43,6 @@ export class cmGraph {
         throw 'Error creating edge in graph! ' + sourceId + ', ' + targetId;
       }
 
-      console.log(edge);
       attributes = {
         linkedStructures: edge.LinkedStructures,
         sourceStructureId: edge.SourceStructureID,
@@ -53,7 +52,6 @@ export class cmGraph {
       };
 
       this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
-      console.log(sourceId, targetId, this.graph.edge(sourceId, targetId, edge.ID));
     }
   }
 

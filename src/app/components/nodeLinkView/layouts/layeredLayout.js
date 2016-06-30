@@ -1,12 +1,11 @@
 /*globals d3, dagre
  */
-export class NodeLinkView {
+export class LayeredLayout {
   /**
    * Class for displaying node-link diagram of the currently selected paths.
    */
-  constructor(svg, model, $log, scope, viewState, mainController) {
+  constructor(svg, model, $log, viewState, mainController) {
     this.model = model;
-    this.scope = scope;
     this.svg = svg;
     this.$log = $log;
     this.viewState = viewState;
@@ -25,9 +24,6 @@ export class NodeLinkView {
     // Settings for positioning the graph
     this.graphYOffset = 80;
     this.graphGroup = this.svg.append("g");
-
-    let onHoverNodes = this.onHoverNodes.bind(this);
-    scope.$on("hoverNodes", onHoverNodes);
   }
 
   /**
@@ -86,9 +82,11 @@ export class NodeLinkView {
   }
 
   /**
-   * Computes a dagre layout of the graph. Convert the layout into an svg. Positions the graph inside the column.
+   * Computes a dagre layout of the graph.
+   * Convert the layout into an svg.
+   * Positions the graph inside the column.
    */
-  createNodeLinkView(graph) {
+  createLayout(graph) {
 
     // get the column containing the svg
     let element = d3.select("#node-link-column")[0][0];
@@ -108,7 +106,7 @@ export class NodeLinkView {
     // Prepare to render the graph.
     let self = this;
 
-    // Set the node sizes
+    // Set the node sizes.
     graph.nodes().forEach(function (key) {
       let node = graph.node(key);
       node.rx = self.nodeRx;
@@ -132,7 +130,8 @@ export class NodeLinkView {
   }
 
   /**
-   * Adds nodes to the parent. They are saved in this.nodes.
+   * Adds nodes to the parent.
+   * They are saved in this.nodes.
    *
    * DOM structure of nodes
    *  g.node
@@ -149,7 +148,7 @@ export class NodeLinkView {
       .enter()
       .append("g")
       .attr("transform", function (d) {
-        return NodeLinkView.getNodeTopLeftAsTransform(d, graph);
+        return LayeredLayout.getNodeTopLeftAsTransform(d, graph);
       })
       .classed("node", true);
 
@@ -177,12 +176,11 @@ export class NodeLinkView {
         return self.model.getMajorLabels([d])[0];
       })
       .attr("transform", function (d) {
-        return NodeLinkView.getNodeCenterAsTransform(d, graph);
+        return LayeredLayout.getNodeCenterAsTransform(d, graph);
       });
 
     this.addHoverCallbacks(this.nodeGroup, "g.node");
     this.addHoverCallbacks(this.nodeGroup, "g.text");
-
   }
 
   /**
@@ -202,7 +200,8 @@ export class NodeLinkView {
   }
 
   /**
-   * Called when the user mouses over a node in any view. Sets nodes that match nodeIndexes to the css class 'hovered'
+   * Called when the user mouses over a node in any view.
+   * Sets nodes that match nodeIndexes to the css class 'hovered'
    */
   onHoverNodes(signal, nodeIndexes) {
     // Has this been created yet?
@@ -238,11 +237,8 @@ export class NodeLinkView {
   /**
    * Updates paths displayed in the node link view.
    */
-  setSelectedPaths(paths) {
-    this.clear();
-    this.paths = paths;
-
-    this.graph = this.model.getCmGraph().getSubgraph(paths);
-    this.createNodeLinkView(this.graph);
+  setGraph(graph) {
+    this.graph = graph;
+    this.createLayout(this.graph);
   }
 }

@@ -110,13 +110,11 @@
 
     <!-- Columns holding the node link view -->
     <span ng-class="main.nodeLinkClass" ng-show="main.nodeLinkClass" id="node-link-column">
-      <span class="matrix-view-attribute-controls">
-        <h4>
-          <span class="main-icon-control fa fa-close" ng-click="main.setNodeLinkVisibility(false)"></span>
-          Node-link View
-        </h4>
-        </span>
-      <svg id="node-link-svg"></svg>
+      <node-link-view-directive
+        set-node-link-visibility="main.setNodeLinkVisibility(false)"
+        view-state="main.viewState"
+        main-controller="main">
+      </node-link-view-directive>
     </span>
   </div>
 
