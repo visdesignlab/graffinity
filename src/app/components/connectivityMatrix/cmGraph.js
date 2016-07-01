@@ -47,10 +47,11 @@ export class cmGraph {
         linkedStructures: edge.LinkedStructures,
         sourceStructureId: edge.SourceStructureID,
         targetStructureId: edge.TargetStructureID,
-        type: edge.Type
+        type: edge.Type,
+        carrier: edge.Carrier
       };
 
-      this.graph.setEdge(sourceId, targetId, attributes);
+      this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
     }
   }
 

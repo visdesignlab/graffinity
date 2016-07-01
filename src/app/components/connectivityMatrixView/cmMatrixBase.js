@@ -252,12 +252,16 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
-  static getAvailableMetrics(encoding) {
+  static getAvailableMetrics(encoding, database) {
+
+    let metrics = null;
     if (encoding == "colormap") {
-      return ["path count", "node count"];
-    } else {
-      return null;
+      metrics = ["path count", "node count"];
+      if (database == "flights") {
+        metrics.push("carrier count");
+      }
     }
+    return metrics;
   }
 
   static getAvailableEncodings() {
@@ -366,6 +370,20 @@ export class cmMatrixBase extends SvgGroupElement {
     } else if (metric == "node count") {
       return function (paths) {
         return Utils.getIntermediateNodesFromPaths(paths).length;
+      }
+    } else if (metric == "carrier count") {
+      return function (paths, graph) {
+        let carriers = [];
+        for (var i = 0; i < paths.length; ++i) {
+          let edge = paths[i][1];
+          //console.log(paths[i], paths[i][0], paths[i][2], edge);
+          let carrier = graph.graph.edge(paths[i][0], paths[i][2], edge).carrier;
+          //console.log(carrier);
+          if (carriers.indexOf(carrier) == -1) {
+            carriers.push(carrier);
+          }
+        }
+        return carriers.length;
       }
     }
   }
@@ -862,12 +880,14 @@ export class cmMatrixBase extends SvgGroupElement {
       preprocessor = new cmColorMapPreprocessor();
       preprocessor.setNodeFilter(this.viewState.isNodeHidden);
       preprocessor.setMetricFunction(metricFunction);
+      preprocessor.graph = this.model.graph;
       this.applyVisitor(preprocessor);
 
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
       visitor.setCallbacks(clicked, mouseover, mouseout);
       visitor.setNodeFilter(this.viewState.isNodeHidden);
       visitor.setMetricFunction(metricFunction);
+      visitor.graph = this.model.graph;
       this.applyVisitor(visitor);
 
       this.legend = new cmColorMapLegend(visitor);

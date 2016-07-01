@@ -8,7 +8,7 @@ import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, NodeLinkViewFactory) {
+              viewState, modalService) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -76,9 +76,6 @@ export class MainController {
     let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = cmModelFactory.createModel(graph, matrix);
 
-    this.nodeLinkSvg = d3.select("#node-link-svg");
-    this.nodeLinkView = NodeLinkViewFactory.createNodeLinkView(this.nodeLinkSvg, this.model, this.$scope, this.viewState, this);
-
     // Wait until after the current digest cycle to activate the ui.
     let self = this;
     $timeout(function () {
@@ -126,8 +123,7 @@ export class MainController {
       this.matrixManager.setModel(model);
       this.nodeListManager.setModel(model);
     }
-
-    this.nodeLinkView.setModel(model);
+    this.$scope.$broadcast("setModel", model);
     this.viewState.setCurrentModel(model);
     this.onEncodingChanged(encoding);
   }
@@ -190,7 +186,7 @@ export class MainController {
    * updates the legend displayed in the sidebar.
    */
   onEncodingChanged(encoding) {
-    let metrics = cmMatrixBase.getAvailableMetrics(encoding);
+    let metrics = cmMatrixBase.getAvailableMetrics(encoding, this.database);
     if (metrics) {
       this.ui.metrics = angular.copy(metrics);
       this.ui.selectedMetric = this.ui.metrics[0];
@@ -217,7 +213,7 @@ export class MainController {
     this.$scope.$apply();
     let self = this;
     this.$timeout(function () {
-      self.nodeLinkView.setSelectedPaths(paths);
+      self.$scope.$broadcast("setSelectedPaths", paths);
     }, 0);
   }
 
@@ -232,10 +228,6 @@ export class MainController {
 
     // Reset the node-link view
     self.setNodeLinkVisibility(false);
-    self.nodeLinkView.clear();
-
-    // remove svg when query button pressed
-    // this.svg.selectAll("*").remove();
 
     // remove legend when query button pressed
     d3.select("#encoding-legend")
@@ -373,10 +365,10 @@ export class MainController {
 
       // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
       // getting pushed onto different lines.
-      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 7);
+      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
 
-      this.nodeLinkClass = "col-lg-2";
-      this.matrixClass = "col-lg-7";
+      this.nodeLinkClass = "col-lg-3";
+      this.matrixClass = "col-lg-6";
     }
   }
 
