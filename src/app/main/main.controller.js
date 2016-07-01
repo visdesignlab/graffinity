@@ -365,10 +365,10 @@ export class MainController {
 
       // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
       // getting pushed onto different lines.
-      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 7);
+      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
 
-      this.nodeLinkClass = "col-lg-2";
-      this.matrixClass = "col-lg-7";
+      this.nodeLinkClass = "col-lg-3";
+      this.matrixClass = "col-lg-6";
     }
   }
 
