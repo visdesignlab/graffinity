@@ -14,7 +14,7 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
 
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
-    // colNodeAttributes[i][j] = attributes[i] for col[j]
+    // colAttributes[i][j] = attributes[i] for col[j]
     for (var i = 0; i < this.numHeaderCols; ++i) {
       this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }

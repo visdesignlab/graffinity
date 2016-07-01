@@ -15,6 +15,8 @@ export class cmModel {
 
     self.areColsCollapsed = false;
     self.areRowsCollapsed = false;
+
+    self.avilableAttributes = null;
   }
 
   collapseCols(colIndexesToCollapse) {
@@ -259,6 +261,21 @@ export class cmModel {
     self.current.rowNodeIndexes = newRowNodeIndexes;
   }
 
+  getAttributeType(attribute) {
+    if (this.getCmGraph().getQuantNodeAttrNames().indexOf(attribute) != -1) {
+      return "quantitative"
+    } else {
+      return "categorical";
+    }
+  }
+
+  getAvailableAttributes() {
+    if (this.availableAttributes == null) {
+      this.availableAttributes = this.getCmGraph().getQuantNodeAttrNames();
+    }
+    return this.availableAttributes;
+  }
+
   getAvailableIntermediateNodeStats() {
     return [['count']]; // list of lists to match col node index format.
   }
@@ -439,6 +456,63 @@ export class cmModel {
 
     return Utils.getNodesFromPaths(paths);
 
+  }
+
+  // getRowAttributes() {
+  //   let self = this;
+  //   let attributes = self.getAvailableAttributes();
+  //   for(let i=0; i<attributes.length; ++i) {
+  //         let rowNodeAttributes = angular.copy(rowAttributes[0]);
+  //   for (i = 0; i < rowNodeAttributes.length; ++i) {
+  //     rowNodeAttributes[i] = [rowNodeAttributes[i]];
+  //   }
+  //
+  //   for (i = 1; i < this.attributes.length; ++i) {
+  //     for (var j = 0; j < rowAttributes[i].length; ++j) {
+  //       rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
+  //     }
+  //   }
+  //   }
+  // }
+  //
+
+  getAttributeValues(nodeIndexes) {
+    let self = this;
+    let attributes = self.getAvailableAttributes();
+    let attributeValues = [];
+    for (let i = 0; i < attributes.length; ++i) {
+      let values = self.getNodeAttrs(nodeIndexes, attributes[i]);
+      attributeValues.push(values);
+    }
+    return attributeValues;
+  }
+
+  getRowNodeAttributeValues() {
+    let self = this;
+    let rowAttributes = self.getRowAttributeValues();
+    if (rowAttributes.length > 0) {
+      let rowNodeAttributes = angular.copy(rowAttributes[0]);
+      for (let i = 0; i < rowNodeAttributes.length; ++i) {
+        rowNodeAttributes[i] = [rowNodeAttributes[i]];
+      }
+
+      for (let i = 1; i < self.getAvailableAttributes().length; ++i) {
+        for (let j = 0; j < rowAttributes[i].length; ++j) {
+          rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
+        }
+      }
+      return rowNodeAttributes;
+    }
+  }
+
+  getRowAttributeValues() {
+    let self = this;
+    return self.getAttributeValues(self.getRowNodeIndexes());
+  }
+
+  getColAttributeValues() {
+    let self = this;
+    return self.getAttributeValues(self.getColNodeIndexes());
   }
 
   /**
@@ -635,6 +709,7 @@ export class cmModel {
     self.resetRows();
     self.resetCols();
     self.resetIntermediateNodes();
+    self.availableAttributes = null;
   }
 
   resetCols() {

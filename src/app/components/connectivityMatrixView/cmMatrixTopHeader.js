@@ -23,7 +23,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
    */
   createRows(model) {
     // Populate the row/col node attributes.
-    let colNodeAttributes = this.colNodeAttributes;
+    let colAttributes = this.colAttributes;
 
     // Controls row is the only one with a onColControlsClicked callback.
     let row = new cmControlRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
@@ -35,7 +35,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
 
     for (let i = 0; i < this.attributes.length; ++i) {
       let attributeRow = new cmAttributeRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols,
-        this.colWidth, this.rowHeightAttr, false, colNodeAttributes[i], this, i, this.attributes[i],
+        this.colWidth, this.rowHeightAttr, false, colAttributes[i], this, i, this.attributes[i],
         this.colAttributeNodeGroup, model.areColsCollapsed);
 
       this.addRow(attributeRow, this.rowHeightAttr);

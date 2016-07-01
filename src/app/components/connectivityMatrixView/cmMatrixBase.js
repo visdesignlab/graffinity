@@ -139,11 +139,13 @@ export class cmMatrixBase extends SvgGroupElement {
     this.addChild(row);
   }
 
+
   applyVisitor(visitor) {
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].apply(visitor);
     }
   }
+
 
   createAttributeEncodings() {
     let visitor = new cmClearVisitor();
@@ -449,27 +451,9 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   initAttributeData(model) {
-    let colNodeAttributes = [];
-    let rowAttributes = [];
-    for (var i = 0; i < this.attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
-      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
-    }
-
-    let rowNodeAttributes = angular.copy(rowAttributes[0]);
-    for (i = 0; i < rowNodeAttributes.length; ++i) {
-      rowNodeAttributes[i] = [rowNodeAttributes[i]];
-    }
-
-    for (i = 1; i < this.attributes.length; ++i) {
-      for (var j = 0; j < rowAttributes[i].length; ++j) {
-        rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
-      }
-    }
-
-    this.rowAttributes = rowAttributes;
-    this.rowNodeAttributes = rowNodeAttributes;
-    this.colNodeAttributes = colNodeAttributes;
+    this.rowAttributes = this.model.getRowAttributeValues();
+    this.rowNodeAttributes = this.model.getRowNodeAttributeValues();
+    this.colAttributes = this.model.getColAttributeValues();
   }
 
   /**
@@ -477,7 +461,7 @@ export class cmMatrixBase extends SvgGroupElement {
    * Creates this.isAttributeRow/Col visible.
    */
   initAttributeState(model) {
-    let attributes = model.graph.getQuantNodeAttrNames();
+    let attributes = model.getAvailableAttributes();
     this.attributes = attributes;
 
     // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
