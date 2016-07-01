@@ -56,7 +56,7 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
       .range(colorRange)
       .domain(domain);
 
-    colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Oranges, preprocessor.nodeRange);
+    colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Greens, preprocessor.nodeRange);
     domain = [0, 1];
     if (colorRange.length != 1) {
       domain = preprocessor.nodeRange;

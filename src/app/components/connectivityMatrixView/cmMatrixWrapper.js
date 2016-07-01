@@ -105,9 +105,16 @@ export class cmMatrixWrapper extends cmWrapperBase {
   }
 
   setModel(model) {
+
     for (let i = 0; i < this.matrices.length; ++i) {
+      // matrix.setModel creates a bunch of rows
       this.matrices[i].setModel(model);
       this.matrices[i].setPosition(1, 1);
+
+      // Set position of matrix rows without animation
+      this.matrices[i].setUseAnimation(false);
+      this.matrices[i].updatePositions(this.matrices[i].rowPerm, this.matrices[i].colPerm);
+      this.matrices[i].setUseAnimation(true);
     }
 
     this.updateElementPositions();
