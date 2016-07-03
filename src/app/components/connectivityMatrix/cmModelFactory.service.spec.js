@@ -372,7 +372,7 @@ describe('cmModelFactory', () => {
   it('cmModel - getAvailableAttributes', inject(($httpBackend, $q, cmModelFactory)=> {
     requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
       let attributes = model.getAvailableAttributes();
-      expect(attributes.length).toEqual(3);
+      expect(attributes.length).toEqual(4);
     });
     $httpBackend.flush();
   }));

@@ -10,6 +10,7 @@ export class cmColorMapVisitorBase extends cmCellVisitor {
     super(width, height);
     this.metric = undefined;
     this.graph = undefined;
+    this.visitDataCells = true;
   }
 
   applyMetric(paths) {
@@ -26,10 +27,11 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
     super();
     this.setRange = [1, 1];
     this.nodeRange = [1, 0];
+    this.visitDataCells = true;
   }
 
   apply(cell) {
-    if (cell.isHeaderCell || !cell.isDataCell) {
+    if (!this.shouldVisitCell(cell)) {
       return;
     }
     let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
@@ -45,6 +47,8 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
 export class cmColorMapVisitor extends cmColorMapVisitorBase {
   constructor(preprocessor, width, height) {
     super(width, height);
+    this.visitDataCells = true;
+
     let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
     let domain = [0, 1];
 
@@ -70,7 +74,7 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
   }
 
   apply(cell) {
-    if (!cell.isDataCell) {
+    if (!this.shouldVisitCell(cell)) {
       return;
     }
 

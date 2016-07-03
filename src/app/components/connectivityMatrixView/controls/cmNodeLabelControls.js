@@ -1,4 +1,4 @@
-import {SvgGroupElement} from "./svgGroupElement"
+import {SvgGroupElement} from "./../svgGroupElement"
 export class cmNodeLabelControls extends SvgGroupElement {
   constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels) {
     super(parent);

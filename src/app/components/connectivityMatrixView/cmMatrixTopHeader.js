@@ -46,7 +46,7 @@ export class cmMatrixTopHeader extends cmMatrixBase {
     let minorColLabels = model.getMinorColLabels();
 
     let labelRow = new cmLabelRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-      this.labelRowHeight, majorColLabels, minorColLabels, this, model.areColsCollapsed);
+      this.labelRowHeight, majorColLabels, minorColLabels, this, this.colAttributeNodeGroup, model.areColsCollapsed);
 
     this.addRow(labelRow, this.labelRowHeight);
   }

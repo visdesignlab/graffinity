@@ -106,10 +106,12 @@ export class cmNodeListControls extends cmMatrixBase {
     let filterNodes = this.onFilterNodes.bind(this);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
 
-    // create labels for all the quantitative attribute columns/rows
-    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
-    this.applyVisitor(visitor);
+    for (var i = 0; i < this.attributes.length; ++i) {
+      // create labels for all the quantitative attribute columns/rows
+      visitor = new cmAttributeLabelVisitor(i, this.rowAttributeNodeGroup, sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
+        this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
+      this.applyVisitor(visitor);
+    }
 
     // create labels for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,

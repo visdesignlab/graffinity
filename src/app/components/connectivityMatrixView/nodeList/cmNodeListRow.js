@@ -3,7 +3,8 @@ import {cmDataRow} from "../cmDataRow"
 
 export class cmNodeListRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label, minorLabels, rowNodeAttributes, matrix, attributeNodeGroup) {
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label,
+              minorLabels, rowNodeAttributes, matrix, attributeNodeGroup) {
     super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
     this.unrollControls = [];
     this.rollupControls = [];
@@ -69,10 +70,11 @@ export class cmNodeListRow extends cmMatrixRow {
       } else if (this.matrix.isLabelCell(i)) {
 
         cell.setData({
-          name: label,
+          values: [label],
           isVertical: 0,
           attributeIndex: -1,
-          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          attributeNodeGroup: attributeNodeGroup
         });
 
         cell.isInNodeListView = true;

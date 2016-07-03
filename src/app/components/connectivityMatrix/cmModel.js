@@ -272,6 +272,7 @@ export class cmModel {
   getAvailableAttributes() {
     if (this.availableAttributes == null) {
       this.availableAttributes = this.getCmGraph().getQuantNodeAttrNames();
+      this.availableAttributes = this.availableAttributes.concat(this.getCmGraph().getCategoricalNodeAttrNames());
     }
     return this.availableAttributes;
   }
@@ -457,24 +458,6 @@ export class cmModel {
     return Utils.getNodesFromPaths(paths);
 
   }
-
-  // getRowAttributes() {
-  //   let self = this;
-  //   let attributes = self.getAvailableAttributes();
-  //   for(let i=0; i<attributes.length; ++i) {
-  //         let rowNodeAttributes = angular.copy(rowAttributes[0]);
-  //   for (i = 0; i < rowNodeAttributes.length; ++i) {
-  //     rowNodeAttributes[i] = [rowNodeAttributes[i]];
-  //   }
-  //
-  //   for (i = 1; i < this.attributes.length; ++i) {
-  //     for (var j = 0; j < rowAttributes[i].length; ++j) {
-  //       rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
-  //     }
-  //   }
-  //   }
-  // }
-  //
 
   getAttributeValues(nodeIndexes) {
     let self = this;
@@ -701,6 +684,10 @@ export class cmModel {
       labels.push([self.getNodeAttrs([nodeIndexesLists[i]], groupAttr)[0][0]]);
     }
     return labels;
+  }
+
+  isCategoricalAttribute(attribute) {
+    return this.getCmGraph().getCategoricalNodeAttrNames().indexOf(attribute) != -1;
   }
 
   reset() {

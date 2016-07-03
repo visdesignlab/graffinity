@@ -3,7 +3,7 @@ import {cmMatrixRow} from "./cmMatrixRow"
 export class cmLabelRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels, matrix,
-              areColsCollapsed) {
+               attributeNodeGroup, areColsCollapsed) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, false, matrix, areColsCollapsed);
 
     this.unrollControls = [];
@@ -51,10 +51,11 @@ export class cmLabelRow extends cmMatrixRow {
 
         cell.isColLabelCell = true;
         cell.setData({
-          name: majorColLabels[dataIndex],
+          values: [majorColLabels[dataIndex]],
           isVertical: 1,
           attributeIndex: -1,
-          nodeIndexes: colNodeIndexes[dataIndex]
+          nodeIndexes: colNodeIndexes[dataIndex],
+          attributeNodeGroup: attributeNodeGroup
         });
 
         cell.isAttributeCell = true;
@@ -64,10 +65,11 @@ export class cmLabelRow extends cmMatrixRow {
             if (minorCell) {
               minorCell.isColLabelCell = true;
               minorCell.setData({
-                name: minorColLabels[dataIndex][j],
+                values: [minorColLabels[dataIndex][j]],
                 isVertical: 1,
                 attributeIndex: -1,
-                nodeIndexes: [colNodeIndexes[dataIndex][j]]
+                nodeIndexes: [colNodeIndexes[dataIndex][j]],
+                attributeNodeGroup: attributeNodeGroup
               });
 
               minorCell.isAttributeCell = true;

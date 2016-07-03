@@ -1,5 +1,10 @@
 import {cmCellVisitor} from "./cmCellVisitors"
-import {cmNodeLabelControls} from "../cmNodeLabelControls"
+import {cmNodeLabelControls} from "../controls/cmNodeLabelControls"
+
+/**
+ * Class for creating the 'id' label above the 'id' row and columns. This class is unique because the 'id' is not
+ * aligned with the other attributes. There are a lot of similarities here though.
+ */
 export class cmNodeLabelVisitor extends cmCellVisitor {
   constructor(onSortRows, onSortCols, onHideRow, onHideCol, rowHeight, colWidth, rowHeightAttr, colWidthAttr, onFilterNodes, onFilterAttributes) {
     super();

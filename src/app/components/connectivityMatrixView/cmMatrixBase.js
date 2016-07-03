@@ -16,6 +16,8 @@ import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributes
 import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
 import {cmHoverVisitor} from "./visitors/cmHoverVisitor"
 
+import {cmCategoricalAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
+
 import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
@@ -148,33 +150,11 @@ export class cmMatrixBase extends SvgGroupElement {
 
 
   createAttributeEncodings() {
+
+    // Clear attributes and attribute labels
     let visitor = new cmClearVisitor();
     visitor.setClearAttributeCells(true);
     visitor.setClearAttributeLabelCells(true);
-    this.applyVisitor(visitor);
-
-    // Create visual encodings for all the quantitative attributes.
-    let isNodeHidden = this.viewState.isNodeHidden;
-    for (var i = 0; i < this.attributes.length; ++i) {
-      for (var j = 0; j < this.numAttributeNodeGroups; ++j) {
-        let preprocessor = new cmScatterPlot1DPreprocessor(i);
-        preprocessor.setAttributeNodeGroup(j);
-        preprocessor.setNodeFilter(isNodeHidden);
-        this.applyVisitor(preprocessor);
-        let valueRange = preprocessor.getValueRange();
-        visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
-        visitor.setNodeFilter(isNodeHidden);
-        visitor.setAttributeNodeGroup(j);
-
-        // Uncomment this to enable hovering on the node attributes.
-        // visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
-
-        this.applyVisitor(visitor);
-      }
-    }
-
-    visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
-    visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
     this.applyVisitor(visitor);
 
     // Create controls for all attributes.
@@ -184,13 +164,67 @@ export class cmMatrixBase extends SvgGroupElement {
     let hideCols = this.onHideAttributeCol.bind(this);
     let filterNodes = this.onFilterNodes.bind(this);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
+    let filterCategoricalAttributes = function () {
+      alert("filtering categorical attributes not implemented");
+    };
 
-    // create labels for all the quantitative attribute columns/rows
-    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
-    this.applyVisitor(visitor);
+    // Create visual encodings for all the quantitative attributes.
+    let isNodeHidden = this.viewState.isNodeHidden;
 
-    // create labels for the 'labels' or 'id' column/row
+    // For all attributes...
+    for (let i = 0; i < this.attributes.length; ++i) {
+      let attribute = this.attributes[i];
+
+      // Is the attribute categorical?
+      if (this.model.isCategoricalAttribute(attribute)) {
+
+        // For all of the attribute groups...
+        for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
+
+          // Create the attribute encoding
+          visitor = new cmStringAttributeVisitor(i, j, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+          this.applyVisitor(visitor);
+
+          // Create the attribute label and scent.
+          visitor = new cmCategoricalAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
+            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterCategoricalAttributes);
+          this.applyVisitor(visitor);
+        }
+
+      } else { // the attribute must be quantitative
+
+        for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
+
+          // Assume only one encoding per attribute
+          let preprocessor = new cmScatterPlot1DPreprocessor(i, j);
+          preprocessor.setNodeFilter(isNodeHidden);
+          this.applyVisitor(preprocessor);
+
+          let valueRange = preprocessor.getValueRange();
+          visitor = new cmScatterPlot1DVisitor(i, j, this.rowHeight / 4, valueRange);
+          visitor.setNodeFilter(isNodeHidden);
+
+          // Uncomment this to enable hovering on the node attributes.
+          // visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+
+          this.applyVisitor(visitor);
+
+          // create labels for all the quantitative attribute columns/rows
+          visitor = new cmAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
+            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
+          this.applyVisitor(visitor);
+        }
+      }
+    }
+
+    // Done with attributes, now create the "ids"
+    for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
+      visitor = new cmStringAttributeVisitor(-1, j, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+      visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+      this.applyVisitor(visitor);
+    }
+
+    // Create controls for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
       this.labelRowHeight, this.colWidthLabel, filterNodes, filterAttributes);
     visitor.setCreateColumnLabels(true);
@@ -451,9 +485,9 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   initAttributeData(model) {
-    this.rowAttributes = this.model.getRowAttributeValues();
-    this.rowNodeAttributes = this.model.getRowNodeAttributeValues();
-    this.colAttributes = this.model.getColAttributeValues();
+    this.rowAttributes = model.getRowAttributeValues();
+    this.rowNodeAttributes = model.getRowNodeAttributeValues();
+    this.colAttributes = model.getColAttributeValues();
   }
 
   /**
