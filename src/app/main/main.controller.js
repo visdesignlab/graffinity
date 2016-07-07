@@ -65,8 +65,32 @@ export class MainController {
 
     } else if (this.database == "flights") {
 
-      jsonGraph = mock.flightResult.graph;
-      jsonMatrix = mock.flightResult.matrix;
+      if (useLargeResult) {
+        jsonGraph = mock.flightResult.graph;
+        jsonMatrix = mock.flightResult.matrix;
+      } else {
+        jsonGraph = mock.smallFlightResult.graph;
+        jsonMatrix = mock.smallFlightResult.matrix;
+      }
+
+      /*
+       3-hops - 2 total
+       PDX -> LAS -> DTW -> BOS x2
+
+       2-hops - 10 total
+       LAX -> DEN -> BOS x2
+       SFO -> LAX -> BOS x2
+       SFO -> IAD -> BOS x2
+       SFO -> HNL -> JFK x2
+       PDX -> IAD -> BOS x1
+       PDX -> LAS -> BOS x1
+
+       1-hop - 5 total
+       LAX -> PDX x2
+       SFO -> JFK x2
+       PDX -> BOS x1
+       */
+
       this.defaultQuery = "MATCH p = (s)-[x:FLIGHT]->(i)-[y:FLIGHT]->(t)  WHERE s.state in ['CA', 'OR', 'WA']  AND t.state in ['CT', 'ME', 'MA', 'RI', 'NH', 'VT'] AND x.carrier = y.carrier AND x.arr_time < y.dep_time RETURN p"
 
     }
