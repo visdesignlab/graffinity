@@ -14,8 +14,6 @@ export class Layout {
     // Settings for positioning the graph
     this.graphYOffset = 80;
     this.graphGroup = this.svg.append("g");
-
-    this.$log.debug("superclass!!!  woot")
   }
 
   /**
