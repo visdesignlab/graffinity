@@ -3,7 +3,7 @@
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
-
+import {ViewState} from "../components/viewState/viewState.service"
 import {Utils} from "../components/utils/utils";
 
 export class MainController {
@@ -333,41 +333,45 @@ export class MainController {
    * histogram of 'attribute' for all nodes.
    */
   openNodeAttributeFilter(attribute, nodeIndexes, nodeAttributeGroup) {
-    // Get lists of all nodes and their attributes
-    nodeIndexes = Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexes));
+
+    let useCategoricalFilter = false;
+
+    if (attribute == 'id') {
+      attribute = this.model.getCmGraph().getNodeIdName();
+      useCategoricalFilter = true;
+    } else {
+      useCategoricalFilter = this.model.isCategoricalAttribute(attribute);
+    }
+
     let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
-    let range = this.viewState.getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes);
 
-    // When the modal is finished, save the range.
-    let self = this;
-    let callback = function (result) {
-      let attribute = result.attribute;
-      let range = result.range;
-      self.viewState.setFilterRange(attribute, nodeAttributeGroup, range);
-      self.updateLegend();
-    };
+    if (useCategoricalFilter) {
 
-    // Open the modal.
-    this.modalService.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
-  }
+      nodeAttributes = Utils.getUniqueValues(nodeAttributes);
+      let list = this.viewState.getOrCreateFilterValues(attribute, nodeAttributeGroup);
+      let isValueSelected = ViewState.getFilterValuesAsSelection(nodeAttributes, list);
 
-  /**
-   * Called when the user clicks 'filter' for the node Ids. Opens a modal containing a checklist of nodes ids.
-   */
-  openNodeIndexFilter() {
-    let nodeIndexes = this.model.getFlattenedNodeIndexes();
+      let modalSuccess = function (selection) {
+        this.viewState.setFilterValuesFromSelection(attribute, nodeAttributeGroup, selection);
+      }.bind(this);
 
-    // "selected" nodes are visible. Unselected nodes are currently hidden.
-    let isNodeSelected = this.viewState.getHiddenNodesAsSelection(nodeIndexes);
+      this.modalService.getSelectionFromList("Select " + attribute, nodeAttributes, isValueSelected, modalSuccess);
 
-    // Tell viewState the user updated visible nodes. This causes viewState to broadcast changes and ultimately
-    // updates the nodes this is displaying.
-    let modalSuccess = function (selection) {
-      this.viewState.setHiddenNodesFromSelection(selection);
-    };
-    modalSuccess = modalSuccess.bind(this);
+    } else {
 
-    this.modalService.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
+      let range = this.viewState.getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes);
+
+      // When the modal is finished, save the range.
+      let callback = function (result) {
+        let attribute = result.attribute;
+        let range = result.range;
+        this.viewState.setFilterRange(attribute, nodeAttributeGroup, range);
+        this.updateLegend();
+      }.bind(this);
+
+      // Open the modal.
+      this.modalService.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
+    }
   }
 
   /**

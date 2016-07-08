@@ -1,12 +1,15 @@
 import {SvgGroupElement} from "./../svgGroupElement"
 export class cmNodeLabelControls extends SvgGroupElement {
-  constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels) {
+  constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels, attributeNodeGroup) {
     super(parent);
 
     this.onSortRows = onSortRows;
     this.onSortCols = onSortCols;
     this.onFilter = onFilter;
     this.nodeIndexes = nodeIndexes;
+    this.attributeNodeGroup = attributeNodeGroup;
+    this.name = name;
+
 
     let group = this.getGroup();
 
@@ -63,7 +66,7 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .classed("fa-filter", true)
       .attr("float", "left")
       .on("click", function () {
-        self.onFilter(self.name, self.filterNodeIndexes, self.filterAttributeGroup);
+        self.onFilter(self.name, self.nodeIndexes, self.attributeNodeGroup);
       });
 
     controls.append("i")

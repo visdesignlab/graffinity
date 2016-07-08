@@ -162,11 +162,8 @@ export class cmMatrixBase extends SvgGroupElement {
     let sortCols = this.onSortColsByAttribute.bind(this);
     let hideRows = this.onHideAttributeRow.bind(this);
     let hideCols = this.onHideAttributeCol.bind(this);
-    let filterNodes = this.onFilterNodes.bind(this);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
-    let filterCategoricalAttributes = function () {
-      alert("filtering categorical attributes not implemented");
-    };
+
 
     // Create visual encodings for all the quantitative attributes.
     let isNodeHidden = this.viewState.isNodeHidden;
@@ -187,7 +184,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
           // Create the attribute label and scent.
           visitor = new cmCategoricalAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
-            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterCategoricalAttributes);
+            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
           this.applyVisitor(visitor);
         }
 
@@ -211,7 +208,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
           // create labels for all the quantitative attribute columns/rows
           visitor = new cmAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
-            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
+            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
           this.applyVisitor(visitor);
         }
       }
@@ -226,7 +223,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     // Create controls for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight, this.colWidthLabel, filterNodes, filterAttributes);
+      this.labelRowHeight, this.colWidthLabel, filterAttributes, filterAttributes);
     visitor.setCreateColumnLabels(true);
     this.applyVisitor(visitor);
 
@@ -504,7 +501,7 @@ export class cmMatrixBase extends SvgGroupElement {
       this.isAttributeColVisible = {};
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = false;
+        this.isAttributeColVisible[attributes[i]] = true;
         this.isAttributeRowVisible[attributes[i]] = false;
       }
     }
@@ -702,13 +699,6 @@ export class cmMatrixBase extends SvgGroupElement {
     modalSuccess = modalSuccess.bind(this);
 
     this.modalService.getSelectionFromList("Select attributes", attributes, isAttributeVisible, modalSuccess);
-  }
-
-  /**
-   * Called when the user clicked on the 'filter' icon of node ids. Main controller will get new filter.
-   */
-  onFilterNodes() {
-    this.mainController.openNodeIndexFilter();
   }
 
   onHideAttributeRow(attributeIndex, isReceiver, skipUpdate) {

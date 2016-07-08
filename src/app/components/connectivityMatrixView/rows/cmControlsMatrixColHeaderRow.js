@@ -43,7 +43,9 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
         cell.setData({
           name: "id",
           isVertical: 0,
-          attributeIndex: -1
+          nodeIndexes: rowNodeIndexes,
+          attributeIndex: -1,
+          attributeNodeGroup: attributeNodeGroup
         });
 
         cell.isAttributeLabelCell = true;

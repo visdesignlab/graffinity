@@ -103,7 +103,7 @@ export class cmNodeListControls extends cmMatrixBase {
     let sortCols = this.onSortColsByAttribute.bind(this);
     let hideCols = this.onHideAttributeCol.bind(this);
 
-    let filterNodes = this.onFilterNodes.bind(this);
+    let filterNodes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
 
     for (var i = 0; i < this.attributes.length; ++i) {

@@ -9,8 +9,34 @@ export class ViewState {
     this.isNodeIDFiltered = {};
     this.isNodeHidden = {};
     this.filterRanges = {};
+    this.filterValues = {};
     this.$scope = $rootScope;
     this.$log = $log;
+  }
+
+  /**
+   * Get the hidden values for the current group.
+   */
+  getOrCreateFilterValues(attribute, attributeNodeGroup) {
+    let valueList = this.filterValues[attribute];
+    if (valueList == undefined) {
+      this.filterValues[attribute] = [];
+      valueList = this.filterValues[attribute];
+    }
+
+    if (valueList[attributeNodeGroup] == undefined) {
+      this.filterValues[attribute][attributeNodeGroup] = [];
+    }
+
+    return this.filterValues[attribute][attributeNodeGroup];
+  }
+
+  static getFilterValuesAsSelection(nodeAttributes, filterValues) {
+    let selection = {};
+    for (var i = 0; i < nodeAttributes.length; ++i) {
+      selection[nodeAttributes[i]] = filterValues.indexOf(nodeAttributes[i]) == -1;
+    }
+    return selection;
   }
 
   /**
@@ -57,9 +83,11 @@ export class ViewState {
     this.$scope.$broadcast('hideNodes', nodeIndexes, this.isNodeIDFiltered);
   }
 
-  isNodeVisibleInAllFilters(nodeIndex, attributeNodeGroup, filterRanges, model, isNodeIDFiltered) {
+  isNodeVisibleInAllFilters(nodeIndex, attributeNodeGroup, filterRanges, model, isNodeIDFiltered, filterValues) {
     let visible = true;
+
     if (!isNodeIDFiltered[nodeIndex]) {
+
       let attributes = Object.keys(filterRanges);
       for (var i = 0; i < attributes.length; ++i) {
         let attribute = attributes[i];
@@ -71,9 +99,24 @@ export class ViewState {
           }
         }
       }
+
+      attributes = Object.keys(filterValues);
+      for (i = 0; i < attributes.length; ++i) {
+        let attribute = attributes[i];
+        let filterValue = filterValues[attribute][attributeNodeGroup];
+        let nodeAttribute = model.getNodeAttr([nodeIndex], attribute)[0];
+        if (filterValue) {
+          if (filterValue.indexOf(nodeAttribute) != -1) {
+            visible = false;
+          }
+        }
+      }
+
+
     } else {
       visible = false;
     }
+
     return visible;
   }
 
@@ -101,13 +144,51 @@ export class ViewState {
 
     let wasNodeVisible = [];
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      wasNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
+      wasNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered, this.filterValues));
     }
 
     this.filterRanges[attribute][attributeNodeGroup] = range;
     let isNodeVisible = [];
     for (i = 0; i < nodeIndexes.length; ++i) {
-      isNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered));
+      isNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered, this.filterValues));
+    }
+
+    for (i = 0; i < nodeIndexes.length; ++i) {
+      if (!wasNodeVisible[i] && isNodeVisible[i]) {
+        this.isNodeHidden[nodeIndexes[i]] = false;
+        showNodes.push(nodeIndexes[i]);
+      } else if (wasNodeVisible[i] && !isNodeVisible[i]) {
+        this.isNodeHidden[nodeIndexes[i]] = true;
+        hideNodes.push(nodeIndexes[i]);
+      }
+    }
+
+    this.$scope.$broadcast('showNodes', showNodes);
+    this.$scope.$broadcast('hideNodes', hideNodes);
+    this.$scope.$broadcast("updateQuantitativeAttributeFilter", attribute, attributeNodeGroup, range);
+  }
+
+  setFilterValuesFromSelection(attribute, attributeNodeGroup, selection) {
+
+    let nodeIndexes = this.getAttributeNodeGroup(attributeNodeGroup);
+    let wasNodeVisible = [];
+    let showNodes = [];
+    let hideNodes = [];
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+      wasNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered, this.filterValues));
+    }
+
+
+    this.filterValues[attribute][attributeNodeGroup] = [];
+    for (var key in selection) {
+      if (!selection[key]) {
+        this.filterValues[attribute][attributeNodeGroup].push(key);
+      }
+    }
+
+    let isNodeVisible = [];
+    for (i = 0; i < nodeIndexes.length; ++i) {
+      isNodeVisible.push(this.isNodeVisibleInAllFilters(nodeIndexes[i], attributeNodeGroup, this.filterRanges, this.model, this.isNodeIDFiltered, this.filterValues));
     }
 
     for (i = 0; i < nodeIndexes.length; ++i) {
@@ -122,7 +203,8 @@ export class ViewState {
     //console.log("showNodes", hideNodes);
     this.$scope.$broadcast('showNodes', showNodes);
     this.$scope.$broadcast('hideNodes', hideNodes);
-    this.$scope.$broadcast("updateQuantitativeAttributeFilter", attribute, attributeNodeGroup, range);
+
+    this.$log.debug(isNodeVisible, wasNodeVisible);
   }
 
   /**
