@@ -16,6 +16,7 @@ import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFact
 import { ModalListFilterController } from "../app/components/modals/modalListFilter.controller.js"
 import { ModalHistogramFilterController } from "../app/components/modals/modalHistogramFilter.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
+import { NumPathsDirective } from "../app/components/numPaths/numPaths.directive";
 import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
 import { NodeLinkViewDirective } from "../app/components/nodeLinkView/nodeLinkView.directive"
@@ -40,5 +41,6 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)
+  .directive('numPathsDirective', NumPathsDirective)
   .service('modalService', ModalService)
   .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective()) ;
