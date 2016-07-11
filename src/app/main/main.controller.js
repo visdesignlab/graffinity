@@ -4,7 +4,7 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 import {ViewState} from "../components/viewState/viewState.service"
-import {Utils} from "../components/utils/utils";
+//import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -107,27 +107,27 @@ export class MainController {
     }, 1);
 
     // If debugging, then automatically manipulate the GUI.
-    $timeout(function () {
-      if (self.ui.debugRowFilterScents) {
-        let attribute = "area";
-        let nodeIndexes = self.model.getFlattenedRowNodeIndexes();
-        let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
-        self.viewState.getOrCreateFilterRange(attribute, 1, nodeAttributes);
-        self.viewState.setFilterRange(attribute, 1, [92616600, 269473560]);
-        self.updateLegend();
-      }
-    }, 1);
+    //$timeout(function () {
+    //  if (self.ui.debugRowFilterScents) {
+    //    let attribute = "area";
+    //    let nodeIndexes = self.model.getFlattenedRowNodeIndexes();
+    //    let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
+    //    self.viewState.getOrCreateFilterRange(attribute, 1, nodeAttributes);
+    //    self.viewState.setFilterRange(attribute, 1, [92616600, 269473560]);
+    //    self.updateLegend();
+    //  }
+    //}, 1);
 
-    $timeout(function () {
-      if (self.ui.debugColFilterScents) {
-        let attribute = "area";
-        let nodeIndexes = self.model.getFlattenedColNodeIndexes();
-        let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
-        self.viewState.getOrCreateFilterRange(attribute, 0, nodeAttributes);
-        self.viewState.setFilterRange(attribute, 0, [216139000, 216139002]); // values selected to show only 1 col
-        self.updateLegend();
-      }
-    }, 1);
+    //$timeout(function () {
+    //  if (self.ui.debugColFilterScents) {
+    //    let attribute = "area";
+    //    let nodeIndexes = self.model.getFlattenedColNodeIndexes();
+    //    let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
+    //    self.viewState.getOrCreateFilterRange(attribute, 0, nodeAttributes);
+    //    self.viewState.setFilterRange(attribute, 0, [216139000, 216139002]); // values selected to show only 1 col
+    //    self.updateLegend();
+    //  }
+    //}, 1);
   }
 
   createCategoricalCollapseControls(model) {
@@ -148,7 +148,7 @@ export class MainController {
       this.nodeListManager.setModel(model);
     }
     this.$scope.$broadcast("setModel", model);
-    this.viewState.setCurrentModel(model);
+    this.viewState.setModel(model);
     this.onEncodingChanged(encoding);
   }
 
@@ -269,7 +269,7 @@ export class MainController {
 
       // Update the model
       self.model = model;
-      self.viewState.setCurrentModel(model);
+      self.viewState.setModel(model);
       self.viewState.reset();
 
       // Actually create the matrix
@@ -345,27 +345,29 @@ export class MainController {
 
     let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
 
+    this.$log.debug(attribute, nodeIndexes, nodeAttributes, nodeAttributeGroup);
+
     if (useCategoricalFilter) {
 
-      nodeAttributes = Utils.getUniqueValues(nodeAttributes);
-      let list = this.viewState.getOrCreateFilterValues(attribute, nodeAttributeGroup);
-      let isValueSelected = ViewState.getFilterValuesAsSelection(nodeAttributes, list);
-
-      let modalSuccess = function (selection) {
-        this.viewState.setFilterValuesFromSelection(attribute, nodeAttributeGroup, selection);
-      }.bind(this);
-
-      this.modalService.getSelectionFromList("Select " + attribute, nodeAttributes, isValueSelected, modalSuccess);
+      //nodeAttributes = Utils.getUniqueValues(nodeAttributes);
+      //let list = this.viewState.getOrCreateFilterValues(attribute, nodeAttributeGroup);
+      //let isValueSelected = ViewState.getFilterValuesAsSelection(nodeAttributes, list);
+      //
+      //let modalSuccess = function (selection) {
+      //  this.viewState.setFilterValuesFromSelection(attribute, nodeAttributeGroup, selection);
+      //}.bind(this);
+      //
+      //this.modalService.getSelectionFromList("Select " + attribute, nodeAttributes, isValueSelected, modalSuccess);
 
     } else {
 
-      let range = this.viewState.getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes);
+      let range = this.viewState.getQuantitativeFilter(attribute, nodeAttributeGroup, nodeAttributes);
 
       // When the modal is finished, save the range.
       let callback = function (result) {
         let attribute = result.attribute;
         let range = result.range;
-        this.viewState.setFilterRange(attribute, nodeAttributeGroup, range);
+        this.viewState.setQuantitativeFilter(attribute, nodeAttributeGroup, range);
         this.updateLegend();
       }.bind(this);
 
