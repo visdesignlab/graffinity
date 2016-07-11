@@ -41,6 +41,6 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)
-  .directive('numPathsDirective', NumPathsDirective)
+  .directive('numPathsDirective', () => new NumPathsDirective())
   .service('modalService', ModalService)
   .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective()) ;
