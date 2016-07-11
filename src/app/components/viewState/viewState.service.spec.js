@@ -56,13 +56,13 @@ describe('viewState', () => {
 
       expect(keys.length).toEqual(numAttributeNodeGroups);
       expect(Object.keys(viewState.categoricalFilters[rowAttributeNodeGroup]).length).toEqual(4); // 4 = 3 attributes + ids
-      expect(viewState.categoricalFilters[rowAttributeNodeGroup]["state"].length).toEqual(2);
+      expect(Object.keys(viewState.categoricalFilters[rowAttributeNodeGroup]["state"]).length).toEqual(2);
 
       keys = Object.keys(viewState.quantitativeFilters);
       expect(keys.length).toEqual(numAttributeNodeGroups);
       expect(Object.keys(viewState.quantitativeFilters[colAttributeNodeGroup]).length).toEqual(3);
 
-      expect(viewState.categoricalFilters[intermediateAttributeNodeGroup]["state"].length).toEqual(6);
+      expect(Object.keys(viewState.categoricalFilters[intermediateAttributeNodeGroup]["state"]).length).toEqual(6);
     }
   }));
 
@@ -86,41 +86,50 @@ describe('viewState', () => {
       }
 
       // pathlist[0] = LAX -> BOS
-      // pathList[4] = PDX -> JFK
-      viewState.setCategoricalFilter("state", rowAttributeNodeGroup, ["OR"]);
+      // pathList[4] = PDX -> BOS
 
-      expect(viewState.isPathFiltered(pathList[0])).toEqual(true);
+      // Start with no paths filtered.
+      expect(viewState.isPathFiltered(pathList[0])).toEqual(false);
       expect(viewState.isPathFiltered(pathList[4])).toEqual(false);
 
-      viewState.setCategoricalFilter("state", colAttributeNodeGroup, ["NY"]);
+      // Filter paths starting at CA
+      viewState.setCategoricalFilter("state", rowAttributeNodeGroup, {"OR": true, "CA": false}); // allow paths only from OR
+      expect(viewState.isPathFiltered(pathList[0])).toEqual(true);  // start in LAC -> filtered
+      expect(viewState.isPathFiltered(pathList[4])).toEqual(false); // starts in PDX -> visible
+
+      // Filter paths ending at either NY or MA
+      viewState.setCategoricalFilter("state", rowAttributeNodeGroup, {"OR": true, "CA": true}); // allow paths from OR or CA
+      viewState.setCategoricalFilter("state", colAttributeNodeGroup, {"NY": false, "MA": true}); // allow paths to only MA
+      expect(viewState.isPathFiltered(pathList[0])).toEqual(false);
+      expect(viewState.isPathFiltered(pathList[4])).toEqual(false);
+
+      // Filter paths ending at MA
+      viewState.setCategoricalFilter("state", colAttributeNodeGroup, {"NY": true, "MA": false});
       expect(viewState.isPathFiltered(pathList[4])).toEqual(true);
-
-      viewState.setCategoricalFilter("state", colAttributeNodeGroup, ["NY", "MA"]);
-      expect(viewState.isPathFiltered(pathList[4])).toEqual(false);
     }
   }));
 
   it('categorical filter values - flights', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
 
-    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
-    $httpBackend.flush();
-
-    function modelReady(model) {
-      "use strict";
-      let rowAttributeNodeGroup = 0;
-      let colAttributeNodeGroup = 1;
-
-
-      viewState.setModel(model);
-
-      let paths = model.getAllPaths();
-      let pathList = [];
-      for (let key in paths) {
-        pathList = pathList.concat(paths[key]);
-      }
-
-
-    }
+    //requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
+    //$httpBackend.flush();
+    //
+    //function modelReady(model) {
+    //  "use strict";
+    //  let rowAttributeNodeGroup = 0;
+    //  let colAttributeNodeGroup = 1;
+    //
+    //
+    //  viewState.setModel(model);
+    //
+    //  let paths = model.getAllPaths();
+    //  let pathList = [];
+    //  for (let key in paths) {
+    //    pathList = pathList.concat(paths[key]);
+    //  }
+    //
+    //
+    //}
   }));
 
 //

@@ -4,7 +4,7 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 import {ViewState} from "../components/viewState/viewState.service"
-//import {Utils} from "../components/utils/utils";
+import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -349,15 +349,13 @@ export class MainController {
 
     if (useCategoricalFilter) {
 
-      //nodeAttributes = Utils.getUniqueValues(nodeAttributes);
-      //let list = this.viewState.getOrCreateFilterValues(attribute, nodeAttributeGroup);
-      //let isValueSelected = ViewState.getFilterValuesAsSelection(nodeAttributes, list);
-      //
-      //let modalSuccess = function (selection) {
-      //  this.viewState.setFilterValuesFromSelection(attribute, nodeAttributeGroup, selection);
-      //}.bind(this);
-      //
-      //this.modalService.getSelectionFromList("Select " + attribute, nodeAttributes, isValueSelected, modalSuccess);
+      let isValueSelected = this.viewState.getCategoricalFilter(attribute, nodeAttributeGroup);
+
+      let modalSuccess = function (selection) {
+        this.viewState.setCategoricalFilter(attribute, nodeAttributeGroup, selection);
+      }.bind(this);
+
+      this.modalService.getSelectionFromList("Select " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
 
     } else {
 

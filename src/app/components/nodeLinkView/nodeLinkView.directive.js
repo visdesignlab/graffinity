@@ -82,7 +82,6 @@ class NodeLinkViewDirectiveController {
     this.paths = paths;
     this.layout.clear();
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
-    this.$log.debug("Updating layout with new graph: ", this.selectedSubgraph);
     this.layout.setGraph(this.selectedSubgraph);
   }
 

@@ -77,8 +77,17 @@ export class ViewState {
     return this.quantitativeFilters[attributeNodeGroup][attribute];
   }
 
+  getCategoricalFilter(attribute, attributeNodeGroup) {
+    return this.categoricalFilters[attributeNodeGroup][attribute];
+  }
+
   isPathFiltered(path) {
     let model = this.model;
+
+    let str = "";
+    for (let i = 0; i < path.length; i = i + 2) {
+      str += this.model.getNodeAttr([path[i]], "state")[0] + " ";
+    }
 
     for (let i = 0; i < path.length; i = i + 2) {
       let currentAttributeNodeGroup = 2;
@@ -93,7 +102,7 @@ export class ViewState {
 
         if (model.isCategoricalAttribute(attribute)) {
           let value = model.getNodeAttr([path[i]], attribute)[0];
-          if (this.categoricalFilters[currentAttributeNodeGroup][attribute].indexOf(value) == -1) {
+          if (!this.categoricalFilters[currentAttributeNodeGroup][attribute][value]) {
             return true;
           }
         } else {
@@ -215,7 +224,11 @@ export class ViewState {
 
         if (model.isCategoricalAttribute(attribute)) {
           let values = model.getNodeAttr(currentNodeIndexes, attribute);
-          this.categoricalFilters[i][attribute] = Utils.getUniqueValues(values);
+          values = Utils.getUniqueValues(values);
+          this.categoricalFilters[i][attribute] = {};
+          for (let k = 0; k < values.length; ++k) {
+            this.categoricalFilters[i][attribute][values[k]] = true;
+          }
         } else {
           let values = model.getNodeAttr(currentNodeIndexes, attribute);
           this.quantitativeFilters[i][attribute] = [d3.min(values), d3.max(values)];
@@ -226,7 +239,6 @@ export class ViewState {
       this.categoricalFilters[i][model.getCmGraph().getNodeIdName()] = [];
     }
   }
-
 
   //setFilterRange(attribute, attributeNodeGroup, range) {
   //  this.hasFilters = true;
@@ -319,13 +331,14 @@ export class ViewState {
   //  this.showNodes(showNodes);
   //}
   //
-  //setHoveredNodes(nodes) {
-  //  this.$scope.$broadcast('hoverNodes', nodes);
-  //}
-  //
-  //clearSelection() {
-  //  this.$scope.$broadcast("clearSelection");
-  //}
+  setHoveredNodes(nodes) {
+    this.$scope.$broadcast('hoverNodes', nodes);
+  }
+
+  clearSelection() {
+    this.$scope.$broadcast("clearSelection");
+  }
+
   //
   //showNodes(nodeIndexes) {
   //  if (nodeIndexes.length == 0) {

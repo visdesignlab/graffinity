@@ -31,7 +31,6 @@ class NumPathsController {
     this.$log = $log;
     this.$scope = $scope;
 
-    this.name = "shit";
     // the default query gets populated in main's constructor
     this.defaultQuery = $scope.$parent.main.defaultQuery;
 
@@ -43,11 +42,32 @@ class NumPathsController {
 
     this.$scope.$on("filterChanged", this.onFilterChanged.bind(this));
 
+    this.numVisiblePathsPerHops = null;
   }
 
   onFilterChanged() {
-    this.$log.debug(this, "onFilterChanged");
+    let numHopsList = Object.keys(this.paths);
+    let numVisiblePathsPerHops = {};
 
+    for (let i = 0; i < numHopsList.length; ++i) {
+      numVisiblePathsPerHops[numHopsList[i]] = 0;
+      let paths = this.paths[numHopsList[i]];
+      for (let j = 0; j < paths.length; ++j) {
+        if (!this.viewState.isPathFiltered(paths[j])) {
+          numVisiblePathsPerHops[numHopsList[i]] += 1;
+        }
+      }
+    }
+
+    let allVisible = true;
+    for (let i = 0; i < numHopsList.length; ++i) {
+      allVisible = allVisible && this.paths[numHopsList[i]].length == numVisiblePathsPerHops[numHopsList[i]];
+    }
+
+    if (!allVisible) {
+      this.numVisiblePathsPerHops = numVisiblePathsPerHops;
+    } else {
+      this.numVisiblePathsPerHops = null;
+    }
   }
-
 }
