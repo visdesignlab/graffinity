@@ -29,6 +29,7 @@ class NumPathsController {
   constructor($scope, $log) {
     "ngInject";
     this.$log = $log;
+    this.$scope = $scope;
 
     this.name = "shit";
     // the default query gets populated in main's constructor
@@ -38,8 +39,15 @@ class NumPathsController {
 
     this.$log.debug(this);
 
-    this.paths = $scope.$parent.main.model.getAllPaths()
-    console.log(this.viewState);
+    this.paths = $scope.$parent.main.model.getAllPaths();
+
+    this.$scope.$on("filterChanged", this.onFilterChanged.bind(this));
+
+  }
+
+  onFilterChanged() {
+    this.$log.debug(this, "onFilterChanged");
+
   }
 
 }

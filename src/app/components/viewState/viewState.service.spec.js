@@ -38,7 +38,6 @@ describe('viewState', () => {
     }
   }));
 
-
   it('default filter values - flights', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
 
     requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
@@ -66,6 +65,64 @@ describe('viewState', () => {
       expect(viewState.categoricalFilters[intermediateAttributeNodeGroup]["state"].length).toEqual(6);
     }
   }));
+
+  it('categorical filter values - flights', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
+
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
+    $httpBackend.flush();
+
+    function modelReady(model) {
+      "use strict";
+      let rowAttributeNodeGroup = 0;
+      let colAttributeNodeGroup = 1;
+
+
+      viewState.setModel(model);
+
+      let paths = model.getAllPaths();
+      let pathList = [];
+      for (let key in paths) {
+        pathList = pathList.concat(paths[key]);
+      }
+
+      // pathlist[0] = LAX -> BOS
+      // pathList[4] = PDX -> JFK
+      viewState.setCategoricalFilter("state", rowAttributeNodeGroup, ["OR"]);
+
+      expect(viewState.isPathFiltered(pathList[0])).toEqual(true);
+      expect(viewState.isPathFiltered(pathList[4])).toEqual(false);
+
+      viewState.setCategoricalFilter("state", colAttributeNodeGroup, ["NY"]);
+      expect(viewState.isPathFiltered(pathList[4])).toEqual(true);
+
+      viewState.setCategoricalFilter("state", colAttributeNodeGroup, ["NY", "MA"]);
+      expect(viewState.isPathFiltered(pathList[4])).toEqual(false);
+    }
+  }));
+
+  it('categorical filter values - flights', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
+
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
+    $httpBackend.flush();
+
+    function modelReady(model) {
+      "use strict";
+      let rowAttributeNodeGroup = 0;
+      let colAttributeNodeGroup = 1;
+
+
+      viewState.setModel(model);
+
+      let paths = model.getAllPaths();
+      let pathList = [];
+      for (let key in paths) {
+        pathList = pathList.concat(paths[key]);
+      }
+
+
+    }
+  }));
+
 //
 //  it('add filter to attribute node groups', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
 //

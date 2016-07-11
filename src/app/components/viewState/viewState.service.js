@@ -78,7 +78,33 @@ export class ViewState {
   }
 
   isPathFiltered(path) {
+    let model = this.model;
 
+    for (let i = 0; i < path.length; i = i + 2) {
+      let currentAttributeNodeGroup = 2;
+      if (i == 0) {
+        currentAttributeNodeGroup = 0;
+      } else if (i == path.length - 1) {
+        currentAttributeNodeGroup = 1;
+      }
+      let attributes = model.getAvailableAttributes();
+      for (let j = 0; j < attributes.length; ++j) {
+        let attribute = attributes[j];
+
+        if (model.isCategoricalAttribute(attribute)) {
+          let value = model.getNodeAttr([path[i]], attribute)[0];
+          if (this.categoricalFilters[currentAttributeNodeGroup][attribute].indexOf(value) == -1) {
+            return true;
+          }
+        } else {
+          let value = model.getNodeAttr([path[i]], attribute)[0];
+          if (this.quantitativeFilters[currentAttributeNodeGroup][attribute][0] > value || this.quantitativeFilters[currentAttributeNodeGroup][attribute][1] < value) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   //
