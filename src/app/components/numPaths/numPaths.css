@@ -2,3 +2,19 @@
   width: 100%;
   height: 100%;
 }
+
+.numPaths{
+  width: 60px;
+  text-align: center;
+}
+
+.numPathsLabel {
+  font-weight: bold;
+}
+
+.numPathsValue {
+  display: block;
+  font-size: 100%;
+  margin: 2px;
+  padding: .3em .3em .3em;
+}

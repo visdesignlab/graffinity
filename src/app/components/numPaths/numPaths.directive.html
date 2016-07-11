@@ -1,1 +1,16 @@
-{{numPathsController.mainController.model.getAllPaths()}}
+<div style="display: inline-block">
+  <div class="numPathsLabel">Length</div>
+  <div class="numPathsLabel">Paths</div>
+</div>
+
+<div style="display:inline-block">
+  <div class="numPaths" style="display: inline-block" ng-repeat="(key, value) in numPathsController.paths">
+    <div>{{key}}</div>
+    <div ng-show="numPathsController.viewState.hasFilters" class="label label-primary numPathsValue">
+      {{value.length}} / {{ value.length }}
+    </div>
+    <div ng-show="!numPathsController.viewState.hasFilters" class="label label-primary numPathsValue">
+      {{value.length}}
+    </div>
+  </div>
+</div>

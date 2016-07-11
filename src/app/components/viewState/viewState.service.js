@@ -10,6 +10,7 @@ export class ViewState {
     this.isNodeHidden = {};
     this.filterRanges = {};
     this.filterValues = {};
+    this.hasFilters = false;
     this.$scope = $rootScope;
     this.$log = $log;
   }
@@ -121,6 +122,7 @@ export class ViewState {
   }
 
   reset() {
+    this.hasFilters = false;
     this.isNodeIDFiltered = {};
     this.isNodeHidden = {};
     this.filterRanges = {};
@@ -138,6 +140,8 @@ export class ViewState {
   }
 
   setFilterRange(attribute, attributeNodeGroup, range) {
+    this.hasFilters = true;
+
     let nodeIndexes = this.getAttributeNodeGroup(attributeNodeGroup);
     let showNodes = [];
     let hideNodes = [];
@@ -169,6 +173,7 @@ export class ViewState {
   }
 
   setFilterValuesFromSelection(attribute, attributeNodeGroup, selection) {
+    this.hasFilters = true;
 
     let nodeIndexes = this.getAttributeNodeGroup(attributeNodeGroup);
     let wasNodeVisible = [];

@@ -37,6 +37,9 @@ class NumPathsController {
     this.cypherQuery = this.defaultQuery;
 
     this.$log.debug(this);
+
+    this.paths = $scope.$parent.main.model.getAllPaths()
+    console.log(this.viewState);
   }
 
 }
