@@ -1,5 +1,5 @@
-import {mock} from './mock'
 import {Utils} from '../utils/utils'
+import {requestAndCreateModel} from "./requestAndCreateModel"
 
 describe('cmModelFactory', () => {
   beforeEach(angular.mock.module('connectivityMatrixJs'));
@@ -7,27 +7,6 @@ describe('cmModelFactory', () => {
   it('should exist', inject(($httpBackend, $q, cmModelFactory)=> {
     expect(cmModelFactory).not.toEqual(null);
   }));
-
-  function requestAndCreateModel($httpBackend, $q, cmModelFactory, flights) {
-    $httpBackend.when('POST', 'http://localhost:8000/').respond(
-      flights ? mock.smallFlightResult : mock.output
-    );
-
-    var deferred = $q.defer();
-
-    cmModelFactory.requestAndCreateModel().then(dataReady, error);
-
-    return deferred.promise;
-
-    function dataReady(model) {
-      deferred.resolve(model);
-    }
-
-    function error(result) {
-      expect(result).toEqual(false);
-    }
-
-  }
 
   it('request matrix by path', inject(($httpBackend, $q, cmModelFactory)=> {
 

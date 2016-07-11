@@ -711,7 +711,6 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending);
   }
 
-
   getTotalNumPaths() {
     let self = this;
     let total = 0;
