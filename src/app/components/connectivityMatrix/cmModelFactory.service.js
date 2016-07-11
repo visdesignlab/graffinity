@@ -22,7 +22,7 @@ export class cmModelFactory {
     let success = function (data) {
       var graph = self.cmGraphFactory.createFromJsonObject(data.graph);
       var matrix = self.cmMatrixFactory.createFromJsonObject(data.matrix);
-      deferred.resolve(new cmModel(graph, matrix));
+      deferred.resolve(new cmModel(graph, matrix, data.lengths));
     };
 
     // Something went wrong!

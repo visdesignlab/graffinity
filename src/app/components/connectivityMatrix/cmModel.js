@@ -3,12 +3,13 @@ import {Utils} from '../utils/utils'
 
 export class cmModel {
 
-  constructor(graph, matrix) {
+  constructor(graph, matrix, pathLengths) {
     var self = this;
     self.graph = graph;
     self.matrix = matrix;
     self.current = {};
     self.reset();
+    self.pathLengths = pathLengths;
 
     self.colsCollapseAttr = "";
     self.rowCollapseAttr = "";
@@ -261,12 +262,54 @@ export class cmModel {
     self.current.rowNodeIndexes = newRowNodeIndexes;
   }
 
+  getAllPaths() {
+    let self = this;
+    let colNodeIndexes = self.getColNodeIndexes();
+    let rows = self.getCurrentRows();
+    let paths = {};
+    for (let i = 0; i < rows.length; ++i) {
+      let currentRowPaths = rows[i].getAllValuesAsList(colNodeIndexes);
+      for (let j = 0; j < currentRowPaths.length; ++j) {
+        let currentRowPathsByTarget = currentRowPaths[j];
+        for (let k = 0; k < currentRowPathsByTarget.length; ++k) {
+          let currentPath = currentRowPathsByTarget[k];
+          let numHops = Utils.getNumHops(currentPath);
+          if (paths[numHops]) {
+            paths[numHops].push(currentPath);
+          } else {
+            paths[numHops] = [currentPath];
+          }
+        }
+      }
+    }
+
+    // Error-check.
+    for (let key in self.pathLengths) {
+      if (paths[key].length != self.pathLengths[key]) {
+        self.$log.error("Something went wrong. We lost some paths");
+      }
+    }
+
+    return paths;
+  }
+
   getAttributeType(attribute) {
     if (this.getCmGraph().getQuantNodeAttrNames().indexOf(attribute) != -1) {
       return "quantitative"
     } else {
       return "categorical";
     }
+  }
+
+  getAttributeValues(nodeIndexes) {
+    let self = this;
+    let attributes = self.getAvailableAttributes();
+    let attributeValues = [];
+    for (let i = 0; i < attributes.length; ++i) {
+      let values = self.getNodeAttrs(nodeIndexes, attributes[i]);
+      attributeValues.push(values);
+    }
+    return attributeValues;
   }
 
   getAvailableAttributes() {
@@ -295,6 +338,17 @@ export class cmModel {
     var self = this;
     return self.matrix;
   }
+
+  getColAttributeValues() {
+    let self = this;
+    return self.getAttributeValues(self.getColNodeIndexes());
+  }
+
+  getColsSortedByAttr(attribute, ascending) {
+    var self = this;
+    return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
+  }
+
 
   // TODO - enable people to collapse these rows by attributes.
   getCurrentIntermediateNodeRows() {
@@ -368,6 +422,12 @@ export class cmModel {
     let self = this;
     return self.intermediateNodeIndexes;
   }
+
+  getIntermediateIndexesSortedByAttr(attribute, ascending) {
+    var self = this;
+    return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
+  }
+
 
   getMinorLabels(indexes) {
     var self = this;
@@ -459,17 +519,6 @@ export class cmModel {
 
   }
 
-  getAttributeValues(nodeIndexes) {
-    let self = this;
-    let attributes = self.getAvailableAttributes();
-    let attributeValues = [];
-    for (let i = 0; i < attributes.length; ++i) {
-      let values = self.getNodeAttrs(nodeIndexes, attributes[i]);
-      attributeValues.push(values);
-    }
-    return attributeValues;
-  }
-
   getRowNodeAttributeValues() {
     let self = this;
     let rowAttributes = self.getRowAttributeValues();
@@ -491,11 +540,6 @@ export class cmModel {
   getRowAttributeValues() {
     let self = this;
     return self.getAttributeValues(self.getRowNodeIndexes());
-  }
-
-  getColAttributeValues() {
-    let self = this;
-    return self.getAttributeValues(self.getColNodeIndexes());
   }
 
   /**
@@ -545,6 +589,18 @@ export class cmModel {
     }
   }
 
+  getPathsFromCol(targetNodeIndex, col) {
+    //var self = this;
+    var paths = [];
+    for (var i = 0; i < col.length; ++i) {
+      var path = col[i];
+      if (path[path.length - 1] == targetNodeIndex) {
+        paths.push(col[i]);
+      }
+    }
+    return paths;
+  }
+
   getPathsFromRow(nodeIndex, row) {
     // var self = this;
     var newRow = [];
@@ -562,46 +618,6 @@ export class cmModel {
       }
     }
     return newRow;
-  }
-
-  getPathsFromCol(targetNodeIndex, col) {
-    //var self = this;
-    var paths = [];
-    for (var i = 0; i < col.length; ++i) {
-      var path = col[i];
-      if (path[path.length - 1] == targetNodeIndex) {
-        paths.push(col[i]);
-      }
-    }
-    return paths;
-  }
-
-  /**
-   * Find any path in the current model that has a target node in nodeIndexes.
-   */
-  getPathsWithTargets(nodeIndexes) {
-
-    let self = this;
-    let paths = [];
-
-    let matrix = self.getCurrentMatrix();
-    let colNodeIndexes = self.getColNodeIndexes();
-
-    for (var i = 0; i < matrix.length; ++i) {
-      for (var j = 0; j < matrix[i].length; ++j) {
-        if (Utils.getIntersection(nodeIndexes, colNodeIndexes[j]).length != 0) {
-          let currentPaths = matrix[i][j];
-          for (let k = 0; k < currentPaths.length; ++k) {
-            let currentTarget = currentPaths[k][currentPaths[k].length - 1];
-            if (nodeIndexes.indexOf(currentTarget) != -1) {
-              paths.push(currentPaths[k]);
-            }
-          }
-        }
-      }
-    }
-
-    return paths;
   }
 
   /**
@@ -657,6 +673,34 @@ export class cmModel {
     return paths;
   }
 
+  /**
+   * Find any path in the current model that has a target node in nodeIndexes.
+   */
+  getPathsWithTargets(nodeIndexes) {
+
+    let self = this;
+    let paths = [];
+
+    let matrix = self.getCurrentMatrix();
+    let colNodeIndexes = self.getColNodeIndexes();
+
+    for (var i = 0; i < matrix.length; ++i) {
+      for (var j = 0; j < matrix[i].length; ++j) {
+        if (Utils.getIntersection(nodeIndexes, colNodeIndexes[j]).length != 0) {
+          let currentPaths = matrix[i][j];
+          for (let k = 0; k < currentPaths.length; ++k) {
+            let currentTarget = currentPaths[k][currentPaths[k].length - 1];
+            if (nodeIndexes.indexOf(currentTarget) != -1) {
+              paths.push(currentPaths[k]);
+            }
+          }
+        }
+      }
+    }
+
+    return paths;
+  }
+
   getRowNodeIndexes() {
     var self = this;
     return self.current.rowNodeIndexes;
@@ -667,14 +711,14 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending);
   }
 
-  getIntermediateIndexesSortedByAttr(attribute, ascending) {
-    var self = this;
-    return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
-  }
 
-  getColsSortedByAttr(attribute, ascending) {
-    var self = this;
-    return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
+  getTotalNumPaths() {
+    let self = this;
+    let total = 0;
+    for (let key in self.pathLengths) {
+      total += self.pathLengths[key]
+    }
+    return total;
   }
 
   getViewLabels(nodeIndexesLists, groupAttr) {
