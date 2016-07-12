@@ -183,6 +183,15 @@ export class MainController {
       this.model.collapseColsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
+
+    // We are collapsing the matrix cols by an attribute. Make sure that attribute is visibile!
+    if(this.model.areColsCollapsed) {
+      this.matrixManager.setUseAnimation(false);
+      this.matrixManager.matrices.forEach(function (matrix) {
+        matrix.onToggleAttributeRow(this.matrixManager.matrix.attributes.indexOf(attr), true);
+      }.bind(this));
+      this.matrixManager.setUseAnimation(true);
+    }
   }
 
   onCollapseRowsByAttr(attr) {
@@ -192,6 +201,14 @@ export class MainController {
       this.model.collapseRowsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
+
+    if(this.model.areRowsCollapsed) {
+      this.matrixManager.setUseAnimation(false);
+      this.matrixManager.matrices.forEach(function (matrix) {
+        matrix.onToggleAttributeCol(this.matrixManager.matrix.attributes.indexOf(attr), true);
+      }.bind(this));
+      this.matrixManager.setUseAnimation(true);
+    }
   }
 
   /**

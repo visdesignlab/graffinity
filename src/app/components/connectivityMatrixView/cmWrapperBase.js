@@ -6,14 +6,15 @@ export class cmWrapperBase {
     this.element = element;
     this.mainController = mainController;
     this.matrices = [];
-
+    this.useAnimation = true;
     let self = this;
     this.$scope.$on("changeMatrixHeight", function () {
-      self.updateElementPositions(null, null, true);
+      self.updateElementPositions(null, null, self.useAnimation);
     });
   }
 
   setUseAnimation(useAnimation) {
+    this.useAnimation = useAnimation;
     for (let i = 0; i < this.matrices.length; ++i) {
       this.matrices[i].setUseAnimation(useAnimation);
     }

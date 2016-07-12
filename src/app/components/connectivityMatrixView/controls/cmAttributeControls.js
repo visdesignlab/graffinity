@@ -143,7 +143,7 @@ export class cmAttributeControls extends SvgGroupElement {
         .classed("fa-close", true)
         .attr("float", "left")
         .on("click", function () {
-          self.onHide(self.index);
+          self.onHide(self.index, false);
         });
     }
   }

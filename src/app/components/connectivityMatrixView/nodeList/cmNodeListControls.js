@@ -97,11 +97,11 @@ export class cmNodeListControls extends cmMatrixBase {
 
     // Create controls for all attributes.
     let sortRows = this.onSortRowsByAttribute.bind(this);
-    let hideRows = this.onHideAttributeRow.bind(this);
+    let hideRows = this.onToggleAttributeRow.bind(this);
 
     // These are unused
     let sortCols = this.onSortColsByAttribute.bind(this);
-    let hideCols = this.onHideAttributeCol.bind(this);
+    let hideCols = this.onToggleAttributeCol.bind(this);
 
     let filterNodes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
