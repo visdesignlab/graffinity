@@ -31,13 +31,6 @@ class NumPathsController {
     this.$log = $log;
     this.$scope = $scope;
 
-    // the default query gets populated in main's constructor
-    this.defaultQuery = $scope.$parent.main.defaultQuery;
-
-    this.cypherQuery = this.defaultQuery;
-
-    this.$log.debug(this);
-
     this.paths = $scope.$parent.main.model.getAllPaths();
 
     this.$scope.$on("filterChanged", this.onFilterChanged.bind(this));

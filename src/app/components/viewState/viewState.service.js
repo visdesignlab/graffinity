@@ -68,7 +68,21 @@ export class ViewState {
   //  }
   //  return selection;
   //}
-  //
+
+  filterPaths(paths) {
+    let filteredPaths = [];
+    for (let i = 0; i < paths.length; ++i) {
+      if (!this.isPathFiltered(paths[i])) {
+        filteredPaths.push(paths[i]);
+      }
+    }
+    return filteredPaths;
+  }
+
+  getFilterPathFunction() {
+    return this.filterPaths.bind(this);
+  }
+
   getAttributeNodeGroup(attributeNodeGroup) {
     return this.attributeNodeGroup[attributeNodeGroup];
   }
@@ -81,13 +95,38 @@ export class ViewState {
     return this.categoricalFilters[attributeNodeGroup][attribute];
   }
 
-  isPathFiltered(path) {
+  isNodeFiltered(nodeIndex, attributeNodeGroup) {
     let model = this.model;
+    let attributes = model.getAvailableAttributes();
+    for (let j = 0; j < attributes.length; ++j) {
+      let attribute = attributes[j];
 
-    let str = "";
-    for (let i = 0; i < path.length; i = i + 2) {
-      str += this.model.getNodeAttr([path[i]], "state")[0] + " ";
+      if (model.isCategoricalAttribute(attribute)) {
+        let value = model.getNodeAttr([nodeIndex], attribute)[0];
+        if (!this.categoricalFilters[attributeNodeGroup][attribute][value]) {
+          return true;
+        }
+      } else {
+        let value = model.getNodeAttr([nodeIndex], attribute)[0];
+        if (this.quantitativeFilters[attributeNodeGroup][attribute][0] > value || this.quantitativeFilters[attributeNodeGroup][attribute][1] < value) {
+          return true;
+        }
+      }
     }
+
+    let id = model.getCmGraph().getNodeIdName();
+    let value = model.getNodeAttr([nodeIndex], id)[0];
+    if (!this.categoricalFilters[attributeNodeGroup][id][value]) {
+      return true;
+    }
+  }
+
+  isPathFiltered(path) {
+
+    // let str = "";
+    // for (let i = 0; i < path.length; i = i + 2) {
+    //   str += this.model.getNodeAttr([path[i]], "state")[0] + " ";
+    // }
 
     for (let i = 0; i < path.length; i = i + 2) {
       let currentAttributeNodeGroup = 2;
@@ -96,23 +135,11 @@ export class ViewState {
       } else if (i == path.length - 1) {
         currentAttributeNodeGroup = 1;
       }
-      let attributes = model.getAvailableAttributes();
-      for (let j = 0; j < attributes.length; ++j) {
-        let attribute = attributes[j];
-
-        if (model.isCategoricalAttribute(attribute)) {
-          let value = model.getNodeAttr([path[i]], attribute)[0];
-          if (!this.categoricalFilters[currentAttributeNodeGroup][attribute][value]) {
-            return true;
-          }
-        } else {
-          let value = model.getNodeAttr([path[i]], attribute)[0];
-          if (this.quantitativeFilters[currentAttributeNodeGroup][attribute][0] > value || this.quantitativeFilters[currentAttributeNodeGroup][attribute][1] < value) {
-            return true;
-          }
-        }
+      if (this.isNodeFiltered(path[i], currentAttributeNodeGroup)) {
+        return true;
       }
     }
+
     return false;
   }
 
@@ -234,9 +261,12 @@ export class ViewState {
           this.quantitativeFilters[i][attribute] = [d3.min(values), d3.max(values)];
         }
       }
-
-      // Add the 'id' field to the filters.
-      this.categoricalFilters[i][model.getCmGraph().getNodeIdName()] = [];
+      let id = model.getCmGraph().getNodeIdName();
+      this.categoricalFilters[i][id] = {};
+      let values = model.getNodeAttr(currentNodeIndexes, id);
+      for (let k = 0; k < values.length; ++k) {
+        this.categoricalFilters[i][id][values[k]] = true;
+      }
     }
   }
 

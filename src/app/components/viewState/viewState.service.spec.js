@@ -106,6 +106,11 @@ describe('viewState', () => {
       // Filter paths ending at MA
       viewState.setCategoricalFilter("state", colAttributeNodeGroup, {"NY": true, "MA": false});
       expect(viewState.isPathFiltered(pathList[4])).toEqual(true);
+
+      viewState.setCategoricalFilter("state", colAttributeNodeGroup, {"NY": true, "MA": true});
+      viewState.setCategoricalFilter("airport", rowAttributeNodeGroup, {"LAX": false, "PDX": true, "SFO": true});
+      expect(viewState.isPathFiltered(pathList[0])).toEqual(true);
+
     }
   }));
 

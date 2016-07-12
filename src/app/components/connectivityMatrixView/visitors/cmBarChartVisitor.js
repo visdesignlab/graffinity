@@ -24,7 +24,7 @@ export class cmBarChartPreprocessor extends cmCellVisitor {
     let summary = {};
 
     // For each path..
-    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let paths = this.pathFilterFunction(cell.getPathList());
 
     for (var i = 0; i < paths.length; ++i) {
       let path = paths[i];
@@ -99,7 +99,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
     this.visited += 1;
 
     // Skip cells with no paths.
-    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let paths = this.pathFilterFunction(cell.getPathList());
 
     if (!paths.length) {
       this.createEmptyCellOutline(cell);

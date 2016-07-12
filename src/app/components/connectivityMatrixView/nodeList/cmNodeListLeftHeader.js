@@ -144,4 +144,11 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     this.colNodeIndexes = model.getAvailableIntermediateNodeStats();
   }
+
+  /**
+   * No-op.
+   */
+  updateDataCols() {
+
+  }
 }

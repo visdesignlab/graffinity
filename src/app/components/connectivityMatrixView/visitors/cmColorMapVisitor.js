@@ -3,7 +3,6 @@
  */
 
 import {cmCellVisitor} from "./cmCellVisitors"
-import {Utils} from "../../utils/utils"
 
 export class cmColorMapVisitorBase extends cmCellVisitor {
   constructor(width, height) {
@@ -34,7 +33,7 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
     if (!this.shouldVisitCell(cell)) {
       return;
     }
-    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let paths = this.pathFilterFunction(cell.getPathList());
     let value = this.applyMetric(paths);
     if (cell.isCellBetweenSets()) {
       this.setRange[1] = Math.max(this.setRange[1], value);
@@ -78,7 +77,7 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
       return;
     }
 
-    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let paths = this.pathFilterFunction(cell.getPathList());
     let value = this.applyMetric(paths);
     let color = this.getCellColor(cell, value);
     let group = cell.getGroup();

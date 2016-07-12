@@ -3,8 +3,6 @@
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
-import {ViewState} from "../components/viewState/viewState.service"
-import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -140,6 +138,7 @@ export class MainController {
   createMatrix(model, encoding) {
     // this.svg.selectAll("*").remove();
     this.model = model;
+    this.viewState.setModel(model);
     if (!this.matrixManager) {
       this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
       this.nodeListManager = this.cmMatrixViewFactory.createNodeListManager(this.nodeListContainer, model, this.$scope, this.viewState, this);
@@ -148,7 +147,8 @@ export class MainController {
       this.nodeListManager.setModel(model);
     }
     this.$scope.$broadcast("setModel", model);
-    this.viewState.setModel(model);
+
+    // this.viewState.setCategoricalFilter("airport", 2, {"DEN": true, "LAX": true, "IAD": true, "HNL": true, "LAS": true, "DTW": true});
     this.onEncodingChanged(encoding);
   }
 
@@ -345,14 +345,13 @@ export class MainController {
 
     let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
 
-    this.$log.debug(attribute, nodeIndexes, nodeAttributes, nodeAttributeGroup);
-
     if (useCategoricalFilter) {
 
       let isValueSelected = this.viewState.getCategoricalFilter(attribute, nodeAttributeGroup);
 
       let modalSuccess = function (selection) {
         this.viewState.setCategoricalFilter(attribute, nodeAttributeGroup, selection);
+        this.updateLegend();
       }.bind(this);
 
       this.modalService.getSelectionFromList("Select " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);

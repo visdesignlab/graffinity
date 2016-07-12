@@ -17,6 +17,8 @@ export class cmCellVisitor {
     this.visitEditAttributeCells = false;
     this.visitHeaderCells = false;
     this.visitLabelCells = false;
+
+    this.pathFilterFunction = null;
   }
 
   setCallbacks(clicked, mouseOver, mouseOut) {
@@ -96,5 +98,9 @@ export class cmCellVisitor {
     }
 
     return visit;
+  }
+
+  setPathFilterFunction(filterPaths) {
+    this.pathFilterFunction = filterPaths;
   }
 }

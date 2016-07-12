@@ -133,4 +133,11 @@ export class cmNodeListControls extends cmMatrixBase {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     this.colNodeIndexes = [];
   }
+
+  /**
+   * No-op
+   */
+  updateDataCols() {
+
+  }
 }
