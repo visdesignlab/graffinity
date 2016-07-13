@@ -81,9 +81,10 @@ class NodeLinkViewDirectiveController {
    */
   setSelectedPaths(signal, paths) {
     this.paths = paths;
-    if(this.layout) {
+    this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
+
+    if (this.layout) {
       this.layout.clear();
-      this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
       this.layout.setGraph(this.selectedSubgraph);
     } else {
       this.onLayoutChanged("Layered")
