@@ -287,7 +287,7 @@ export class MainController {
       // Update the model
       self.model = model;
       self.viewState.setModel(model);
-      self.viewState.reset();
+      // self.viewState.reset();
 
       // Actually create the matrix
       self.$timeout(function () {
