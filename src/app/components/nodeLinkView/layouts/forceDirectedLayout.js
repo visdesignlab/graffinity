@@ -60,8 +60,6 @@ export class LayeredLayout extends Layout {
    * Positions the graph inside the column.
    */
   createLayout(graph) {
-    this.svg.selectAll("path").remove();
-    this.svg.selectAll("circle").remove();
 
     // get the column containing the svg
     let element = d3.select("#node-link-column")[0][0];
