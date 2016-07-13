@@ -3,7 +3,8 @@
   <!--Row holding the query text box -->
   <div class="row top-row">
     <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
-    <num-paths-directive view-state="main.viewState" main-controller="main"></num-paths-directive>
+    <num-paths-directive ng-show="!main.hasActiveQuery && !main.hasQueryError"
+                         view-state="main.viewState" main-controller="main"></num-paths-directive>
   </div>
 
   <!-- Row holding the controls (left-most col) and matrix (right-ish cols) -->

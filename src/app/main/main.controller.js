@@ -371,7 +371,7 @@ export class MainController {
         this.updateLegend();
       }.bind(this);
 
-      this.modalService.getSelectionFromList("Select " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
+      this.modalService.getSelectionFromList("Filter by " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
 
     } else {
 
@@ -386,7 +386,7 @@ export class MainController {
       }.bind(this);
 
       // Open the modal.
-      this.modalService.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
+      this.modalService.getValueRange("Filter by " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
     }
   }
 
