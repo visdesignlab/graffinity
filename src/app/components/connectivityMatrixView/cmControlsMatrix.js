@@ -34,7 +34,7 @@ export class cmControlsMatrix extends cmMatrixBase {
     let minorColLabels = model.getMinorColLabels();
     row = new cmControlsMatrixColHeaderRow(this.svg, this.allRows.length, this.colNodeIndexes,
       this.numHeaderCols, this.colWidth, this.labelRowHeight, majorColLabels, minorColLabels, this, this.attributes,
-      this.rowNodeIndexes, this.rowAttributeNodeGroup, rowAttributes);
+      this.rowNodeIndexes, this.rowAttributeNodeGroup, rowAttributes, this.colAttributeNodeGroup);
 
     this.addRow(row, this.labelRowHeight);
   }

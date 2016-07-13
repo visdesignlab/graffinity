@@ -33,7 +33,7 @@ export class cmNodeLabelVisitor extends cmCellVisitor {
 
       cell.controls.push(new cmNodeLabelControls(group, name, this.colWidthAttr, this.rowHeightAttr, this.colWidth,
         this.rowHeight, this.callbacks.onFilterNodes, cell.data.nodeIndexes, this.callbacks.onSortRows,
-        this.callbacks.onSortCols, this.createColumnLabels, cell.data.attributeNodeGroup));
+        this.callbacks.onSortCols, this.createColumnLabels, cell.data.rowAttributeNodeGroup, cell.data.colAttributeNodeGroup));
     }
   }
 
