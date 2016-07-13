@@ -34,8 +34,14 @@ class NumPathsController {
     this.paths = $scope.$parent.main.model.getAllPaths();
 
     this.$scope.$on("filterChanged", this.onFilterChanged.bind(this));
+    this.$scope.$on("setModel", this.setModel.bind(this));
 
     this.numVisiblePathsPerHops = null;
+  }
+
+  setModel(signal, model) {
+    this.paths = model.getAllPaths();
+    this.onFilterChanged();
   }
 
   onFilterChanged() {

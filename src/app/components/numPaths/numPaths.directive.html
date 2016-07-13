@@ -1,3 +1,6 @@
+<div>
+  <b>Query statistics</b>
+</div>
 <div style="display: inline-block">
   <div class="numPathsLabel">Length</div>
   <div class="numPathsLabel">Paths</div>
@@ -7,7 +10,7 @@
   <div class="numPaths" style="display: inline-block" ng-repeat="(key, value) in numPathsController.paths">
     <div>{{key}}</div>
     <div ng-show="numPathsController.numVisiblePathsPerHops != null" class="label label-primary numPathsValue">
-      {{numPathsController.numVisiblePathsPerHops[key]}} / {{ value.length }}
+      {{numPathsController.numVisiblePathsPerHops[key]}} ({{(numPathsController.numVisiblePathsPerHops[key] / value.length * 100).toFixed(1)}}%)
     </div>
     <div ng-show="numPathsController.numVisiblePathsPerHops == null" class="label label-primary numPathsValue">
       {{value.length}}
