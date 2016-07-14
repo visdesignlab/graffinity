@@ -1,9 +1,10 @@
-/*globals d3, dagre
+/*globals d3
  */
 
 import {Layout} from "./layout"
+import {usMap} from './usMap'
 
-export class LayeredLayout extends Layout {
+export class GeographicLayout extends Layout {
   /**
    * Class for displaying node-link diagram of the currently selected paths.
    */
@@ -19,7 +20,6 @@ export class LayeredLayout extends Layout {
     this.graphRankSep = 7;
     this.graphMarginTop = 80;
     this.rankdir = "LR";
-
   }
 
   /**
@@ -55,13 +55,13 @@ export class LayeredLayout extends Layout {
   }
 
   /**
-   * Computes a dagre layout of the graph.
+   * Computes a geographical layout of the graph.
    * Convert the layout into an svg.
    * Positions the graph inside the column.
    */
   createLayout(graph) {
-    this.svg.selectAll("path").remove();
-    this.svg.selectAll("circle").remove();
+    //clear the SVG
+    this.svg.selectAll("*").remove();
 
     // get the column containing the svg
     let element = d3.select("#node-link-column")[0][0];
@@ -81,27 +81,98 @@ export class LayeredLayout extends Layout {
     // Prepare to render the graph.
     let self = this;
 
-    // Set the node sizes.
+    // set project for the US map
+    // translating to height/8 puts map at top
+    // translating to width/2 puts US in middle
+    // scale to 420 puts the map at the right location for the hard-coded size
+    this.projection = d3.geo.albers()
+    .translate([width / 2, height / 8])
+    .scale(420);
+
+    this.path = d3.geo.path().projection(this.projection);
+
+    let airports = [];
+    //airports by ID is a map between the 3Letter ID of an airport to the data of the airport
+    let airportById = d3.map();
+
+    // for all of the airports in the selected graph, set up the array of airports and map for airportsById
     graph.nodes().forEach(function (key) {
       let node = graph.node(key);
-      node.rx = self.nodeRx;
-      node.ry = self.nodeRy;
-      node.width = self.nodeWidth;
-      node.height = self.nodeHeight;
+      airports.push(node);
+      airportById.set(self.model.getMajorLabels([key])[0], node);
+
+      node.outgoing = [];
+      node.incoming = [];
     });
 
-    // Compute layout
-    graph.graph().rankdir = "LR";
-    graph.graph().nodesep = this.graphNodeSep;
-    graph.graph().ranksep = this.graphRankSep;
-    graph.graph().margintop = this.graphMarginTop;
-    dagre.layout(graph);
 
-    this.createLinks(this.graphGroup, graph);
-    this.createNodes(this.graphGroup, graph);
+    // set up array of flights (edges) in the graph
+    let flights = [];
+    graph.edges().forEach(function (edge) {
+        let flight = {};
+        flight.origin = self.model.getMajorLabels([edge.v])[0];
+        flight.destination = self.model.getMajorLabels([edge.w])[0];
+        flights.push(flight);
+    });
 
-    let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
-    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + this.graphYOffset + ")");
+    //put the airport information in the flights data
+    flights.forEach(function(flight) {
+      let source = airportById.get(flight.origin),
+          target = airportById.get(flight.destination),
+          link = {source: source, target: target};
+      source.outgoing.push(link);
+      target.incoming.push(link);
+    });
+
+    //add lat and lon data to the airports
+    airports = airports.filter(function(d) {
+      d[0] = +d.lon;
+      d[1] = +d.lat;
+      var position = self.projection(d);
+      d.x = position[0];
+      d.y = position[1];
+      return true;
+    });
+
+    // draw the states
+    this.svg.append("path")
+       .datum(topojson.feature(usMap.output, usMap.output.objects.land))
+       .attr("fill", "#ccc")
+       .attr("d", this.path);
+
+    //state boarders
+    this.svg.append("path")
+      .datum(topojson.mesh(usMap.output, usMap.output.objects.states, function(a, b) { return a !== b; }))
+      .attr("fill", "none")
+      .attr("stroke", "#fff")
+      .attr("stroke-width", "1.5px")
+      .attr("stroke-linejoin","round")
+      .attr("stroke-linecap", "round")
+      .attr("d", this.path);
+
+    //draw airports
+    let airport = this.svg.append("g")
+      .attr("stroke", "#fff")
+      .attr("pointer-events", "none")  //to consider for hover???
+      .attr("fill", "steelblue")
+    .selectAll("g")
+      .data(airports)
+    .enter().append("g")
+      .attr("class", "airport");
+
+    //draw flight lines (airport arcs)
+    airport.append("g")
+      .attr("display","inline")
+      .attr("fill","none")
+      .attr("stroke","#000")
+    .selectAll("path")
+      .data(function(d) { return d.outgoing; })
+    .enter().append("path")
+      .attr("d", function(d) { return self.path({type: "LineString", coordinates: [d.source, d.target]}); });
+
+    airport.append("circle")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr("r", Math.sqrt(10));
   }
 
   /**
@@ -123,7 +194,7 @@ export class LayeredLayout extends Layout {
       .enter()
       .append("g")
       .attr("transform", function (d) {
-        return LayeredLayout.getNodeTopLeftAsTransform(d, graph);
+        return GeographicLayout.getNodeTopLeftAsTransform(d, graph);
       })
       .classed("node", true);
 
@@ -151,7 +222,7 @@ export class LayeredLayout extends Layout {
         return self.model.getMajorLabels([d])[0];
       })
       .attr("transform", function (d) {
-        return LayeredLayout.getNodeCenterAsTransform(d, graph);
+        return GeographicLayout.getNodeCenterAsTransform(d, graph);
       });
 
     this.addHoverCallbacks(this.nodeGroup, "g.node");
