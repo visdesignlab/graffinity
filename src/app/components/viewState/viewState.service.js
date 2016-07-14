@@ -222,6 +222,7 @@ export class ViewState {
   setQuantitativeFilter(attribute, attributeNodeGroup, filter) {
     this.quantitativeFilters[attributeNodeGroup][attribute] = filter;
     this.$scope.$broadcast('filterChanged');
+    this.$scope.$broadcast("updateQuantitativeAttributeFilter", attribute, attributeNodeGroup, filter);
   }
 
   /**
