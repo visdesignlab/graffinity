@@ -1033,15 +1033,25 @@ export class cmMatrixBase extends SvgGroupElement {
       // Loop over all major cols
       for (var dataColIndex = 0; dataColIndex < this.colNodeIndexes.length; ++dataColIndex) {
 
-        let isOnlyNodeInCol = this.colNodeIndexes[dataColIndex].length == 1;
         let minorColIndex = this.colNodeIndexes[dataColIndex].indexOf(nodeIndexes[i]);
         let isNodeInCol = minorColIndex != -1;
+        let isOnlyNodeInCol = this.colNodeIndexes[dataColIndex].length == 1 && isNodeInCol;
+
         let hide = this.viewState.isNodeFiltered(nodeIndexes[i], this.colAttributeNodeGroup);
         let colIndex = this.getViewColIndexFromDataIndex(dataColIndex);
 
-        if (isOnlyNodeInCol && isNodeInCol) {
+        if (isOnlyNodeInCol) {
+
+          // update visibility of major col
           this.updateCol(colIndex, !hide);
-        } else if (isNodeInCol && !isOnlyNodeInCol) {
+
+          // if we are showing the major col, we also need to make room for its minor cols
+          if (!hide) {
+            this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
+          }
+
+        } else if (isNodeInCol) {
+          // update visibility of minor col
           this.isMinorColVisible[colIndex][minorColIndex] = !hide;
           this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
         }
@@ -1060,6 +1070,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     // Loop over all the node indexes in all rows.
     for (var i = 0; i < flatRowNodeIndexes.length; ++i) {
+      let currentNodeIndex = flatRowNodeIndexes[i];
 
       // Loop over individual rows.
       for (var rowIndex = 0; rowIndex < this.allRows.length; ++rowIndex) {
@@ -1068,14 +1079,14 @@ export class cmMatrixBase extends SvgGroupElement {
         if (this.isDataRow(rowIndex)) {
 
           let dataIndex = this.getDataRowIndex(rowIndex);
-          let isOnlyNodeInRow = rowNodeIndexes[dataIndex].length == 1;
-          let minorRowIndex = this.rowNodeIndexes[dataIndex].indexOf(flatRowNodeIndexes[i]) != -1;
+          let minorRowIndex = this.rowNodeIndexes[dataIndex].indexOf(currentNodeIndex);
           let isNodeInRow = minorRowIndex != -1;
-          let hide = this.viewState.isNodeFiltered(rowNodeIndexes[dataIndex], this.rowAttributeNodeGroup);
+          let isOnlyNodeInRow = isNodeInRow && rowNodeIndexes[dataIndex].length == 1;
+          let hide = this.viewState.isNodeFiltered(currentNodeIndex, this.rowAttributeNodeGroup);
 
-          if (isNodeInRow && isOnlyNodeInRow) {
+          if (isOnlyNodeInRow) {
             this.updateRow(rowIndex, !hide);
-          } else if (isNodeInRow && !isOnlyNodeInRow) {
+          } else if (isNodeInRow) {
             if (hide) {
               this.allRows[rowIndex].hideMinorRow(minorRowIndex);
             } else {
@@ -1123,16 +1134,22 @@ export class cmMatrixBase extends SvgGroupElement {
   updateRow(rowIndex, isRowIndexVisible) {
     let row = this.allRows[rowIndex];
     if (row) {
+      let height = 0;
       row.setVisible(isRowIndexVisible);
       if (isRowIndexVisible) {
         if (this.isAttributeRow(rowIndex)) {
-          this.rowHeights[rowIndex] = this.rowHeightAttr;
+          height = row.getCurrentHeight();
+          if (!height) {
+            height = this.rowHeightAttr;
+          }
         } else if (this.isDataRow(rowIndex)) {
-          this.rowHeights[rowIndex] = this.rowHeight;
+          height = row.getCurrentHeight();
+          if (!height) {
+            height = this.rowHeight;
+          }
         }
-      } else {
-        this.rowHeights[rowIndex] = 0;
       }
+      this.rowHeights[rowIndex] = height;
     }
   }
 

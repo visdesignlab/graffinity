@@ -41,7 +41,7 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
       } else if (this.matrix.isLabelCell(i)) {
 
         cell.setData({
-          name: "id",
+          name: matrix.model.getCmGraph().getNodeIdName(),
           isVertical: 0,
           nodeIndexes: rowNodeIndexes,
           attributeIndex: -1,

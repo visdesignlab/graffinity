@@ -3,6 +3,7 @@
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
+import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -350,17 +351,17 @@ export class MainController {
    * histogram of 'attribute' for all nodes.
    */
   openNodeAttributeFilter(attribute, nodeIndexes, nodeAttributeGroup) {
-
     let useCategoricalFilter = false;
 
-    if (attribute == 'id') {
-      attribute = this.model.getCmGraph().getNodeIdName();
+    if (attribute == this.model.getCmGraph().getNodeIdName()) {
       useCategoricalFilter = true;
     } else {
       useCategoricalFilter = this.model.isCategoricalAttribute(attribute);
     }
 
-    let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
+    let flattenedIndexes = Utils.getFlattenedLists(nodeIndexes);
+
+    let nodeAttributes = this.model.getNodeAttr(flattenedIndexes, attribute);
 
     if (useCategoricalFilter) {
 
@@ -386,7 +387,7 @@ export class MainController {
       }.bind(this);
 
       // Open the modal.
-      this.modalService.getValueRange("Filter by " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
+      this.modalService.getValueRange("Filter by " + attribute, nodeAttributes, range, flattenedIndexes, attribute, callback);
     }
   }
 
