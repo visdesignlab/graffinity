@@ -1,3 +1,5 @@
+/*global d3*/
+
 /**
  * Class for easy manipulation of node link layouts.
  */
@@ -39,7 +41,10 @@ export class Layout {
     this.graphGroup.selectAll("*").remove();
   }
 
-  createLayout(graph) {
+  /**
+   * Graph is available as parameter here.
+   */
+  createLayout() {
     //clear the SVG
     this.svg.selectAll("*").remove();
 
