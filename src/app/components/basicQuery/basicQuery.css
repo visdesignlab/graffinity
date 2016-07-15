@@ -1,0 +1,19 @@
+.query-input {
+  width: 80%;
+  height: 70px;
+}
+
+.list-item{
+  display: inline;
+}
+
+.rule-filter-container{
+
+}
+.query-property-select {
+  width: 100px;
+}
+
+.query-property-input{
+  width: 200px;
+}
