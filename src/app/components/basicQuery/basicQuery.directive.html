@@ -1,12 +1,13 @@
-<span class="col-lg-3">
-  <div ng-repeat="set in queryController.sets" class="form-group">
+<span class="col-lg-4">
+  <h4>Query <i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>
 
+  <div ng-repeat="set in queryController.sets" class="form-group">
     <form class="form-inline">
-      <label style="width:30%"> {{set}} {{queryController.property}} {{queryController.operator}}</label>
-      <input class="form-control" type="text" style="float: right; width:70%;" ng-model="queryController[set]">
+      <label style="width:25%; text-align: right; padding: 6px 12px;"> {{set}} {{queryController.property}} {{queryController.operator}}</label>
+      <input class="form-control" type="text" style="float: right; width:75%;" ng-model="queryController[set]">
     </form>
   </div>
-  <label style="width:30%"> Num hops</label>
+  <label style="width:25%; text-align: right; padding: 6px 12px;"> Num hops</label>
               <ui-select ng-model="queryController.selectedNumHops" style="width:30%; display: inline-block;">
                 <ui-select-match>
                   {{queryController.selectedNumHops}}
@@ -15,7 +16,8 @@
                   {{option}}
                 </ui-select-choices>
               </ui-select>
-      <button style="display:inline-block; vertical-align: top; float:right; width: 30%;"
+      <button style="display:inline-block; vertical-align: top; float:right; width: 20%;"
               ng-click="queryController.submit({query:queryController.cypherQuery})" class="btn btn-default">Submit
       </button>
+
 </span>
