@@ -69,6 +69,29 @@ export class ForceDirectedLayout extends Layout {
     // Get list of nodes that are in the filter.
     let nodes = graph.nodes();
 
+    let minNumberOfPredecessors = nodes.length;
+    let minNumberOfSuccessors = nodes.length;
+
+    //find min number of predecessors & successors in graph
+    // used for placement of nodes
+    for (var i = 0; i < nodes.length; ++i) {
+      let node = nodes[i];
+      let predeccessors = graph.predecessors(node);
+      let successors = graph.successors(node);
+      if (predeccessors.length < minNumberOfPredecessors)
+      {
+        minNumberOfPredecessors = predeccessors.length;
+      }
+      if (successors.length < minNumberOfSuccessors)
+      {
+        minNumberOfSuccessors = successors.length;
+      }
+    }
+
+    let numberOfLeftNodes = 1;
+    let numberOfRightNodes = 1;
+
+
     for (var i = 0; i < nodes.length; ++i) {
       let node = nodes[i];
       let predeccessors = graph.predecessors(node);
@@ -76,27 +99,29 @@ export class ForceDirectedLayout extends Layout {
       let attributes = graph.node(node);
 
       //establish which nodes should be fixed on the left or right side
-      if (predeccessors.length ==0) {
+      if (predeccessors.length == minNumberOfPredecessors) {
         result.nodes.push(
           {
             id: node,
             attributes: attributes,
             name: self.model.getMajorLabels([node])[0],
             x: self.width/10, //left side
-            y: self.height/8,
+            y: self.height*numberOfLeftNodes/8,
             fixed: true
           });
+        numberOfLeftNodes++;
       }
-      else if (successors.length == 0) {
+      else if (successors.length == minNumberOfSuccessors) {
         result.nodes.push(
           {
             id: node,
             attributes: attributes,
             name: self.model.getMajorLabels([node])[0],
             x: 9*self.width/10, //right side
-            y: self.height/8,
+            y: self.height*numberOfRightNodes/8,
             fixed: true
           });
+        numberOfRightNodes++;
       }
       else {
         result.nodes.push(
@@ -130,7 +155,7 @@ export class ForceDirectedLayout extends Layout {
    * Positions the graph inside the column.
    */
   createLayout(graph) {
-    
+
     //call to superclass
     this.setHeightAndWidth(graph);
 
