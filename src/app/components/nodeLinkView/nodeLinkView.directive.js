@@ -3,6 +3,7 @@
 
 import {LayeredLayout} from "./layouts/layeredLayout"
 import {GeographicLayout} from "./layouts/geographicLayout"
+import {ForceDirectedLayout} from "./layouts/forceDirectedLayout"
 
 /**
  * Angular directive that will contain the node-link diagrams. Interaction with this is handled by the
@@ -108,15 +109,17 @@ class NodeLinkViewDirectiveController {
    */
   onLayoutChanged(layout) {
 
+    if (this.layout) {
+      this.layout.clear();
+    }
+
     // Create the layout
     if (layout == "Layered") {
       this.layout = new LayeredLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     } else if (layout == "Geographic") {
-      this.layout.clear();
       this.layout = new GeographicLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
-      //alert(layout + " not implemented yet");
     } else /* if (layout == "Force-directed") */ {
-      alert(layout + " not implemented yet");
+      this.layout = new ForceDirectedLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     }
 
     // Give the layout data to draw.
