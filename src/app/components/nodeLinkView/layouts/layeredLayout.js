@@ -19,7 +19,6 @@ export class LayeredLayout extends Layout {
     this.graphRankSep = 7;
     this.graphMarginTop = 80;
     this.rankdir = "LR";
-
   }
 
   /**
@@ -60,23 +59,9 @@ export class LayeredLayout extends Layout {
    * Positions the graph inside the column.
    */
   createLayout(graph) {
-    this.svg.selectAll("path").remove();
-    this.svg.selectAll("circle").remove();
-
-    // get the column containing the svg
-    let element = d3.select("#node-link-column")[0][0];
-
-    // How much room do we have available in the column? Use this to size the svg.
-    // padding is of the form '0px 15px.'
-    // get the horizontal form of it
-    // use that to determine width
-    let padding = d3.select("#node-link-column").style("padding");
-    padding = padding.split(' ')[1];
-    padding = parseInt(padding);
-    let width = element.clientWidth - padding;
-    let height = 960;
-    this.svg.attr("width", width);
-    this.svg.attr("height", height);
+    
+    //call to superclass
+    this.setHeightAndWidth(graph);
 
     // Prepare to render the graph.
     let self = this;
