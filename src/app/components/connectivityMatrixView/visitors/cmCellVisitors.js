@@ -10,6 +10,15 @@ export class cmCellVisitor {
 
     this.hasNodeFilter = false;
     this.isNodeHidden = {};
+
+    this.visitAttributeCells = false;
+    this.visitAttributeLabelCells = false;
+    this.visitDataCells = false;
+    this.visitEditAttributeCells = false;
+    this.visitHeaderCells = false;
+    this.visitLabelCells = false;
+
+    this.pathFilterFunction = null;
   }
 
   setCallbacks(clicked, mouseOver, mouseOut) {
@@ -59,5 +68,39 @@ export class cmCellVisitor {
   setNodeFilter(isNodeHidden) {
     this.isNodeHidden = isNodeHidden;
     this.hasNodeFilter = true;
+  }
+
+  shouldVisitCell(cell) {
+    let visit = true;
+
+    if (this.visitAttributeCells) {
+      visit = visit && cell.isAttributeCell;
+    }
+
+    if (this.visitAttributeLabelCells) {
+      visit = visit && cell.isAttributeLabelCell;
+    }
+
+    if (this.visitDataCells) {
+      visit = visit && cell.isDataCell;
+    }
+
+    if (this.visitEditAttributeCells) {
+      visit = visit && cell.isEditAttributeCell;
+    }
+
+    if (this.visitHeaderCells) {
+      visit = visit && cell.isHeaderCell;
+    }
+
+    if (this.visitLabelCells) {
+      visit = visit && cell.isLabelCell;
+    }
+
+    return visit;
+  }
+
+  setPathFilterFunction(filterPaths) {
+    this.pathFilterFunction = filterPaths;
   }
 }

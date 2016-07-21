@@ -15,7 +15,7 @@ export class cmNodeListControls extends cmMatrixBase {
     this.rowAttributeNodeGroup = 2;
     //// Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
-    // colNodeAttributes[i][j] = attributes[i] for col[j]
+    // colAttributes[i][j] = attributes[i] for col[j]
 
     let rowAttributes = [];
     for (i = 0; i < this.attributes.length - 1; ++i) {
@@ -97,19 +97,21 @@ export class cmNodeListControls extends cmMatrixBase {
 
     // Create controls for all attributes.
     let sortRows = this.onSortRowsByAttribute.bind(this);
-    let hideRows = this.onHideAttributeRow.bind(this);
+    let hideRows = this.onToggleAttributeRow.bind(this);
 
     // These are unused
     let sortCols = this.onSortColsByAttribute.bind(this);
-    let hideCols = this.onHideAttributeCol.bind(this);
+    let hideCols = this.onToggleAttributeCol.bind(this);
 
-    let filterNodes = this.onFilterNodes.bind(this);
+    let filterNodes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
 
-    // create labels for all the quantitative attribute columns/rows
-    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
-    this.applyVisitor(visitor);
+    for (var i = 0; i < this.attributes.length; ++i) {
+      // create labels for all the quantitative attribute columns/rows
+      visitor = new cmAttributeLabelVisitor(i, this.rowAttributeNodeGroup, sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
+        this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
+      this.applyVisitor(visitor);
+    }
 
     // create labels for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
@@ -130,5 +132,12 @@ export class cmNodeListControls extends cmMatrixBase {
   initNodeIndexes(model) {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     this.colNodeIndexes = [];
+  }
+
+  /**
+   * No-op
+   */
+  updateDataCols() {
+
   }
 }

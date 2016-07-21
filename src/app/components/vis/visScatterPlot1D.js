@@ -101,10 +101,10 @@ export class visScatterPlot1D {
   }
 
   static createDataScale(range, valueRange) {
-    valueRange[1] = Math.round(valueRange[1]);
+    valueRange[1] = Math.ceil(valueRange[1]);
     return d3.scale.linear()
       .range(range)
-      .domain(valueRange).nice();
+      .domain(valueRange);
   }
 
   static createMarks(group, data, radius) {

@@ -2,7 +2,7 @@ import {cmMatrixRow} from "./cmMatrixRow"
 
 export class cmAttributeRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colNodeAttributes, matrix,
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colAttributes, matrix,
               attributeIndex, attributeLabel, attributeNodeGroup, areColsCollapsed) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
 
@@ -34,7 +34,7 @@ export class cmAttributeRow extends cmMatrixRow {
         // Put the attribute values in it.
         let colIndex = this.matrix.getDataColIndex(i);
         data = {
-          values: colNodeAttributes[colIndex],
+          values: colAttributes[colIndex],
           nodeIndexes: colNodeIndexes[colIndex],
           isVertical: true,
           attributeIndex: attributeIndex,
@@ -48,7 +48,7 @@ export class cmAttributeRow extends cmMatrixRow {
         if (this.areColsCollapsed) {
           for (var j = 0; j < colNodeIndexes[colIndex].length; ++j) {
             data = {
-              values: [colNodeAttributes[colIndex][j]],
+              values: [colAttributes[colIndex][j]],
               isVertical: true,
               attributeIndex: attributeIndex,
               nodeIndexes: [colNodeIndexes[colIndex][j]],

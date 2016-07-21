@@ -1,4 +1,4 @@
-/*globals d3
+/*globals d3, topojson
  */
 
 import {Layout} from "./layout"

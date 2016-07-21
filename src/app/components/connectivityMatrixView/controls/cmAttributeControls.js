@@ -1,5 +1,5 @@
-import {SvgGroupElement} from "./svgGroupElement"
-import {visHistogramScent} from "../vis/visHistogramScent.js"
+import {SvgGroupElement} from "./../svgGroupElement"
+import {visHistogramScent} from "../../vis/visHistogramScent.js"
 
 /**
  * Class that displays quantitative attributes row/col controls.
@@ -23,20 +23,11 @@ export class cmAttributeControls extends SvgGroupElement {
               filterAttributeGroup, attributeValues) {
     super(parent);
     let group = this.getGroup();
-    if(isVertical) {
-      group = group.append("g")
-        .attr("transform", "translate(" + width + ", " + 0 + ")");
+    if (isVertical) {
+      group.attr("transform", "translate(" + width + ", " + 0 + ")");
     } else {
-      group = group.append("g")
-        .attr("transform", "translate(" + 0 + ", " + height + ")");
+      group.attr("transform", "translate(" + 0 + ", " + height + ")");
     }
-
-    // uncomment to draw outline of this label
-    //group.append("rect")
-    //  .attr("width", width)
-    //  .attr("height", height)
-    //  .style("outline", "thin solid grey")
-    //  .attr("fill", "none");
 
     this.width = width;
     this.height = height;
@@ -65,14 +56,19 @@ export class cmAttributeControls extends SvgGroupElement {
     // Note - the label gets rotated if this isVertical.
     this.label = cmAttributeControls.createLabel(group, name, isVertical, width, height);
 
-    // Compute dimensions of the scent.
+    this.scent = this.createDataScent(group, isVertical, attributeValues);
+
+    // This must be called last for z-ordering of svg elements.
+    this.createInteractionRect(group, isVertical, width, height);
+  }
+
+  createDataScent(group, isVertical, attributeValues) {
+
     let scentHeight = null;
     let scentWidth = null;
     let scentGroup = null;
     let offset = parseInt(this.label.style("line-height"));
 
-    // In the not-vertical case, the scent starts below the label. In the isVertical case, the scent starts to the left
-    // of the label. This is saved in the scentGroup's transform.
     if (isVertical) {
       scentHeight = this.height;
       scentWidth = this.width - offset;
@@ -87,12 +83,9 @@ export class cmAttributeControls extends SvgGroupElement {
         .attr("transform", "translate(0, " + offset + ")");
     }
 
-    // We save this.scent in order to update it later on.
-    this.scent = cmAttributeControls.createDataScent(scentGroup, isVertical, scentWidth, scentHeight, attributeValues);
-
-    // This must be called last for z-ordering of svg elements.
-    this.createInteractionRect(group, isVertical, width, height);
+    return new visHistogramScent(this.$scope, scentGroup, scentWidth, scentHeight, 10, isVertical, attributeValues);
   }
+
 
   /**
    * Creates rectangle that appears on mouse hover for displaying the filter, hide, and sort controls.
@@ -150,7 +143,7 @@ export class cmAttributeControls extends SvgGroupElement {
         .classed("fa-close", true)
         .attr("float", "left")
         .on("click", function () {
-          self.onHide(self.index);
+          self.onHide(self.index, false);
         });
     }
   }
@@ -172,12 +165,6 @@ export class cmAttributeControls extends SvgGroupElement {
     }
   }
 
-  /**
-   * Returns a histogram scent of the data.
-   */
-  static createDataScent(group, isVertical, scentWidth, scentHeight, attributeValues) {
-    return new visHistogramScent(this.$scope, group, scentWidth, scentHeight, 10, isVertical, attributeValues);
-  }
 
   /**
    * Updates the filter displayed in the scent.
@@ -193,4 +180,23 @@ export class cmAttributeControls extends SvgGroupElement {
     this.outline.attr("stroke", visible ? "black" : "none");
     this.controls.style("display", visible ? "block" : "none");
   }
+}
+
+
+export class cmCategoricalAttributeControls extends cmAttributeControls {
+  constructor(parent, name, isVertical, width, height, onSort, onHide, index, onFilter, filterNodeIndexes,
+              filterAttributeGroup, attributeValues) {
+    super(parent, name, isVertical, width, height, onSort, onHide, index, onFilter, filterNodeIndexes,
+      filterAttributeGroup, attributeValues);
+  }
+
+  /**
+   * No-op
+   */
+  // createDataScent(group, isVertical, attributeValues)
+  createDataScent() {
+
+  }
+
+
 }

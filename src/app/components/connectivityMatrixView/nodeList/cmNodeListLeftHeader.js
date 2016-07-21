@@ -11,10 +11,11 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
 
     // TODO - pull this out
     this.rowAttributeNodeGroup = 2;
+    this.isNodeListView = true;
 
     // Populate the row/col node attributes.
     // rowNodeAttributes[i][j] = attributes[j] for row[i]
-    // colNodeAttributes[i][j] = attributes[i] for col[j]
+    // colAttributes[i][j] = attributes[i] for col[j]
     for (var i = 0; i < this.numHeaderCols; ++i) {
       this.addRow(new cmMatrixRow(this.svg, i, [], this.numHeaderCols), 0);
     }
@@ -143,5 +144,12 @@ export class cmNodeListLeftHeader extends cmMatrixBase {
   initNodeIndexes(model) {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     this.colNodeIndexes = model.getAvailableIntermediateNodeStats();
+  }
+
+  /**
+   * No-op.
+   */
+  updateDataCols() {
+
   }
 }

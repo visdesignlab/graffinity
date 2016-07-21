@@ -4,7 +4,7 @@ import {Utils} from "../../utils/utils";
 export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, majorColLabels, minorColLabels,
-              matrix, attributeLabels, rowNodeIndexes, attributeNodeGroup, rowNodeAttributes) {
+              matrix, attributeLabels, rowNodeIndexes, rowAttributeNodeGroup, rowNodeAttributes, colAttributeNodeGroup) {
     super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, false, matrix);
 
     this.unrollControls = [];
@@ -32,7 +32,7 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
           isVertical: 0,
           attributeIndex: attributeIndex,
           nodeIndexes: rowNodeIndexes,
-          attributeNodeGroup: attributeNodeGroup,
+          attributeNodeGroup: rowAttributeNodeGroup,
           attributeValues: Utils.getFlattenedLists(rowNodeAttributes[attributeIndex])
         });
 
@@ -41,9 +41,12 @@ export class cmControlsMatrixColHeaderRow extends cmMatrixRow {
       } else if (this.matrix.isLabelCell(i)) {
 
         cell.setData({
-          name: "id",
+          name: matrix.model.getCmGraph().getNodeIdName(),
           isVertical: 0,
-          attributeIndex: -1
+          nodeIndexes: rowNodeIndexes,
+          attributeIndex: -1,
+          rowAttributeNodeGroup: rowAttributeNodeGroup,
+          colAttributeNodeGroup: colAttributeNodeGroup
         });
 
         cell.isAttributeLabelCell = true;

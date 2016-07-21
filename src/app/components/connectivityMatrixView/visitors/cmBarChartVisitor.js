@@ -7,6 +7,7 @@ import {Utils} from "../../utils/utils"
 export class cmBarChartPreprocessor extends cmCellVisitor {
   constructor() {
     super();
+    this.visitDataCells = true;
     this.maxDomainValue = 0;
     this.maxNumHops = [];
     this.summaries = [];
@@ -17,14 +18,13 @@ export class cmBarChartPreprocessor extends cmCellVisitor {
    * They are the count of paths for numHops.
    */
   apply(cell) {
-    if (!cell.isDataCell) {
+    if (!this.shouldVisitCell(cell)) {
       return;
     }
-
     let summary = {};
 
     // For each path..
-    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let paths = this.pathFilterFunction(cell.getPathList());
 
     for (var i = 0; i < paths.length; ++i) {
       let path = paths[i];
@@ -52,6 +52,7 @@ export class cmBarChartPreprocessor extends cmCellVisitor {
 export class cmBarChartVisitor extends cmCellVisitor {
   constructor(preprocessor, width, height) {
     super();
+    this.visitDataCells = true;
 
     // Width is shrunk by 2 so that we can offset rect by 1 in each direction.
     this.xScale = d3.scale.ordinal()
@@ -72,7 +73,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
 
   apply(cell) {
 
-    if (!cell.isDataCell) {
+    if (!this.shouldVisitCell(cell)) {
       return;
     }
 
@@ -98,7 +99,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
     this.visited += 1;
 
     // Skip cells with no paths.
-    let paths = Utils.getFilteredPaths(cell.getPathList(), this.hasNodeFilter, this.isNodeHidden);
+    let paths = this.pathFilterFunction(cell.getPathList());
 
     if (!paths.length) {
       this.createEmptyCellOutline(cell);

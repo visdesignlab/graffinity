@@ -1,4 +1,5 @@
-/* global malarkey:false, moment:false */
+/* global malarkey:false, moment:false*/
+let production = false;
 
 import { config } from './index.config';
 import { routerConfig } from './index.route';
@@ -16,6 +17,7 @@ import { cmModelFactory } from '../app/components/connectivityMatrix/cmModelFact
 import { ModalListFilterController } from "../app/components/modals/modalListFilter.controller.js"
 import { ModalHistogramFilterController } from "../app/components/modals/modalHistogramFilter.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
+import { NumPathsDirective } from "../app/components/numPaths/numPaths.directive";
 import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
 import { NodeLinkViewDirective } from "../app/components/nodeLinkView/nodeLinkView.directive"
@@ -23,6 +25,7 @@ import { NodeLinkViewDirective } from "../app/components/nodeLinkView/nodeLinkVi
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
   .constant('moment', moment)
+  .constant('resource', production ? "http://54.164.73.78:8000" : "http://localhost:8000")
   .config(config)
   .config(routerConfig)
   .run(runBlock)
@@ -40,5 +43,6 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive('acmeNavbar', NavbarDirective)
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)
+  .directive('numPathsDirective', () => new NumPathsDirective())
   .service('modalService', ModalService)
   .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective()) ;

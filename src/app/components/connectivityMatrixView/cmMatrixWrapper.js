@@ -92,18 +92,6 @@ export class cmMatrixWrapper extends cmWrapperBase {
     return this.matrix.getMajorRowsAndColsAsScalarMatrix();
   }
 
-  setUseAnimation(useAnimation) {
-    for (let i = 0; i < this.matrices.length; ++i) {
-      this.matrices[i].setUseAnimation(useAnimation);
-    }
-  }
-
-  setSortOrders(rowPerm, colPerm) {
-    for (let i = 0; i < this.matrices.length; ++i) {
-      this.matrices[i].setSortOrders(rowPerm, colPerm);
-    }
-  }
-
   setModel(model) {
 
     for (let i = 0; i < this.matrices.length; ++i) {

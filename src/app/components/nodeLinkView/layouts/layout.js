@@ -97,7 +97,7 @@ export class Layout {
     this.svg.attr("width", this.width);
     this.svg.attr("height", this.height);
   }
-  
+
   /**
    * This will require clearing the svg and updating the selected paths.
    */

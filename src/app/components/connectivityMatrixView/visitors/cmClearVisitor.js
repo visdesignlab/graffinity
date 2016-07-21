@@ -5,14 +5,10 @@ import {cmCellVisitor} from "./cmCellVisitors"
 export class cmClearVisitor extends cmCellVisitor {
   constructor() {
     super();
-    this.clearAttributeCells = false;
-    this.clearDataCells = false;
   }
 
   apply(cell) {
-    if ((cell.isDataCell && this.clearDataCells)
-      || (cell.isAttributeCell && this.clearAttributeCells)
-      || (cell.isAttributeLabelCell && this.clearAttributeLabelCells)) {
+    if(this.shouldVisitCell(cell)) {
 
       let children = cell.getGroup()
         .selectAll("*");
@@ -28,14 +24,14 @@ export class cmClearVisitor extends cmCellVisitor {
   }
 
   setClearAttributeCells(clearAttributeCells) {
-    this.clearAttributeCells = clearAttributeCells;
+    this.visitAttributeCells = clearAttributeCells;
   }
 
   setClearAttributeLabelCells(clearAttributeLabelCells) {
-    this.clearAttributeLabelCells = clearAttributeLabelCells;
+    this.visitAttributeLabelCells = clearAttributeLabelCells;
   }
 
   setClearDataCells(clearDataCells) {
-    this.clearDataCells = clearDataCells;
+    this.visitDataCells = clearDataCells;
   }
 }

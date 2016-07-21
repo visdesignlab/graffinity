@@ -45,8 +45,8 @@ export class cmNodeListWrapper extends cmWrapperBase {
     this.leftHeader.setGridPosition([0, 1]);
 
     for (var i = 0; i < this.leftHeader.attributes.length -1; ++i) {
-      this.leftHeader.onHideAttributeCol(i, true, true);
-      this.controlsHeader.onHideAttributeCol(i, true, true);
+      this.leftHeader.onToggleAttributeCol(i, false, true, true);
+      this.controlsHeader.onToggleAttributeCol(i, false, true, true);
     }
 
     this.matrices = [this.leftHeader, this.controlsHeader];

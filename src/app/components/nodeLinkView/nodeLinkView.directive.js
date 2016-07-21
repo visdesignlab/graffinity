@@ -66,6 +66,7 @@ class NodeLinkViewDirectiveController {
     this.ui.availableLayouts = ["Layered", "Geographic", "Force-directed"];
     this.ui.selectedLayout = this.ui.availableLayouts[0];
     this.svg = d3.select("#node-link-svg");
+    this.model = $scope.$parent.main.model;
   }
 
   /**
@@ -81,10 +82,14 @@ class NodeLinkViewDirectiveController {
    */
   setSelectedPaths(signal, paths) {
     this.paths = paths;
-    this.layout.clear();
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
-    this.$log.debug("Updating layout with new graph: ", this.selectedSubgraph);
-    this.layout.setGraph(this.selectedSubgraph);
+
+    if (this.layout) {
+      this.layout.clear();
+      this.layout.setGraph(this.selectedSubgraph);
+    } else {
+      this.onLayoutChanged("Layered")
+    }
   }
 
   /**

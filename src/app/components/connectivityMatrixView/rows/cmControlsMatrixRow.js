@@ -3,7 +3,7 @@ import {Utils} from "../../utils/utils"
 
 export class cmControlsMatrixRow extends cmMatrixRow {
 
-  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colNodeAttributes, matrix,
+  constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, colAttributes, matrix,
               attributeIndex, attributeLabel, attributeNodeGroup) {
     super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
 
@@ -24,7 +24,7 @@ export class cmControlsMatrixRow extends cmMatrixRow {
           attributeIndex: attributeIndex,
           nodeIndexes: colNodeIndexes,
           attributeNodeGroup: attributeNodeGroup,
-          attributeValues: Utils.getFlattenedLists(colNodeAttributes)
+          attributeValues: Utils.getFlattenedLists(colAttributes)
         };
 
         cell.isAttributeLabelCell = true;
