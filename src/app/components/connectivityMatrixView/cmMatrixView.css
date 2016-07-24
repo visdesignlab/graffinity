@@ -31,7 +31,7 @@
 .matrix-view-string-attribute {
   text-anchor: start;
   alignment-baseline: middle;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 /* Children of g.matrix-view-interaction-group get manipulated on hovererd/selected events */
@@ -64,7 +64,7 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-attribute-label {
   text-anchor: middle;
-  font-size: 12px;
+  font-size: 14px;
   alignment-baseline: text-before-edge;
   font-weight: bold;
 }
@@ -76,8 +76,8 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-attribute-controls {
   fill: transparent;
-  rx: 3px;
-  ry: 3px;
+  rx: 1px;
+  ry: 1px;
 }
 
 .matrix-view-edit-attribute-controls {
@@ -85,20 +85,27 @@ g.matrix-view-interaction-group.hovered rect {
   border-radius: 3px 3px 3px 3px;
   text-align: center;
   padding: 0 2px;
-  font-size: 10px;
+  border-color: #adadad;
 }
 
 .matrix-view-edit-attribute-controls:hover {
-  background: #6D6C6C;
+  background: #adadad;
 }
 
 .matrix-view-toolbar {
   display: none;
-  text-align: left;
-  border-radius: 3px 3px 3px 3px;
-  padding: 0 2px;
-  background: #6D6C6C;
-  font-size: 10px;
-  width: 30px;
-  stroke: black;
+  border-right-style: solid;
+  border-left-style: solid;
+  background: #adadad;
+  border-color: #adadad;
+  width: min-content;
+}
+
+.matrix-view-toolbar-item {
+  color: #333;
+  padding-right: 2px;
+}
+
+.matrix-view-toolbar-item:hover {
+  color: white;
 }

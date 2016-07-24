@@ -22,9 +22,11 @@ export class cmNodeLabelControls extends SvgGroupElement {
 
     if (createColumnLabels) {
       this.createInteractionRect(group, true, width, height, colWidth, rowHeight);
-    }
+      this.createInteractionRect(group, false, width - rowHeight, height, colWidth, rowHeight);
+    } else {
 
-    this.createInteractionRect(group, false, width, height, colWidth, rowHeight);
+      this.createInteractionRect(group, false, width, height, colWidth, rowHeight);
+    }
 
   }
 
@@ -56,7 +58,6 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .on("mouseleave", mouseLeave);
 
     let controls = group.append("foreignObject")
-      .attr("transform", isVertical ? "translate(50, 0)" : "translate(0, 0)")
       .append('xhtml:div')
       .data([isVertical])
       .classed("matrix-view-toolbar", true)
@@ -67,7 +68,8 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .data([isVertical])
       .classed("fa", true)
       .classed("fa-filter", true)
-      .attr("float", "left")
+      .classed("matrix-view-toolbar-item", true)
+      .attr("title", "filter")
       .on("click", function (d) {
         self.onFilter(self.name, self.nodeIndexes, d ? self.colAttributeNodeGroup : self.rowAttributeNodeGroup);
       });
@@ -76,7 +78,8 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .data([isVertical])
       .classed("fa", true)
       .classed("fa-sort", true)
-      .attr("float", "left")
+      .classed("matrix-view-toolbar-item", true)
+      .attr("title", "sort")
       .on("click", function (d) {
         if (d) {
           self.onSortCols(self.name, self.sortColsAscending);
@@ -113,10 +116,10 @@ export class cmNodeLabelControls extends SvgGroupElement {
   toggleControlVisible(visible, isVertical) {
     if (isVertical) {
       this.verticalOutline.attr("stroke", visible ? "black" : "none");
-      this.verticalControls.style("display", visible ? "block" : "none");
+      this.verticalControls.style("display", visible ? "flex" : "none");
     } else {
       this.outline.attr("stroke", visible ? "black" : "none");
-      this.controls.style("display", visible ? "block" : "none");
+      this.controls.style("display", visible ? "flex" : "none");
     }
   }
 }

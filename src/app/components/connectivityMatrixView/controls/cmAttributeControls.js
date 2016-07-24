@@ -123,7 +123,8 @@ export class cmAttributeControls extends SvgGroupElement {
     this.controls.append("i")
       .classed("fa", true)
       .classed("fa-filter", true)
-      .attr("float", "left")
+      .classed("matrix-view-toolbar-item", true)
+      .attr("title", "filter")
       .on("click", function () {
         self.onFilter(self.name, self.filterNodeIndexes, self.filterAttributeGroup);
       });
@@ -131,7 +132,8 @@ export class cmAttributeControls extends SvgGroupElement {
     this.controls.append("i")
       .classed("fa", true)
       .classed("fa-sort", true)
-      .attr("float", "left")
+      .classed("matrix-view-toolbar-item", true)
+      .attr("title", "sort")
       .on("click", function () {
         self.onSort(self.name, self.sortAscending);
         self.sortAscending = !self.sortAscending;
@@ -141,7 +143,8 @@ export class cmAttributeControls extends SvgGroupElement {
       this.controls.append("i")
         .classed("fa", true)
         .classed("fa-close", true)
-        .attr("float", "left")
+        .classed("matrix-view-toolbar-item", true)
+        .attr("title", "hide")
         .on("click", function () {
           self.onHide(self.index, false);
         });
@@ -178,7 +181,7 @@ export class cmAttributeControls extends SvgGroupElement {
    */
   toggleControlVisible(visible) {
     this.outline.attr("stroke", visible ? "black" : "none");
-    this.controls.style("display", visible ? "block" : "none");
+    this.controls.style("display", visible ? "flex" : "none");
   }
 }
 
