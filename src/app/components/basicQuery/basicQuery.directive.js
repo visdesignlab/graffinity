@@ -16,17 +16,27 @@ export function BasicQueryDirective() {
 }
 
 class QueryController {
-  constructor($scope) {
+  constructor($log) {
     'ngInject';
-
-    this.sets = ["Sources", "Targets"];
-    this.property = "state";
-    this.operator = "in";
-    this.numHops = [1, 2, 3];
+    this.$log = $log;
+    this.sets = ["Sources"];
+    this.property = "label";
+    this.operator = "matches";
+    this.numHops = [1, 2, 3, 4];
     this.selectedNumHops = this.numHops[1];
 
     this.Sources = "CA, OR, WA";
     this.Targets = "NY, MA, CT, RI, NH, ME, VT";
   }
+
+  setSelectedNumHops(numHops) {
+    let sets = [];
+    sets.push("Sources");
+    for (let i = 1; i < numHops; ++i) {
+      sets.push("Node #" + i);
+    }
+    this.sets = sets;
+  }
+
 
 }

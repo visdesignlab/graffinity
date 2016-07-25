@@ -38,8 +38,7 @@ export class MainController {
     this.ui.debugRowFilterScents = false;
     this.ui.debugColFilterScents = false;
 
-    // Setup a default query and dataset depending on our database.
-
+    // Setup a default query and dataset depending on our database
     this.database = database;
 
     let useLargeResult = false;

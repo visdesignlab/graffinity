@@ -1,14 +1,28 @@
 <span class="col-lg-4">
-  <h4>Query <i class="fa fa-pencil-square-o" aria-hidden="true"></i></h4>
+  <h4>Query</h4>
 
-  <div ng-repeat="set in queryController.sets" class="form-group">
+  <div ng-repeat="set in queryController.sets track by $index">
     <form class="form-inline">
-      <label style="width:25%; text-align: right; padding: 6px 12px;"> {{set}} {{queryController.property}} {{queryController.operator}}</label>
-      <input class="form-control" type="text" style="float: right; width:75%;" ng-model="queryController[set]">
+      <label style="width:35%; text-align: right; padding: 6px 12px;"> {{set}} {{queryController.property}}
+        {{queryController.operator}}</label>
+      <input class="form-control" type="text" style="float: right; width:65%;" ng-model="queryController[set]">
+    </form>
+    <form class="form-inline">
+      <label style="width:35%; text-align: right; padding: 6px 12px;"> {{"Edge #" + $index }} {{"type"}}
+        {{queryController.operator}}</label>
+      <input class="form-control" type="text" style="float: right; width:65%;" ng-model="queryController['edge' + set]">
     </form>
   </div>
-  <label style="width:25%; text-align: right; padding: 6px 12px;"> Num hops</label>
-              <ui-select ng-model="queryController.selectedNumHops" style="width:30%; display: inline-block;">
+  <form class="form-inline">
+    <label style="width:35%; text-align: right; padding: 6px 12px;"> {{"Targets"}} {{queryController.property}}
+      {{queryController.operator}}</label>
+    <input class="form-control" type="text" style="float: right; width:65%;" ng-model="queryController['Targets']">
+  </form>
+
+  <label style="width:35%; text-align: right; padding: 6px 12px;">Max num hops</label>
+              <ui-select ng-model="queryController.selectedNumHops"
+                         ng-change="queryController.setSelectedNumHops(queryController.selectedNumHops)"
+                         style="width:35%; display: inline-block;">
                 <ui-select-match>
                   {{queryController.selectedNumHops}}
                 </ui-select-match>
