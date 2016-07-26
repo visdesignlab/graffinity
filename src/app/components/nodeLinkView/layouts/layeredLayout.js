@@ -59,9 +59,9 @@ export class LayeredLayout extends Layout {
    * Positions the graph inside the column.
    */
   createLayout(graph) {
-    
+
     //call to superclass
-    this.setHeightAndWidth(graph);
+    this.setHeightAndWidth();
 
     // Prepare to render the graph.
     let self = this;
@@ -102,7 +102,7 @@ export class LayeredLayout extends Layout {
     // Create groups that will hold the nodes.
     this.nodeGroup = parent.append("g")
       .classed("nodeGroup", true);
-
+    
     this.nodes = this.nodeGroup.selectAll("g.node")
       .data(graph.nodes())
       .enter()
@@ -138,6 +138,8 @@ export class LayeredLayout extends Layout {
       .attr("transform", function (d) {
         return LayeredLayout.getNodeCenterAsTransform(d, graph);
       });
+
+
 
     this.addHoverCallbacks(this.nodeGroup, "g.node");
     this.addHoverCallbacks(this.nodeGroup, "g.text");

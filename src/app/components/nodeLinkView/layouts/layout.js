@@ -82,7 +82,7 @@ export class Layout {
    * establishes svg attributes "height" and "width"
    * establishes values for this.height and this.width, which are used in other layouts
    */
-  setHeightAndWidth(graph) {
+  setHeightAndWidth() {
     // // get the column containing the svg
     let element = d3.select("#node-link-column")[0][0];
     // How much room do we have available in the column? Use this to size the svg.

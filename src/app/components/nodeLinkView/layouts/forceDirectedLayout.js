@@ -23,11 +23,28 @@ export class ForceDirectedLayout extends Layout {
     this.charge= -1000;
   }
 
-/*
-  input is one edge and the array of nodes
-  converts input edge's node ids into indexes of the node list
-  returns structure with source and target of the node id's
- */
+  /**
+   * Used to set mouseenter/mouseleave events on nodes.
+   * overridden method to handle hover events on forceDirected nodes
+   */
+  addHoverCallbacks(group, selector) {
+    let self = this;
+    group.selectAll(selector)
+      .on("mouseenter", function (d) {
+        d3.select(this).classed("hovered", true);
+        self.viewState.setHoveredNodes([parseInt(d.id)]);
+      })
+      .on("mouseleave", function () {
+        d3.select(this).classed("hovered", false);
+        self.viewState.setHoveredNodes(null);
+      });
+  }
+
+  /*
+  * input is one edge and the array of nodes
+  * converts input edge's node ids into indexes of the node list
+  * returns structure with source and target of the node id's
+  */
   convertEdgeToLink(edge, nodes) {
     var targetIndex = undefined;
     var sourceIndex = undefined;
@@ -53,6 +70,7 @@ export class ForceDirectedLayout extends Layout {
       value: this.graph.edge(edge)
     };
   }
+
 
   /*
   * input is the graph parameter
@@ -88,11 +106,30 @@ export class ForceDirectedLayout extends Layout {
       }
     }
 
-    let numberOfLeftNodes = 1;
-    let numberOfRightNodes = 1;
+    let leftNodeCount = 0;
+    let rightNodeCount = 0;
 
+    //determine number of nodes that should be placed on left or right side
+    for (i = 0; i < nodes.length; ++i) {
+      let node = nodes[i];
+      let predeccessors = graph.predecessors(node);
+      let successors = graph.successors(node);
 
-    for (var i = 0; i < nodes.length; ++i) {
+      if (predeccessors.length == minNumberOfPredecessors) {
+        leftNodeCount++;
+      }
+      if (successors.length == minNumberOfSuccessors) {
+        rightNodeCount++;
+      }
+    }
+
+    let leftNodeIndex = 1;
+    let rightNodeIndex = 1;
+
+    let leftVerticalBalanceIndex = Math.max(4,leftNodeCount) + 1;
+    let rightVerticalBalanceIndex = Math.max(4,rightNodeCount) + 1;
+
+    for (i = 0; i < nodes.length; ++i) {
       let node = nodes[i];
       let predeccessors = graph.predecessors(node);
       let successors = graph.successors(node);
@@ -106,10 +143,10 @@ export class ForceDirectedLayout extends Layout {
             attributes: attributes,
             name: self.model.getMajorLabels([node])[0],
             x: self.width/10, //left side
-            y: self.height*numberOfLeftNodes/8,
+            y: self.height*leftNodeIndex/leftVerticalBalanceIndex,
             fixed: true
           });
-        numberOfLeftNodes++;
+        leftNodeIndex++;
       }
       else if (successors.length == minNumberOfSuccessors) {
         result.nodes.push(
@@ -118,10 +155,10 @@ export class ForceDirectedLayout extends Layout {
             attributes: attributes,
             name: self.model.getMajorLabels([node])[0],
             x: 9*self.width/10, //right side
-            y: self.height*numberOfRightNodes/8,
+            y: self.height*rightNodeIndex/rightVerticalBalanceIndex,
             fixed: true
           });
-        numberOfRightNodes++;
+        rightNodeIndex++;
       }
       else {
         result.nodes.push(
@@ -148,6 +185,7 @@ export class ForceDirectedLayout extends Layout {
 
     return result;
   }
+
 
   /**
    * Computes a force-directed layout of the graph.
@@ -196,25 +234,25 @@ export class ForceDirectedLayout extends Layout {
     this.nodeGroup = this.graphGroup.append("g")
       .classed("nodeGroup", true);
 
+    //set up highlighting for nodes
     this.nodes = this.nodeGroup.selectAll("g.node")
       .data(dataset.nodes)
       .enter()
-      .append("rect")
-      .attr("rx", self.rx)
-      .attr("ry", self.ry)
-      .attr({"height":self.nodeHeight})
-      .attr({"width":self.nodeWidth})
-      .style("fill","#aaa")
+      .append("g")
       .classed("node",true)
       .call(force.drag);
 
-    this.nodeLabels = this.nodeGroup.selectAll("g.nodelabel")
-       .data(dataset.nodes)
-       .enter()
-       .append("text")
-       .attr( {"class":"nodelabel",
-              "stroke":"black"})
-       .text(function(d){return d.name;});
+    this.nodes.append("rect")
+      .attr("rx", self.rx)
+      .attr("ry", self.ry)
+      .attr({"height":self.nodeHeight})
+      .attr({"width":self.nodeWidth});
+
+    //node text
+    this.nodeLabels = this.nodes.append("text")
+      .text(function (d) {
+        return d.name;
+      });
 
     //arrowheads
     this.graphGroup.append('defs').append('marker')
@@ -231,9 +269,9 @@ export class ForceDirectedLayout extends Layout {
             .attr('fill', '#ccc')
             .attr('stroke','#ccc');
 
-    /* todo: not sure why hovering won't work*/
+
     this.addHoverCallbacks(this.nodeGroup, "g.node");
-    this.addHoverCallbacks(this.nodeGroup, "g.nodelabel");
+    this.addHoverCallbacks(this.nodeGroup, "g.text");
 
     //force functions
     force.on("tick", function(){
@@ -244,14 +282,14 @@ export class ForceDirectedLayout extends Layout {
                     "y2": function(d){return d.target.y;}
         });
 
-        self.nodes.attr({"x":function(d){return d.x-self.nodeWidth/2;},
-                    "y":function(d){return d.y-self.nodeHeight/2;}
+        self.nodes.attr("transform", function (d) {
+          //return "translate(" + (graph.node(d).x-self.nodeWidth/2) + "," + (graph.node(d).y-self.nodeHeight/2) + ")";
+          return "translate(" + (d.x-self.nodeWidth/2) + "," + (d.y-self.nodeHeight/2) + ")";
         });
 
-        self.nodeLabels.attr("x", function(d) { return d.x - self.nodeWidth/3; })
-                  .attr("y", function(d) { return d.y + self.nodeHeight/5; })
-                  .attr("pointer-events", "none"); //to consider for hover???
-
+        self.nodeLabels.attr("x", self.nodeWidth/2)
+            .attr("y", self.nodeHeight/2)
+            .attr("pointer-events", "none");
 
         self.edgePaths.attr('d', function(d) { var path='M '+d.source.x+' '+d.source.y+' L '+ d.target.x +' '+d.target.y;
                                            return path});

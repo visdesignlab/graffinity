@@ -19,7 +19,7 @@ export class GeographicLayout extends Layout {
    */
   createLayout(graph) {
 
-    this.setHeightAndWidth(graph);
+    this.setHeightAndWidth();
 
     // Prepare to render the graph.
     let self = this;
