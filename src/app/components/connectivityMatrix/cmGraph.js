@@ -233,9 +233,10 @@ export class cmGraph {
   }
 
   getSubgraph(paths) {
+    // extract node and edge indexes from the paths
     let nodes = Utils.getNodesFromPaths(paths);
+    let edges = Utils.getEdgesFromPaths(paths);
 
-    // graph that we're creating
     let subgraph = new graphlib.Graph({multigraph: true});
 
     // the subgraph's graph is an object used by dagre layout.
@@ -255,10 +256,9 @@ export class cmGraph {
 
     // if an edge's source and target nodes in paths, add it to the subgraph
     graph.edges().forEach(function (key) {
-      let isSourceInPaths = nodes.indexOf(parseInt(key.v)) != -1;
-      let isTargetInPaths = nodes.indexOf(parseInt(key.w)) != -1;
-      if (isSourceInPaths && isTargetInPaths) {
-        subgraph.setEdge(key.v, key.w, graph.edge(key));
+      let id = parseInt(key.name);
+      if (edges.indexOf(id) != -1) {
+        subgraph.setEdge(key.v, key.w, graph.edge(key), key.name);
       }
     });
 

@@ -1,15 +1,14 @@
 /*globals d3, dagre
  */
-export class LayeredLayout {
+
+import {Layout} from "./layout"
+
+export class LayeredLayout extends Layout {
   /**
    * Class for displaying node-link diagram of the currently selected paths.
    */
   constructor(svg, model, $log, viewState, mainController) {
-    this.model = model;
-    this.svg = svg;
-    this.$log = $log;
-    this.viewState = viewState;
-    this.mainController = mainController;
+    super(svg, model, $log, viewState, mainController);
 
     // Parameters for dagre
     this.nodeWidth = 45;
@@ -20,33 +19,6 @@ export class LayeredLayout {
     this.graphRankSep = 7;
     this.graphMarginTop = 80;
     this.rankdir = "LR";
-
-    // Settings for positioning the graph
-    this.graphYOffset = 80;
-    this.graphGroup = this.svg.append("g");
-  }
-
-  /**
-   * Used to set mouseenter/mouseleave events on nodes.
-   */
-  addHoverCallbacks(group, selector) {
-    let self = this;
-    group.selectAll(selector)
-      .on("mouseenter", function (d) {
-        d3.select(this).classed("hovered", true);
-        self.viewState.setHoveredNodes([parseInt(d)]);
-      })
-      .on("mouseleave", function () {
-        d3.select(this).classed("hovered", false);
-        self.viewState.setHoveredNodes(null);
-      });
-  }
-
-  /**
-   * Remove everything from the svg.
-   */
-  clear() {
-    this.graphGroup.selectAll("*").remove();
   }
 
   /**
@@ -88,20 +60,8 @@ export class LayeredLayout {
    */
   createLayout(graph) {
 
-    // get the column containing the svg
-    let element = d3.select("#node-link-column")[0][0];
-
-    // How much room do we have available in the column? Use this to size the svg.
-    // padding is of the form '0px 15px.'
-    // get the horizontal form of it
-    // use that to determine width
-    let padding = d3.select("#node-link-column").style("padding");
-    padding = padding.split(' ')[1];
-    padding = parseInt(padding);
-    let width = element.clientWidth - padding;
-    let height = 960;
-    this.svg.attr("width", width);
-    this.svg.attr("height", height);
+    //call to superclass
+    this.setHeightAndWidth();
 
     // Prepare to render the graph.
     let self = this;
@@ -142,7 +102,7 @@ export class LayeredLayout {
     // Create groups that will hold the nodes.
     this.nodeGroup = parent.append("g")
       .classed("nodeGroup", true);
-
+    
     this.nodes = this.nodeGroup.selectAll("g.node")
       .data(graph.nodes())
       .enter()
@@ -179,6 +139,8 @@ export class LayeredLayout {
         return LayeredLayout.getNodeCenterAsTransform(d, graph);
       });
 
+
+
     this.addHoverCallbacks(this.nodeGroup, "g.node");
     this.addHoverCallbacks(this.nodeGroup, "g.text");
   }
@@ -199,46 +161,4 @@ export class LayeredLayout {
     return "translate(" + (graph.node(key).width / 2) + ", " + (graph.node(key).height / 2) + ")";
   }
 
-  /**
-   * Called when the user mouses over a node in any view.
-   * Sets nodes that match nodeIndexes to the css class 'hovered'
-   */
-  onHoverNodes(signal, nodeIndexes) {
-    // Has this been created yet?
-    if (this.nodeGroup) {
-
-      // Are we hovering or disabling hover?
-      if (nodeIndexes) {
-
-        // Find elements for each of nodeIndexes
-        let hoveredNodes = this.nodeGroup.selectAll("g.node").filter(function (d) {
-          return nodeIndexes.indexOf(parseInt(d)) != -1;
-        });
-
-        hoveredNodes.classed("hovered", true);
-
-      } else {
-
-        // Set everything to not hovered.
-        this.nodeGroup.selectAll("g.node")
-          .classed("hovered", false);
-
-      }
-    }
-  }
-
-  /**
-   * This will require clearing the svg and updating the selected paths.
-   */
-  setModel(model) {
-    this.model = model;
-  }
-
-  /**
-   * Updates paths displayed in the node link view.
-   */
-  setGraph(graph) {
-    this.graph = graph;
-    this.createLayout(this.graph);
-  }
 }

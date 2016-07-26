@@ -2,6 +2,8 @@
  */
 
 import {LayeredLayout} from "./layouts/layeredLayout"
+import {GeographicLayout} from "./layouts/geographicLayout"
+import {ForceDirectedLayout} from "./layouts/forceDirectedLayout"
 
 /**
  * Angular directive that will contain the node-link diagrams. Interaction with this is handled by the
@@ -65,6 +67,7 @@ class NodeLinkViewDirectiveController {
     this.ui.availableLayouts = ["Layered", "Geographic", "Force-directed"];
     this.ui.selectedLayout = this.ui.availableLayouts[0];
     this.svg = d3.select("#node-link-svg");
+    this.model = $scope.$parent.main.model;
   }
 
   /**
@@ -80,10 +83,14 @@ class NodeLinkViewDirectiveController {
    */
   setSelectedPaths(signal, paths) {
     this.paths = paths;
-    this.layout.clear();
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
-    this.$log.debug("Updating layout with new graph: ", this.selectedSubgraph);
-    this.layout.setGraph(this.selectedSubgraph);
+
+    if (this.layout) {
+      this.layout.clear();
+      this.layout.setGraph(this.selectedSubgraph);
+    } else {
+      this.onLayoutChanged("Layered")
+    }
   }
 
   /**
@@ -102,13 +109,17 @@ class NodeLinkViewDirectiveController {
    */
   onLayoutChanged(layout) {
 
+    if (this.layout) {
+      this.layout.clear();
+    }
+
     // Create the layout
     if (layout == "Layered") {
       this.layout = new LayeredLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     } else if (layout == "Geographic") {
-      alert(layout + " not implemented yet");
+      this.layout = new GeographicLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     } else /* if (layout == "Force-directed") */ {
-      alert(layout + " not implemented yet");
+      this.layout = new ForceDirectedLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     }
 
     // Give the layout data to draw.

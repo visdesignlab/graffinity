@@ -3,7 +3,6 @@
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
 import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
-
 import {Utils} from "../components/utils/utils";
 
 export class MainController {
@@ -45,7 +44,7 @@ export class MainController {
     this.database = "flights";
 
     let useLargeResult = false;
-    //useLargeResult = true;
+    useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;
@@ -107,27 +106,27 @@ export class MainController {
     }, 1);
 
     // If debugging, then automatically manipulate the GUI.
-    $timeout(function () {
-      if (self.ui.debugRowFilterScents) {
-        let attribute = "area";
-        let nodeIndexes = self.model.getFlattenedRowNodeIndexes();
-        let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
-        self.viewState.getOrCreateFilterRange(attribute, 1, nodeAttributes);
-        self.viewState.setFilterRange(attribute, 1, [92616600, 269473560]);
-        self.updateLegend();
-      }
-    }, 1);
+    //$timeout(function () {
+    //  if (self.ui.debugRowFilterScents) {
+    //    let attribute = "area";
+    //    let nodeIndexes = self.model.getFlattenedRowNodeIndexes();
+    //    let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
+    //    self.viewState.getOrCreateFilterRange(attribute, 1, nodeAttributes);
+    //    self.viewState.setFilterRange(attribute, 1, [92616600, 269473560]);
+    //    self.updateLegend();
+    //  }
+    //}, 1);
 
-    $timeout(function () {
-      if (self.ui.debugColFilterScents) {
-        let attribute = "area";
-        let nodeIndexes = self.model.getFlattenedColNodeIndexes();
-        let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
-        self.viewState.getOrCreateFilterRange(attribute, 0, nodeAttributes);
-        self.viewState.setFilterRange(attribute, 0, [216139000, 216139002]); // values selected to show only 1 col
-        self.updateLegend();
-      }
-    }, 1);
+    //$timeout(function () {
+    //  if (self.ui.debugColFilterScents) {
+    //    let attribute = "area";
+    //    let nodeIndexes = self.model.getFlattenedColNodeIndexes();
+    //    let nodeAttributes = self.model.getNodeAttr(nodeIndexes, attribute);
+    //    self.viewState.getOrCreateFilterRange(attribute, 0, nodeAttributes);
+    //    self.viewState.setFilterRange(attribute, 0, [216139000, 216139002]); // values selected to show only 1 col
+    //    self.updateLegend();
+    //  }
+    //}, 1);
   }
 
   createCategoricalCollapseControls(model) {
@@ -140,6 +139,7 @@ export class MainController {
   createMatrix(model, encoding) {
     // this.svg.selectAll("*").remove();
     this.model = model;
+    this.viewState.setModel(model);
     if (!this.matrixManager) {
       this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
       this.nodeListManager = this.cmMatrixViewFactory.createNodeListManager(this.nodeListContainer, model, this.$scope, this.viewState, this);
@@ -148,7 +148,8 @@ export class MainController {
       this.nodeListManager.setModel(model);
     }
     this.$scope.$broadcast("setModel", model);
-    this.viewState.setCurrentModel(model);
+
+    // this.viewState.setCategoricalFilter("airport", 2, {"DEN": true, "LAX": true, "IAD": true, "HNL": true, "LAS": true, "DTW": true});
     this.onEncodingChanged(encoding);
   }
 
@@ -183,6 +184,15 @@ export class MainController {
       this.model.collapseColsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
+
+    // We are collapsing the matrix cols by an attribute. Make sure that attribute is visibile!
+    if(this.model.areColsCollapsed) {
+      this.matrixManager.setUseAnimation(false);
+      this.matrixManager.matrices.forEach(function (matrix) {
+        matrix.onToggleAttributeRow(this.matrixManager.matrix.attributes.indexOf(attr), true);
+      }.bind(this));
+      this.matrixManager.setUseAnimation(true);
+    }
   }
 
   onCollapseRowsByAttr(attr) {
@@ -192,6 +202,14 @@ export class MainController {
       this.model.collapseRowsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
+
+    if(this.model.areRowsCollapsed) {
+      this.matrixManager.setUseAnimation(false);
+      this.matrixManager.matrices.forEach(function (matrix) {
+        matrix.onToggleAttributeCol(this.matrixManager.matrix.attributes.indexOf(attr), true);
+      }.bind(this));
+      this.matrixManager.setUseAnimation(true);
+    }
   }
 
   /**
@@ -269,8 +287,8 @@ export class MainController {
 
       // Update the model
       self.model = model;
-      self.viewState.setCurrentModel(model);
-      self.viewState.reset();
+      self.viewState.setModel(model);
+      // self.viewState.reset();
 
       // Actually create the matrix
       self.$timeout(function () {
@@ -333,41 +351,44 @@ export class MainController {
    * histogram of 'attribute' for all nodes.
    */
   openNodeAttributeFilter(attribute, nodeIndexes, nodeAttributeGroup) {
-    // Get lists of all nodes and their attributes
-    nodeIndexes = Utils.getUniqueValues(Utils.getFlattenedLists(nodeIndexes));
-    let nodeAttributes = this.model.getNodeAttr(nodeIndexes, attribute);
-    let range = this.viewState.getOrCreateFilterRange(attribute, nodeAttributeGroup, nodeAttributes);
+    let useCategoricalFilter = false;
 
-    // When the modal is finished, save the range.
-    let self = this;
-    let callback = function (result) {
-      let attribute = result.attribute;
-      let range = result.range;
-      self.viewState.setFilterRange(attribute, nodeAttributeGroup, range);
-      self.updateLegend();
-    };
+    if (attribute == this.model.getCmGraph().getNodeIdName()) {
+      useCategoricalFilter = true;
+    } else {
+      useCategoricalFilter = this.model.isCategoricalAttribute(attribute);
+    }
 
-    // Open the modal.
-    this.modalService.getValueRange("Select range of " + attribute, nodeAttributes, range, nodeIndexes, attribute, callback);
-  }
+    let flattenedIndexes = Utils.getFlattenedLists(nodeIndexes);
 
-  /**
-   * Called when the user clicks 'filter' for the node Ids. Opens a modal containing a checklist of nodes ids.
-   */
-  openNodeIndexFilter() {
-    let nodeIndexes = this.model.getFlattenedNodeIndexes();
+    let nodeAttributes = this.model.getNodeAttr(flattenedIndexes, attribute);
 
-    // "selected" nodes are visible. Unselected nodes are currently hidden.
-    let isNodeSelected = this.viewState.getHiddenNodesAsSelection(nodeIndexes);
+    if (useCategoricalFilter) {
 
-    // Tell viewState the user updated visible nodes. This causes viewState to broadcast changes and ultimately
-    // updates the nodes this is displaying.
-    let modalSuccess = function (selection) {
-      this.viewState.setHiddenNodesFromSelection(selection);
-    };
-    modalSuccess = modalSuccess.bind(this);
+      let isValueSelected = this.viewState.getCategoricalFilter(attribute, nodeAttributeGroup);
 
-    this.modalService.getSelectionFromList("Select nodes", nodeIndexes, isNodeSelected, modalSuccess);
+      let modalSuccess = function (selection) {
+        this.viewState.setCategoricalFilter(attribute, nodeAttributeGroup, selection);
+        this.updateLegend();
+      }.bind(this);
+
+      this.modalService.getSelectionFromList("Filter by " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
+
+    } else {
+
+      let range = this.viewState.getQuantitativeFilter(attribute, nodeAttributeGroup, nodeAttributes);
+
+      // When the modal is finished, save the range.
+      let callback = function (result) {
+        let attribute = result.attribute;
+        let range = result.range;
+        this.viewState.setQuantitativeFilter(attribute, nodeAttributeGroup, range);
+        this.updateLegend();
+      }.bind(this);
+
+      // Open the modal.
+      this.modalService.getValueRange("Filter by " + attribute, nodeAttributes, range, flattenedIndexes, attribute, callback);
+    }
   }
 
   /**

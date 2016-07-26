@@ -69,29 +69,18 @@ export class cmDataAttributeRow extends cmMatrixRow {
       } else if (this.matrix.isLabelCell(i)) {
 
         cell.setData({
-          name: label,
+          values: [label],
           isVertical: 0,
           attributeIndex: -1,
-          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes()
+          nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          attributeNodeGroup: attributeNodeGroup
         });
 
         cell.isAttributeCell = true;
 
       } else if (this.matrix.isDataCell(i)) {
 
-        //let dataIndex = this.matrix.getDataColIndex(i);
-        //data = {
-        //  colNodeIndexes: colNodeIndexes[dataIndex],
-        //  modelRow: modelRow
-        //};
-        //
-        //cell.setData(data);
-        //
-        //if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
-        //  throw "something fucked up in col node indexes and minor cells";
-        //}
-        //
-        if(areColsCollapsed) {
+        if (areColsCollapsed) {
           for (var j = 0; j < this.majorCells[i].minorCells.length; ++j) {
 
             data = {

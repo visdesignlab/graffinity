@@ -16,6 +16,8 @@ import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributes
 import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
 import {cmHoverVisitor} from "./visitors/cmHoverVisitor"
 
+import {cmCategoricalAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
+
 import {Utils} from "../utils/utils"
 import {UtilsD3} from "../utils/utilsd3"
 
@@ -87,15 +89,15 @@ export class cmMatrixBase extends SvgGroupElement {
       self.updatePositions(rowPerm, colPerm);
     });
 
-    this.$scope.$on("hideAttributeRow", function (event, attributeIndex, sender) {
+    this.$scope.$on("toggleAttributeRow", function (event, attributeIndex, visible, sender) {
       if (sender != self) {
-        self.onHideAttributeRow(attributeIndex, true);
+        self.onToggleAttributeRow(attributeIndex, visible, true);
       }
     });
 
-    this.$scope.$on("hideAttributeCol", function (event, attributeIndex, sender) {
+    this.$scope.$on("toggleAttributeCol", function (event, attributeIndex, visible, sender) {
       if (sender != self) {
-        self.onHideAttributeCol(attributeIndex, true);
+        self.onToggleAttributeCol(attributeIndex, visible, true);
       }
     });
 
@@ -139,58 +141,96 @@ export class cmMatrixBase extends SvgGroupElement {
     this.addChild(row);
   }
 
+
   applyVisitor(visitor) {
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].apply(visitor);
     }
   }
 
+
   createAttributeEncodings() {
+
+    // Clear attributes and attribute labels
     let visitor = new cmClearVisitor();
     visitor.setClearAttributeCells(true);
     visitor.setClearAttributeLabelCells(true);
     this.applyVisitor(visitor);
 
-    // Create visual encodings for all the quantitative attributes.
-    let isNodeHidden = this.viewState.isNodeHidden;
-    for (var i = 0; i < this.attributes.length; ++i) {
-      for (var j = 0; j < this.numAttributeNodeGroups; ++j) {
-        let preprocessor = new cmScatterPlot1DPreprocessor(i);
-        preprocessor.setAttributeNodeGroup(j);
-        preprocessor.setNodeFilter(isNodeHidden);
-        this.applyVisitor(preprocessor);
-        let valueRange = preprocessor.getValueRange();
-        visitor = new cmScatterPlot1DVisitor(i, this.rowHeight / 4, valueRange);
-        visitor.setNodeFilter(isNodeHidden);
-        visitor.setAttributeNodeGroup(j);
-
-        // Uncomment this to enable hovering on the node attributes.
-        // visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
-
-        this.applyVisitor(visitor);
-      }
-    }
-
-    visitor = new cmStringAttributeVisitor(-1, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
-    visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
-    this.applyVisitor(visitor);
-
     // Create controls for all attributes.
     let sortRows = this.onSortRowsByAttribute.bind(this);
     let sortCols = this.onSortColsByAttribute.bind(this);
-    let hideRows = this.onHideAttributeRow.bind(this);
-    let hideCols = this.onHideAttributeCol.bind(this);
-    let filterNodes = this.onFilterNodes.bind(this);
+    let hideRows = this.onToggleAttributeRow.bind(this);
+    let hideCols = this.onToggleAttributeCol.bind(this);
     let filterAttributes = this.mainController.openNodeAttributeFilter.bind(this.mainController);
 
-    // create labels for all the quantitative attribute columns/rows
-    visitor = new cmAttributeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight / 2, this.colWidthAttr, filterNodes, filterAttributes);
-    this.applyVisitor(visitor);
 
-    // create labels for the 'labels' or 'id' column/row
+    // Create visual encodings for all the quantitative attributes.
+    let isNodeHidden = this.viewState.isNodeHidden;
+
+    // For all attributes...
+    for (let i = 0; i < this.attributes.length; ++i) {
+      let attribute = this.attributes[i];
+
+      // Is the attribute categorical?
+      if (this.model.isCategoricalAttribute(attribute)) {
+
+        // For all of the attribute groups...
+        for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
+
+          // Create the attribute encoding
+          visitor = new cmStringAttributeVisitor(i, j, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+          visitor.isVisitingColsCollapsedAttr = attribute == this.model.colsCollapseAttr && j == this.colAttributeNodeGroup;
+          visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && j == this.rowAttributeNodeGroup;
+          visitor.areRowsCollapsed = this.model.areRowsCollapsed;
+          visitor.areColsCollapsed = this.model.areColsCollapsed;
+          this.applyVisitor(visitor);
+
+          // Create the attribute label and scent.
+
+          visitor = new cmCategoricalAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
+            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
+          this.applyVisitor(visitor);
+        }
+
+      } else { // the attribute must be quantitative
+
+        for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
+
+          // Assume only one encoding per attribute
+          let preprocessor = new cmScatterPlot1DPreprocessor(i, j);
+          preprocessor.setNodeFilter(isNodeHidden);
+          this.applyVisitor(preprocessor);
+
+          let valueRange = preprocessor.getValueRange();
+          visitor = new cmScatterPlot1DVisitor(i, j, this.rowHeight / 4, valueRange);
+          visitor.setNodeFilter(isNodeHidden);
+
+          // Uncomment this to enable hovering on the node attributes.
+          // visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+
+          this.applyVisitor(visitor);
+
+          // create labels for all the quantitative attribute columns/rows
+          visitor = new cmAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
+            this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
+          this.applyVisitor(visitor);
+        }
+      }
+    }
+
+    // Done with attributes, now create the "ids"
+    for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
+      visitor = new cmStringAttributeVisitor(-1, j, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+      visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+      visitor.areRowsCollapsed = (!this.isNodeListView) && this.model.areRowsCollapsed;
+      visitor.areColsCollapsed = this.model.areColsCollapsed;
+      this.applyVisitor(visitor);
+    }
+
+    // Create controls for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
-      this.labelRowHeight, this.colWidthLabel, filterNodes, filterAttributes);
+      this.labelRowHeight, this.colWidthLabel, filterAttributes, filterAttributes);
     visitor.setCreateColumnLabels(true);
     this.applyVisitor(visitor);
 
@@ -219,12 +259,9 @@ export class cmMatrixBase extends SvgGroupElement {
    * Connects this to signals broadcast by the global scope.
    */
   connectToViewState(scope) {
-    let onHideNodes = this.onHideNodes.bind(this);
-    let onShowNodes = this.onShowNodes.bind(this);
     let onHoverNodes = this.onHoverNodes.bind(this);
     let onQuantitativeAttributeFilterUpdate = this.onQuantitativeAttributeFilterUpdate.bind(this);
-    scope.$on("hideNodes", onHideNodes);
-    scope.$on("showNodes", onShowNodes);
+    scope.$on("filterChanged", this.onFilterChanged.bind(this));
     scope.$on("hoverNodes", onHoverNodes);
     scope.$on("updateQuantitativeAttributeFilter", onQuantitativeAttributeFilterUpdate);
   }
@@ -334,7 +371,7 @@ export class cmMatrixBase extends SvgGroupElement {
         for (var j = 0; j < this.allRows[i].majorCells.length; ++j) {
           if (this.isDataCell(j)) {
             let paths = this.allRows[i].majorCells[j].getPathList();
-            let filteredPaths = Utils.getFilteredPaths(paths, true, this.viewState.isNodeHidden);
+            let filteredPaths = this.viewState.getFilterPathFunction()(paths);
             row.push(filteredPaths.length);
           }
         }
@@ -376,9 +413,9 @@ export class cmMatrixBase extends SvgGroupElement {
         let carriers = [];
         for (var i = 0; i < paths.length; ++i) {
           let edge = paths[i][1];
-          //console.log(paths[i], paths[i][0], paths[i][2], edge);
+
           let carrier = graph.graph.edge(paths[i][0], paths[i][2], edge).carrier;
-          //console.log(carrier);
+
           if (carriers.indexOf(carrier) == -1) {
             carriers.push(carrier);
           }
@@ -449,27 +486,9 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   initAttributeData(model) {
-    let colNodeAttributes = [];
-    let rowAttributes = [];
-    for (var i = 0; i < this.attributes.length; ++i) {
-      colNodeAttributes[i] = model.getNodeAttrs(this.colNodeIndexes, this.attributes[i]);
-      rowAttributes[i] = model.getNodeAttrs(this.rowNodeIndexes, this.attributes[i]);
-    }
-
-    let rowNodeAttributes = angular.copy(rowAttributes[0]);
-    for (i = 0; i < rowNodeAttributes.length; ++i) {
-      rowNodeAttributes[i] = [rowNodeAttributes[i]];
-    }
-
-    for (i = 1; i < this.attributes.length; ++i) {
-      for (var j = 0; j < rowAttributes[i].length; ++j) {
-        rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
-      }
-    }
-
-    this.rowAttributes = rowAttributes;
-    this.rowNodeAttributes = rowNodeAttributes;
-    this.colNodeAttributes = colNodeAttributes;
+    this.rowAttributes = model.getRowAttributeValues();
+    this.rowNodeAttributes = model.getRowNodeAttributeValues();
+    this.colAttributes = model.getColAttributeValues();
   }
 
   /**
@@ -477,7 +496,7 @@ export class cmMatrixBase extends SvgGroupElement {
    * Creates this.isAttributeRow/Col visible.
    */
   initAttributeState(model) {
-    let attributes = model.graph.getQuantNodeAttrNames();
+    let attributes = model.getAvailableAttributes();
     this.attributes = attributes;
 
     // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
@@ -603,7 +622,7 @@ export class cmMatrixBase extends SvgGroupElement {
     // Tell other views that we changed selection.
     let paths = [];
     if (cell.isDataCell) {
-      paths = Utils.getFilteredPaths(cell.getPathList(), true, this.viewState.isNodeHidden);
+      paths = cell.getPathList();
     } else if (cell.isColLabelCell) {
       paths = this.model.getPathsWithTargets(cell.data.nodeIndexes);
     } else if (cell.isRowLabelCell && !cell.isInNodeListView) {
@@ -611,6 +630,8 @@ export class cmMatrixBase extends SvgGroupElement {
     } else if (cell.isRowLabelCell && cell.isInNodeListView) {
       paths = this.model.getPathsWithIntermediates(cell.data.nodeIndexes);
     }
+
+    paths = this.viewState.getFilterPathFunction()(paths);
 
     this.mainController.onPathsSelected(paths);
   }
@@ -686,42 +707,35 @@ export class cmMatrixBase extends SvgGroupElement {
     this.modalService.getSelectionFromList("Select attributes", attributes, isAttributeVisible, modalSuccess);
   }
 
-  /**
-   * Called when the user clicked on the 'filter' icon of node ids. Main controller will get new filter.
-   */
-  onFilterNodes() {
-    this.mainController.openNodeIndexFilter();
-  }
-
-  onHideAttributeRow(attributeIndex, isReceiver, skipUpdate) {
+  onToggleAttributeRow(attributeIndex, visible, isReceiver, skipUpdate) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
-    this.isAttributeRowVisible[attribute] = false;
-    this.updateRow(viewIndex, false);
+    this.isAttributeRowVisible[attribute] = visible;
+    this.updateRow(viewIndex, visible);
 
     if (!skipUpdate) {
       this.updatePositions(this.rowPerm, this.colPerm);
     }
 
     if (!isReceiver) {
-      this.$scope.$broadcast("hideAttributeRow", attributeIndex, this);
+      this.$scope.$broadcast("toggleAttributeRow", attributeIndex, visible, this);
       this.$scope.$broadcast("changeMatrixHeight");
     }
 
   }
 
-  onHideAttributeCol(attributeIndex, isReceiver, skipUpdate) {
+  onToggleAttributeCol(attributeIndex, visible, isReceiver, skipUpdate) {
     let attribute = this.attributes[attributeIndex];
     let viewIndex = this.getViewIndexFromAttributeIndex(attributeIndex);
-    this.isAttributeColVisible[attribute] = false;
-    this.updateCol(viewIndex, false);
+    this.isAttributeColVisible[attribute] = visible;
+    this.updateCol(viewIndex, visible);
 
     if (!skipUpdate) {
       this.updatePositions(this.rowPerm, this.colPerm);
     }
 
     if (!isReceiver) {
-      this.$scope.$broadcast("hideAttributeCol", attributeIndex, this);
+      this.$scope.$broadcast("toggleAttributeCol", attributeIndex, visible, this);
       this.$scope.$broadcast("changeMatrixHeight");
     }
   }
@@ -732,9 +746,9 @@ export class cmMatrixBase extends SvgGroupElement {
     });
   }
 
-  onHideNodes(event, nodeIndexes) {
-    this.updateDataRows(nodeIndexes, true);
-    this.updateDataCols(nodeIndexes, true);
+  onFilterChanged() {
+    this.updateDataRows();
+    this.updateDataCols();
     this.setEncoding(this.encoding, this.metric);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
@@ -817,13 +831,6 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
-  onShowNodes(event, nodeIndexes) {
-    this.updateDataRows(nodeIndexes, false);
-    this.updateDataCols(nodeIndexes, false);
-    this.setEncoding(this.encoding, this.metric);
-    this.updatePositions(this.rowPerm, this.colPerm);
-  }
-
   onSortColsByAttribute(attribute, ascending) {
     let colPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.colNodeIndexes, attribute, ascending);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
@@ -864,11 +871,11 @@ export class cmMatrixBase extends SvgGroupElement {
 
     if (encoding == "bar chart") {
       preprocessor = new cmBarChartPreprocessor();
-      preprocessor.setNodeFilter(this.viewState.isNodeHidden);
+      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       this.applyVisitor(preprocessor);
 
       visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setNodeFilter(this.viewState.isNodeHidden);
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       visitor.setCallbacks(clicked, mouseover, mouseout);
       this.applyVisitor(visitor);
 
@@ -878,19 +885,20 @@ export class cmMatrixBase extends SvgGroupElement {
       let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
       preprocessor = new cmColorMapPreprocessor();
-      preprocessor.setNodeFilter(this.viewState.isNodeHidden);
+      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       preprocessor.setMetricFunction(metricFunction);
       preprocessor.graph = this.model.graph;
       this.applyVisitor(preprocessor);
 
       visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
       visitor.setCallbacks(clicked, mouseover, mouseout);
-      visitor.setNodeFilter(this.viewState.isNodeHidden);
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       visitor.setMetricFunction(metricFunction);
       visitor.graph = this.model.graph;
       this.applyVisitor(visitor);
 
       this.legend = new cmColorMapLegend(visitor);
+
     }
 
   }
@@ -968,10 +976,10 @@ export class cmMatrixBase extends SvgGroupElement {
   updateAttributeView() {
     for (var i = 0; i < this.attributes.length; ++i) {
       if (!this.isAttributeColVisible[this.attributes[i]]) {
-        this.onHideAttributeCol(i, true, true);
+        this.onToggleAttributeCol(i, false, true, true);
       }
       if (!this.isAttributeRowVisible[this.attributes[i]]) {
-        this.onHideAttributeRow(i, true, true);
+        this.onToggleAttributeRow(i, false, true, true);
       }
     }
   }
@@ -1016,22 +1024,34 @@ export class cmMatrixBase extends SvgGroupElement {
    * Requres that we call this.updatePositions to account for gaps in matrix layout due to visibility.
    * There is some symmetry with updateDataRows. They could probably be condensed to the same function.
    */
-  updateDataCols(nodeIndexes, hide) {
+  updateDataCols() {
 
+    let nodeIndexes = Utils.getFlattenedLists(this.colNodeIndexes);
     // Loop over all indexes who we are showing/hiding.
     for (var i = 0; i < nodeIndexes.length; ++i) {
 
       // Loop over all major cols
       for (var dataColIndex = 0; dataColIndex < this.colNodeIndexes.length; ++dataColIndex) {
 
-        let isOnlyNodeInCol = this.colNodeIndexes[dataColIndex].length == 1;
         let minorColIndex = this.colNodeIndexes[dataColIndex].indexOf(nodeIndexes[i]);
         let isNodeInCol = minorColIndex != -1;
+        let isOnlyNodeInCol = this.colNodeIndexes[dataColIndex].length == 1 && isNodeInCol;
+
+        let hide = this.viewState.isNodeFiltered(nodeIndexes[i], this.colAttributeNodeGroup);
         let colIndex = this.getViewColIndexFromDataIndex(dataColIndex);
 
-        if (isOnlyNodeInCol && isNodeInCol) {
+        if (isOnlyNodeInCol) {
+
+          // update visibility of major col
           this.updateCol(colIndex, !hide);
-        } else if (isNodeInCol && !isOnlyNodeInCol) {
+
+          // if we are showing the major col, we also need to make room for its minor cols
+          if (!hide) {
+            this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
+          }
+
+        } else if (isNodeInCol) {
+          // update visibility of minor col
           this.isMinorColVisible[colIndex][minorColIndex] = !hide;
           this.updateMinorCols(colIndex, this.colWidth, this.isMajorColUnrolled[colIndex], this.isMinorColVisible);
         }
@@ -1044,27 +1064,29 @@ export class cmMatrixBase extends SvgGroupElement {
    * There is some symmetry with updateDataCols. One difference from updateDataCols is that major and minor row
    * row visbility is tracked by the individual rows, as opposed to the matrixView.
    */
-  updateDataRows(nodeIndexes, hide) {
+  updateDataRows() {
     let rowNodeIndexes = this.rowNodeIndexes;
+    let flatRowNodeIndexes = Utils.getFlattenedLists(rowNodeIndexes);
 
-    // Loop over all indexes who we are showing/hiding.
-    for (var i = 0; i < nodeIndexes.length; ++i) {
+    // Loop over all the node indexes in all rows.
+    for (var i = 0; i < flatRowNodeIndexes.length; ++i) {
+      let currentNodeIndex = flatRowNodeIndexes[i];
 
-      // Loop over all major rows
+      // Loop over individual rows.
       for (var rowIndex = 0; rowIndex < this.allRows.length; ++rowIndex) {
 
-        // Only check rows that have data bound.
+        // Only looking for data rows - skip others
         if (this.isDataRow(rowIndex)) {
 
           let dataIndex = this.getDataRowIndex(rowIndex);
-
-          let isOnlyNodeInRow = rowNodeIndexes[dataIndex].length == 1;
-          let minorRowIndex = rowNodeIndexes[dataIndex].indexOf(nodeIndexes[i]);
+          let minorRowIndex = this.rowNodeIndexes[dataIndex].indexOf(currentNodeIndex);
           let isNodeInRow = minorRowIndex != -1;
+          let isOnlyNodeInRow = isNodeInRow && rowNodeIndexes[dataIndex].length == 1;
+          let hide = this.viewState.isNodeFiltered(currentNodeIndex, this.rowAttributeNodeGroup);
 
-          if (isNodeInRow && isOnlyNodeInRow) {
+          if (isOnlyNodeInRow) {
             this.updateRow(rowIndex, !hide);
-          } else if (isNodeInRow && !isOnlyNodeInRow) {
+          } else if (isNodeInRow) {
             if (hide) {
               this.allRows[rowIndex].hideMinorRow(minorRowIndex);
             } else {
@@ -1112,16 +1134,22 @@ export class cmMatrixBase extends SvgGroupElement {
   updateRow(rowIndex, isRowIndexVisible) {
     let row = this.allRows[rowIndex];
     if (row) {
+      let height = 0;
       row.setVisible(isRowIndexVisible);
       if (isRowIndexVisible) {
         if (this.isAttributeRow(rowIndex)) {
-          this.rowHeights[rowIndex] = this.rowHeightAttr;
+          height = row.getCurrentHeight();
+          if (!height) {
+            height = this.rowHeightAttr;
+          }
         } else if (this.isDataRow(rowIndex)) {
-          this.rowHeights[rowIndex] = this.rowHeight;
+          height = row.getCurrentHeight();
+          if (!height) {
+            height = this.rowHeight;
+          }
         }
-      } else {
-        this.rowHeights[rowIndex] = 0;
       }
+      this.rowHeights[rowIndex] = height;
     }
   }
 

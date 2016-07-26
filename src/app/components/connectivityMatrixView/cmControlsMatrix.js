@@ -13,7 +13,7 @@ export class cmControlsMatrix extends cmMatrixBase {
    */
   createRows(model) {
 
-    let colNodeAttributes = this.colNodeAttributes;
+    let colAttributes = this.colAttributes;
     let rowAttributes = this.rowAttributes;
 
     // Controls row is the only one with a onColControlsClicked callback.
@@ -24,7 +24,7 @@ export class cmControlsMatrix extends cmMatrixBase {
 
     for (var i = 0; i < this.attributes.length; ++i) {
       row = new cmControlsMatrixRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols,
-        this.colWidth, this.rowHeightAttr, false, colNodeAttributes[i], this, i, this.attributes[i],
+        this.colWidth, this.rowHeightAttr, false, colAttributes[i], this, i, this.attributes[i],
         this.colAttributeNodeGroup);
 
       this.addRow(row, this.rowHeightAttr);
@@ -34,7 +34,7 @@ export class cmControlsMatrix extends cmMatrixBase {
     let minorColLabels = model.getMinorColLabels();
     row = new cmControlsMatrixColHeaderRow(this.svg, this.allRows.length, this.colNodeIndexes,
       this.numHeaderCols, this.colWidth, this.labelRowHeight, majorColLabels, minorColLabels, this, this.attributes,
-      this.rowNodeIndexes, this.rowAttributeNodeGroup, rowAttributes);
+      this.rowNodeIndexes, this.rowAttributeNodeGroup, rowAttributes, this.colAttributeNodeGroup);
 
     this.addRow(row, this.labelRowHeight);
   }

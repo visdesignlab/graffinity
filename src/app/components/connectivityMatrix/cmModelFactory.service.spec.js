@@ -1,5 +1,5 @@
-import {mock} from './mock'
 import {Utils} from '../utils/utils'
+import {requestAndCreateModel} from "./requestAndCreateModel"
 
 describe('cmModelFactory', () => {
   beforeEach(angular.mock.module('connectivityMatrixJs'));
@@ -7,26 +7,6 @@ describe('cmModelFactory', () => {
   it('should exist', inject(($httpBackend, $q, cmModelFactory)=> {
     expect(cmModelFactory).not.toEqual(null);
   }));
-
-  function requestAndCreateModel($httpBackend, $q, cmModelFactory) {
-    $httpBackend.when('POST', 'http://localhost:8000/').respond(
-      mock.output
-    );
-    var deferred = $q.defer();
-
-    cmModelFactory.requestAndCreateModel().then(dataReady, error);
-
-    return deferred.promise;
-
-    function dataReady(model) {
-      deferred.resolve(model);
-    }
-
-    function error(result) {
-      expect(result).toEqual(false);
-    }
-
-  }
 
   it('request matrix by path', inject(($httpBackend, $q, cmModelFactory)=> {
 
@@ -368,4 +348,34 @@ describe('cmModelFactory', () => {
     });
     $httpBackend.flush();
   }));
+
+  it('cmModel - getAvailableAttributes', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+      let attributes = model.getAvailableAttributes();
+      expect(attributes.length).toEqual(4);
+    });
+    $httpBackend.flush();
+  }));
+
+  it('cmModel - flights - getAvailableAttributes', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
+      let attributes = model.getAvailableAttributes();
+      expect(attributes.length).toEqual(6);
+    });
+    $httpBackend.flush();
+  }));
+
+  it('cmModel - flights - getPathsByNumHops', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
+      let paths = model.getAllPaths();
+      expect(paths[1].length).toEqual(5);
+      expect(paths[2].length).toEqual(10);
+      expect(paths[3].length).toEqual(2);
+
+      let total = model.getTotalNumPaths();
+      expect(total).toEqual(17);
+    });
+    $httpBackend.flush();
+  }));
+
 });

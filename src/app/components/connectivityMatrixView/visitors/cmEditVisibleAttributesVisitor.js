@@ -9,11 +9,12 @@ export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
     super(width, height);
     this.editAttributeRows = editAttributeRows;
     this.editAttributeCols = editAttributeCols;
+    this.visitEditAttributeCells = true;
   }
 
   apply(cell) {
 
-    if (!cell.isEditAttributeCell) {
+    if (!this.shouldVisitCell(cell)) {
       return;
     }
 

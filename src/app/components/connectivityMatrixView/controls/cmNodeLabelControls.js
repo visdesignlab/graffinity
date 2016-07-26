@@ -1,12 +1,16 @@
-import {SvgGroupElement} from "./svgGroupElement"
+import {SvgGroupElement} from "./../svgGroupElement"
 export class cmNodeLabelControls extends SvgGroupElement {
-  constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels) {
+  constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels, rowAttributeNodeGroup, colAttributeNodeGroup) {
     super(parent);
 
     this.onSortRows = onSortRows;
     this.onSortCols = onSortCols;
     this.onFilter = onFilter;
     this.nodeIndexes = nodeIndexes;
+    this.rowAttributeNodeGroup = rowAttributeNodeGroup;
+    this.colAttributeNodeGroup = colAttributeNodeGroup;
+    this.name = name;
+
 
     let group = this.getGroup();
 
@@ -52,6 +56,7 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .on("mouseleave", mouseLeave);
 
     let controls = group.append("foreignObject")
+      .attr("transform", isVertical ? "translate(50, 0)" : "translate(0, 0)")
       .append('xhtml:div')
       .data([isVertical])
       .classed("matrix-view-toolbar", true)
@@ -59,11 +64,12 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .on("mouseleave", mouseLeave);
 
     controls.append("i")
+      .data([isVertical])
       .classed("fa", true)
       .classed("fa-filter", true)
       .attr("float", "left")
-      .on("click", function () {
-        self.onFilter(self.name, self.filterNodeIndexes, self.filterAttributeGroup);
+      .on("click", function (d) {
+        self.onFilter(self.name, self.nodeIndexes, d ? self.colAttributeNodeGroup : self.rowAttributeNodeGroup);
       });
 
     controls.append("i")

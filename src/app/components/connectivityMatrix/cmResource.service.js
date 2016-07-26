@@ -1,7 +1,7 @@
 export class cmResource {
-  constructor($log, $http, $q) {
+  constructor($log, $http, $q, resource) {
     'ngInject';
-    this.url = 'http://localhost:8000/';
+    this.url = resource;
     this.$q = $q;
     this.$http = $http;
     this.$log = $log;
