@@ -1,3 +1,5 @@
+/*global d3
+ */
 import {SvgGroupElement} from "./../svgGroupElement"
 export class cmNodeLabelControls extends SvgGroupElement {
   constructor(parent, name, width, height, colWidth, rowHeight, onFilter, nodeIndexes, onSortRows, onSortCols, createColumnLabels, rowAttributeNodeGroup, colAttributeNodeGroup) {
@@ -11,6 +13,8 @@ export class cmNodeLabelControls extends SvgGroupElement {
     this.colAttributeNodeGroup = colAttributeNodeGroup;
     this.name = name;
 
+    this.areRowsSorted = false;
+    this.areColsSorted = false;
 
     let group = this.getGroup();
 
@@ -23,10 +27,14 @@ export class cmNodeLabelControls extends SvgGroupElement {
     if (createColumnLabels) {
       this.createInteractionRect(group, true, width, height, colWidth, rowHeight);
       this.createInteractionRect(group, false, width - rowHeight, height, colWidth, rowHeight);
+      this.toggleControlVisible(false, true);
+      this.toggleControlVisible(false, false);
     } else {
 
       this.createInteractionRect(group, false, width, height, colWidth, rowHeight);
+      this.toggleControlVisible(false, false);
     }
+
 
   }
 
@@ -57,12 +65,27 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .on("mouseenter", mouseEnter)
       .on("mouseleave", mouseLeave);
 
-    let controls = group.append("foreignObject")
+    let allControls = group.append("foreignObject")
+      .append('xhtml:div')
+      .style("width", width + "px")
+      .style("justify-content", "space-between")
+      .style("display", "flex")
+      .data([isVertical])
+      .on("mouseover", mouseEnter)
+      .on("mouseleave", mouseLeave);
+
+    let sortControls = allControls
       .append('xhtml:div')
       .data([isVertical])
+      .classed("matrix-view-sortbar", true)
+      .on("mouseover", mouseEnter)
+      .on("mouseleave", mouseLeave);
+
+    let controls = allControls.append('xhtml:div')
       .classed("matrix-view-toolbar", true)
       .on("mouseover", mouseEnter)
       .on("mouseleave", mouseLeave);
+
 
     controls.append("i")
       .data([isVertical])
@@ -74,29 +97,36 @@ export class cmNodeLabelControls extends SvgGroupElement {
         self.onFilter(self.name, self.nodeIndexes, d ? self.colAttributeNodeGroup : self.rowAttributeNodeGroup);
       });
 
-    controls.append("i")
+    sortControls.append("i")
       .data([isVertical])
       .classed("fa", true)
-      .classed("fa-sort", true)
+      .classed("fa-sort-desc", true)
       .classed("matrix-view-toolbar-item", true)
       .attr("title", "sort")
       .on("click", function (d) {
         if (d) {
-          self.onSortCols(self.name, self.sortColsAscending);
+          self.areColsSorted = true;
+          self.onSortCols(self.name, self.sortColsAscending, this.parentNode);
           self.sortColsAscending = !self.sortColsAscending;
+          cmNodeLabelControls.setSortIcon(this, self.sortColsAscending);
         } else {
-          self.onSortRows(self.name, self.sortRowsAscending);
+          self.areRowsSorted = true;
+          self.onSortRows(self.name, self.sortRowsAscending, this.parentNode);
           self.sortRowsAscending = !self.sortRowsAscending;
+          cmNodeLabelControls.setSortIcon(this, self.sortRowsAscending);
         }
       });
 
     if (isVertical) {
       this.verticalControls = controls;
       this.verticalOutline = outline;
+      this.verticalSortControls = sortControls;
     } else {
       this.controls = controls;
       this.outline = outline;
+      this.sortControls = sortControls;
     }
+
   }
 
   static createLabel(group, name, isVertical, width, height, colWidth, rowHeight) {
@@ -113,13 +143,33 @@ export class cmNodeLabelControls extends SvgGroupElement {
     }
   }
 
+  static setSortIcon(icon, ascending) {
+    icon = d3.select(icon);
+    icon.attr("data-is-sorted", true);
+    icon.classed("fa-sort-desc", !ascending);
+    icon.classed("fa-sort-asc", ascending);
+  }
+
   toggleControlVisible(visible, isVertical) {
     if (isVertical) {
       this.verticalOutline.attr("stroke", visible ? "black" : "none");
       this.verticalControls.style("display", visible ? "flex" : "none");
+
+      if (!visible && !Boolean(this.verticalSortControls.select(".fa").attr("data-is-sorted"))) {
+        this.verticalSortControls.style("display", "none");
+      } else if (visible) {
+        this.verticalSortControls.style("display", "flex");
+      }
+
     } else {
       this.outline.attr("stroke", visible ? "black" : "none");
       this.controls.style("display", visible ? "flex" : "none");
+
+      if (!visible && !Boolean(this.sortControls.select(".fa").attr("data-is-sorted"))) {
+        this.sortControls.style("display", "none");
+      } else if (visible) {
+        this.sortControls.style("display", "flex");
+      }
     }
   }
 }

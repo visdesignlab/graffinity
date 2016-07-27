@@ -93,12 +93,20 @@ g.matrix-view-interaction-group.hovered rect {
 }
 
 .matrix-view-toolbar {
-  display: none;
+  display: flex;
   border-right-style: solid;
   border-left-style: solid;
   background: #adadad;
   border-color: #adadad;
   width: min-content;
+}
+
+.matrix-view-sortbar {
+  display: flex;
+  width: min-content;
+}
+.matrix-view-sortbar:hover {
+  background: #adadad;
 }
 
 .matrix-view-toolbar-item {

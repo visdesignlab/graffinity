@@ -831,16 +831,20 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
-  onSortColsByAttribute(attribute, ascending) {
+  onSortColsByAttribute(attribute, ascending, sortBar) {
     let colPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.colNodeIndexes, attribute, ascending);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
+    this.resetSortState(false, true, sortBar);
+    this.mainController.ui.selectedSortOrder = "custom";
     this.$scope.$broadcast("updatePositions", this.rowPerm, shiftedColPerm);
   }
 
-  onSortRowsByAttribute(attribute, ascending) {
+  onSortRowsByAttribute(attribute, ascending, sortBar) {
     let rowPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.rowNodeIndexes, attribute, ascending);
     let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
+    this.resetSortState(true, false, sortBar);
     this.updatePositions(shiftedRowPerm, this.colPerm);
+    this.$scope.$apply(this.mainController.ui.selectedSortOrder = "custom");
     this.$scope.$broadcast("updatePositions", shiftedRowPerm, this.colPerm);
   }
 
@@ -851,6 +855,28 @@ export class cmMatrixBase extends SvgGroupElement {
   onQuantitativeAttributeFilterUpdate(event, attribute, attributeNodeGroup, range) {
     let visitor = new cmAttributeLabelScentVisitor(this.attributes.indexOf(attribute), attributeNodeGroup, range);
     this.applyVisitor(visitor);
+  }
+
+  resetSortState(resetRows, resetCols, sortBar) {
+    let sortBars = this.svg.selectAll(".matrix-view-sortbar")
+      .filter(function(d) {
+        if(resetRows && !resetCols) {
+          return !d;
+        } else if(!resetRows && resetCols) {
+          return d;
+        } else if(resetRows && resetCols) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      .filter(function() {
+        return this != sortBar;
+      })
+      .style("display", "none");
+
+    sortBars.selectAll(".fa")
+      .attr("data-is-sorted", '');
   }
 
   setEncoding(encoding, metric) {

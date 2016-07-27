@@ -168,7 +168,8 @@ export class MainController {
   }
 
   createReorderControls() {
-    this.ui.orders = ["optimal leaf", "database", "random"];
+    this.ui.orders = ["custom", "optimal leaf", "database", "random"];
+    this.ui.selectedSortOrder = this.ui.orders[1];
   }
 
   createEncodingControls() {
@@ -332,6 +333,8 @@ export class MainController {
     } else if (order == 'database') {
       rowPerm = reorder.permutation(matrix.length);
       colPerm = reorder.permutation(matrix[0].length);
+    } else {
+      return;
     }
 
     this.matrixManager.setSortOrders(rowPerm, colPerm);

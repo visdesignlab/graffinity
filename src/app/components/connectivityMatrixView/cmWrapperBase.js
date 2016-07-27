@@ -11,6 +11,10 @@ export class cmWrapperBase {
     this.$scope.$on("changeMatrixHeight", function () {
       self.updateElementPositions(null, null, self.useAnimation);
     });
+
+    this.$scope.$on("setSortOrders", function (signal, rowPerm, colPerm) {
+      self.setSortOrders(rowPerm, colPerm);
+    });
   }
 
   setUseAnimation(useAnimation) {
@@ -21,7 +25,9 @@ export class cmWrapperBase {
   }
 
   setSortOrders(rowPerm, colPerm) {
+
     for (let i = 0; i < this.matrices.length; ++i) {
+      this.matrices[i].resetSortState(true, true);
       this.matrices[i].setSortOrders(rowPerm, colPerm);
     }
   }

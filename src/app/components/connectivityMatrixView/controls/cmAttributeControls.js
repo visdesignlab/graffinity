@@ -1,3 +1,5 @@
+/*global d3
+ */
 import {SvgGroupElement} from "./../svgGroupElement"
 import {visHistogramScent} from "../../vis/visHistogramScent.js"
 
@@ -114,8 +116,23 @@ export class cmAttributeControls extends SvgGroupElement {
       .on("mouseleave", mouseLeave);
 
 
-    this.controls = group.append("foreignObject")
+    this.allControls = group.append("foreignObject")
       .append('xhtml:div')
+      .style("justify-content", "space-between")
+      .style("display", "flex")
+      .style("width", (isVertical ? height : width) + "px")
+      .style("height", "auto")
+      .on("mouseover", mouseEnter)
+      .on("mouseleave", mouseLeave);
+
+
+    this.sortControls = this.allControls.append('xhtml:div')
+      .data([isVertical])
+      .classed("matrix-view-sortbar", true)
+      .on("mouseover", mouseEnter)
+      .on("mouseleave", mouseLeave);
+
+    this.controls = this.allControls.append('xhtml:div')
       .classed("matrix-view-toolbar", true)
       .on("mouseover", mouseEnter)
       .on("mouseleave", mouseLeave);
@@ -129,13 +146,23 @@ export class cmAttributeControls extends SvgGroupElement {
         self.onFilter(self.name, self.filterNodeIndexes, self.filterAttributeGroup);
       });
 
-    this.controls.append("i")
+    this.sortControls.append("i")
       .classed("fa", true)
-      .classed("fa-sort", true)
+      .classed("fa-sort-asc", true)
       .classed("matrix-view-toolbar-item", true)
       .attr("title", "sort")
       .on("click", function () {
-        self.onSort(self.name, self.sortAscending);
+
+        // Tell the matrix to sort by this.
+        self.onSort(self.name, self.sortAscending, this.parentNode);
+
+        // Remember that we've sorted this.
+        d3.select(this)
+          .attr("data-is-sorted", "true");
+
+        // Update the arrow to point in the right direction.
+        cmAttributeControls.setSortIcon(this, self.sortAscending);
+
         self.sortAscending = !self.sortAscending;
       });
 
@@ -149,6 +176,8 @@ export class cmAttributeControls extends SvgGroupElement {
           self.onHide(self.index, false);
         });
     }
+
+    this.toggleControlVisible(false);
   }
 
   /**
@@ -177,11 +206,26 @@ export class cmAttributeControls extends SvgGroupElement {
   }
 
   /**
+   * Changes the arrow direction of the icon passed in.
+   */
+  static setSortIcon(icon, ascending) {
+    icon = d3.select(icon);
+    icon.classed("fa-sort-desc", !ascending);
+    icon.classed("fa-sort-asc", ascending);
+  }
+
+  /**
    * Called when mouse is on top of the interaction rect.
    */
   toggleControlVisible(visible) {
     this.outline.attr("stroke", visible ? "black" : "none");
     this.controls.style("display", visible ? "flex" : "none");
+
+    if (!Boolean(this.sortControls.select(".fa").attr("data-is-sorted")) && !visible) {
+      this.sortControls.style("display", "none");
+    } else if (visible) {
+      this.sortControls.style("display", "flex");
+    }
   }
 }
 
