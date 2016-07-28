@@ -25,7 +25,7 @@ import { NodeLinkViewDirective } from "../app/components/nodeLinkView/nodeLinkVi
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
   .constant('moment', moment)
-  .constant('resource', production ? "http://54.164.73.78:8000" : "http://localhost:8000")
+  .constant('resource', production ? "http://54.164.73.78:8000" : "http://localhost:8000/")
   .config(config)
   .config(routerConfig)
   .run(runBlock)
