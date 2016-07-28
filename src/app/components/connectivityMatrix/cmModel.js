@@ -349,7 +349,6 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
   }
 
-
   // TODO - enable people to collapse these rows by attributes.
   getCurrentIntermediateNodeRows() {
     var self = this;
@@ -426,6 +425,29 @@ export class cmModel {
   getIntermediateIndexesSortedByAttr(attribute, ascending) {
     var self = this;
     return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
+  }
+
+  getIntermediateNodeAttributeValues() {
+    let self = this;
+    return self.getAttributeValues(self.getIntermediateNodeIndexes());
+  }
+
+  getIntermediateRowNodeAttributeValues() {
+    let self = this;
+    let rowAttributes = self.getIntermediateNodeAttributeValues();
+    if (rowAttributes.length > 0) {
+      let rowNodeAttributes = angular.copy(rowAttributes[0]);
+      for (let i = 0; i < rowNodeAttributes.length; ++i) {
+        rowNodeAttributes[i] = [rowNodeAttributes[i]];
+      }
+
+      for (let i = 1; i < self.getAvailableAttributes().length; ++i) {
+        for (let j = 0; j < rowAttributes[i].length; ++j) {
+          rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
+        }
+      }
+      return rowNodeAttributes;
+    }
   }
 
   getIntermediateNodePositions() {
@@ -803,7 +825,7 @@ export class cmModel {
     }
 
     nodeIndexes = Utils.getUniqueValues(nodeIndexes);
-    for(let i=0; i<nodeIndexes.length; ++i) {
+    for (let i = 0; i < nodeIndexes.length; ++i) {
       nodeIndexes[i] = [nodeIndexes[i]];
     }
     self.intermediateNodeIndexes = nodeIndexes;
@@ -812,7 +834,7 @@ export class cmModel {
 
 
     let positionKeys = [];
-    for(let i=0; i<positions.length; ++i) {
+    for (let i = 0; i < positions.length; ++i) {
       positionKeys.push(String(positions[i]));
     }
 
@@ -825,15 +847,14 @@ export class cmModel {
     }
 
     let paths = self.getAllPaths();
-    for(let key in paths) {
+    for (let key in paths) {
       let currentPaths = paths[key];
-      for(let i=0; i<currentPaths.length; ++i) {
+      for (let i = 0; i < currentPaths.length; ++i) {
         let currentPath = currentPaths[i];
-        for(let j=0; j<nodeIndexes.length; ++j) {
+        for (let j = 0; j < nodeIndexes.length; ++j) {
           let position = self.getIntermediateNodePosition(nodeIndexes[j][0], currentPath);
-          if(positionKeys.indexOf(String(position)) != -1) {
+          if (positionKeys.indexOf(String(position)) != -1) {
             intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
-          } else {
           }
         }
       }

@@ -229,7 +229,7 @@ export class cmMatrixBase extends SvgGroupElement {
     // Create controls for the 'labels' or 'id' column/row
     visitor = new cmNodeLabelVisitor(sortRows, sortCols, hideRows, hideCols, this.colWidth, this.rowHeight,
       this.labelRowHeight, this.colWidthLabel, filterAttributes, filterAttributes);
-    visitor.setCreateColumnLabels(true);
+    visitor.setCreateColumnLabels(!this.isNodeListView);
     this.applyVisitor(visitor);
 
     // Create controls for editing visible attributes.

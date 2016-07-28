@@ -1,11 +1,7 @@
 import {cmNodeListControls} from "./cmNodeListControls"
 import {cmNodeListLeftHeader} from "./cmNodeListLeftHeader"
 import {cmWrapperBase} from "./../cmWrapperBase"
-
-import {cmMatrixView} from "../cmMatrixView"
 import {cmMatrixTopHeader} from "../cmMatrixTopHeader"
-import {cmControlsMatrix} from "../cmControlsMatrix"
-import {cmMatrixLeftHeader} from "../cmMatrixLeftHeader"
 
 export class cmNodeListWrapper extends cmWrapperBase {
 
@@ -20,11 +16,11 @@ export class cmNodeListWrapper extends cmWrapperBase {
       modalService, mainController);
     this.topHeader.setGridPosition([1, 0]);
 
-    this.leftHeader = new cmMatrixLeftHeader(this.leftHeaderGroup, model, $log, $uibModal, scope, viewState,
+    this.leftHeader = new cmNodeListLeftHeader(this.leftHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
     this.leftHeader.setGridPosition([0, 1]);
 
-    this.matrix = new cmMatrixView(this.matrixGroup, model, $log, $uibModal, scope, viewState,
+    this.matrix = new cmNodeListLeftHeader(this.matrixGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
     this.matrix.setGridPosition([1, 1]);
 
