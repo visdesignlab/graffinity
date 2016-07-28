@@ -69,7 +69,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.rowAttributeNodeGroup = 0;
     this.colAttributeNodeGroup = 1;
-    this.numAttributeNodeGroups = 3; // TODO pull this out
+    this.numAttributeNodeGroups = 4; // TODO pull this out
 
     this.highlights = [];
     this.rowHeights = [];
@@ -906,22 +906,22 @@ export class cmMatrixBase extends SvgGroupElement {
       this.legend = undefined;
     } else if (encoding == "colormap") {
 
-      let metricFunction = cmMatrixBase.getMetricFunction(metric);
+        let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
-      preprocessor = new cmColorMapPreprocessor();
-      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      preprocessor.setMetricFunction(metricFunction);
-      preprocessor.graph = this.model.graph;
-      this.applyVisitor(preprocessor);
+        preprocessor = new cmColorMapPreprocessor();
+        preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+        preprocessor.setMetricFunction(metricFunction);
+        preprocessor.graph = this.model.graph;
+        this.applyVisitor(preprocessor);
 
-      visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(clicked, mouseover, mouseout);
-      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      visitor.setMetricFunction(metricFunction);
-      visitor.graph = this.model.graph;
-      this.applyVisitor(visitor);
+        visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
+        visitor.setCallbacks(clicked, mouseover, mouseout);
+        visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+        visitor.setMetricFunction(metricFunction);
+        visitor.graph = this.model.graph;
+        this.applyVisitor(visitor);
 
-      this.legend = new cmColorMapLegend(visitor);
+        this.legend = new cmColorMapLegend(visitor);
 
     }
 

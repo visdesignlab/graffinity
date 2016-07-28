@@ -23,8 +23,13 @@ export class cmNodeListBase extends cmMatrixBase {
    */
   initNodeIndexes(model) {
     this.rowAttributeNodeGroup = 2;
+    this.colAttributeNodeGroup = 3;
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
-    this.colNodeIndexes = model.getIntermediateNodePositions();
+    let nodePositions = model.getIntermediateNodePositions();
+    this.colNodeIndexes = [];
+    for(let i=0; i<nodePositions.length; ++i) {
+      this.colNodeIndexes.push([String(nodePositions[i])]);
+    }
   }
 
   /**
