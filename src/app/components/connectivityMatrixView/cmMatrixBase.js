@@ -141,13 +141,11 @@ export class cmMatrixBase extends SvgGroupElement {
     this.addChild(row);
   }
 
-
   applyVisitor(visitor) {
     for (var i = 0; i < this.allRows.length; ++i) {
       this.allRows[i].apply(visitor);
     }
   }
-
 
   createAttributeEncodings() {
 

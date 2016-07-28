@@ -428,6 +428,27 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
   }
 
+  getIntermediateNodePositions() {
+    let self = this;
+    let paths = self.getAllPaths();
+    let positions = [];
+    for (let key in paths) {
+      key = parseInt(key);
+      for (let i = 1; i < key; ++i) {
+        positions.push([key, i]);
+      }
+    }
+    return positions;
+  }
+
+  getIntermediateNodePosition(nodeIndex, path) {
+    let numHops = Utils.getNumHops(path);
+    for (let i = 0; i < path.length; i += 2) {
+      if (path[i] == nodeIndex) {
+        return [numHops, i];
+      }
+    }
+  }
 
   getMinorLabels(indexes) {
     var self = this;
@@ -770,7 +791,7 @@ export class cmModel {
     }
   }
 
-// TODO - this should match resetRows in terms of what gets created.
+  // TODO - this should match resetRows in terms of what gets created.
   resetIntermediateNodes() {
     let self = this;
     let matrix = self.current.matrix;
@@ -781,27 +802,52 @@ export class cmModel {
       }
     }
 
-    let intermediateNodeCount = {};
+    nodeIndexes = Utils.getUniqueValues(nodeIndexes);
+    for(let i=0; i<nodeIndexes.length; ++i) {
+      nodeIndexes[i] = [nodeIndexes[i]];
+    }
+    self.intermediateNodeIndexes = nodeIndexes;
 
-    for (i = 0; i < nodeIndexes.length; ++i) {
-      let nodeIndex = nodeIndexes[i];
-      if (intermediateNodeCount[nodeIndex] == undefined) {
-        intermediateNodeCount[nodeIndex] = 1;
-      } else {
-        intermediateNodeCount[nodeIndex] += 1;
+    let positions = self.getIntermediateNodePositions();
+
+
+    let positionKeys = [];
+    for(let i=0; i<positions.length; ++i) {
+      positionKeys.push(String(positions[i]));
+    }
+
+    let intermediateNodeCounts = {};
+    for (let i = 0; i < nodeIndexes.length; ++i) {
+      intermediateNodeCounts[nodeIndexes[i][0]] = [];
+      for (let j = 0; j < positions.length; ++j) {
+        intermediateNodeCounts[nodeIndexes[i][0]][j] = [];
       }
     }
 
-    self.intermediateNodeCount = intermediateNodeCount;
-    self.intermediateNodeIndexes = Utils.getUniqueValues(nodeIndexes);
+    let paths = self.getAllPaths();
+    for(let key in paths) {
+      let currentPaths = paths[key];
+      for(let i=0; i<currentPaths.length; ++i) {
+        let currentPath = currentPaths[i];
+        for(let j=0; j<nodeIndexes.length; ++j) {
+          let position = self.getIntermediateNodePosition(nodeIndexes[j][0], currentPath);
+          if(positionKeys.indexOf(String(position)) != -1) {
+            intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
+          } else {
+          }
+        }
+      }
+    }
+
+    self.intermediateNodeCounts = intermediateNodeCounts;
     self.intermediateRows = [];
 
     for (var i = 0; i < self.intermediateNodeIndexes.length; ++i) {
-      var currentRowNodeIndex = self.intermediateNodeIndexes[i];
+      var currentRowNodeIndex = self.intermediateNodeIndexes[i][0];
+
       var row = new cmModelRow();
-      row.activate(currentRowNodeIndex, [self.intermediateNodeCount[currentRowNodeIndex]], ['count']);
+      row.activate(currentRowNodeIndex, self.intermediateNodeCounts[currentRowNodeIndex], positionKeys);
       self.intermediateRows.push(row);
-      self.intermediateNodeIndexes[i] = [self.intermediateNodeIndexes[i]];
     }
 
     self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);

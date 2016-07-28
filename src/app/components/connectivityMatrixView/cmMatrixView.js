@@ -10,7 +10,6 @@ export class cmMatrixView extends cmMatrixBase {
     this.colWidthAttr = 0;
     this.colWidthLabel = 0;
     this.colWidthControl = 0;
-
     this.rowHeightAttr = 0;
 
     this.setModel(model);
