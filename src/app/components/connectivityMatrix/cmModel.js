@@ -847,23 +847,16 @@ export class cmModel {
     }
 
     let paths = self.getAllPaths();
-    console.log(positionKeys);
     for (let key in paths) {
       let currentPaths = paths[key];
       for (let i = 0; i < currentPaths.length; ++i) {
         let currentPath = currentPaths[i];
         for (let j = 0; j < nodeIndexes.length; ++j) {
-
           let position = self.getIntermediateNodePosition(nodeIndexes[j][0], currentPath);
           let wasAdded = false;
           if (positionKeys.indexOf(String(position)) != -1) {
             wasAdded = true;
             intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
-          }
-
-          if (nodeIndexes[j][0] == 27) {
-            console.log(currentPath, wasAdded, position, String(position));
-
           }
         }
       }
