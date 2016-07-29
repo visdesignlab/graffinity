@@ -51,14 +51,17 @@ export class cmNodeListPositionVisitor extends cmAttributeCellVisitor {
       let edgeWidth = 2;
 
       // Create nodes - source is at the bottom
+      let radius = this.width / 3;
+      let step = self.height / maxPathLength;
+
       group.selectAll("circle")
         .data(array)
         .enter()
         .append("circle")
-        .attr("r", this.width / 3)
+        .attr("r", radius)
         .attr("transform", function (d, i) {
-          let x = self.width / 2;
-          let y = self.height - ((self.height / maxPathLength) * (i * 1.5) + x);
+          let x = self.width / 2; // x is center
+          let y = self.height - ((step * i) + radius);
           return "translate(" + x + ", " + y + ")";
         })
         .style("stroke", "#337ab7")
@@ -73,11 +76,11 @@ export class cmNodeListPositionVisitor extends cmAttributeCellVisitor {
         .append("rect")
         .attr("transform", function (d, i) {
           let x = (self.width / 2) - (edgeWidth / 2);
-          let y = self.height - ((self.height / maxPathLength) * (i * 1.5) + x + x + x);
+          let y = self.height - (step * (i + 1));
           return "translate(" + x + ", " + y + ")";
         })
         .attr("width", edgeWidth)
-        .attr("height", self.height / maxPathLength * 0.6)
+        .attr("height", step - radius * 2)
         .style("fill", "#337ab7");
 
       //if (this.callbacks) {
