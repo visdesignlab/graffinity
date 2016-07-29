@@ -1,8 +1,8 @@
 import {cmNodeListBase} from "./cmNodeListBase"
-import {cmLabelRow} from "../rows/cmLabelRow"
-import {cmAttributeRow} from "../rows/cmAttributeRow"
-
+import {cmNodeListLabelRow} from "./cmNodeListLabelRow"
 import {cmMatrixRow} from "../rows/cmMatrixRow"
+import {cmNodeListPositionVisitor} from "../visitors/cmNodeListPositionVisitor"
+
 export class cmNodeListTopHeader extends cmNodeListBase {
 
   constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
@@ -32,12 +32,19 @@ export class cmNodeListTopHeader extends cmNodeListBase {
 
     // Create the labels row
     let majorColLabels = model.getIntermediateNodePositions();
-    let minorColLabels = model.getIntermediateNodePositions();
 
-    let labelRow = new cmLabelRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+    let labelRow = new cmNodeListLabelRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
       this.labelRowHeight, majorColLabels, null, this, 3, false);
 
     this.addRow(labelRow, this.labelRowHeight);
+  }
+
+  createAttributeEncodings() {
+    let visitor = new cmNodeListPositionVisitor(-1, this.colAttributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+    visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+    visitor.areRowsCollapsed = (!this.isNodeListView) && this.model.areRowsCollapsed;
+    visitor.areColsCollapsed = this.model.areColsCollapsed;
+    this.applyVisitor(visitor);
   }
 
 }

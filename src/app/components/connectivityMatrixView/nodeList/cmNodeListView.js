@@ -32,8 +32,7 @@ export class cmNodeListView extends cmNodeListBase {
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this,
-        model.areColsCollapsed, model.areRowsCollapsed);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, false, false);
 
       // If row has minor rows, then we want the controls to be visible!
       if (model.areRowsCollapsed) {
