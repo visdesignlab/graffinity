@@ -7,7 +7,7 @@ import {cmWrapperBase} from "./cmWrapperBase"
 export class cmMatrixWrapper extends cmWrapperBase {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    super(element, $log, scope, mainController);
+    super(element, $log, scope, mainController, "matrix-view");
 
     this.controlsHeader = new cmControlsMatrix(this.controlsHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);

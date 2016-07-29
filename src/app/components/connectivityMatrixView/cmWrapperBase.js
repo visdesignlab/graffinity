@@ -1,6 +1,6 @@
 export class cmWrapperBase {
 
-  constructor(element, $log, scope, mainController) {
+  constructor(element, $log, scope, mainController, name) {
     this.$log = $log;
     this.$scope = scope;
     this.element = element;
@@ -27,11 +27,11 @@ export class cmWrapperBase {
       .style("overflow", "hidden");
 
     this.controlsHeaderElement = this.topDiv.append("div")
-      .attr("id", "matrix-view-header-controls")
+      .attr("id", name + "-header-controls")
       .classed("matrix-view-header-controls", true);
 
     this.topHeaderElement = this.topDiv.append("div")
-      .attr("id", "matrix-view-header-top")
+      .attr("id", name + "-header-top")
       .classed("matrix-view-header-top", true);
 
     // Bottom row will hold row headers nad matrix
@@ -40,7 +40,7 @@ export class cmWrapperBase {
       .classed("matrix-view-bottom-row", true);
 
     this.leftHeaderElement = this.bottomDiv.append("div")
-      .attr("id", "matrix-view-header-left")
+      .attr("id", name + "-header-left")
       .classed("matrix-view-header-left", true);
 
     // The matrix's scrolling will be connected with the headers.
@@ -49,8 +49,8 @@ export class cmWrapperBase {
       .on("scroll", function () {
         let left = angular.element(this).scrollLeft();
         let top = angular.element(this).scrollTop();
-        angular.element("#matrix-view-header-top").scrollLeft(left);
-        angular.element("#matrix-view-header-left").scrollTop(top);
+        angular.element("#" + name + "-header-top").scrollLeft(left);
+        angular.element("#" + name + "-header-left").scrollTop(top);
       });
 
     this.controlsHeaderSvg = this.controlsHeaderElement.append("svg")

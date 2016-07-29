@@ -7,7 +7,7 @@ import {cmNodeListView} from "./cmNodeListView"
 export class cmNodeListWrapper extends cmWrapperBase {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    super(element, $log, scope, mainController);
+    super(element, $log, scope, mainController, "node-list");
 
     this.controlsHeader = new cmNodeListControls(this.controlsHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
