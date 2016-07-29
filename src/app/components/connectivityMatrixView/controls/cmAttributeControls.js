@@ -85,7 +85,7 @@ export class cmAttributeControls extends SvgGroupElement {
         .attr("transform", "translate(0, " + offset + ")");
     }
 
-    return new visHistogramScent(this.$scope, scentGroup, scentWidth, scentHeight, 10, isVertical, attributeValues);
+    return new visHistogramScent(this.$scope, scentGroup, scentWidth, scentHeight, 10, isVertical, attributeValues, offset / 2);
   }
 
 

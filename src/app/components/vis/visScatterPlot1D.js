@@ -130,11 +130,11 @@ export class visScatterPlot1D {
   }
 
   onMouseOverGroup() {
-    this.axis.selectAll(".tick").style("display", "block");
+    // this.axis.selectAll(".tick").style("display", "block");
   }
 
   onMouseOutGroup() {
-    this.axis.selectAll(".tick").style("display", "none");
+    // this.axis.selectAll(".tick").style("display", "none");
   }
 
 }

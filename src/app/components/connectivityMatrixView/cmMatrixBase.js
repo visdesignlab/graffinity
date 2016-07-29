@@ -60,7 +60,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.colWidth = 15;
     this.rowHeight = 15;
     this.colWidthAttr = 80;
-    this.colWidthLabel = 80;
+    this.colWidthLabel = 80 + this.rowHeight;
     this.colWidthControl = 15;
     this.labelRowHeight = this.colWidthLabel;
     this.rowHeightAttr = 80;
@@ -505,8 +505,8 @@ export class cmMatrixBase extends SvgGroupElement {
       this.isAttributeColVisible = {};
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {
-        this.isAttributeColVisible[attributes[i]] = false;
-        this.isAttributeRowVisible[attributes[i]] = false;
+        this.isAttributeColVisible[attributes[i]] = true;
+        this.isAttributeRowVisible[attributes[i]] = true;
       }
     }
   }

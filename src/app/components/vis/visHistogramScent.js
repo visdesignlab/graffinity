@@ -5,12 +5,13 @@ export class visHistogramScent {
   /**
    * Class for representing a histogram.
    */
-  constructor($scope, parent, width, height, numBins, isVertical, values) {
+  constructor($scope, parent, width, height, numBins, isVertical, values, offset) {
 
     this.$scope = $scope;
     this.parent = parent;
     this.numBins = numBins;
     this.values = values;
+    this.offset = offset;
 
     this.maxValue = d3.max(this.values);
     this.minValue = d3.min(this.values);
@@ -28,7 +29,7 @@ export class visHistogramScent {
       // margin allows for histogram to be properly placed -- note can change the right to 2 if you want histogram farther way from 1D scatterplots
       this.margin = {top: 5, right: 0, bottom: 5, left: 0};
 
-      this.chartWidth = this.width - this.margin.left - this.margin.right;
+      this.chartWidth = this.width - this.margin.left - this.margin.right - this.offset;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
 
       this.xScale = d3.scale.linear()
@@ -41,14 +42,16 @@ export class visHistogramScent {
         })])
         .range([this.chartWidth, 0]);
 
+      this.createHistogramTicksVertical();
       this.createHistogramBarsVertical();
     }
     else {
       // margin allows for histogram to be properly placed-- note can change the bottom to 2 if you want histogram farther way from 1D scatterplots
       this.margin = {top: 0, right: 5, bottom: 0, left: 5};
       this.chartWidth = this.width - this.margin.left - this.margin.right;
-      this.chartHeight = this.height - this.margin.top - this.margin.bottom;
+      this.chartHeight = this.height - this.margin.top - this.margin.bottom - this.offset;
 
+      let self = this;
       this.xScale = d3.scale.linear()
         .domain([this.minValue, this.maxValue])
         .range([0, this.chartWidth]);
@@ -59,6 +62,8 @@ export class visHistogramScent {
         })])
         .range([this.chartHeight, 0]);
 
+
+      this.createHistogramTicksHorizontal();
       this.createHistogramBarsHorizontal();
     }
 
@@ -122,6 +127,68 @@ export class visHistogramScent {
         return (self.chartWidth - self.yScale(d.y));
       })
       .style("fill", "steelblue");
+  }
+
+
+  createHistogramTicksHorizontal() {
+    let self = this;
+    let xAxis = d3.svg.axis()
+      .scale(this.xScale)
+      .orient("bottom")
+      .tickSize(2)
+      .tickValues(this.xScale.domain())
+      .tickFormat(d3.format(".3s"));
+
+    this.parent.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + self.margin.left + "," + (self.margin.top + self.chartHeight) + ")")
+      .call(xAxis);
+
+    let ticks = this.parent.selectAll(".tick")
+      .selectAll("text")
+      .style("font-size", "8px");
+
+    d3.select(ticks[0][0])
+      .style("text-anchor", "start");
+
+    d3.select(ticks[1][0])
+      .style("text-anchor", "end");
+
+  }
+
+  createHistogramTicksVertical() {
+    let self = this;
+    let xAxis = d3.svg.axis()
+      .scale(this.xScale)
+      .orient("right")
+      .tickSize(3)
+      .tickValues(this.xScale.domain())
+      .tickFormat(d3.format(".3s"));
+
+    this.parent.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(" + self.margin.left + self.chartWidth + "," + (self.margin.top) + ")")
+      .call(xAxis);
+
+    let ticks = this.parent.selectAll(".tick")
+      .selectAll("text")
+      .style("font-size", "8px");
+
+    // top ticks
+    d3.select(ticks[0][0])
+      .style("text-anchor", "end")
+      .style("alignment-baseline", "hanging")
+      .attr("x", 0)
+      .attr("transform", "rotate(270)");
+
+    // bottom tick
+    d3.select(ticks[1][0])
+      .style("text-anchor", "start")
+      .style("alignment-baseline", "hanging")
+      .attr("x", 0)
+      .attr("transform", "rotate(270)");
+
+
   }
 
 
