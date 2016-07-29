@@ -464,7 +464,6 @@ export class cmModel {
   }
 
   getIntermediateNodePosition(nodeIndex, path) {
-    let numHops = Utils.getNumHops(path);
     for (let i = 0; i < path.length; i += 2) {
       if (path[i] == nodeIndex) {
         return [path.length, i];
@@ -853,9 +852,7 @@ export class cmModel {
         let currentPath = currentPaths[i];
         for (let j = 0; j < nodeIndexes.length; ++j) {
           let position = self.getIntermediateNodePosition(nodeIndexes[j][0], currentPath);
-          let wasAdded = false;
           if (positionKeys.indexOf(String(position)) != -1) {
-            wasAdded = true;
             intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
           }
         }
@@ -865,14 +862,13 @@ export class cmModel {
     self.intermediateNodeCounts = intermediateNodeCounts;
     self.intermediateRows = [];
 
-    for (var i = 0; i < self.intermediateNodeIndexes.length; ++i) {
+    for (let i = 0; i < self.intermediateNodeIndexes.length; ++i) {
       var currentRowNodeIndex = self.intermediateNodeIndexes[i][0];
 
       var row = new cmModelRow();
       row.activate(currentRowNodeIndex, self.intermediateNodeCounts[currentRowNodeIndex], positionKeys);
       self.intermediateRows.push(row);
     }
-    console.log("model generating intermediate rows", self.intermediateRows);
 
     self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);
     self.current.intermediateRows = angular.copy(self.intermediateRows);
