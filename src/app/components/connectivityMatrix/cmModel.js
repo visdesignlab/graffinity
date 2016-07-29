@@ -463,12 +463,14 @@ export class cmModel {
     return positions;
   }
 
-  getIntermediateNodePosition(nodeIndex, path) {
+  getIntermediatePositionsOfNode(nodeIndex, path) {
+    let positions = [];
     for (let i = 0; i < path.length; i += 2) {
       if (path[i] == nodeIndex) {
-        return [path.length, i];
+        positions.push([path.length, i]);
       }
     }
+    return positions;
   }
 
   getMinorLabels(indexes) {
@@ -851,9 +853,12 @@ export class cmModel {
       for (let i = 0; i < currentPaths.length; ++i) {
         let currentPath = currentPaths[i];
         for (let j = 0; j < nodeIndexes.length; ++j) {
-          let position = self.getIntermediateNodePosition(nodeIndexes[j][0], currentPath);
-          if (positionKeys.indexOf(String(position)) != -1) {
-            intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
+          let positions = self.getIntermediatePositionsOfNode(nodeIndexes[j][0], currentPath);
+          for (let k = 0; k < positions.length; ++k) {
+            let position = positions[k];
+            if (positionKeys.indexOf(String(position)) != -1) {
+              intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
+            }
           }
         }
       }
