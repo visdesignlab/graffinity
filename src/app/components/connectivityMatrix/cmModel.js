@@ -349,7 +349,6 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.colNodeIndexes, attribute, ascending);
   }
 
-
   // TODO - enable people to collapse these rows by attributes.
   getCurrentIntermediateNodeRows() {
     var self = this;
@@ -428,6 +427,51 @@ export class cmModel {
     return self.getSortedIndexesOfNodeIndexAttr(self.current.intermediateNodeIndexes, attribute, ascending);
   }
 
+  getIntermediateNodeAttributeValues() {
+    let self = this;
+    return self.getAttributeValues(self.getIntermediateNodeIndexes());
+  }
+
+  getIntermediateRowNodeAttributeValues() {
+    let self = this;
+    let rowAttributes = self.getIntermediateNodeAttributeValues();
+    if (rowAttributes.length > 0) {
+      let rowNodeAttributes = angular.copy(rowAttributes[0]);
+      for (let i = 0; i < rowNodeAttributes.length; ++i) {
+        rowNodeAttributes[i] = [rowNodeAttributes[i]];
+      }
+
+      for (let i = 1; i < self.getAvailableAttributes().length; ++i) {
+        for (let j = 0; j < rowAttributes[i].length; ++j) {
+          rowNodeAttributes[j] = rowNodeAttributes[j].concat([rowAttributes[i][j]])
+        }
+      }
+      return rowNodeAttributes;
+    }
+  }
+
+  getIntermediateNodePositions() {
+    let self = this;
+    let paths = self.getAllPaths();
+    let positions = [];
+    for (let key in paths) {
+      key = parseInt(key) * 2 + 1;
+      for (let i = 2; i < key - 1; i += 2) {
+        positions.push([key, i]);
+      }
+    }
+    return positions;
+  }
+
+  getIntermediatePositionsOfNode(nodeIndex, path) {
+    let positions = [];
+    for (let i = 0; i < path.length; i += 2) {
+      if (path[i] == nodeIndex) {
+        positions.push([path.length, i]);
+      }
+    }
+    return positions;
+  }
 
   getMinorLabels(indexes) {
     var self = this;
@@ -770,7 +814,7 @@ export class cmModel {
     }
   }
 
-// TODO - this should match resetRows in terms of what gets created.
+  // TODO - this should match resetRows in terms of what gets created.
   resetIntermediateNodes() {
     let self = this;
     let matrix = self.current.matrix;
@@ -781,27 +825,54 @@ export class cmModel {
       }
     }
 
-    let intermediateNodeCount = {};
+    nodeIndexes = Utils.getUniqueValues(nodeIndexes);
+    for (let i = 0; i < nodeIndexes.length; ++i) {
+      nodeIndexes[i] = [nodeIndexes[i]];
+    }
+    self.intermediateNodeIndexes = nodeIndexes;
 
-    for (i = 0; i < nodeIndexes.length; ++i) {
-      let nodeIndex = nodeIndexes[i];
-      if (intermediateNodeCount[nodeIndex] == undefined) {
-        intermediateNodeCount[nodeIndex] = 1;
-      } else {
-        intermediateNodeCount[nodeIndex] += 1;
+    let positions = self.getIntermediateNodePositions();
+
+
+    let positionKeys = [];
+    for (let i = 0; i < positions.length; ++i) {
+      positionKeys.push(String(positions[i]));
+    }
+
+    let intermediateNodeCounts = {};
+    for (let i = 0; i < nodeIndexes.length; ++i) {
+      intermediateNodeCounts[nodeIndexes[i][0]] = [];
+      for (let j = 0; j < positions.length; ++j) {
+        intermediateNodeCounts[nodeIndexes[i][0]][j] = [];
       }
     }
 
-    self.intermediateNodeCount = intermediateNodeCount;
-    self.intermediateNodeIndexes = Utils.getUniqueValues(nodeIndexes);
+    let paths = self.getAllPaths();
+    for (let key in paths) {
+      let currentPaths = paths[key];
+      for (let i = 0; i < currentPaths.length; ++i) {
+        let currentPath = currentPaths[i];
+        for (let j = 0; j < nodeIndexes.length; ++j) {
+          let positions = self.getIntermediatePositionsOfNode(nodeIndexes[j][0], currentPath);
+          for (let k = 0; k < positions.length; ++k) {
+            let position = positions[k];
+            if (positionKeys.indexOf(String(position)) != -1) {
+              intermediateNodeCounts[nodeIndexes[j][0]][positionKeys.indexOf(String(position))].push(currentPath);
+            }
+          }
+        }
+      }
+    }
+
+    self.intermediateNodeCounts = intermediateNodeCounts;
     self.intermediateRows = [];
 
-    for (var i = 0; i < self.intermediateNodeIndexes.length; ++i) {
-      var currentRowNodeIndex = self.intermediateNodeIndexes[i];
+    for (let i = 0; i < self.intermediateNodeIndexes.length; ++i) {
+      var currentRowNodeIndex = self.intermediateNodeIndexes[i][0];
+
       var row = new cmModelRow();
-      row.activate(currentRowNodeIndex, [self.intermediateNodeCount[currentRowNodeIndex]], ['count']);
+      row.activate(currentRowNodeIndex, self.intermediateNodeCounts[currentRowNodeIndex], positionKeys);
       self.intermediateRows.push(row);
-      self.intermediateNodeIndexes[i] = [self.intermediateNodeIndexes[i]];
     }
 
     self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);

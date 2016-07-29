@@ -315,11 +315,18 @@ describe('cmModelFactory', () => {
     $httpBackend.flush();
   }));
 
-  it('cmModel - getIntermediateNodes', inject(($httpBackend, $q, cmModelFactory)=> {
-    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+  it('cmModel - getIntermediateNodeIndexes', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
       var intermediateNodeIndexes = model.getIntermediateNodeIndexes();
-      expect(intermediateNodeIndexes.length).toEqual(2);
-      expect(Object.keys(model.intermediateNodeCount).length).toEqual(2);
+      expect(intermediateNodeIndexes.length).toEqual(6);
+    });
+    $httpBackend.flush();
+  }));
+
+  it('cmModel - getIntermediateNodeCounts', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
+      var intermediateNodeIndexes = model.getIntermediateNodeIndexes();
+      expect(intermediateNodeIndexes.length).toEqual(6);
     });
     $httpBackend.flush();
   }));
@@ -332,19 +339,34 @@ describe('cmModelFactory', () => {
     $httpBackend.flush();
   }));
 
-  it('cmModel - getAvailableIntermediateNodeStats', inject(($httpBackend, $q, cmModelFactory)=> {
-    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
-      var stats = model.getAvailableIntermediateNodeStats();
-      expect(stats[0].length).toEqual(1);
+  it('cmModel - flights - getIntermediateNodePositions', inject(($httpBackend, $q, cmModelFactory)=> {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
+      let positions = model.getIntermediateNodePositions();
+
+      // numHops in the dataset range from 1,2,3
+      // there should be 3 positions
+      // [numHops, position]
+      // [2, 1] -- 2 hops and the node in the middle
+      // [3, 1] -- 3 hops and the node closer to source
+      // [3, 2] -- 3 hops and the node closer to target
+      expect(positions.length).toEqual(3);
     });
     $httpBackend.flush();
   }));
 
   it('cmModel - showing node stats in a row', inject(($httpBackend, $q, cmModelFactory)=> {
-    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
+    requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
       var rows = model.getCurrentIntermediateNodeRows();
-      var stats = model.getAvailableIntermediateNodeStats();
-      expect(rows[0].getValuesAsList(stats)[0] == 1);
+      var positions = model.getIntermediateNodePositions();
+      for (let i = 0; i < positions.length; ++i) {
+        for (let j = 0; j < rows.length; ++j) {
+          let values = rows[j].getValuesAsList([[String(positions[i])]]);
+          for (let k = 0; k < values[0].length; ++k) {
+            expect(values[0][k][positions[i][1]] == rows[j].nodeIndex).toBe(true);
+          }
+        }
+      }
+
     });
     $httpBackend.flush();
   }));
@@ -377,5 +399,6 @@ describe('cmModelFactory', () => {
     });
     $httpBackend.flush();
   }));
+
 
 });

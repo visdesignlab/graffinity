@@ -114,28 +114,28 @@ describe('viewState', () => {
     }
   }));
 
-  it('categorical filter values - flights', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
-
-    //requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
-    //$httpBackend.flush();
-    //
-    //function modelReady(model) {
-    //  "use strict";
-    //  let rowAttributeNodeGroup = 0;
-    //  let colAttributeNodeGroup = 1;
-    //
-    //
-    //  viewState.setModel(model);
-    //
-    //  let paths = model.getAllPaths();
-    //  let pathList = [];
-    //  for (let key in paths) {
-    //    pathList = pathList.concat(paths[key]);
-    //  }
-    //
-    //
-    //}
-  }));
+  //it('categorical filter values - flights', inject(($httpBackend, $q, cmModelFactory, viewState)=> {
+  //
+  //  //requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(modelReady);
+  //  //$httpBackend.flush();
+  //  //
+  //  //function modelReady(model) {
+  //  //  "use strict";
+  //  //  let rowAttributeNodeGroup = 0;
+  //  //  let colAttributeNodeGroup = 1;
+  //  //
+  //  //
+  //  //  viewState.setModel(model);
+  //  //
+  //  //  let paths = model.getAllPaths();
+  //  //  let pathList = [];
+  //  //  for (let key in paths) {
+  //  //    pathList = pathList.concat(paths[key]);
+  //  //  }
+  //  //
+  //  //
+  //  //}
+  //}));
 
 //
 //  it('add filter to attribute node groups', inject(($httpBackend, $q, cmModelFactory, viewState)=> {

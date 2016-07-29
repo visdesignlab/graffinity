@@ -1,8 +1,8 @@
-import {cmMatrixBase} from "./cmMatrixBase"
-import {cmDataRow} from "./cmDataRow"
-import {cmMatrixRow} from "./rows/cmMatrixRow"
+import {cmNodeListBase} from "./cmNodeListBase"
+import {cmDataRow} from "../cmDataRow"
+import {cmMatrixRow} from "../rows/cmMatrixRow"
 
-export class cmMatrixView extends cmMatrixBase {
+export class cmNodeListView extends cmNodeListBase {
 
   constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
     super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
@@ -26,14 +26,13 @@ export class cmMatrixView extends cmMatrixBase {
     let rowNodeAttributes = this.rowNodeAttributes;
 
     // Create each of the data rows!
-    let modelRows = model.getCurrentRows();
+    let modelRows = model.getCurrentIntermediateNodeRows();
     let majorRowLabels = model.getMajorRowLabels();
     let minorRowLabels = model.getMinorRowLabels();
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this,
-        model.areColsCollapsed, model.areRowsCollapsed);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, false, false);
 
       // If row has minor rows, then we want the controls to be visible!
       if (model.areRowsCollapsed) {
