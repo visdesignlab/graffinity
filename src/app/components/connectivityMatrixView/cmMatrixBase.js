@@ -60,7 +60,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.colWidth = 15;
     this.rowHeight = 15;
     this.colWidthAttr = 80;
-    this.colWidthLabel = 80 + this.rowHeight;
+    this.colWidthLabel = 80;
     this.colWidthControl = 15;
     this.labelRowHeight = this.colWidthLabel;
     this.rowHeightAttr = 80;
