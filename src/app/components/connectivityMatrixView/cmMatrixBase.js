@@ -67,10 +67,6 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.svg = svg;
 
-    this.rowAttributeNodeGroup = 0;
-    this.colAttributeNodeGroup = 1;
-    this.numAttributeNodeGroups = 4; // TODO pull this out
-
     this.highlights = [];
     this.rowHeights = [];
     this.colWidths = [];
@@ -174,34 +170,33 @@ export class cmMatrixBase extends SvgGroupElement {
       if (this.model.isCategoricalAttribute(attribute)) {
 
         // For all of the attribute groups...
-        for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
-
-          // Create the attribute encoding
-          visitor = new cmStringAttributeVisitor(i, j, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
-          visitor.isVisitingColsCollapsedAttr = attribute == this.model.colsCollapseAttr && j == this.colAttributeNodeGroup;
-          visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && j == this.rowAttributeNodeGroup;
+        for (let j = 0; j < this.attributeNodeGroupsBeingDisplayed.length; ++j) {
+          let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
+          visitor = new cmStringAttributeVisitor(i, attributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+          visitor.isVisitingColsCollapsedAttr = attribute == this.model.colsCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.TARGET;
+          visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.SOURCE;
           visitor.areRowsCollapsed = this.model.areRowsCollapsed;
           visitor.areColsCollapsed = this.model.areColsCollapsed;
           this.applyVisitor(visitor);
 
           // Create the attribute label and scent.
 
-          visitor = new cmCategoricalAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
+          visitor = new cmCategoricalAttributeLabelVisitor(i, attributeNodeGroup, sortRows, sortCols, hideRows, hideCols, this.colWidth,
             this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
           this.applyVisitor(visitor);
         }
 
       } else { // the attribute must be quantitative
 
-        for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
-
+        for (let j = 0; j < this.attributeNodeGroupsBeingDisplayed.length; ++j) {
+          let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
           // Assume only one encoding per attribute
-          let preprocessor = new cmScatterPlot1DPreprocessor(i, j);
+          let preprocessor = new cmScatterPlot1DPreprocessor(i, attributeNodeGroup);
           preprocessor.setNodeFilter(isNodeHidden);
           this.applyVisitor(preprocessor);
 
           let valueRange = preprocessor.getValueRange();
-          visitor = new cmScatterPlot1DVisitor(i, j, this.rowHeight / 4, valueRange);
+          visitor = new cmScatterPlot1DVisitor(i, attributeNodeGroup, this.rowHeight / 4, valueRange);
           visitor.setNodeFilter(isNodeHidden);
 
           // Uncomment this to enable hovering on the node attributes.
@@ -210,7 +205,7 @@ export class cmMatrixBase extends SvgGroupElement {
           this.applyVisitor(visitor);
 
           // create labels for all the quantitative attribute columns/rows
-          visitor = new cmAttributeLabelVisitor(i, j, sortRows, sortCols, hideRows, hideCols, this.colWidth,
+          visitor = new cmAttributeLabelVisitor(i, attributeNodeGroup, sortRows, sortCols, hideRows, hideCols, this.colWidth,
             this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
           this.applyVisitor(visitor);
         }
@@ -218,8 +213,9 @@ export class cmMatrixBase extends SvgGroupElement {
     }
 
     // Done with attributes, now create the "ids"
-    for (let j = 0; j < this.numAttributeNodeGroups; ++j) {
-      visitor = new cmStringAttributeVisitor(-1, j, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
+    for (let j = 0; j < this.attributeNodeGroupsBeingDisplayed.length; ++j) {
+      let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
+      visitor = new cmStringAttributeVisitor(-1, attributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
       visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
       visitor.areRowsCollapsed = (!this.isNodeListView) && this.model.areRowsCollapsed;
       visitor.areColsCollapsed = this.model.areColsCollapsed;
@@ -548,6 +544,9 @@ export class cmMatrixBase extends SvgGroupElement {
    * Initializes this.row/col indexes.
    */
   initNodeIndexes(model) {
+    this.rowAttributeNodeGroup = this.model.AttributeNodeGroups.SOURCE;
+    this.colAttributeNodeGroup = this.model.AttributeNodeGroups.TARGET;
+    this.attributeNodeGroupsBeingDisplayed = [this.rowAttributeNodeGroup, this.colAttributeNodeGroup];
     this.rowNodeIndexes = model.getRowNodeIndexes();
     this.colNodeIndexes = model.getColNodeIndexes();
   }
@@ -830,7 +829,7 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onSortColsByAttribute(attribute, ascending, sortBar) {
-    let colPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.colNodeIndexes, attribute, ascending);
+    let colPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.colNodeIndexes, attribute, ascending, this.colAttributeNodeGroup);
     let shiftedColPerm = Utils.shiftPermutation(colPerm, this.numHeaderCols);
     this.resetSortState(false, true, sortBar);
     this.mainController.ui.selectedSortOrder = "custom";
@@ -838,7 +837,7 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onSortRowsByAttribute(attribute, ascending, sortBar) {
-    let rowPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.rowNodeIndexes, attribute, ascending);
+    let rowPerm = this.model.getSortedIndexesOfNodeIndexAttr(this.rowNodeIndexes, attribute, ascending, this.rowAttributeNodeGroup);
     let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
     this.resetSortState(true, false, sortBar);
     this.updatePositions(shiftedRowPerm, this.colPerm);
@@ -857,18 +856,18 @@ export class cmMatrixBase extends SvgGroupElement {
 
   resetSortState(resetRows, resetCols, sortBar) {
     let sortBars = this.svg.selectAll(".matrix-view-sortbar")
-      .filter(function(d) {
-        if(resetRows && !resetCols) {
+      .filter(function (d) {
+        if (resetRows && !resetCols) {
           return !d;
-        } else if(!resetRows && resetCols) {
+        } else if (!resetRows && resetCols) {
           return d;
-        } else if(resetRows && resetCols) {
+        } else if (resetRows && resetCols) {
           return true;
         } else {
           return false;
         }
       })
-      .filter(function() {
+      .filter(function () {
         return this != sortBar;
       })
       .style("display", "none");
@@ -906,22 +905,22 @@ export class cmMatrixBase extends SvgGroupElement {
       this.legend = undefined;
     } else if (encoding == "colormap") {
 
-        let metricFunction = cmMatrixBase.getMetricFunction(metric);
+      let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
-        preprocessor = new cmColorMapPreprocessor();
-        preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-        preprocessor.setMetricFunction(metricFunction);
-        preprocessor.graph = this.model.graph;
-        this.applyVisitor(preprocessor);
+      preprocessor = new cmColorMapPreprocessor();
+      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      preprocessor.setMetricFunction(metricFunction);
+      preprocessor.graph = this.model.graph;
+      this.applyVisitor(preprocessor);
 
-        visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
-        visitor.setCallbacks(clicked, mouseover, mouseout);
-        visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-        visitor.setMetricFunction(metricFunction);
-        visitor.graph = this.model.graph;
-        this.applyVisitor(visitor);
+      visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
+      visitor.setCallbacks(clicked, mouseover, mouseout);
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      visitor.setMetricFunction(metricFunction);
+      visitor.graph = this.model.graph;
+      this.applyVisitor(visitor);
 
-        this.legend = new cmColorMapLegend(visitor);
+      this.legend = new cmColorMapLegend(visitor);
 
     }
 

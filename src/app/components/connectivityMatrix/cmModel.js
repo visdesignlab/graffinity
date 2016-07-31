@@ -294,19 +294,22 @@ export class cmModel {
   }
 
   getAttributeType(attribute) {
-    if (this.getCmGraph().getQuantNodeAttrNames().indexOf(attribute) != -1) {
+    if (this.getCmGraph().getCategoricalNodeAttrNames().indexOf(attribute) == -1) {
       return "quantitative"
     } else {
       return "categorical";
     }
   }
 
-  getAttributeValues(nodeIndexes) {
+  /**
+   * Returns Array[attributeIndex] = [ Array of attribute values for that node index ]
+   */
+  getAttributeValues(nodeIndexes, attributeNodeGroup) {
     let self = this;
     let attributes = self.getAvailableAttributes();
     let attributeValues = [];
     for (let i = 0; i < attributes.length; ++i) {
-      let values = self.getNodeAttrs(nodeIndexes, attributes[i]);
+      let values = self.getNodeAttrs(nodeIndexes, attributes[i], attributeNodeGroup);
       attributeValues.push(values);
     }
     return attributeValues;
@@ -316,6 +319,7 @@ export class cmModel {
     if (this.availableAttributes == null) {
       this.availableAttributes = this.getCmGraph().getQuantNodeAttrNames();
       this.availableAttributes = this.availableAttributes.concat(this.getCmGraph().getCategoricalNodeAttrNames());
+      this.availableAttributes.push("num paths");
     }
     return this.availableAttributes;
   }
@@ -341,7 +345,7 @@ export class cmModel {
 
   getColAttributeValues() {
     let self = this;
-    return self.getAttributeValues(self.getColNodeIndexes());
+    return self.getAttributeValues(self.getColNodeIndexes(), self.AttributeNodeGroups.TARGET);
   }
 
   getColsSortedByAttr(attribute, ascending) {
@@ -429,7 +433,7 @@ export class cmModel {
 
   getIntermediateNodeAttributeValues() {
     let self = this;
-    return self.getAttributeValues(self.getIntermediateNodeIndexes());
+    return self.getAttributeValues(self.getIntermediateNodeIndexes(), self.AttributeNodeGroups.INTERMEDIATE);
   }
 
   getIntermediateRowNodeAttributeValues() {
@@ -512,25 +516,29 @@ export class cmModel {
     return self.getMinorLabels(self.getRowNodeIndexes());
   }
 
-  getNodeAttrs(nodeIndexes, attribute) {
+  getNodeAttrs(nodeIndexes, attribute, attributeNodeGroup) {
     var self = this;
     var attributes = [nodeIndexes.length];
     for (var i = 0; i < nodeIndexes.length; ++i) {
       attributes[i] = [];
       for (var j = 0; j < nodeIndexes[i].length; ++j) {
-        attributes[i].push(self.graph.getNode(nodeIndexes[i][j])[attribute]);
+        if (attribute != "num paths") {
+          attributes[i].push(self.graph.getNode(nodeIndexes[i][j])[attribute]);
+        } else {
+          attributes[i].push(self.numPathsPerNode[nodeIndexes[i][j]][attributeNodeGroup]);
+        }
       }
     }
     return attributes;
   }
 
   // TODO - this is a hack to get the intermediate nodes working.
-  getNodeAttr(nodeIndexes, attribute) {
+  getNodeAttr(nodeIndexes, attribute, attributeNodeGroup) {
     var self = this;
     var attributes = [nodeIndexes.length];
     for (var i = 0; i < nodeIndexes.length; ++i) {
-      if (attribute == "count") {
-        attributes[i] = this.intermediateNodeCount[nodeIndexes[i]];
+      if (attribute == "num paths") {
+        attributes[i] = this.numPathsPerNode[nodeIndexes[i]][attributeNodeGroup];
       } else {
         attributes[i] = self.graph.getNode(nodeIndexes[i])[attribute];
       }
@@ -583,7 +591,7 @@ export class cmModel {
 
   getRowAttributeValues() {
     let self = this;
-    return self.getAttributeValues(self.getRowNodeIndexes());
+    return self.getAttributeValues(self.getRowNodeIndexes(), self.AttributeNodeGroups.SOURCE);
   }
 
   /**
@@ -592,7 +600,7 @@ export class cmModel {
    * @param {string} attribute - attribute to sort nodes by
    * @param {boolean} ascending - order of the attribute
    */
-  getSortedIndexesOfNodeIndexAttr(nodeIndexes, attribute, ascending) {
+  getSortedIndexesOfNodeIndexAttr(nodeIndexes, attribute, ascending, attributeNodeGroup) {
     var self = this;
     var nodeValues = []; // will be max value of each entry in nodeIndexes
     var sortedIndexes = [];
@@ -607,9 +615,9 @@ export class cmModel {
         for (var j = 0; j < currentNodeIndexes.length; ++j) {
           var currentRowNodeIndex = currentNodeIndexes[j];
           if (maxAttrValue == null) {
-            maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute);
+            maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute, attributeNodeGroup);
           } else {
-            maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue);
+            maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue, attributeNodeGroup);
           }
 
           nodeValues.push(maxAttrValue);
@@ -750,9 +758,10 @@ export class cmModel {
     return self.current.rowNodeIndexes;
   }
 
+  // TODO - is this dead code?
   getRowsSortedByAttr(attribute, ascending) {
     var self = this;
-    return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending);
+    return self.getSortedIndexesOfNodeIndexAttr(self.current.rowNodeIndexes, attribute, ascending, self.AttributeNodeGroups.SOURCE);
   }
 
   getTotalNumPaths() {
@@ -779,10 +788,20 @@ export class cmModel {
 
   reset() {
     var self = this;
+
+    self.AttributeNodeGroups = {
+      SOURCE: 0,
+      TARGET: 1,
+      INTERMEDIATE: 2
+    };
+
+    self.numAttributeNodeGroups = 3;
+
     self.resetMatrix();
     self.resetRows();
     self.resetCols();
     self.resetIntermediateNodes();
+    self.resetNumPathsPerNode();
     self.availableAttributes = null;
   }
 
@@ -877,6 +896,42 @@ export class cmModel {
 
     self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);
     self.current.intermediateRows = angular.copy(self.intermediateRows);
+  }
+
+  resetNumPathsPerNode() {
+    let self = this;
+    let nodeIndexes = Utils.getFlattenedLists(self.getRowNodeIndexes());
+    nodeIndexes = nodeIndexes.concat(Utils.getFlattenedLists(self.getColNodeIndexes()));
+    nodeIndexes = nodeIndexes.concat(Utils.getFlattenedLists(self.getIntermediateNodeIndexes()));
+
+    let numPathsPerNode = {};
+    for (let i = 0; i < nodeIndexes.length; ++i) {
+      let nodeIndex = nodeIndexes[i];
+      numPathsPerNode[nodeIndex] = {};
+      for (let j = 0; j < self.numAttributeNodeGroups; ++j) {
+        numPathsPerNode[nodeIndex][j] = 0;
+      }
+    }
+
+    let paths = self.getAllPaths();
+    for (let key in paths) {
+      let currentPaths = paths[key];
+      for (let i = 0; i < currentPaths.length; ++i) {
+        let currentPath = currentPaths[i];
+        for (let j = 0; j < currentPath.length; j += 2) {
+          let currentNode = currentPath[j];
+          if (j == 0) {
+            numPathsPerNode[currentNode][self.AttributeNodeGroups.SOURCE] += 1;
+          } else if (j == currentPath.length - 1) {
+            numPathsPerNode[currentNode][self.AttributeNodeGroups.TARGET] += 1;
+          } else {
+            numPathsPerNode[currentNode][self.AttributeNodeGroups.INTERMEDIATE] += 1;
+          }
+        }
+      }
+    }
+
+    self.numPathsPerNode = numPathsPerNode;
   }
 
   resetMatrix() {

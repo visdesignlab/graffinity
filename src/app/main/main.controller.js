@@ -84,7 +84,7 @@ export class MainController {
        PDX -> LAS -> BOS x1
 
        1-hop - 5 total
-       LAX -> PDX x2
+       LAX -> BOS x2
        SFO -> JFK x2
        PDX -> BOS x1
        */

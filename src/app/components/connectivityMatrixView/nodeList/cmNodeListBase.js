@@ -22,8 +22,9 @@ export class cmNodeListBase extends cmMatrixBase {
    * Initializes this.row/col indexes.
    */
   initNodeIndexes(model) {
-    this.rowAttributeNodeGroup = 2;
-    this.colAttributeNodeGroup = 3;
+    this.rowAttributeNodeGroup = model.AttributeNodeGroups.INTERMEDIATE;
+    this.colAttributeNodeGroup = Object.keys(model.AttributeNodeGroups).length;
+    this.attributeNodeGroupsBeingDisplayed = [this.rowAttributeNodeGroup, this.colAttributeNodeGroup];
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     let nodePositions = model.getIntermediateNodePositions();
     this.colNodeIndexes = [];

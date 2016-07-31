@@ -51,7 +51,6 @@ export class visHistogramScent {
       this.chartWidth = this.width - this.margin.left - this.margin.right;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom - this.offset;
 
-      let self = this;
       this.xScale = d3.scale.linear()
         .domain([this.minValue, this.maxValue])
         .range([0, this.chartWidth]);
@@ -61,7 +60,6 @@ export class visHistogramScent {
           return d.y;
         })])
         .range([this.chartHeight, 0]);
-
 
       this.createHistogramTicksHorizontal();
       this.createHistogramBarsHorizontal();
