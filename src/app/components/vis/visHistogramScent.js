@@ -144,7 +144,7 @@ export class visHistogramScent {
 
     let ticks = this.parent.selectAll(".tick")
       .selectAll("text")
-      .style("font-size", "8px");
+      .style("font-size", "10px");
 
     d3.select(ticks[0][0])
       .style("text-anchor", "start");
@@ -170,7 +170,7 @@ export class visHistogramScent {
 
     let ticks = this.parent.selectAll(".tick")
       .selectAll("text")
-      .style("font-size", "8px");
+      .style("font-size", "10px");
 
     // top ticks
     d3.select(ticks[0][0])

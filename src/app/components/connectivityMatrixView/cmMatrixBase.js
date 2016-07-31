@@ -65,6 +65,9 @@ export class cmMatrixBase extends SvgGroupElement {
     this.labelRowHeight = this.colWidthLabel;
     this.rowHeightAttr = 80;
 
+    this.paddingBottom = 4;
+    this.paddingRight = 4;
+
     this.svg = svg;
 
     this.highlights = [];
@@ -351,6 +354,7 @@ export class cmMatrixBase extends SvgGroupElement {
     for (var i = 0; i < this.rowHeights.length; ++i) {
       total += this.rowHeights[i];
     }
+    total += this.paddingBottom;
     return total;
   }
 
@@ -476,6 +480,7 @@ export class cmMatrixBase extends SvgGroupElement {
     for (var i = 0; i < this.colWidths.length; ++i) {
       width += this.colWidths[i];
     }
+    width += this.paddingRight;
     return width;
   }
 
