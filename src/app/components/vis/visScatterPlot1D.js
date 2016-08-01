@@ -37,17 +37,8 @@ export class visScatterPlot1D {
     this.dataOffset = this.dataOffset.bind(this);
 
     this.data = visScatterPlot1D.createData(values, this.radius, this.xMarkPosition, this.yMarkPosition);
-    this.marks = visScatterPlot1D.createMarks(group, this.data, this.radius);
     this.axis = visScatterPlot1D.createAxis(group, this.dataScale, this.dataOffset, orientation);
-
-    let mouseOverCallback = this.onMouseOverGroup.bind(this);
-    let mouseOutCallback = this.onMouseOutGroup.bind(this);
-    group.append("rect")
-      .attr("width", width)
-      .attr('height', height)
-      .attr("fill", "transparent")
-      .on("mouseover", mouseOverCallback)
-      .on("mouseout", mouseOutCallback);
+    this.marks = visScatterPlot1D.createMarks(group, this.data, this.radius);
   }
 
   static createAxis(group, dataScale, dataOffset, orientation) {
@@ -108,7 +99,7 @@ export class visScatterPlot1D {
   }
 
   static createMarks(group, data, radius) {
-    return group.selectAll(".dot")
+    let mark = group.selectAll(".dot")
       .data(data)
       .enter()
       .append("circle")
@@ -120,6 +111,15 @@ export class visScatterPlot1D {
       .attr("cy", function (d) {
         return d.y;
       });
+
+    mark.attr("data-toggle", "tooltip");
+    mark.attr("data-title", function (d) {
+      return d.value;
+    });
+    mark.attr("data-placement", "right");
+    mark.attr("data-container", "body");
+
+    angular.element('[data-toggle="tooltip"]').tooltip();
   }
 
   static getOrientations() {
@@ -128,13 +128,4 @@ export class visScatterPlot1D {
       VERTICAL: 1
     };
   }
-
-  onMouseOverGroup() {
-    // this.axis.selectAll(".tick").style("display", "block");
-  }
-
-  onMouseOutGroup() {
-    // this.axis.selectAll(".tick").style("display", "none");
-  }
-
 }

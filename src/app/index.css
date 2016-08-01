@@ -6,9 +6,11 @@
 }
 
 .dot {
-  fill: none;
-  stroke: #333;
-  stroke-width: 1px;
+  fill: #777;
+}
+
+.dot:hover {
+  fill: #FFC800;
 }
 
 .axis path,
