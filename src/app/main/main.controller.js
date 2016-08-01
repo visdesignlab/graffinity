@@ -23,7 +23,7 @@ export class MainController {
     this.hasQueryError = false;
     this.queryError = "";
 
-    this.matrixClass = "col-lg-9";
+    this.matrixClass = "col-lg-7";
     this.nodeLinkClass = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
@@ -43,7 +43,7 @@ export class MainController {
     this.database = database;
 
     let useLargeResult = false;
-    //useLargeResult = true;
+    useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;
@@ -398,25 +398,25 @@ export class MainController {
    * This causes an animated transition because of the '.row span' definition in main.css
    */
   setNodeLinkVisibility(visible) {
-    if (!visible) {
-      this.nodeLinkClass = "";
-      this.matrixClass = "col-lg-9";
-
-      // Let the resize event finish before expanding the matrix.
-      let self = this;
-      this.$timeout(function () {
-        self.matrixManager.updateElementPositions();
-      }, 300);
-
-    } else {
-
-      // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
-      // getting pushed onto different lines.
-      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
-
-      this.nodeLinkClass = "col-lg-3";
-      this.matrixClass = "col-lg-6";
-    }
+    //if (!visible) {
+    //  this.nodeLinkClass = "";
+    //  this.matrixClass = "col-lg-9";
+    //
+    //  // Let the resize event finish before expanding the matrix.
+    //  let self = this;
+    //  this.$timeout(function () {
+    //    self.matrixManager.updateElementPositions();
+    //  }, 300);
+    //
+    //} else {
+    //
+    //  // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
+    //  // getting pushed onto different lines.
+    //  this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
+    //
+    //  this.nodeLinkClass = "col-lg-3";
+    //  this.matrixClass = "col-lg-6";
+    //}
   }
 
   updateLegend() {

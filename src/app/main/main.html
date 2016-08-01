@@ -106,17 +106,24 @@
       <h4>Connectivity Matrix</h4>
     </span>
 
-    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-lg-2 column-matrix" id="node-list-col">
-        <h4>Intermediate Nodes</h4>
-    </span>
 
-    <!-- Columns holding the node link view -->
-    <span ng-class="main.nodeLinkClass" ng-show="main.nodeLinkClass" id="node-link-column">
-      <node-link-view-directive
-        set-node-link-visibility="main.setNodeLinkVisibility(false)"
-        view-state="main.viewState"
-        main-controller="main">
-      </node-link-view-directive>
+
+    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-lg-4" id="details-column" style="padding-left: 0;">
+          <uib-tabset active="active">
+            <uib-tab index="0" heading="Intermediate Nodes">
+              <div id="node-list-col" style="padding-left: 15px;">
+              </div>
+            </uib-tab>
+            <uib-tab index="1" heading="Node-Link">
+              <div id="node-link-column" style="padding-left: 15px;">
+                <node-link-view-directive
+                  set-node-link-visibility="main.setNodeLinkVisibility(false)"
+                  view-state="main.viewState"
+                  main-controller="main">
+                </node-link-view-directive>
+              </div>
+            </uib-tab>
+          </uib-tabset>
     </span>
   </div>
 

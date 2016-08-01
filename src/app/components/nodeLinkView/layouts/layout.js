@@ -84,12 +84,12 @@ export class Layout {
    */
   setHeightAndWidth() {
     // // get the column containing the svg
-    let element = d3.select("#node-link-column")[0][0];
+    let element = d3.select("#details-column")[0][0];
     // How much room do we have available in the column? Use this to size the svg.
     // padding is of the form '0px 15px.'
     // get the horizontal form of it
     // use that to determine width
-    let padding = d3.select("#node-link-column").style("padding");
+    let padding = d3.select("#details-column").style("padding");
     padding = padding.split(' ')[1];
     padding = parseInt(padding);
     this.width = element.clientWidth - padding;
