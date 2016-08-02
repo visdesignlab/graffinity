@@ -138,23 +138,22 @@ export class cmWrapperBase {
     let matrixWidth, clientWidth;
     if (!width) {
       matrixWidth = this.matrix.getWidth() + 30;
-      clientWidth = angular.element(this.element)[0][0].clientWidth - this.controlsHeader.getAttributeColWidths() - 100;
+      clientWidth = angular.element(this.element)[0][0].clientWidth - this.controlsHeader.getAttributeColWidths() - 400;
       if (matrixWidth > clientWidth) {
         matrixWidth = clientWidth;
       }
     } else {
-      matrixWidth = width - this.controlsHeader.getAttributeColWidths() - 50;
+      matrixWidth = width - this.controlsHeader.getAttributeColWidths() - 250;
     }
 
     this.matrixElementStyle.width = matrixWidth + padding + "px";
     this.topHeaderElementStyle.width = matrixWidth + padding + "px";
-
     let duration = useAnimation ? 500 : 0;
 
     // The matrix'x svg needs to be large enough to hold everything.
     this.matrixSvg.transition()
       .duration(duration).attr({
-      width: this.matrix.getWidth() + padding,
+      width: Math.max(this.matrix.getWidth() + padding, 50),
       height: this.matrix.getHeight() + padding
     });
 
@@ -165,8 +164,11 @@ export class cmWrapperBase {
 
     this.topHeaderSvg.transition()
       .duration(duration).attr({
-      width: this.matrix.getWidth() + padding
+      width: Math.max(this.matrix.getWidth() + padding, 50)
     });
+
+    this.$log.debug("the matrix width is", this.matrix.getWidth());
+    this.$log.debug("value is", matrixWidth);
 
     // The divs need to expand/collapse depending on matrix size.
     this.controlsHeaderElement.transition()

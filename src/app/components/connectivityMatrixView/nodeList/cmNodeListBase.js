@@ -28,9 +28,27 @@ export class cmNodeListBase extends cmMatrixBase {
     this.rowNodeIndexes = model.getIntermediateNodeIndexes();
     let nodePositions = model.getIntermediateNodePositions();
     this.colNodeIndexes = [];
-    for(let i=0; i<nodePositions.length; ++i) {
+    for (let i = 0; i < nodePositions.length; ++i) {
       this.colNodeIndexes.push([String(nodePositions[i])]);
     }
+  }
+
+  initAttributeState(model) {
+    let attributes = model.getAvailableAttributes();
+    this.attributes = attributes;
+
+    // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
+    // attributes that the user already selected.
+    if (!this.isInitialized) {
+      this.isAttributeColVisible = {};
+      this.isAttributeRowVisible = {};
+      for (var i = 0; i < attributes.length; ++i) {
+        this.isAttributeColVisible[attributes[i]] = false;
+        this.isAttributeRowVisible[attributes[i]] = false;
+      }
+    }
+
+    this.isAttributeColVisible["num paths"] = true;
   }
 
   /**

@@ -46,3 +46,7 @@ html, body {
   background: #6D6C6C;
   border-radius: 3px;
 }
+
+.column-node-list {
+  width: auto !important;
+}

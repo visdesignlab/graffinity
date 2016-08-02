@@ -30,6 +30,10 @@ export class cmNodeListWrapper extends cmWrapperBase {
     this.setModel(model);
 
     this.updateElementPositions();
+
+    this.matrices.forEach(function(matrix) {
+      matrix.onSortRowsByAttribute("num paths", false)
+    });
   }
 }
 

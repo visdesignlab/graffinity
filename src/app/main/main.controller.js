@@ -23,7 +23,7 @@ export class MainController {
     this.hasQueryError = false;
     this.queryError = "";
 
-    this.matrixClass = "col-lg-9";
+    this.matrixClass = "col-lg-8";
     this.nodeLinkClass = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
@@ -43,7 +43,7 @@ export class MainController {
     this.database = database;
 
     let useLargeResult = false;
-    //useLargeResult = true;
+    useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;
@@ -400,7 +400,7 @@ export class MainController {
   setNodeLinkVisibility(visible) {
     if (!visible) {
       this.nodeLinkClass = "";
-      this.matrixClass = "col-lg-9";
+      this.matrixClass = "col-lg-8";
 
       // Let the resize event finish before expanding the matrix.
       let self = this;
@@ -415,7 +415,7 @@ export class MainController {
       this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
 
       this.nodeLinkClass = "col-lg-3";
-      this.matrixClass = "col-lg-6";
+      this.matrixClass = "col-lg-5";
     }
   }
 
