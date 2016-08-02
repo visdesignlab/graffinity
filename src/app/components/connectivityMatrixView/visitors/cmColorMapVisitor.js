@@ -94,7 +94,19 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
         .style("stroke-width", "1px")
         .attr("fill", color);
 
+
       this.createInteractionGroup(cell);
+
+      group.select(".matrix-view-interaction-group")
+        .select("rect")
+        .attr("data-toggle", "tooltip")
+        .attr("data-title", function () {
+          return paths.length + (paths.length == 1 ? " path" : " paths");
+        })
+        .attr("data-placement", "right")
+        .attr("data-container", "body");
+
+      angular.element('[data-toggle="tooltip"]').tooltip();
 
     } else {
       this.createEmptyCellOutline(cell);
