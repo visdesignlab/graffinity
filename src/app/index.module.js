@@ -4,6 +4,7 @@ let production = false;
 import { config } from './index.config';
 import { routerConfig } from './index.route';
 import { runBlock } from './index.run';
+import { AdjustableColorScaleDirective } from "../app/components/adjustableColorScale/adjustableColorScale.directive";
 import { MainController } from './main/main.controller';
 import { GithubContributorService } from '../app/components/githubContributor/githubContributor.service';
 import { WebDevTecService } from '../app/components/webDevTec/webDevTec.service';
@@ -29,6 +30,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .config(config)
   .config(routerConfig)
   .run(runBlock)
+  .directive( 'adjustableColorScale', () => new AdjustableColorScaleDirective() )
   .service('githubContributor', GithubContributorService)
   .service('webDevTec', WebDevTecService)
   .service('cmResource', cmResource)
