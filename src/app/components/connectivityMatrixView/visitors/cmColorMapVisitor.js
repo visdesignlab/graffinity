@@ -44,32 +44,12 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
 }
 
 export class cmColorMapVisitor extends cmColorMapVisitorBase {
-  constructor(preprocessor, width, height) {
+  constructor(nodeColorScale, setColorScale, width, height) {
     super(width, height);
     this.visitDataCells = true;
 
-    let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
-    let domain = [0, 1];
-
-    if (colorRange.length != 1) {
-      domain = preprocessor.setRange;
-    }
-
-    this.setColorScale = d3.scale.quantize()
-      .range(colorRange)
-      .domain(domain);
-
-    colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Greens, preprocessor.nodeRange);
-    domain = [0, 1];
-    if (colorRange.length != 1) {
-      domain = preprocessor.nodeRange;
-    }
-
-    this.nodeColorScale = d3.scale.quantize()
-      .range(colorRange)
-      .domain(domain);
-
-    this.preprocessor = preprocessor;
+    this.nodeColorScale = nodeColorScale;
+    this.setColorScale = setColorScale;
   }
 
   apply(cell) {

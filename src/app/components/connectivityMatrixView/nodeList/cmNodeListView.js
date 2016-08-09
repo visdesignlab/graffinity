@@ -12,6 +12,8 @@ export class cmNodeListView extends cmNodeListBase {
     this.colWidthControl = 0;
     this.rowHeightAttr = 0;
 
+    this.isDataMatrix = true;
+
     this.setModel(model);
   }
 

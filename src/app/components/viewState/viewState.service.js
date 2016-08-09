@@ -6,13 +6,14 @@ export class ViewState {
   constructor($rootScope, $log) {
     "ngInject";
     this.attributeNodeGroup = {};
-    this.isNodeIDFiltered = {};
+    // this.isNodeIDFiltered = {};
     this.isNodeHidden = {};
-    this.filterRanges = {};
-    this.filterValues = {};
-    this.hasFilters = false;
+    // this.filterRanges = {};
+    // this.filterValues = {};
+    // this.hasFilters = false;
     this.$scope = $rootScope;
     this.$log = $log;
+    this.colorScales = {};
   }
 
   ///**
@@ -269,6 +270,10 @@ export class ViewState {
         this.categoricalFilters[i][id][values[k]] = true;
       }
     }
+  }
+
+  resetColorScales() {
+    this.colorScales = {};
   }
 
   //setFilterRange(attribute, attributeNodeGroup, range) {

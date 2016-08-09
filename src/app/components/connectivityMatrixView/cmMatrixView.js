@@ -11,6 +11,8 @@ export class cmMatrixView extends cmMatrixBase {
     this.colWidthLabel = 0;
     this.colWidthControl = 0;
     this.rowHeightAttr = 0;
+    
+    this.isDataMatrix = true;
 
     this.setModel(model);
   }

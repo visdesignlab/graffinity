@@ -77,6 +77,9 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.gridPosition = [];
 
+    this.isDataMatrix = false;
+    this.isHeaderMatrix = false;
+
     this.setUseAnimation(false);
     this.isInitialized = false;
     this.setModel(model);
@@ -881,7 +884,33 @@ export class cmMatrixBase extends SvgGroupElement {
       .attr("data-is-sorted", '');
   }
 
+  setColorMaps(nodeColorScale, setColorScale) {
+    let cellWidth = this.colWidth;
+    let cellHeight = this.rowHeight;
+
+    let visitor = new cmColorMapVisitor(nodeColorScale, setColorScale, cellWidth, cellHeight);
+
+    let clicked = this.onCellClicked.bind(this);
+    let mouseover = this.onCellMouseOver.bind(this);
+    let mouseout = this.onCellMouseOut.bind(this);
+
+    let metricFunction = cmMatrixBase.getMetricFunction(this.metric);
+
+    visitor.setCallbacks(clicked, mouseover, mouseout);
+    visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+    visitor.setMetricFunction(metricFunction);
+    visitor.graph = this.model.graph;
+    this.applyVisitor(visitor);
+
+    this.legend = new cmColorMapLegend(visitor);
+  }
+
+
   setEncoding(encoding, metric) {
+    if (!this.isDataMatrix) {
+      return;
+    }
+
     this.encoding = encoding;
     this.metric = metric;
     let preprocessor = undefined;
@@ -915,17 +944,47 @@ export class cmMatrixBase extends SvgGroupElement {
       preprocessor = new cmColorMapPreprocessor();
       preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       preprocessor.setMetricFunction(metricFunction);
+
+      // TODO - why does preprocessor get a graph?
       preprocessor.graph = this.model.graph;
       this.applyVisitor(preprocessor);
 
-      visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(clicked, mouseover, mouseout);
-      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      visitor.setMetricFunction(metricFunction);
-      visitor.graph = this.model.graph;
-      this.applyVisitor(visitor);
+      let nodeColorScale = null;
+      let setColorScale = null;
+      let nodeColorScaleIndex = 0;
+      let setColorScaleIndex = 1;
+      if (this.viewState.hasColorMaps) {
 
-      this.legend = new cmColorMapLegend(visitor);
+        nodeColorScale = this.viewState.colorScales[nodeColorScaleIndex];
+        setColorScale = this.viewState.colorScales[setColorScaleIndex];
+      } else {
+        let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
+        let domain = [0, 1];
+
+        if (colorRange.length != 1) {
+          domain = preprocessor.setRange;
+        }
+
+        setColorScale = d3.scale.quantize()
+          .range(colorRange)
+          .domain(domain);
+
+        colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Greens, preprocessor.nodeRange);
+        domain = [0, 1];
+        if (colorRange.length != 1) {
+          domain = preprocessor.nodeRange;
+        }
+
+        nodeColorScale = d3.scale.quantize()
+          .range(colorRange)
+          .domain(domain);
+
+        this.viewState.colorScales[nodeColorScaleIndex] = nodeColorScale;
+        this.viewState.colorScales[setColorScaleIndex] = setColorScale;
+        this.viewState.hasColorMaps = true;
+      }
+
+      this.setColorMaps(nodeColorScale, setColorScale);
 
     }
 
