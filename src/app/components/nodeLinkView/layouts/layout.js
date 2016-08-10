@@ -14,7 +14,6 @@ export class Layout {
 
     // Settings for positioning the graph
     this.graphYOffset = 80;
-    this.graphGroup = this.svg.append("g");
   }
 
   /**
@@ -37,7 +36,7 @@ export class Layout {
    * Remove everything from the svg.
    */
   clear() {
-    this.graphGroup.selectAll("*").remove();
+    this.svg.selectAll("*").remove();
   }
 
   /**
@@ -73,6 +72,7 @@ export class Layout {
    */
   setGraph(graph) {
     this.graph = graph;
+    this.graphGroup = this.svg.append("g");
     this.createLayout(this.graph);
   }
 
