@@ -40,6 +40,7 @@ export class MainController {
 
     // Setup a default query and dataset depending on our database
     this.database = database;
+    this.isUsingFlightDatabase = this.database == "flights";
 
     let useLargeResult = false;
     useLargeResult = true;

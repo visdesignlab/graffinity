@@ -2,7 +2,12 @@
 
   <!--Row holding the query text box -->
   <div class="row top-row">
-    <basic-query-directive submit="main.onQuerySubmitted(query)"></basic-query-directive>
+    <span ng-show="main.isUsingFlightDatabase">
+      <flight-query-directive submit="main.onQuerySubmitted(query)"></flight-query-directive>
+    </span>
+    <span ng-show="!main.isUsingFlightDatabase">
+      <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
+    </span>
     <num-paths-directive ng-show="!main.hasActiveQuery && !main.hasQueryError"
                          view-state="main.viewState" main-controller="main"></num-paths-directive>
   </div>
