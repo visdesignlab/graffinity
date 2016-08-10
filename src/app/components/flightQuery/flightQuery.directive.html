@@ -1,0 +1,37 @@
+<span class="col-lg-4">
+  <h4>Flights Query</h4>
+
+  <div ng-repeat="set in queryController.sets track by $index">
+    <form class="form-inline">
+      <label style="width:35%; text-align: right; padding: 6px 12px;"> {{set}} {{queryController.property}}
+        {{queryController.operator}}</label>
+      <input class="form-control" type="text" style="float: right; width:65%;" ng-model="queryController[set]">
+    </form>
+    <form class="form-inline">
+      <label style="width:35%; text-align: right; padding: 6px 12px;"> {{"Edge #" + $index }} {{"type"}}
+        {{queryController.operator}}</label>
+      <input class="form-control" type="text" style="float: right; width:65%;" ng-model="queryController['edge' + set]">
+    </form>
+  </div>
+  <form class="form-inline">
+    <label style="width:35%; text-align: right; padding: 6px 12px;"> {{"Targets"}} {{queryController.property}}
+      {{queryController.operator}}</label>
+    <input class="form-control" type="text" style="float: right; width:65%;" ng-model="queryController['Targets']">
+  </form>
+
+  <label style="width:35%; text-align: right; padding: 6px 12px;">Max num hops</label>
+              <ui-select ng-model="queryController.selectedNumHops"
+                         ng-change="queryController.setSelectedNumHops(queryController.selectedNumHops)"
+                         style="width:35%; display: inline-block;">
+                <ui-select-match>
+                  {{queryController.selectedNumHops}}
+                </ui-select-match>
+                <ui-select-choices repeat="option in queryController.numHops">
+                  {{option}}
+                </ui-select-choices>
+              </ui-select>
+      <button style="display:inline-block; vertical-align: top; float:right; width: 20%;"
+              ng-click="queryController.submit({query:queryController.cypherQuery})" class="btn btn-default">Submit
+      </button>
+
+</span>

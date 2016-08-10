@@ -18,6 +18,7 @@ import { ModalListFilterController } from "../app/components/modals/modalListFil
 import { ModalHistogramFilterController } from "../app/components/modals/modalHistogramFilter.controller"
 import { QueryDirective } from "../app/components/query/query.directive";
 import { BasicQueryDirective } from "../app/components/basicQuery/basicQuery.directive";
+import { FlightQueryDirective } from "../app/components/flightQuery/flightQuery.directive";
 import { NumPathsDirective } from "../app/components/numPaths/numPaths.directive";
 import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
@@ -45,6 +46,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)
   .directive('basicQueryDirective', BasicQueryDirective)
+  .directive('flightQueryDirective', FlightQueryDirective)
   .directive('numPathsDirective', () => new NumPathsDirective())
   .service('modalService', ModalService)
-  .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective()) ;
+  .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective());
