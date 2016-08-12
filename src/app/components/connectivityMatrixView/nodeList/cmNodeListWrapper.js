@@ -6,8 +6,8 @@ import {cmNodeListView} from "./cmNodeListView"
 
 export class cmNodeListWrapper extends cmWrapperBase {
 
-  constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    super(element, $log, scope, mainController, "node-list");
+  constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController, colorScaleService) {
+    super(element, $log, scope, mainController, "node-list", colorScaleService);
 
     this.controlsHeader = new cmNodeListControls(this.controlsHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
@@ -22,7 +22,7 @@ export class cmNodeListWrapper extends cmWrapperBase {
     this.leftHeader.setGridPosition([0, 1]);
 
     this.matrix = new cmNodeListView(this.matrixGroup, model, $log, $uibModal, scope, viewState,
-      modalService, mainController);
+      modalService, mainController, colorScaleService);
     this.matrix.setGridPosition([1, 1]);
 
     this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
@@ -31,7 +31,7 @@ export class cmNodeListWrapper extends cmWrapperBase {
 
     this.updateElementPositions();
 
-    this.matrices.forEach(function(matrix) {
+    this.matrices.forEach(function (matrix) {
       matrix.onSortRowsByAttribute("num paths", false)
     });
   }

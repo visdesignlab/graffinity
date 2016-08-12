@@ -22,6 +22,7 @@ import { NumPathsDirective } from "../app/components/numPaths/numPaths.directive
 import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
 import { NodeLinkViewDirective } from "../app/components/nodeLinkView/nodeLinkView.directive"
+import { ColorScaleService } from "../app/components/colorScale/colorScale.service.js"
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
@@ -30,7 +31,7 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .config(config)
   .config(routerConfig)
   .run(runBlock)
-  .directive( 'adjustableColorScale', () => new AdjustableColorScaleDirective() )
+  .directive('adjustableColorScale', () => new AdjustableColorScaleDirective())
   .service('githubContributor', GithubContributorService)
   .service('webDevTec', WebDevTecService)
   .service('cmResource', cmResource)
@@ -47,4 +48,5 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive('queryDirective', QueryDirective)
   .directive('numPathsDirective', () => new NumPathsDirective())
   .service('modalService', ModalService)
-  .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective()) ;
+  .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective())
+  .service('colorScaleService', ColorScaleService);

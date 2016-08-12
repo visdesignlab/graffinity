@@ -83,7 +83,7 @@
       <!-- Legend of matrix cell encodings -->
       <div class="control-header" ng-show="main.ui.hasLegend">
         <b>Legend</b>
-        {{main.viewState.colorScales}}
+        {{main.viewState.colorScales.keys()}}
         <svg id="encoding-legend">
         </svg>
       </div>
@@ -99,7 +99,7 @@
         <button ng-click="main.onToggleNodeLinkView()">Toggle node-link</button>
       </div>
 
-      <adjustable-color-scale></adjustable-color-scale>
+      <adjustable-color-scale color-scale-index="0"></adjustable-color-scale>
 
     </span>
 
@@ -109,7 +109,8 @@
       <h4>Connectivity Matrix</h4>
     </span>
 
-    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-lg-3 column-matrix column-node-list" id="node-list-col">
+    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-lg-3 column-matrix column-node-list"
+          id="node-list-col">
         <h4>Intermediate Nodes</h4>
     </span>
 

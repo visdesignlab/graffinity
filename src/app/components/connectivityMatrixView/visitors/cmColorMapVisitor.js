@@ -44,12 +44,11 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
 }
 
 export class cmColorMapVisitor extends cmColorMapVisitorBase {
-  constructor(nodeColorScale, setColorScale, width, height) {
+  constructor(colorScale, colorMapIndex, width, height) {
     super(width, height);
     this.visitDataCells = true;
-
-    this.nodeColorScale = nodeColorScale;
-    this.setColorScale = setColorScale;
+    this.colorMapIndex = colorMapIndex;
+    this.colorScale = colorScale;
   }
 
   apply(cell) {
@@ -59,9 +58,10 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
 
     let paths = this.pathFilterFunction(cell.getPathList());
     let value = this.applyMetric(paths);
-    let color = this.getCellColor(cell, value);
+    let isCorrectAggregation = (cell.isCellBetweenSets() && this.colorMapIndex == 0) || (!cell.isCellBetweenSets() && this.colorMapIndex == 1);
+    let color = this.colorScale(value);
     let group = cell.getGroup();
-    if (paths.length) {
+    if (paths.length && isCorrectAggregation) {
 
       // Shrink the rect by 1x1 so that it doesn't take up the entire cell. This is for pretty selection.
       group.append("rect")
@@ -90,14 +90,6 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
 
     } else {
       this.createEmptyCellOutline(cell);
-    }
-  }
-
-  getCellColor(cell, value) {
-    if (cell.isCellBetweenSets()) {
-      return this.setColorScale(value);
-    } else {
-      return this.nodeColorScale(value);
     }
   }
 

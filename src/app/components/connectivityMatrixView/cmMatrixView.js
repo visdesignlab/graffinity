@@ -4,14 +4,14 @@ import {cmMatrixRow} from "./rows/cmMatrixRow"
 
 export class cmMatrixView extends cmMatrixBase {
 
-  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController, colorScaleService) {
+    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController, colorScaleService);
 
     this.colWidthAttr = 0;
     this.colWidthLabel = 0;
     this.colWidthControl = 0;
     this.rowHeightAttr = 0;
-    
+
     this.isDataMatrix = true;
 
     this.setModel(model);

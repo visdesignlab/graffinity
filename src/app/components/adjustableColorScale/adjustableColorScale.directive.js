@@ -5,7 +5,7 @@ export function AdjustableColorScaleDirective() {
     restrict: 'E',
     templateUrl: 'app/components/adjustableColorScale/adjustableColorScale.directive.html',
     scope: {
-      submit: '&'
+      colorScaleIndex: '='
     },
     controller: AdjustableColorScaleController,
     controllerAs: 'controller',
@@ -16,12 +16,20 @@ export function AdjustableColorScaleDirective() {
 }
 
 class AdjustableColorScaleController {
-  constructor($scope) {
+  constructor($scope, $log) {
     'ngInject';
+    this.$log = $log;
+    this.$scope = $scope;
     // the default query gets populated in main's constructor
-    this.defaultQuery = $scope.$parent.main.defaultQuery;
+    this.$log.debug("Adjustable color scale controller", this);
 
-    this.cypherQuery = this.defaultQuery;
+    this.$scope.$on("setColorScale", this.setColorScale.bind(this));
+  }
+
+  setColorScale(signal, colorScaleIndex, colorScale) {
+    if (colorScaleIndex == this.colorScaleIndex) {
+      this.$log.debug(this, "received color scale", colorScale);
+    }
   }
 
 }

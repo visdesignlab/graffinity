@@ -4,8 +4,8 @@ import {cmMatrixRow} from "../rows/cmMatrixRow"
 
 export class cmNodeListView extends cmNodeListBase {
 
-  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
-    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController, colorScaleService) {
+    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController, colorScaleService);
 
     this.colWidthAttr = 0;
     this.colWidthLabel = 0;

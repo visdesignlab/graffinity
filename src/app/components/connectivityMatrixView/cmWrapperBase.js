@@ -1,12 +1,13 @@
 export class cmWrapperBase {
 
-  constructor(element, $log, scope, mainController, name) {
+  constructor(element, $log, scope, mainController, name, colorScaleService) {
     this.$log = $log;
     this.$scope = scope;
     this.element = element;
     this.mainController = mainController;
     this.matrices = [];
     this.useAnimation = true;
+    this.colorScaleService = colorScaleService;
     let self = this;
     this.$scope.$on("changeMatrixHeight", function () {
       self.updateElementPositions(null, null, self.useAnimation);

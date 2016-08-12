@@ -437,5 +437,7 @@ export class MainController {
     } else {
       this.ui.hasLegend = false;
     }
+
+    this.$log.debug(this, this.viewState);
   }
 }

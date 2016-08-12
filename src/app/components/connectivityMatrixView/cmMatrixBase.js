@@ -48,7 +48,7 @@ import {UtilsD3} from "../utils/utilsd3"
  */
 export class cmMatrixBase extends SvgGroupElement {
 
-  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController, colorScaleService) {
     super(svg);
     this.$log = $log;
     this.$uibModal = $uibModal;
@@ -56,6 +56,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$scope = scope;
     this.mainController = mainController;
     this.viewState = viewState;
+    this.colorScaleService = colorScaleService;
 
     this.colWidth = 15;
     this.rowHeight = 15;
@@ -130,6 +131,8 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$scope.$on("positionHighlights", self.onPositionHighlights.bind(self));
     this.$scope.$on("hideHighlights", self.onHideHighlights.bind(self))
     this.$scope.$on("clearSelection", self.onClearSelection.bind(self))
+
+    this.$scope.$on("setColorScale", self.setColorScale.bind(self));
   }
 
   addRow(row, rowHeight) {
@@ -884,11 +887,11 @@ export class cmMatrixBase extends SvgGroupElement {
       .attr("data-is-sorted", '');
   }
 
-  setColorMaps(nodeColorScale, setColorScale) {
+  setColorScale(signal, colorScaleIndex, colorScale) {
     let cellWidth = this.colWidth;
     let cellHeight = this.rowHeight;
 
-    let visitor = new cmColorMapVisitor(nodeColorScale, setColorScale, cellWidth, cellHeight);
+    let visitor = new cmColorMapVisitor(colorScale, colorScaleIndex, cellWidth, cellHeight);
 
     let clicked = this.onCellClicked.bind(this);
     let mouseover = this.onCellMouseOver.bind(this);
@@ -901,10 +904,7 @@ export class cmMatrixBase extends SvgGroupElement {
     visitor.setMetricFunction(metricFunction);
     visitor.graph = this.model.graph;
     this.applyVisitor(visitor);
-
-    this.legend = new cmColorMapLegend(visitor);
   }
-
 
   setEncoding(encoding, metric) {
     if (!this.isDataMatrix) {
@@ -939,55 +939,28 @@ export class cmMatrixBase extends SvgGroupElement {
       this.legend = undefined;
     } else if (encoding == "colormap") {
 
-      let metricFunction = cmMatrixBase.getMetricFunction(metric);
+      if (this.colorScaleService.hasColorScales) {
 
-      preprocessor = new cmColorMapPreprocessor();
-      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      preprocessor.setMetricFunction(metricFunction);
+        this.setColorScale(null, 0, this.colorScaleService.colorScales[0]);
+        this.setColorScale(null, 1, this.colorScaleService.colorScales[1]);
 
-      // TODO - why does preprocessor get a graph?
-      preprocessor.graph = this.model.graph;
-      this.applyVisitor(preprocessor);
-
-      let nodeColorScale = null;
-      let setColorScale = null;
-      let nodeColorScaleIndex = 0;
-      let setColorScaleIndex = 1;
-      if (this.viewState.hasColorMaps) {
-
-        nodeColorScale = this.viewState.colorScales[nodeColorScaleIndex];
-        setColorScale = this.viewState.colorScales[setColorScaleIndex];
       } else {
-        let colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Blues, preprocessor.setRange);
-        let domain = [0, 1];
 
-        if (colorRange.length != 1) {
-          domain = preprocessor.setRange;
-        }
+        let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
-        setColorScale = d3.scale.quantize()
-          .range(colorRange)
-          .domain(domain);
+        preprocessor = new cmColorMapPreprocessor();
+        preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+        preprocessor.setMetricFunction(metricFunction);
 
-        colorRange = cmColorMapVisitor.getColorScaleRange(colorbrewer.Greens, preprocessor.nodeRange);
-        domain = [0, 1];
-        if (colorRange.length != 1) {
-          domain = preprocessor.nodeRange;
-        }
+        // TODO - why does preprocessor get a graph?
+        preprocessor.graph = this.model.graph;
+        this.applyVisitor(preprocessor);
 
-        nodeColorScale = d3.scale.quantize()
-          .range(colorRange)
-          .domain(domain);
-
-        this.viewState.colorScales[nodeColorScaleIndex] = nodeColorScale;
-        this.viewState.colorScales[setColorScaleIndex] = setColorScale;
-        this.viewState.hasColorMaps = true;
+        this.colorScaleService.hasColorScales = true;
+        this.colorScaleService.createColorScale(0, preprocessor.setRange);
+        this.colorScaleService.createColorScale(1, preprocessor.nodeRange);
       }
-
-      this.setColorMaps(nodeColorScale, setColorScale);
-
     }
-
   }
 
   /**
