@@ -57,4 +57,10 @@ export class ColorScaleService {
     this.colorScales[colorScaleIndex] = colorScale;
     this.$scope.$broadcast("setColorScale", colorScaleIndex, colorScale);
   }
+
+  resetColorScales() {
+    // this.$log.debug("Resetting color scales");
+    this.colorScales = [];
+    this.hasColorScales = false;
+  }
 }

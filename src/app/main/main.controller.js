@@ -7,7 +7,7 @@ import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database) {
+              viewState, modalService, colorScaleService, database) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -17,6 +17,7 @@ export class MainController {
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
     this.$timeout = $timeout;
+    this.colorScaleService = colorScaleService;
 
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
@@ -143,6 +144,7 @@ export class MainController {
       this.matrixManager = this.cmMatrixViewFactory.createConnectivityMatrixManager(this.matrixContainer, model, this.$scope, this.viewState, this);
       this.nodeListManager = this.cmMatrixViewFactory.createNodeListManager(this.nodeListContainer, model, this.$scope, this.viewState, this);
     } else {
+      this.colorScaleService.resetColorScales();
       this.matrixManager.setModel(model);
       this.nodeListManager.setModel(model);
     }
@@ -186,7 +188,7 @@ export class MainController {
     this.createMatrix(this.model, this.ui.selectedEncoding);
 
     // We are collapsing the matrix cols by an attribute. Make sure that attribute is visibile!
-    if(this.model.areColsCollapsed) {
+    if (this.model.areColsCollapsed) {
       this.matrixManager.setUseAnimation(false);
       this.matrixManager.matrices.forEach(function (matrix) {
         matrix.onToggleAttributeRow(this.matrixManager.matrix.attributes.indexOf(attr), true);
@@ -203,7 +205,7 @@ export class MainController {
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
 
-    if(this.model.areRowsCollapsed) {
+    if (this.model.areRowsCollapsed) {
       this.matrixManager.setUseAnimation(false);
       this.matrixManager.matrices.forEach(function (matrix) {
         matrix.onToggleAttributeCol(this.matrixManager.matrix.attributes.indexOf(attr), true);
@@ -370,6 +372,7 @@ export class MainController {
       let isValueSelected = this.viewState.getCategoricalFilter(attribute, nodeAttributeGroup);
 
       let modalSuccess = function (selection) {
+        this.colorScaleService.resetColorScales();
         this.viewState.setCategoricalFilter(attribute, nodeAttributeGroup, selection);
         this.updateLegend();
       }.bind(this);
@@ -384,6 +387,7 @@ export class MainController {
       let callback = function (result) {
         let attribute = result.attribute;
         let range = result.range;
+        this.colorScaleService.resetColorScales();
         this.viewState.setQuantitativeFilter(attribute, nodeAttributeGroup, range);
         this.updateLegend();
       }.bind(this);
