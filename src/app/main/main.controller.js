@@ -44,7 +44,7 @@ export class MainController {
     this.database = database;
 
     let useLargeResult = false;
-    useLargeResult = true;
+    //useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;
@@ -243,7 +243,10 @@ export class MainController {
   }
 
   onMetricChanged(metric, encoding) {
+    this.colorScaleService.resetColorScales();
+
     this.matrixManager.matrix.setEncoding(encoding, metric);
+
     this.updateLegend();
   }
 

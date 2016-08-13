@@ -2,10 +2,16 @@
 
   <!--Row holding the query text box -->
   <div class="row top-row">
+    <span class="col-lg-5">
     <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
+    </span>
+    <span class="col-lg-2" style="width: auto;">
     <num-paths-directive ng-show="!main.hasActiveQuery && !main.hasQueryError"
                          view-state="main.viewState" main-controller="main"></num-paths-directive>
+      </span>
+    <span class="col-lg-2" style="width: auto;">
     <adjustable-color-scale style="display: inline-block;" color-scale-index="0"></adjustable-color-scale>
+      </span>
   </div>
 
   <!-- Row holding the controls (left-most col) and matrix (right-ish cols) -->

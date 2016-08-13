@@ -1,4 +1,8 @@
 .query-input {
-  width: 80%;
+  width: 90%;
   height: 70px;
+}
+
+.query-button {
+  vertical-align: top;
 }
