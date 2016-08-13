@@ -176,6 +176,9 @@ class AdjustableColorScaleController {
 
     this.group.call(this.xAxis)
       .selectAll(".tick")
+      .filter(function (d, i) {
+        return !(i == 0) || (i == self.xAxis.tickValues().length);
+      })
       .style("cursor", "ew-resize")
       .call(drag)
       .append("rect")
