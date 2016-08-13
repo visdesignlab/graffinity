@@ -1,3 +1,6 @@
+/*globals d3
+ */
+
 export function AdjustableColorScaleDirective() {
   'ngInject';
 

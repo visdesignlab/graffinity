@@ -1,3 +1,5 @@
+/*globals d3, colorbrewer
+ */
 export class ColorScaleService {
 
   /**

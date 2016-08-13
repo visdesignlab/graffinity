@@ -1,7 +1,3 @@
-/*globals
- colorbrewer, d3
- */
-
 import {cmCellVisitor} from "./cmCellVisitors"
 
 export class cmColorMapVisitorBase extends cmCellVisitor {
@@ -103,70 +99,5 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
     } else {
       return colors[7];
     }
-  }
-}
-
-export class cmColorMapLegend {
-  constructor(visitor) {
-    this.visitor = visitor;
-  }
-
-  createView(parent, width) {
-    let group = parent.append('g');
-
-    // Create the color legend for major rows/cols
-    let swatchWidth = 20;
-    let swatchHeight = Math.min(width, 20);
-    cmColorMapLegend.createColorScaleLegend(this.visitor.setColorScale, group, swatchWidth, swatchHeight);
-    group = parent.append('g').attr('transform', function () {
-      return 'translate(' + swatchWidth * 3 + ',0)';
-    });
-
-    // If there are minor rows/cols, create the legend.
-    if (this.visitor.nodeColorScale.domain()[1] != 0) {
-      cmColorMapLegend.createColorScaleLegend(this.visitor.nodeColorScale, group, swatchWidth, swatchHeight);
-    }
-  }
-
-  static createColorScaleLegend(colorScale, group, swatchWidth, swatchHeight) {
-
-    let data = colorScale.range();
-
-    let swatchPositionFn = function (d, i) {
-      return "translate(0" + ", " + (i * swatchHeight) + ")";
-    };
-
-    // Create square swatches.
-    group.selectAll('rect')
-      .data(data)
-      .enter()
-      .append('rect')
-      .attr('width', swatchWidth)
-      .attr('height', swatchHeight)
-      .attr('rx', 2)
-      .attr('ry', 2)
-      .attr('transform', swatchPositionFn)
-      .style('fill', function (d) {
-        return d;
-      });
-
-
-    let textPositionFn = function (d, i) {
-      return "translate(" + (swatchWidth * 1.1) + ", " + ((i * swatchHeight) + (0.5 * swatchHeight)) + ")";
-    };
-
-    // Create text labels to the right of the swatches.
-    group.append('g')
-      .selectAll('text')
-      .data(data)
-      .enter()
-      .append('text')
-      .text(function (d) {
-        let value = colorScale.invertExtent(d);
-        return Math.floor(value[1]);
-      })
-      .attr('transform', textPositionFn)
-      .style('alignment-baseline', 'mathematical')
-      .style('text-anchor', 'start');
   }
 }
