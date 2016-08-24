@@ -1,9 +1,7 @@
-<span class="col-lg-5">
-  <div>
-    <textarea style="display: inline-block" class="query-input" type="text"
+<div>
+    <textarea style="display: inline-block" class="query-input" type="text" placeholder="Write a query that returns path(s) p"
               ng-model="queryController.cypherQuery"></textarea>
-    <button style="display:inline-block; vertical-align: top;"
-            ng-click="queryController.submit({query:queryController.cypherQuery})" class="btn btn-default">Submit
-    </button>
-  </div>
-</span>
+  <button style="display:inline-block; vertical-align: top;"
+          ng-click="queryController.submit({query:queryController.cypherQuery})" class="btn btn-default">Submit
+  </button>
+</div>
