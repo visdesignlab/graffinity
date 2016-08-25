@@ -2,6 +2,7 @@
   overflow: hidden;
   position: relative;
   display: inline-block;
+  width: 100%;
 }
 
 .matrix-view-header-controls {
@@ -14,6 +15,7 @@
   position: relative;
   overflow: hidden;
   top: -5px;
+  width: 100%;
 }
 
 .matrix-view-header-left {
@@ -105,6 +107,7 @@ g.matrix-view-interaction-group.hovered rect {
   display: flex;
   width: min-content;
 }
+
 .matrix-view-sortbar:hover {
   background: #adadad;
 }

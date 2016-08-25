@@ -34,11 +34,7 @@ html, body {
 }
 
 /* The matrix view is wrapped in a dark grey outline */
-.column-matrix {
-  border-width: 1px;
-  border-right-style: solid;
-  border-left-style: solid;
-  border-color: grey;
+.column-matrix-wrapper {
   height: 960px;
   overflow: hidden;
 }
@@ -64,6 +60,23 @@ html, body {
   border-radius: 3px;
 }
 
+.column-matrix {
+  float: left;
+  border-left: solid;
+  border-right: solid;
+  border-width: 1px;
+  border-color: grey;
+  padding-right: 0 !important;
+}
+
 .column-node-list {
   width: auto !important;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.no-padding-right {
+  padding-right: 0 !important;
 }

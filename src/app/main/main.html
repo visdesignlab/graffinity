@@ -109,24 +109,53 @@
     <!-- Column holding global matrix controls -->
 
     <!-- TODO: Update the width/height of the svg elements here and in the nodeLinkView-->
-    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" ng-class="main.matrixClass" class="column-matrix"
+    <div class="col-md-7 no-padding-right col-matrix-wrapper">
+    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-md-12 column-matrix column-matrix-wrapper"
           id="matrices-row">
       <h4>Connectivity Matrix</h4>
     </span>
 
-    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-lg-3 column-matrix column-node-list"
-          id="node-list-col">
-        <h4>Intermediate Nodes</h4>
-    </span>
+
+    </div>
 
     <!-- Columns holding the node link view -->
-    <span ng-class="main.nodeLinkClass" ng-show="main.nodeLinkClass" id="node-link-column">
-      <node-link-view-directive
-        set-node-link-visibility="main.setNodeLinkVisibility(false)"
-        view-state="main.viewState"
-        main-controller="main">
-      </node-link-view-directive>
-    </span>
+    <span class="col-md-3 no-padding" id="node-link-column">
+        <uib-tabset active="activePill" type="tabs">
+          <uib-tab index="0" heading="{{main.availablePanels[0]}}">
+              <span class="col-md-12">
+                 <div class="column-matrix-wrapper column-node-list" id="node-list-col">
+                 </div>
+              </span>
+          </uib-tab>
+          <uib-tab index="1" heading="{{main.availablePanels[1]}}">
+            <span class="col-md-12" >
+              <node-link-view-directive
+                view-state="main.viewState"
+                main-controller="main">
+              </node-link-view-directive>
+            </span>
+          </uib-tab>
+        </uib-tabset>
+
+
+      <!--
+      <div class="btn-group query-builder-radio-btn-group">
+        <label class="btn btn-xs btn-primary" ng-repeat="item in main.availablePanels" uib-btn-radio="item"
+               ng-model="main.selectedPanel">{{item}}</label>
+      </div>
+
+      <div ng-show="main.selectedPanel==main.availablePanels[0]" class="column-matrix-wrapper column-node-list"
+           id="node-list-col">
+      </div>
+
+      <div ng-show="main.selectedPanel==main.availablePanels[1]">
+        <node-link-view-directive
+          view-state="main.viewState"
+          main-controller="main">
+        </node-link-view-directive>
+      </div>
+      -->
+  </span>
   </div>
 
   <!-- Row the replaces the matrix when there is a query running or query error. -->

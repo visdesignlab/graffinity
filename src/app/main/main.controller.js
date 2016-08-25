@@ -42,6 +42,9 @@ export class MainController {
 
     this.database = database;
 
+    this.availablePanels = ["Intermediate Nodes", "Node Link"];
+    this.selectedPanel = this.availablePanels[0];
+
     let useLargeResult = false;
     useLargeResult = true;
 
@@ -399,24 +402,23 @@ export class MainController {
    */
   setNodeLinkVisibility(visible) {
     if (!visible) {
-      this.nodeLinkClass = "";
-      this.matrixClass = "col-md-8";
+//      this.nodeLinkClass = "";
+//      this.matrixClass = "col-md-8";
 
       // Let the resize event finish before expanding the matrix.
-      let self = this;
-      this.$timeout(function () {
-        self.matrixManager.updateElementPositions();
-      }, 300);
-
+      //let self = this;
+      //this.$timeout(function () {
+      //  self.matrixManager.updateElementPositions();
+      //}, 300);
     } else {
 
       // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
       // getting pushed onto different lines.
-      //this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
-      this.matrixManager.setWidth(6 * 81);
+      //this.matrixManager.setWidth(angular.element("#matrices-row")[0].clientWidth * 6);
+      //this.matrixManager.setWidth(6 * 81);
 
-      this.nodeLinkClass = "col-md-3";
-      this.matrixClass = "col-md-5";
+//      this.nodeLinkClass = "col-md-4";
+//      this.matrixClass = "col-md-5";
     }
   }
 

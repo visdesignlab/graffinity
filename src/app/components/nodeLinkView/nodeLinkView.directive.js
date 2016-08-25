@@ -24,7 +24,6 @@ export class NodeLinkViewDirective {
 
     // Parameters passed from main.controller.
     this.scope = {
-      setNodeLinkVisibility: '&',
       viewState: '=',
       mainController: '='
     };
