@@ -65,7 +65,15 @@ export class cmNodeListRow extends cmMatrixRow {
           attributeNodeGroup: attributeNodeGroup
         };
 
+        cell.isInNodeListView = true;
+
         cell.setData(data);
+
+        cell.data.ids = {
+          sources: [],
+          intermediates: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          targets: []
+        }
 
       } else if (this.matrix.isLabelCell(i)) {
 
@@ -80,6 +88,13 @@ export class cmNodeListRow extends cmMatrixRow {
         cell.isInNodeListView = true;
         cell.isAttributeCell = true;
 
+        cell.data.ids = {
+          sources: [],
+          intermediates: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          targets: []
+        }
+
+
       } else if (this.matrix.isDataCell(i)) {
 
         let dataIndex = this.matrix.getDataColIndex(i);
@@ -90,6 +105,12 @@ export class cmNodeListRow extends cmMatrixRow {
 
         cell.isInNodeListView = true;
         cell.setData(data);
+
+        cell.data.ids = {
+          sources: [],
+          intermediates: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          targets: []
+        };
 
         if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
           throw "something fucked up in col node indexes and minor cells";

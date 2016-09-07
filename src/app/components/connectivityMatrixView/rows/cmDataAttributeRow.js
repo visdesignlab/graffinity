@@ -64,6 +64,12 @@ export class cmDataAttributeRow extends cmMatrixRow {
           attributeNodeGroup: attributeNodeGroup
         };
 
+        data.ids = {
+          sources: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          intermediates: [],
+          targets: []
+        };
+
         cell.setData(data);
 
       } else if (this.matrix.isLabelCell(i)) {
@@ -75,6 +81,12 @@ export class cmDataAttributeRow extends cmMatrixRow {
           nodeIndexes: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
           attributeNodeGroup: attributeNodeGroup
         });
+
+        cell.data.ids = {
+          sources: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
+          intermediates: [],
+          targets: []
+        };
 
         cell.isAttributeCell = true;
 
