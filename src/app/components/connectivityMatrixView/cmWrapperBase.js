@@ -167,9 +167,6 @@ export class cmWrapperBase {
       width: Math.max(this.matrix.getWidth() + padding, 50)
     });
 
-    this.$log.debug("the matrix width is", this.matrix.getWidth());
-    this.$log.debug("value is", matrixWidth);
-
     // The divs need to expand/collapse depending on matrix size.
     this.controlsHeaderElement.transition()
       .duration(duration)
