@@ -639,46 +639,15 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellMouseOver(cell) {
-    // let nodeIndexes = cell.data.nodeIndexes;
 
-    let paths = [];
+    // this.$log.debug("sources", sources, cell.data.ids.sources);
+    // this.$log.debug("intermediates", intermediates, cell.data.ids.intermediates);
+    // this.$log.debug("targets", targets, cell.data.ids.targets);
 
-    let sources = [];
-    let targets = [];
-    let intermediates = [];
-    if (cell.isDataCell && !cell.isInNodeListView) {
-      paths = cell.getPathList();
-      sources = cell.data.modelRow.getAllNodeIndexes();
-      targets = cell.data.colNodeIndexes;
-    }else if (cell.isDataCell && cell.isInNodeListView) {
-      paths = cell.getPathList();
-      sources = [];
-      intermediates = cell.data.modelRow.getAllNodeIndexes();
-      targets = [];
-    } else if (cell.isColLabelCell) {
-      paths = this.model.getPathsWithTargets(cell.data.nodeIndexes);
-      sources = [];
-      targets = cell.data.nodeIndexes;
-    } else if (cell.isRowLabelCell && !cell.isInNodeListView) {
-      paths = this.model.getPathsWithSources(cell.data.nodeIndexes);
-      sources = cell.data.nodeIndexes;
-      targets = [];
-    } else if (cell.isRowLabelCell && cell.isInNodeListView) {
-      paths = this.model.getPathsWithIntermediates(cell.data.nodeIndexes);
-      intermediates = cell.data.nodeIndexes;
-    }
+    // Global highlighting - tell all other views
+    this.viewState.setHoveredNodes(cell.data.ids, true); // true => look for exact match of paths in other views
 
-    paths = this.viewState.getFilterPathFunction()(paths);
-
-    this.$log.debug(cell, paths);
-    this.$log.debug("sources", sources, cell.data.ids.sources);
-    this.$log.debug("intermediates", intermediates, cell.data.ids.intermediates);
-    this.$log.debug("targets", targets, cell.data.ids.targets);
-
-    //if (nodeIndexes) {
-    this.viewState.setHoveredNodes(cell.data.ids, true);
-    //}
-
+    // Local highlighting - tell only the other matrices
     let transform = cmMatrixBase.getCellTransform(cell);
 
     let rect = cell.getGroup()
