@@ -59,8 +59,8 @@ export class cmLabelRow extends cmMatrixRow {
         });
 
         let ids = {
-          sources: [],
-          intermediates: [],
+          sources: [-1],
+          intermediates: [-1],
           targets: cell.data.nodeIndexes
         };
 
@@ -81,8 +81,8 @@ export class cmLabelRow extends cmMatrixRow {
               });
 
               ids = {
-                sources: [],
-                intermediates: [],
+                sources: [-1],
+                intermediates: [-1],
                 targets: cell.data.nodeIndexes
               };
 

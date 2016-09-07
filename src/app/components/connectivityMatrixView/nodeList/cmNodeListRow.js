@@ -89,9 +89,9 @@ export class cmNodeListRow extends cmMatrixRow {
         cell.isAttributeCell = true;
 
         cell.data.ids = {
-          sources: [],
+          sources: [-1],
           intermediates: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
-          targets: []
+          targets: [-1]
         }
 
 
@@ -107,9 +107,9 @@ export class cmNodeListRow extends cmMatrixRow {
         cell.setData(data);
 
         cell.data.ids = {
-          sources: [],
+          sources: [-1],
           intermediates: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
-          targets: []
+          targets: [-1]
         };
 
         if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {

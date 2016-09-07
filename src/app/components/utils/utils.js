@@ -14,8 +14,11 @@ Utils = (function () {
     getIntersection: getIntersection,
     getNumHops: getNumHops,
     getNodesFromPaths: getNodesFromPaths,
+    getSourceNodesFromPaths: getSourceNodesFromPaths,
+    getTargetNodesFromPaths: getTargetNodesFromPaths,
     getUniqueValues: getUniqueValues,
     getValueRange: getValueRange,
+    hasIntersection: hasIntersection,
     reduceMatrix: reduceMatrix,
     reduceRow: reduceRow,
     shiftPermutation: shiftPermutation
@@ -113,12 +116,21 @@ Utils = (function () {
 
   function getIntersection(a, b) {
     let intersection = [];
-    for(let i=0; i<a.length; ++i) {
-      if(b.indexOf(a[i]) != -1) {
+    for (let i = 0; i < a.length; ++i) {
+      if (b.indexOf(a[i]) != -1) {
         intersection.push(a[i]);
       }
     }
     return intersection;
+  }
+
+  function hasIntersection(a, b) {
+    for (let i = 0; i < a.length; ++i) {
+      if (b.indexOf(a[i]) != -1) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function getNodesFromPaths(paths) {
@@ -146,6 +158,25 @@ Utils = (function () {
     }
     return getUniqueValues(nodes);
   }
+
+  function getSourceNodesFromPaths(paths) {
+    let nodes = [];
+    for (let i = 0; i < paths.length; ++i) {
+      let path = paths[i];
+      nodes.push(path[0]);
+    }
+    return getUniqueValues(nodes);
+  }
+
+  function getTargetNodesFromPaths(paths) {
+    let nodes = [];
+    for (let i = 0; i < paths.length; ++i) {
+      let path = paths[i];
+      nodes.push(path[path.length - 1]);
+    }
+    return getUniqueValues(nodes);
+  }
+
 
   function getNumHops(path) {
     if (path.length == 3) {

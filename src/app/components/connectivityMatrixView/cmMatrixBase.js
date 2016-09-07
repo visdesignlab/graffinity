@@ -676,7 +676,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$log.debug("targets", targets, cell.data.ids.targets);
 
     //if (nodeIndexes) {
-    //  this.viewState.setHoveredNodes(nodeIndexes);
+    this.viewState.setHoveredNodes(cell.data.ids, paths);
     //}
 
     let transform = cmMatrixBase.getCellTransform(cell);

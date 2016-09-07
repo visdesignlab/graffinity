@@ -96,10 +96,11 @@ export class cmDataRow extends cmMatrixRow {
         cell.setData(data);
         let ids = {};
         if(isInNodeListView) {
+          let paths = cell.getPathList();
           ids = {
-            sources: [],
+            sources: Utils.getSourceNodesFromPaths(paths),
             intermediates: modelRow.getAllNodeIndexes(),
-            targets: []
+            targets: Utils.getTargetNodesFromPaths(paths)
           }
         } else {
           ids = {

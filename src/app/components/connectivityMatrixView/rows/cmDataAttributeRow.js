@@ -84,8 +84,8 @@ export class cmDataAttributeRow extends cmMatrixRow {
 
         cell.data.ids = {
           sources: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),
-          intermediates: [],
-          targets: []
+          intermediates: [-1],
+          targets: [-1]
         };
 
         cell.isAttributeCell = true;

@@ -362,8 +362,8 @@ export class ViewState {
   //  this.showNodes(showNodes);
   //}
   //
-  setHoveredNodes(nodes) {
-    this.$scope.$broadcast('hoverNodes', nodes);
+  setHoveredNodes(nodes, paths) {
+    this.$scope.$broadcast('hoverNodes', nodes, paths);
   }
 
   clearSelection() {
