@@ -25,7 +25,14 @@ export class Layout {
     group.selectAll(selector)
       .on("mouseenter", function (d) {
         d3.select(this).classed("hovered", true);
-        self.viewState.setHoveredNodes([parseInt(d)]);
+        let nodeIndex = parseInt(d);
+        let ids = {
+          sources: [nodeIndex],
+          intermediates: [nodeIndex],
+          targets: [nodeIndex]
+        };
+
+        self.viewState.setHoveredNodes(ids, false);
       })
       .on("mouseleave", function () {
         d3.select(this).classed("hovered", false);

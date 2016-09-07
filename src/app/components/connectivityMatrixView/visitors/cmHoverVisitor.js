@@ -8,14 +8,12 @@ export class cmHoverVisitor extends cmCellVisitor {
   constructor() {
     super();
     this.isHovered = true;
-    this.matchSources = false;
-    this.matchTargets = false;
-    this.matchIntermediates = false;
     this.nodeIndexes = [];
   }
 
-  setNodes(nodeIndexes) {
+  setNodes(nodeIndexes, matchPaths) {
     this.nodeIndexes = nodeIndexes;
+    this.matchPaths = matchPaths;
     if (nodeIndexes) {
       this.matchAnySources = this.nodeIndexes.sources.indexOf(-1) == 0;
       this.matchAnyTargets = this.nodeIndexes.targets.indexOf(-1) == 0;
@@ -36,14 +34,22 @@ export class cmHoverVisitor extends cmCellVisitor {
         if (cell.isDataCell) {
           let ids = cell.data.ids;
 
-          if (
-            (Utils.hasIntersection(this.nodeIndexes.sources, ids.sources) || this.matchAnySources) &&
-            (Utils.hasIntersection(this.nodeIndexes.targets, ids.targets) || this.matchAnyTargets) &&
-            (Utils.hasIntersection(this.nodeIndexes.intermediates, ids.intermediates) || this.matchAnyIntermediates)) {
-            isCellHovered = true;
+          if (this.matchPaths) {
+            if ((Utils.hasIntersection(this.nodeIndexes.sources, ids.sources) || this.matchAnySources) &&
+              (Utils.hasIntersection(this.nodeIndexes.targets, ids.targets) || this.matchAnyTargets) &&
+              (Utils.hasIntersection(this.nodeIndexes.intermediates, ids.intermediates) || this.matchAnyIntermediates)) {
+              isCellHovered = true;
+            }
+          } else {
+            if ((Utils.hasIntersection(this.nodeIndexes.sources, ids.sources) || this.matchAnySources) ||
+              (Utils.hasIntersection(this.nodeIndexes.targets, ids.targets) || this.matchAnyTargets) ||
+              (Utils.hasIntersection(this.nodeIndexes.intermediates, ids.intermediates) || this.matchAnyIntermediates)) {
+              isCellHovered = true;
+            }
           }
         }
       }
+
 
       // update cell's state
       if (!cell.interactionGroup.classed("selected")) {

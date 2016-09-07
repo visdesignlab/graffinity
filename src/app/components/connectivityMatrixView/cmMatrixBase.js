@@ -676,7 +676,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$log.debug("targets", targets, cell.data.ids.targets);
 
     //if (nodeIndexes) {
-    this.viewState.setHoveredNodes(cell.data.ids, paths);
+    this.viewState.setHoveredNodes(cell.data.ids, true);
     //}
 
     let transform = cmMatrixBase.getCellTransform(cell);
@@ -792,13 +792,13 @@ export class cmMatrixBase extends SvgGroupElement {
   /**
    * Called when the mouse is on top of a node in another view.
    */
-  onHoverNodes(event, nodeIndexes) {
+  onHoverNodes(event, nodeIndexes, matchPaths) {
     if (!this.hoverVisitor) {
       this.hoverVisitor = new cmHoverVisitor();
     }
 
     if (nodeIndexes) {
-      this.hoverVisitor.setNodes(nodeIndexes);
+      this.hoverVisitor.setNodes(nodeIndexes, matchPaths);
       this.hoverVisitor.isHovered = true;
     } else {
       this.hoverVisitor.setNodes(null);
