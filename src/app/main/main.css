@@ -2,10 +2,27 @@ html, body {
   height: 100%;
 }
 
+/* Override a bunch of bootstrap properties to put the title in the top right */
+.top-row-container {
+  padding-left: 0;
+  padding-right: 0;
+  min-height: 0;
+}
+
 .top-row {
-  padding-top: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
+  margin-bottom: 0;
+  margin-right: 0;
+  min-height: 0;
+}
+
+.top-row-navbar {
+  margin-bottom: 0;
+  min-height: 0;
+}
+
+.top-row-navbar-brand {
+  height: 30px;
+  padding: 7px 7px;
 }
 
 /* This controls the animation for changing column widths with ng-class */
@@ -17,11 +34,7 @@ html, body {
 }
 
 /* The matrix view is wrapped in a dark grey outline */
-.column-matrix {
-  border-width: 1px;
-  border-right-style: solid;
-  border-left-style: solid;
-  border-color: grey;
+.column-matrix-wrapper {
   height: 960px;
   overflow: hidden;
 }
@@ -47,6 +60,23 @@ html, body {
   border-radius: 3px;
 }
 
+.column-matrix {
+  float: left;
+  border-left: solid;
+  border-right: solid;
+  border-width: 1px;
+  border-color: grey;
+  padding-right: 0 !important;
+}
+
 .column-node-list {
   width: auto !important;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.no-padding-right {
+  padding-right: 0 !important;
 }

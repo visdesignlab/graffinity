@@ -24,7 +24,14 @@ export class Layout {
     group.selectAll(selector)
       .on("mouseenter", function (d) {
         d3.select(this).classed("hovered", true);
-        self.viewState.setHoveredNodes([parseInt(d)]);
+        let nodeIndex = parseInt(d);
+        let ids = {
+          sources: [nodeIndex],
+          intermediates: [nodeIndex],
+          targets: [nodeIndex]
+        };
+
+        self.viewState.setHoveredNodes(ids, false);
       })
       .on("mouseleave", function () {
         d3.select(this).classed("hovered", false);
@@ -89,10 +96,10 @@ export class Layout {
     // padding is of the form '0px 15px.'
     // get the horizontal form of it
     // use that to determine width
-    let padding = d3.select("#node-link-column").style("padding");
-    padding = padding.split(' ')[1];
-    padding = parseInt(padding);
-    this.width = element.clientWidth - padding;
+    //let padding = d3.select("#node-link-column").style("padding");
+    //padding = padding.split(' ')[1];
+    //padding = parseInt(padding);
+    this.width = element.clientWidth;
     this.height = 960;
     this.svg.attr("width", this.width);
     this.svg.attr("height", this.height);

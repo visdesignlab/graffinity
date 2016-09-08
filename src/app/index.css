@@ -29,3 +29,11 @@
   color: white;
   cursor: pointer;
 }
+
+.btn-xxs,
+.btn-group-xxs > .btn {
+  padding: 1px 2px;
+  font-size: 12px;
+  line-height: 0.5;
+  border-radius: 3px;
+}

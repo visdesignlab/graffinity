@@ -42,6 +42,9 @@ export class MainController {
 
     this.database = database;
 
+    this.availablePanels = ["Intermediate Nodes", "Node Link"];
+    this.selectedPanel = this.availablePanels[0];
+
     let useLargeResult = false;
     useLargeResult = true;
 
@@ -186,7 +189,7 @@ export class MainController {
     this.createMatrix(this.model, this.ui.selectedEncoding);
 
     // We are collapsing the matrix cols by an attribute. Make sure that attribute is visibile!
-    if(this.model.areColsCollapsed) {
+    if (this.model.areColsCollapsed) {
       this.matrixManager.setUseAnimation(false);
       this.matrixManager.matrices.forEach(function (matrix) {
         matrix.onToggleAttributeRow(this.matrixManager.matrix.attributes.indexOf(attr), true);
@@ -203,7 +206,7 @@ export class MainController {
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
 
-    if(this.model.areRowsCollapsed) {
+    if (this.model.areRowsCollapsed) {
       this.matrixManager.setUseAnimation(false);
       this.matrixManager.matrices.forEach(function (matrix) {
         matrix.onToggleAttributeCol(this.matrixManager.matrix.attributes.indexOf(attr), true);
@@ -399,23 +402,23 @@ export class MainController {
    */
   setNodeLinkVisibility(visible) {
     if (!visible) {
-      this.nodeLinkClass = "";
-      this.matrixClass = "col-lg-8";
+//      this.nodeLinkClass = "";
+//      this.matrixClass = "col-md-8";
 
       // Let the resize event finish before expanding the matrix.
-      let self = this;
-      this.$timeout(function () {
-        self.matrixManager.updateElementPositions();
-      }, 300);
-
+      //let self = this;
+      //this.$timeout(function () {
+      //  self.matrixManager.updateElementPositions();
+      //}, 300);
     } else {
 
       // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
       // getting pushed onto different lines.
-      this.matrixManager.setWidth(angular.element("#controls-column")[0].clientWidth * 6);
+      //this.matrixManager.setWidth(angular.element("#matrices-row")[0].clientWidth * 6);
+      //this.matrixManager.setWidth(6 * 81);
 
-      this.nodeLinkClass = "col-lg-3";
-      this.matrixClass = "col-lg-5";
+//      this.nodeLinkClass = "col-md-4";
+//      this.matrixClass = "col-md-5";
     }
   }
 

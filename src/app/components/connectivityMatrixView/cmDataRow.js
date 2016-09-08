@@ -1,9 +1,9 @@
 import {cmMatrixRow} from "./rows/cmMatrixRow"
-
+import {Utils} from "../utils/utils"
 export class cmDataRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label,
-              minorLabels, rowNodeAttributes, matrix, areColsCollapsed, areRowsCollapsed) {
+              minorLabels, rowNodeAttributes, matrix, areColsCollapsed, areRowsCollapsed, isInNodeListView) {
     super(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, matrix, areColsCollapsed);
     this.unrollControls = [];
     this.rollupControls = [];
@@ -52,7 +52,7 @@ export class cmDataRow extends cmMatrixRow {
       }
     }
 
-    if(areColsCollapsed) {
+    if (areColsCollapsed) {
       this.createMinorCells(numHeaderCols, colNodeIndexes, true);
     }
 
@@ -60,6 +60,7 @@ export class cmDataRow extends cmMatrixRow {
     for (i = 0; i < numMajorCells; ++i) {
       let cell = this.majorCells[i];
       let data = {};
+      cell.isInNodeListView = isInNodeListView;
       if (this.matrix.isAttributeCell(i)) {
 
         //let attributeIndex = this.matrix.getAttributeColIndex(i);
@@ -93,6 +94,23 @@ export class cmDataRow extends cmMatrixRow {
         };
 
         cell.setData(data);
+        let ids = {};
+        if(isInNodeListView) {
+          let paths = cell.getPathList();
+          ids = {
+            sources: Utils.getSourceNodesFromPaths(paths),
+            intermediates: modelRow.getAllNodeIndexes(),
+            targets: Utils.getTargetNodesFromPaths(paths)
+          }
+        } else {
+          ids = {
+            sources: modelRow.getAllNodeIndexes(),
+            intermediates: Utils.getIntermediateNodesFromPaths(cell.getPathList()),
+            targets: colNodeIndexes[dataIndex]
+          };
+        }
+
+        cell.data.ids = ids;
 
         if (this.areColsCollapsed)
           if (cell.minorCells.length != colNodeIndexes[dataIndex].length) {
@@ -104,6 +122,14 @@ export class cmDataRow extends cmMatrixRow {
             colNodeIndexes: colNodeIndexes[dataIndex][j],
             modelRow: modelRow
           };
+
+          ids = {
+            sources: modelRow.getAllNodeIndexes(),
+            intermediates: Utils.getIntermediateNodesFromPaths(cell.getPathList()),
+            targets: colNodeIndexes[dataIndex][j]
+          };
+
+          cell.data.ids = ids;
 
           if (cell.minorCells[j]) {
             cell.minorCells[j].setData(data);

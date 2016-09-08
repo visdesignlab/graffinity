@@ -639,12 +639,15 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onCellMouseOver(cell) {
-    let nodeIndexes = cell.data.nodeIndexes;
 
-    if (nodeIndexes) {
-      this.viewState.setHoveredNodes(nodeIndexes);
-    }
+    // this.$log.debug("sources", sources, cell.data.ids.sources);
+    // this.$log.debug("intermediates", intermediates, cell.data.ids.intermediates);
+    // this.$log.debug("targets", targets, cell.data.ids.targets);
 
+    // Global highlighting - tell all other views
+    this.viewState.setHoveredNodes(cell.data.ids, true); // true => look for exact match of paths in other views
+
+    // Local highlighting - tell only the other matrices
     let transform = cmMatrixBase.getCellTransform(cell);
 
     let rect = cell.getGroup()
@@ -758,13 +761,13 @@ export class cmMatrixBase extends SvgGroupElement {
   /**
    * Called when the mouse is on top of a node in another view.
    */
-  onHoverNodes(event, nodeIndexes) {
+  onHoverNodes(event, nodeIndexes, matchPaths) {
     if (!this.hoverVisitor) {
       this.hoverVisitor = new cmHoverVisitor();
     }
 
     if (nodeIndexes) {
-      this.hoverVisitor.setNodes(nodeIndexes);
+      this.hoverVisitor.setNodes(nodeIndexes, matchPaths);
       this.hoverVisitor.isHovered = true;
     } else {
       this.hoverVisitor.setNodes(null);
