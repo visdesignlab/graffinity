@@ -1,0 +1,36 @@
+/* These are copied from pathfinder's style.css */
+
+.path-list-path {
+  margin: 10px;
+  font-size: 0;
+}
+
+.path-list-node {
+  display: inline-block;
+  background: #c8c8c8;
+  border: thin solid #505050;
+  font-size: 14px;
+  alignment-baseline: middle;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px;
+  width: 100px;
+  height: 30px;
+}
+
+.path-list-node:hover {
+  background: #FFC800;
+}
+
+.path-list-edge:hover {
+  background: #FFC800;
+}
+
+.path-list-edge {
+  display: inline-block;
+  width: 25px;
+  height: 5px;
+  background: darkgrey;
+  padding: 0;
+  transform: translateY(-50%);
+}

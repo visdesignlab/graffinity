@@ -1,0 +1,17 @@
+<h4>
+  Path List
+</h4>
+<div ng-if="controller.paths" ng-repeat="path in controller.paths" class="path-list-path">
+  <span ng-repeat="i in path track by $index">
+    <span ng-if="$index%2==0" class="path-list-node">
+      {{controller.model.getMajorLabels([path[$index]])[0]}}
+    </span>
+    <span ng-if="$index%2==1" class="path-list-edge" data-toggle="tooltip" data-title="Edge: {{path[$index]}}"
+          data-container="body" data-placement="top">
+    </span>
+  </span>
+</div>
+
+<div ng-if="!controller.paths">
+  Select some paths to see a list!
+</div>

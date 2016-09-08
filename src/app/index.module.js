@@ -21,6 +21,7 @@ import { NumPathsDirective } from "../app/components/numPaths/numPaths.directive
 import { ModalService } from "../app/components/modals/modals.service.js";
 import { ViewState } from "../app/components/viewState/viewState.service";
 import { NodeLinkViewDirective } from "../app/components/nodeLinkView/nodeLinkView.directive"
+import { PathListViewDirective } from "../app/components/pathListView/pathListView.directive"
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select'])
   .constant('malarkey', malarkey)
@@ -45,4 +46,5 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive('queryDirective', QueryDirective)
   .directive('numPathsDirective', () => new NumPathsDirective())
   .service('modalService', ModalService)
-  .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective()) ;
+  .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective())
+  .directive("pathListViewDirective", () => new PathListViewDirective()) ;
