@@ -50,11 +50,12 @@ class PathListViewDirectiveController {
    * Save injected dependencies and bind scope events.
    * $scope is the child of main.controller's scope.
    */
-  constructor($log, $scope, $timeout) {
+  constructor($log, $scope, $timeout, viewState) {
     "ngInject"
     this.$log = $log;
     this.$scope = $scope;
     this.$timeout = $timeout;
+    this.viewState = viewState;
 
     this.$scope.$on("setSelectedPaths", this.setSelectedPaths.bind(this));
     this.$scope.$on("setModel", this.setModel.bind(this));
@@ -65,7 +66,9 @@ class PathListViewDirectiveController {
     this.ui.selectedLayout = this.ui.availableLayouts[0];
     this.svg = d3.select("#node-link-svg");
     this.model = $scope.$parent.main.model;
-
+    this.itemsPerPage = 20;
+    this.currentPage = 1;
+    this.currentPaths = [];
   }
 
   /**
@@ -80,9 +83,34 @@ class PathListViewDirectiveController {
    */
   setSelectedPaths(signal, paths) {
     this.paths = paths;
+    this.setPage(1);
+  }
+
+  setPage(newPage) {
+    this.currentPage = newPage;
+    this.currentPaths = [];
+    for (let i = 0; i < this.itemsPerPage; ++i) {
+      let index = (this.itemsPerPage * (this.currentPage - 1)) + i;
+      if (index < this.paths.length) {
+        this.currentPaths.push(this.paths[index]);
+      }
+    }
     this.$timeout(function () {
       angular.element('[data-toggle="tooltip"]').tooltip(); // to do - this searches entire dom for elements
     });
+  }
+
+  hoverNodes(nodeIndex) {
+    if (nodeIndex) {
+      let ids = {
+        sources: nodeIndex,
+        intermediates: nodeIndex,
+        targets: nodeIndex
+      };
+      this.viewState.setHoveredNodes(ids, false);
+    } else {
+      this.viewState.setHoveredNodes(null, false);
+    }
   }
 
   /**
