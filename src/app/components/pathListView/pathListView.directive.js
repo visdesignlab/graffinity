@@ -1,6 +1,8 @@
 /*global d3
  */
 
+import {Utils} from "../utils/utils"
+
 /**
  * Angular directive that will contain the node-link diagrams. Interaction with this is handled by the
  * NodeLinkViewDirectiveController.
@@ -115,20 +117,21 @@ class PathListViewDirectiveController {
 
   /**
    * Called when node is being hovered in another view.
-   * We don't connect this directly to this.layout b/c of angular memory leaks.
-   * Available parameters; ids and
    */
-  onHoverNodes() {
-    // if (this.layout) {
-    //   if (ids) {
-    //     let nodeIndexes = [];
-    //     nodeIndexes = nodeIndexes.concat(ids.sources);
-    //     nodeIndexes = nodeIndexes.concat(ids.targets);
-    //     nodeIndexes = nodeIndexes.concat(ids.intermediates);
-    //     nodeIndexes = Utils.getUniqueValues(nodeIndexes);
-    // } else {
-    //     this.layout.onHoverNodes(signal, null);
-    //   }
-    // }
+  onHoverNodes(signal, ids) {
+    if (ids) {
+      let nodeIndexes = [];
+      nodeIndexes = nodeIndexes.concat(ids.sources);
+      nodeIndexes = nodeIndexes.concat(ids.targets);
+      nodeIndexes = nodeIndexes.concat(ids.intermediates);
+      this.hoveredNodes = Utils.getUniqueValues(nodeIndexes);
+    } else {
+      this.hoveredNodes = [];
+    }
+
+    let self = this;
+    this.$timeout(function () {
+      self.$scope.$apply();
+    });
   }
 }

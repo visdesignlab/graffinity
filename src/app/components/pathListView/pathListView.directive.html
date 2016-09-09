@@ -4,7 +4,9 @@
 <div class="path-list-container">
   <div ng-if="controller.paths" ng-repeat="path in controller.currentPaths" class="path-list-path">
   <span ng-repeat="i in path track by $index">
-    <span ng-if="$index%2==0" class="path-list-node" ng-mouseover="controller.hoverNodes([path[$index]])"
+    <span ng-if="$index%2==0" ng-model="path[$index]" class="path-list-node"
+          ng-class="{'path-list-hovered': controller.hoveredNodes.indexOf(path[$index]) != -1}"
+          ng-mouseover="controller.hoverNodes([path[$index]])"
           ng-mouseleave="controller.hoverNodes()">
       {{controller.model.getMajorLabels([path[$index]])[0]}}
     </span>

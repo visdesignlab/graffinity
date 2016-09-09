@@ -46,7 +46,7 @@ export class MainController {
     this.selectedPanel = this.availablePanels[0];
 
     let useLargeResult = false;
-    //useLargeResult = true;
+    useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;

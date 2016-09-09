@@ -22,6 +22,10 @@
   background: #FFC800;
 }
 
+.path-list-hovered{
+  background: #FFC800;
+}
+
 .path-list-edge:hover {
   background: #FFC800;
 }
