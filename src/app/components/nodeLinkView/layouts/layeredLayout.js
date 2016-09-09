@@ -87,6 +87,8 @@ export class LayeredLayout extends Layout {
 
     let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
     this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + this.graphYOffset + ")");
+    this.svg.attr("width", Math.max(this.width, graph.graph().width));
+    this.svg.attr("height", Math.max(graph.graph().height, this.graphYOffset + graph.graph().height));
   }
 
   /**
@@ -102,7 +104,7 @@ export class LayeredLayout extends Layout {
     // Create groups that will hold the nodes.
     this.nodeGroup = parent.append("g")
       .classed("nodeGroup", true);
-    
+
     this.nodes = this.nodeGroup.selectAll("g.node")
       .data(graph.nodes())
       .enter()
@@ -138,7 +140,6 @@ export class LayeredLayout extends Layout {
       .attr("transform", function (d) {
         return LayeredLayout.getNodeCenterAsTransform(d, graph);
       });
-
 
 
     this.addHoverCallbacks(this.nodeGroup, "g.node");

@@ -99,7 +99,7 @@ export class Layout {
     //let padding = d3.select("#node-link-column").style("padding");
     //padding = padding.split(' ')[1];
     //padding = parseInt(padding);
-    this.width = element.clientWidth;
+    this.width = element.clientWidth * 0.85;
     this.height = 960;
     this.svg.attr("width", this.width);
     this.svg.attr("height", this.height);

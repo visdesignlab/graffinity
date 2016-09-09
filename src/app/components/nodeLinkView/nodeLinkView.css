@@ -1,5 +1,13 @@
 /* These are copied from pathfinder's style.css */
 
+.node-link-view-container {
+  overflow: auto;
+  outline: thin solid gray;
+  width: 90%;
+  height: auto;
+  max-height: 1000px;
+}
+
 g.node rect {
   fill: #c8c8c8;
   stroke: #505050;
