@@ -100,7 +100,7 @@ export class Layout {
     //padding = padding.split(' ')[1];
     //padding = parseInt(padding);
     this.width = element.clientWidth * 0.85;
-    this.height = 960;
+    this.height = 900;
     this.svg.attr("width", this.width);
     this.svg.attr("height", this.height);
   }

@@ -35,7 +35,6 @@ html, body {
 
 /* The matrix view is wrapped in a dark grey outline */
 .column-matrix-wrapper {
-  height: 960px;
   overflow: hidden;
 }
 
@@ -47,7 +46,6 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
   background: transparent;
 }
 
@@ -62,10 +60,6 @@ html, body {
 
 .column-matrix {
   float: left;
-  border-left: solid;
-  border-right: solid;
-  border-width: 1px;
-  border-color: grey;
   padding-right: 0 !important;
 }
 
@@ -79,4 +73,16 @@ html, body {
 
 .no-padding-right {
   padding-right: 0 !important;
+}
+
+.side-panel {
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  margin-top: 3px;
+}
+
+.full-height {
+  min-height: 900px;
 }

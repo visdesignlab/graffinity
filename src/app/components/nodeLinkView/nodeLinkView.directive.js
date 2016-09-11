@@ -54,10 +54,11 @@ class NodeLinkViewDirectiveController {
    * Save injected dependencies and bind scope events.
    * $scope is the child of main.controller's scope.
    */
-  constructor($log, $scope) {
+  constructor($log, $scope, $timeout) {
     "ngInject"
     this.$log = $log;
     this.$scope = $scope;
+    this.$timeout = $timeout;
 
     this.$scope.$on("setSelectedPaths", this.setSelectedPaths.bind(this));
     this.$scope.$on("setModel", this.setModel.bind(this));
@@ -85,12 +86,15 @@ class NodeLinkViewDirectiveController {
     this.paths = paths;
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
 
-    if (this.layout) {
-      this.layout.clear();
-      this.layout.setGraph(this.selectedSubgraph);
-    } else {
-      this.onLayoutChanged("Layered")
-    }
+    let self = this;
+    this.$timeout(function () {
+      if (self.layout) {
+        self.layout.clear();
+        self.layout.setGraph(self.selectedSubgraph);
+      } else {
+        self.onLayoutChanged("Layered")
+      }
+    });
   }
 
   /**

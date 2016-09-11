@@ -2,10 +2,11 @@
 
 .node-link-view-container {
   overflow: auto;
-  outline: thin solid gray;
-  width: 90%;
+  border: thin solid gray;
+  width: 100%;
   height: auto;
-  max-height: 1000px;
+  max-height: 700px;
+  border-radius: 5px;
 }
 
 g.node rect {
