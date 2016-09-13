@@ -33,10 +33,6 @@ html, body {
   transition: width 0.3s ease, margin 0.3s ease;
 }
 
-.column-matrix-wrapper {
-  overflow: auto;
-}
-
 .control-header {
   margin-top: 15px;
 }

@@ -126,7 +126,7 @@ export class cmWrapperBase {
 
     // Bound the matrix's height by screen size.
     let matrixHeight = this.matrix.getHeight() + 30;
-    let clientHeight = angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50;
+    let clientHeight = Math.min(angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50, 1000);
     if (matrixHeight > clientHeight) {
       matrixHeight = clientHeight;
     }
@@ -137,7 +137,7 @@ export class cmWrapperBase {
     // Bound matrix's width by screen size.
     let matrixWidth, clientWidth;
     if (!width) {
-      matrixWidth = this.matrix.getWidth() + 30;
+      matrixWidth = this.matrix.getWidth() + 50;
       clientWidth = angular.element(this.element)[0][0].clientWidth - this.controlsHeader.getAttributeColWidths() - 100;
       if (matrixWidth > clientWidth) {
         matrixWidth = clientWidth;

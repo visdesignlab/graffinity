@@ -122,7 +122,7 @@
         <uib-tabset active="activePill" type="tabs">
           <uib-tab index="0" heading="{{main.availablePanels[0]}}">
               <span class="col-md-12">
-                 <div class="column-matrix-wrapper column-node-list" id="node-list-col">
+                 <div class="column-node-list" id="node-list-col">
                  </div>
               </span>
           </uib-tab>
@@ -143,25 +143,6 @@
             </span>
           </uib-tab>
         </uib-tabset>
-
-
-      <!--
-      <div class="btn-group query-builder-radio-btn-group">
-        <label class="btn btn-xs btn-primary" ng-repeat="item in main.availablePanels" uib-btn-radio="item"
-               ng-model="main.selectedPanel">{{item}}</label>
-      </div>
-
-      <div ng-show="main.selectedPanel==main.availablePanels[0]" class="column-matrix-wrapper column-node-list"
-           id="node-list-col">
-      </div>
-
-      <div ng-show="main.selectedPanel==main.availablePanels[1]">
-        <node-link-view-directive
-          view-state="main.viewState"
-          main-controller="main">
-        </node-link-view-directive>
-      </div>
-      -->
   </span>
   </div>
 
