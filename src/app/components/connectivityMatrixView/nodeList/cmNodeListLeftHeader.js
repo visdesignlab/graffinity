@@ -4,6 +4,10 @@ import {cmMatrixRow} from "../rows/cmMatrixRow"
 
 export class cmNodeListLeftHeader extends cmNodeListBase {
 
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
+    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+    this.setModel(model);
+  }
   /**
    * Creates empty rows at top of the matrix
    * Creates rows using the intermediate node row indexes

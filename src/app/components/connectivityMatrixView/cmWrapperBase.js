@@ -94,8 +94,8 @@ export class cmWrapperBase {
   }
 
   setModel(model) {
-
     for (let i = 0; i < this.matrices.length; ++i) {
+
       // matrix.setModel creates a bunch of rows
       this.matrices[i].setModel(model);
       this.matrices[i].setPosition(1, 1);

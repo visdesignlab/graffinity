@@ -77,12 +77,6 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.gridPosition = [];
 
-    this.setUseAnimation(false);
-    this.isInitialized = false;
-    this.setModel(model);
-    this.isInitialized = true;
-    this.setUseAnimation(true);
-
     let self = this;
     this.$scope.$on("updatePositions", function (event, rowPerm, colPerm) {
       self.updatePositions(rowPerm, colPerm);
@@ -125,8 +119,8 @@ export class cmMatrixBase extends SvgGroupElement {
     });
 
     this.$scope.$on("positionHighlights", self.onPositionHighlights.bind(self));
-    this.$scope.$on("hideHighlights", self.onHideHighlights.bind(self))
-    this.$scope.$on("clearSelection", self.onClearSelection.bind(self))
+    this.$scope.$on("hideHighlights", self.onHideHighlights.bind(self));
+    this.$scope.$on("clearSelection", self.onClearSelection.bind(self));
   }
 
   addRow(row, rowHeight) {

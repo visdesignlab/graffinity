@@ -5,6 +5,11 @@ import {cmControlsMatrixColHeaderRow} from "./rows/cmControlsMatrixColHeaderRow"
 
 export class cmControlsMatrix extends cmMatrixBase {
 
+  constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
+    super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+    this.setModel(model);
+  }
+
   /**
    * Create:
    *  - cmEditAttributeRow holds button that lets user select visible attribute rows

@@ -27,11 +27,9 @@ export class cmNodeListWrapper extends cmWrapperBase {
 
     this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
 
-    this.setModel(model);
-
     this.updateElementPositions();
 
-    this.matrices.forEach(function(matrix) {
+    this.matrices.forEach(function (matrix) {
       matrix.onSortRowsByAttribute("num paths", false)
     });
   }

@@ -27,8 +27,6 @@ export class cmMatrixWrapper extends cmWrapperBase {
 
     this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
 
-    this.setModel(model);
-
     this.updateElementPositions();
   }
 
