@@ -5,7 +5,7 @@
  */
 export class visScatterPlot1D {
 
-  constructor(group, width, height, radius, values, valueRange, orientation) {
+  constructor(group, width, height, radius, values, valueRange, orientation, mouseover, mouseout) {
     this.radius = radius;
     if (orientation == visScatterPlot1D.getOrientations().HORIZONTAL) {
       this.dataScale = visScatterPlot1D.createDataScale([5, width - 5], valueRange);
@@ -39,6 +39,10 @@ export class visScatterPlot1D {
     this.data = visScatterPlot1D.createData(values, this.radius, this.xMarkPosition, this.yMarkPosition);
     this.axis = visScatterPlot1D.createAxis(group, this.dataScale, this.dataOffset, orientation);
     this.marks = visScatterPlot1D.createMarks(group, this.data, this.radius);
+
+    group.selectAll("*")
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout);
   }
 
   static createAxis(group, dataScale, dataOffset, orientation) {
@@ -111,13 +115,13 @@ export class visScatterPlot1D {
       .attr("cy", function (d) {
         return d.y;
       });
-
     mark.attr("data-toggle", "tooltip");
     mark.attr("data-title", function (d) {
       return d.value;
     });
     mark.attr("data-placement", "right");
     mark.attr("data-container", "body");
+
 
     angular.element('[data-toggle="tooltip"]').tooltip();
   }

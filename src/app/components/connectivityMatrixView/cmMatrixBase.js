@@ -174,10 +174,11 @@ export class cmMatrixBase extends SvgGroupElement {
           visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.SOURCE;
           visitor.areRowsCollapsed = this.model.areRowsCollapsed;
           visitor.areColsCollapsed = this.model.areColsCollapsed;
+          visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+
           this.applyVisitor(visitor);
 
           // Create the attribute label and scent.
-
           visitor = new cmCategoricalAttributeLabelVisitor(i, attributeNodeGroup, sortRows, sortCols, hideRows, hideCols, this.colWidth,
             this.rowHeight, this.labelRowHeight / 2, this.colWidthAttr, filterAttributes, filterAttributes);
           this.applyVisitor(visitor);
@@ -195,6 +196,7 @@ export class cmMatrixBase extends SvgGroupElement {
           let valueRange = preprocessor.getValueRange();
           visitor = new cmScatterPlot1DVisitor(i, attributeNodeGroup, this.rowHeight / 4, valueRange);
           visitor.setNodeFilter(isNodeHidden);
+          visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
 
           // Uncomment this to enable hovering on the node attributes.
           // visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));

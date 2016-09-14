@@ -41,11 +41,15 @@ g.matrix-view-interaction-group {
   cursor: pointer;
 }
 
+.no-click {
+  cursor: default !important;
+}
+
 g.matrix-view-interaction-group rect {
   fill: transparent;
 }
 
-g.matrix-view-interaction-group rect:hover {
+g.matrix-view-interaction-group:hover {
   stroke: #FFC800;
   stroke-width: 1px;
 }

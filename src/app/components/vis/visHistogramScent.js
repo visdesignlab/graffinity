@@ -185,8 +185,6 @@ export class visHistogramScent {
       .style("alignment-baseline", "hanging")
       .attr("x", 0)
       .attr("transform", "rotate(270)");
-
-
   }
 
 

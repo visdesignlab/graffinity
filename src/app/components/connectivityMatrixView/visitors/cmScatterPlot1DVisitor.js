@@ -42,19 +42,35 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
     if (this.shouldVisitCell(cell)) {
       let data = cell.data;
       let values = cell.data.values;
-      let group = cell.getGroup()
-        .append("g");
-      if (data.isVertical) {
-        new visScatterPlot1D(group, 15, 80, this.radius, values, this.valueRange, data.orientation);
 
-        // uncomment this to create interaction group for mouse hovering
-        //this.width = 15;
-        //this.height = 80;
-        //this.createInteractionGroup(cell);
+      if (this.callbacks) {
+        if (data.isVertical) {
+          this.width = 15;
+          this.height = 80;
+        } else {
+          this.width = 80;
+          this.height = 15;
+        }
+        this.createInteractionGroup(cell);
+      }
+
+      let self = this;
+      let mouseover = function () {
+        self.callbacks.mouseOver(cell);
+      };
+
+      let mouseout = function () {
+        self.callbacks.mouseOut(cell);
+      };
+
+      if (data.isVertical) {
+
+        new visScatterPlot1D(cell.interactionGroup, 15, 80, this.radius, values, this.valueRange, data.orientation, mouseover, mouseout);
 
       } else {
-        new visScatterPlot1D(group, 80, 15, this.radius, values, this.valueRange, data.orientation);
+        new visScatterPlot1D(cell.interactionGroup, 80, 15, this.radius, values, this.valueRange, data.orientation, mouseover, mouseout);
       }
+
     }
   }
 }
