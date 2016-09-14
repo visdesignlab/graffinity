@@ -35,6 +35,10 @@ export class cmCellVisitor {
     cell.interactionGroup = group.append("g")
       .classed("matrix-view-interaction-group", true);
 
+    if (!self.callbacks.clicked) {
+      cell.interactionGroup.classed("no-click", true);
+    }
+
     cell.interactionGroup
       .append("rect")
       .attr("width", this.width)
@@ -42,7 +46,9 @@ export class cmCellVisitor {
       .attr("rx", this.rx)
       .attr("ry", this.ry)
       .on("click", function () {
-        self.callbacks.clicked(cell);
+        if (self.callbacks.clicked) {
+          self.callbacks.clicked(cell);
+        }
       })
       .on("mouseover", function () {
         self.callbacks.mouseOver(cell);
