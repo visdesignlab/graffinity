@@ -45,6 +45,10 @@ g.matrix-view-interaction-group {
   cursor: default !important;
 }
 
+.node-list-top-row {
+  margin-top: -30px;
+}
+
 g.matrix-view-interaction-group rect {
   fill: transparent;
 }

@@ -25,6 +25,9 @@ export class cmNodeListWrapper extends cmWrapperBase {
       modalService, mainController);
     this.matrix.setGridPosition([1, 1]);
 
+    this.topDiv
+      .classed("node-list-top-row", true);
+
     this.matrices = [this.topHeader, this.leftHeader, this.controlsHeader, this.matrix];
 
     this.updateElementPositions();
