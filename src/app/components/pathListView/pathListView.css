@@ -1,5 +1,9 @@
 /* These are copied from pathfinder's style.css */
 
+.path-list-container {
+  min-height: 800px; /* TODO - replace this with dynamic content height */
+}
+
 .path-list-path {
   margin: 10px;
   font-size: 0;
@@ -22,7 +26,7 @@
   background: #FFC800;
 }
 
-.path-list-hovered{
+.path-list-hovered {
   background: #FFC800;
 }
 
