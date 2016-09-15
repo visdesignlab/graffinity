@@ -14,17 +14,39 @@ export class Layout {
 
     // Settings for positioning the graph
     this.graphYOffset = 80;
+
+    // accessor is used to get data from g.nodes
+    this.accessor = function (d) {
+      return d;
+    }
   }
 
   /**
    * Used to set mouseenter/mouseleave events on nodes.
+   * group - parent of the elements
+   * selector - class of DOM element to add callback to. e.g., 'g.node'
+   * accessor - function for getting nodeIndex from the d
    */
-  addHoverCallbacks(group, selector) {
+  addHoverCallbacks(group, selector, accessor) {
+    if (accessor) {
+      this.accessor = accessor;
+    }
     let self = this;
     group.selectAll(selector)
       .on("mouseenter", function (d) {
-        d3.select(this).classed("hovered", true);
-        let nodeIndex = parseInt(d);
+
+        d3.select(this)
+          .classed("hovered", true);
+
+        let nodeIndexStr = "";
+
+        if (accessor) {
+          nodeIndexStr = accessor(d);
+        } else {
+          nodeIndexStr = d;
+        }
+
+        let nodeIndex = parseInt(nodeIndexStr);
         let ids = {
           sources: [nodeIndex],
           intermediates: [nodeIndex],
@@ -34,7 +56,10 @@ export class Layout {
         self.viewState.setHoveredNodes(ids, false);
       })
       .on("mouseleave", function () {
-        d3.select(this).classed("hovered", false);
+
+        d3.select(this)
+          .classed("hovered", false);
+
         self.viewState.setHoveredNodes(null);
       });
   }
@@ -52,15 +77,23 @@ export class Layout {
    */
   onHoverNodes(signal, nodeIndexes) {
     // Has this been created yet?
+    let self = this;
+
     if (this.nodeGroup) {
 
       // Are we hovering or disabling hover?
       if (nodeIndexes) {
 
         // Find elements for each of nodeIndexes
-        let hoveredNodes = this.nodeGroup.selectAll("g.node").filter(function (d) {
-          return nodeIndexes.indexOf(parseInt(d)) != -1;
-        });
+        let hoveredNodes = this.nodeGroup.selectAll("g.node")
+          .filter(function (d) {
+
+            // accessor is function for getting nodeIndex from g.nodes - set by the addHoverCallbacks
+            // default is identity
+            let nodeIndex = parseInt(self.accessor(d));
+
+            return nodeIndexes.indexOf(nodeIndex) != -1;
+          });
 
         hoveredNodes.classed("hovered", true);
 

@@ -10,7 +10,29 @@ export class GeographicLayout extends Layout {
    */
   constructor(svg, model, $log, viewState, mainController) {
     super(svg, model, $log, viewState, mainController);
+  }
 
+  /**
+   * Draws edges inside the svg
+   * @param edgeGroup
+   * @param cities
+   */
+  createEdges(edgeGroup, cities) {
+    let self = this;
+    edgeGroup.selectAll("g")
+      .data(cities)
+      .enter()
+      .append("g")
+      .classed("link", true)
+      .selectAll("path")
+      .data(function (d) {
+        return d.outgoing;
+      })
+      .enter()
+      .append("path")
+      .attr("d", function (d) {
+        return self.path({type: "LineString", coordinates: [d.source, d.target]});
+      });
   }
 
   /**
@@ -24,13 +46,17 @@ export class GeographicLayout extends Layout {
     // Prepare to render the graph.
     let self = this;
 
+    this.geoGroup = this.svg.append("g").classed("geoGroup", true);
+    this.edgeGroup = this.svg.append("g").classed("edgeGroup", true);
+    this.nodeGroup = this.svg.append("g").classed("nodeGroup", true);
+
     // set project for the US map
     // translating to height/8 puts map at top
     // translating to width/2 puts US in middle
     // scale to 420 puts the map at the right location for the hard-coded size
     this.projection = d3.geo.albers()
-      .translate([self.width / 2, self.height / 8])
-      .scale(420);
+      .translate([self.width / 2, self.height / 8 * 2])
+      .scale(600);
 
     this.path = d3.geo.path().projection(this.projection);
 
@@ -43,6 +69,7 @@ export class GeographicLayout extends Layout {
     graph.nodes().forEach(function (key) {
       let node = graph.node(key);
       cities.push(node);
+      node.nodeIndex = key;
       cityById.set(self.model.getMajorLabels([key])[0], node);
 
       node.outgoing = [];
@@ -77,53 +104,59 @@ export class GeographicLayout extends Layout {
       return true;
     });
 
-    // draw the states
-    this.graphGroup.append("path")
+    this.createMap(this.geoGroup);
+    this.createEdges(this.edgeGroup, cities);
+    this.createNodes(this.nodeGroup, cities);
+  }
+
+  /**
+   * Draws outline of the US
+   * @param geoGroup
+   */
+  createMap(geoGroup) {
+    geoGroup.append("path")
       .datum(topojson.feature(usMap.output, usMap.output.objects.land))
-      .attr("fill", "#ccc")
+      .attr("stroke", "#ccc")
+      .attr("fill", "none")
       .attr("d", this.path);
 
     //state boarders
-    this.graphGroup.append("path")
+    geoGroup.append("path")
       .datum(topojson.mesh(usMap.output, usMap.output.objects.states, function (a, b) {
         return a !== b;
       }))
       .attr("fill", "none")
-      .attr("stroke", "#fff")
+      .attr("stroke", "#ccc")
       .attr("stroke-width", "1.5px")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("d", this.path);
+  }
 
-    //draw cities as blue circles
-    let city = this.graphGroup.append("g")
-      .attr("stroke", "#fff")
-      .attr("pointer-events", "none")  //to consider for hover???
-      .attr("fill", "steelblue")
-      .selectAll("g")
+  /**
+   * Draws nodes.
+   * @param nodeGroup
+   * @param cities
+   */
+  createNodes(nodeGroup, cities) {
+    let nodes = nodeGroup
+      .selectAll("g.node")
       .data(cities)
-      .enter().append("g")
-      .attr("class", "airport");
+      .enter()
+      .append("g")
+      .classed("node", true);
 
-    //draw flight lines (airport arcs)
-    city.append("g")
-      .attr("display", "inline")
-      .attr("fill", "none")
-      .attr("stroke", "#000")
-      .selectAll("path")
-      .data(function (d) {
-        return d.outgoing;
-      })
-      .enter().append("path")
-      .attr("d", function (d) {
-        return self.path({type: "LineString", coordinates: [d.source, d.target]});
-      });
-
-    city.append("circle")
+    nodes
+      .append("circle")
+      .classed("node", true)
       .attr("transform", function (d) {
         return "translate(" + d.x + "," + d.y + ")";
       })
-      .attr("r", Math.sqrt(10));
+      .attr("r", 5);
+
+    this.addHoverCallbacks(this.nodeGroup, "g.node", function (d) {
+      return d.nodeIndex;
+    });
   }
 
 }

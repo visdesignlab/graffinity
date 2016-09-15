@@ -14,6 +14,11 @@ g.node rect {
   stroke: #505050;
 }
 
+g.node circle {
+  fill: #c8c8c8;
+  stroke: #505050;
+}
+
 g.node text {
   font-size: 11px;
   alignment-baseline: middle;
@@ -21,6 +26,10 @@ g.node text {
 }
 
 g.node.hovered rect {
+  fill: #FFC800;
+}
+
+g.node.hovered circle {
   fill: #FFC800;
 }
 
