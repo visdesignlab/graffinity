@@ -54,11 +54,12 @@ class NodeLinkViewDirectiveController {
    * Save injected dependencies and bind scope events.
    * $scope is the child of main.controller's scope.
    */
-  constructor($log, $scope, $timeout) {
+  constructor($log, $scope, $timeout, $http) {
     "ngInject"
     this.$log = $log;
     this.$scope = $scope;
     this.$timeout = $timeout;
+    this.$http = $http;
 
     this.$scope.$on("setSelectedPaths", this.setSelectedPaths.bind(this));
     this.$scope.$on("setModel", this.setModel.bind(this));
@@ -69,6 +70,16 @@ class NodeLinkViewDirectiveController {
     this.ui.selectedLayout = this.ui.availableLayouts[0];
     this.svg = d3.select("#node-link-svg");
     this.model = $scope.$parent.main.model;
+
+    let self = this;
+
+    // Load the map used by the geographic layout.
+    this.$http.get("/assets/mock/usMap.json")
+      .success(function (result) {
+        self.usMap = result;
+      }).error(function (error) {
+      self.$log.error("NodeLinkController failed to get US Map!", error);
+    });
   }
 
   /**
@@ -131,7 +142,7 @@ class NodeLinkViewDirectiveController {
     if (layout == "Layered") {
       this.layout = new LayeredLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     } else if (layout == "Geographic") {
-      this.layout = new GeographicLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
+      this.layout = new GeographicLayout(this.svg, this.model, this.$log, this.viewState, this.mainController, this.usMap);
     } else /* if (layout == "Force-directed") */ {
       this.layout = new ForceDirectedLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     }

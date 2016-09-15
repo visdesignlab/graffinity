@@ -7,16 +7,19 @@ import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database) {
+              viewState, modalService, database, $http) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
     this.$log = $log;
     this.toastr = toastr;
     this.cmModelFactory = cmModelFactory;
+    this.cmGraphFactory = cmGraphFactory;
+    this.cmMatrixFactory = cmMatrixFactory;
     this.cmMatrixViewFactory = cmMatrixViewFactory;
     this.modalService = modalService;
     this.$timeout = $timeout;
+    this.$http = $http;
 
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
@@ -55,8 +58,7 @@ export class MainController {
     if (this.database == "marclab") {
 
       if (useLargeResult) {
-        jsonGraph = mock.largeResult.graph;
-        jsonMatrix = mock.largeResult.matrix;
+        this.requestInitialData("/assets/mock/largeMarclab.json");
       } else {
         jsonGraph = mock.output.graph;
         jsonMatrix = mock.output.matrix;
@@ -67,8 +69,7 @@ export class MainController {
     } else if (this.database == "flights") {
 
       if (useLargeResult) {
-        jsonGraph = mock.flightResult.graph;
-        jsonMatrix = mock.flightResult.matrix;
+        this.requestInitialData("/assets/mock/largeFlights.json");
       } else {
         jsonGraph = mock.smallFlightResult.graph;
         jsonMatrix = mock.smallFlightResult.matrix;
@@ -96,16 +97,10 @@ export class MainController {
 
     }
 
-    // Populate the model with default dataset
-    let graph = cmGraphFactory.createFromJsonObject(jsonGraph);
-    let matrix = cmMatrixFactory.createFromJsonObject(jsonMatrix);
-    this.model = cmModelFactory.createModel(graph, matrix);
-
+    if (!useLargeResult) {
+      this.activate(jsonGraph, jsonMatrix);
+    }
     // Wait until after the current digest cycle to activate the ui.
-    let self = this;
-    $timeout(function () {
-      self.createMatrixAndUi(self.model);
-    }, 1);
 
     // If debugging, then automatically manipulate the GUI.
     //$timeout(function () {
@@ -130,6 +125,18 @@ export class MainController {
     //  }
     //}, 1);
   }
+
+  activate(jsonGraph, jsonMatrix) {
+    // Populate the model with default dataset
+    let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph);
+    let matrix = this.cmMatrixFactory.createFromJsonObject(jsonMatrix);
+    this.model = this.cmModelFactory.createModel(graph, matrix);
+    let self = this;
+    this.$timeout(function () {
+      self.createMatrixAndUi(self.model);
+    }, 1);
+  }
+
 
   createCategoricalCollapseControls(model) {
     this.ui.availableCategoricalAttr = ["none"];
@@ -394,6 +401,27 @@ export class MainController {
       // Open the modal.
       this.modalService.getValueRange("Filter by " + attribute, nodeAttributes, range, flattenedIndexes, attribute, callback);
     }
+  }
+
+
+  /**
+   * Used for loading local mocked results.
+   * @param filename
+   */
+  requestInitialData(filename) {
+    let self = this;
+
+    let success = function (result) {
+      self.activate(result.graph, result.matrix);
+    };
+
+    let error = function (error) {
+      self.$log.error("Something went wrong loading initial datasets!", error);
+    };
+
+    self.$http.get(filename)
+      .success(success)
+      .error(error);
   }
 
   /**

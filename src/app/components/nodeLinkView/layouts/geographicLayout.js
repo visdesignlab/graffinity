@@ -2,14 +2,15 @@
  */
 
 import {Layout} from "./layout"
-import {usMap} from './usMap'
 
 export class GeographicLayout extends Layout {
   /**
    * Class for displaying node-link diagram of the currently selected paths.
    */
-  constructor(svg, model, $log, viewState, mainController) {
+  constructor(svg, model, $log, viewState, mainController, usMap) {
     super(svg, model, $log, viewState, mainController);
+    this.$log.debug(this, usMap);
+    this.usMap = usMap;
   }
 
   /**
@@ -104,7 +105,7 @@ export class GeographicLayout extends Layout {
       return true;
     });
 
-    this.createMap(this.geoGroup);
+    this.createMap(this.geoGroup, this.usMap);
     this.createEdges(this.edgeGroup, cities);
     this.createNodes(this.nodeGroup, cities);
   }
@@ -113,16 +114,16 @@ export class GeographicLayout extends Layout {
    * Draws outline of the US
    * @param geoGroup
    */
-  createMap(geoGroup) {
+  createMap(geoGroup, usMap) {
     geoGroup.append("path")
-      .datum(topojson.feature(usMap.output, usMap.output.objects.land))
+      .datum(topojson.feature(usMap, usMap.objects.land))
       .attr("stroke", "#ccc")
       .attr("fill", "none")
       .attr("d", this.path);
 
     //state boarders
     geoGroup.append("path")
-      .datum(topojson.mesh(usMap.output, usMap.output.objects.states, function (a, b) {
+      .datum(topojson.mesh(usMap, usMap.objects.states, function (a, b) {
         return a !== b;
       }))
       .attr("fill", "none")
