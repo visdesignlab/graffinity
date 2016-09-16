@@ -24,6 +24,7 @@ export class MainController {
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
+    this.hasGoodData = true;
     this.queryError = "";
 
     this.matrixClass = "col-lg-8";
@@ -277,6 +278,7 @@ export class MainController {
 
     self.hasActiveQuery = true;
     self.hasQueryError = false;
+    self.hasGoodData = false;
 
     // Reset the node-link view
     self.setNodeLinkVisibility(false);
@@ -302,6 +304,7 @@ export class MainController {
 
       // Actually create the matrix
       self.$timeout(function () {
+        self.hasGoodData = true;
         self.createMatrixAndUi(model);
       }, 0);
     };
@@ -310,7 +313,6 @@ export class MainController {
       // upon failure, update text message to the the error message
       self.hasActiveQuery = false;
       self.hasQueryError = true;
-      self.queryError = "Query Error: \n" + error.data.message;
 
       // log the error
       self.$log.error("The query failed", error);
