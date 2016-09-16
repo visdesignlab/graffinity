@@ -2,27 +2,17 @@ html, body {
   height: 100%;
 }
 
-/* Override a bunch of bootstrap properties to put the title in the top right */
-.top-row-container {
-  padding-left: 0;
-  padding-right: 0;
-  min-height: 0;
-}
-
+/* Override a bunch of bootstrap properties to put the title in the top left */
 .top-row {
-  margin-bottom: 0;
-  margin-right: 0;
-  min-height: 0;
-}
-
-.top-row-navbar {
-  margin-bottom: 0;
-  min-height: 0;
+  border-radius: 5px;
+  height: 3%;
+  min-height: 48px !important;
+  margin: 0 2px;
 }
 
 .top-row-navbar-brand {
-  height: 30px;
-  padding: 7px 7px;
+  height: 100% !important;
+  font-size: 22px !important;
 }
 
 /* This controls the animation for changing column widths with ng-class */
@@ -76,8 +66,35 @@ html, body {
   border-width: 1px;
   border-radius: 5px;
   margin-top: 3px;
+  margin-right: 10px;
+  width: 99%;
 }
 
 .full-height {
-  min-height: 1000px;
+  height: 100%;
+}
+
+.red-border {
+  outline: thick solid red;
+}
+
+.green-border {
+  outline: thick solid green;
+}
+
+.main-row {
+  height: 95%;
+}
+
+.tab-content {
+  height: 100%;
+}
+
+.tab-pane {
+  height: 100%;
+}
+
+/* Top 10% is for the tabs*/
+.tab-directive {
+  height: 90%;
 }

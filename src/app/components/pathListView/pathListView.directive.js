@@ -19,7 +19,7 @@ export class PathListViewDirective {
 
     // Angular directive stuff
     this.templateUrl = "app/components/pathListView/pathListView.directive.html";
-    this.restrict = 'E';
+    this.restrict = 'EA';
 
     // Parameters passed from main.controller.
     this.scope = {
@@ -38,7 +38,7 @@ export class PathListViewDirective {
    * Save this directive's element in the controller.
    */
   linkFn(scope, element) {
-    scope.controller.element = element;
+    scope.controller.activate(element);
   }
 }
 
@@ -62,15 +62,26 @@ class PathListViewDirectiveController {
     this.$scope.$on("setSelectedPaths", this.setSelectedPaths.bind(this));
     this.$scope.$on("setModel", this.setModel.bind(this));
     this.$scope.$on("hoverNodes", this.onHoverNodes.bind(this));
+    this.$scope.$on("setPathListVisible", this.update.bind(this));
 
     this.ui = {};
-    this.ui.availableLayouts = ["Layered", "Geographic", "Force-directed"];
-    this.ui.selectedLayout = this.ui.availableLayouts[0];
-    this.svg = d3.select("#node-link-svg");
+
     this.model = $scope.$parent.main.model;
     this.itemsPerPage = 20;
     this.currentPage = 1;
     this.currentPaths = [];
+
+    //this.$log.debug(this.element);
+
+  }
+
+  getClientHeight() {
+    return this.element[0].clientHeight;
+  }
+
+  activate(element) {
+    this.element = element;
+    this.$log.debug(this.getClientHeight());
   }
 
   /**
@@ -84,6 +95,7 @@ class PathListViewDirectiveController {
    * User selected some paths. Draw them in the layout.
    */
   setSelectedPaths(signal, paths) {
+    this.$log.debug(this.element);
     this.paths = paths;
     this.setPage(1);
   }
@@ -133,5 +145,12 @@ class PathListViewDirectiveController {
     this.$timeout(function () {
       self.$scope.$apply();
     });
+  }
+
+  update() {
+    this.$log.debug("onResize", this.element[0].offsetHeight);
+
+    this.$log.debug(this.getClientHeight());
+
   }
 }

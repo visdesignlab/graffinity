@@ -469,4 +469,8 @@ export class MainController {
       this.ui.hasLegend = false;
     }
   }
+
+  test() {
+    this.$scope.$broadcast("setPathListVisible");
+  }
 }

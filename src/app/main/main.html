@@ -1,19 +1,13 @@
 <!--Row holding the query text box -->
-<nav class="navbar navbar-inverse navbar-static-top top-row-container top-row">
-
-  <div class="navbar top-row-navbar">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <a class="navbar-brand top-row-navbar-brand">Connectivity Matrix</a>
-
-  </div>
-
+<nav class="navbar navbar-inverse navbar-static-top top-row">
+  <span class="navbar-brand top-row-navbar-brand">Connectivity Matrix</span>
 </nav>
 
-<div class="container-fluid">
+<div class="container-fluid full-height">
   <!-- Row holding the controls (left-most col) and matrix (right-ish cols) -->
-  <div class="row animate-show" ng-show="!main.hasActiveQuery && !main.hasQueryError">
+  <div class="row animate-show main-row" ng-show="!main.hasActiveQuery && !main.hasQueryError">
 
-    <span class="col-md-2">
+    <span class="col-md-2 full-height">
       <h4>Query</h4>
         <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
       <hr>
@@ -108,7 +102,7 @@
     <!-- Column holding global matrix controls -->
 
     <!-- TODO: Update the width/height of the svg elements here and in the nodeLinkView-->
-    <div class="col-md-7 no-padding-right col-matrix-wrapper">
+    <div class="col-md-7 no-padding-right col-matrix-wrapper full-height">
     <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-md-12 column-matrix full-height"
           id="matrices-row">
       <h4>Connectivity Matrix</h4>
@@ -118,8 +112,9 @@
     </div>
 
     <!-- Columns holding the node link view -->
-    <span class="col-md-3 no-padding side-panel full-height" id="node-link-column">
-        <uib-tabset active="activePill" type="tabs">
+    <span class="col-md-3 no-padding full-height" id="node-link-column">
+      <span class="col-md-12 full-height side-panel no-padding">
+        <uib-tabset active="activePill" type="tabs" class="full-height">
           <uib-tab index="0" heading="{{main.availablePanels[0]}}">
               <span class="col-md-12">
                 <h4>Intermediate Nodes</h4>
@@ -136,16 +131,18 @@
               </node-link-view-directive>
             </span>
           </uib-tab>
-          <uib-tab index="2" heading="{{main.availablePanels[2]}}">
-            <span class="col-md-12">
-              <path-list-view-directive
+          <uib-tab index="2" heading="{{main.availablePanels[2]}}" select="main.test()">
+            <span class="col-md-12 full-height">
+              <div path-list-view-directive
                 view-state="main.viewState"
-                main-controller="main">
-              </path-list-view-directive>
+                main-controller="main"
+                class="tab-directive">
+              </div>
             </span>
           </uib-tab>
         </uib-tabset>
-  </span>
+      </span>
+    </span>
   </div>
 
   <!-- Row the replaces the matrix when there is a query running or query error. -->
