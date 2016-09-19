@@ -262,7 +262,6 @@ export class MainController {
    * Function must end with a $scope.$apply in order to update the css layout.
    */
   onPathsSelected(paths) {
-    this.setNodeLinkVisibility(true);
     this.$scope.$apply();
     let self = this;
     this.$timeout(function () {
@@ -281,7 +280,6 @@ export class MainController {
     self.hasGoodData = false;
 
     // Reset the node-link view
-    self.setNodeLinkVisibility(false);
 
     // remove legend when query button pressed
     d3.select("#encoding-legend")
@@ -352,13 +350,6 @@ export class MainController {
     this.matrixManager.setSortOrders(rowPerm, colPerm);
   }
 
-  /**
-   * Called when the node-link view gets toggled. This will either collapse or expand the far right column which
-   * contains the node-link directive.
-   */
-  onToggleNodeLinkView() {
-    this.setNodeLinkVisibility(this.nodeLinkClass == "");
-  }
 
   /**
    * Called when the user wants to filter nodes by a quantitative attributes. Opens a modal containing a
@@ -426,32 +417,6 @@ export class MainController {
       .error(error);
   }
 
-  /**
-   * Makes the node-link view visible by expanding it from the right side of the screen.
-   * This causes an animated transition because of the '.row span' definition in main.css
-   */
-  setNodeLinkVisibility(visible) {
-    if (!visible) {
-//      this.nodeLinkClass = "";
-//      this.matrixClass = "col-md-8";
-
-      // Let the resize event finish before expanding the matrix.
-      //let self = this;
-      //this.$timeout(function () {
-      //  self.matrixManager.updateElementPositions();
-      //}, 300);
-    } else {
-
-      // Need to shrink the matrix's div before we show the node-link view. This stops the matrix's 4 divs from
-      // getting pushed onto different lines.
-      //this.matrixManager.setWidth(angular.element("#matrices-row")[0].clientWidth * 6);
-      //this.matrixManager.setWidth(6 * 81);
-
-//      this.nodeLinkClass = "col-md-4";
-//      this.matrixClass = "col-md-5";
-    }
-  }
-
   updateLegend() {
 
     d3.select("#encoding-legend")
@@ -470,9 +435,5 @@ export class MainController {
     } else {
       this.ui.hasLegend = false;
     }
-  }
-
-  test() {
-    this.$scope.$broadcast("setPathListVisible");
   }
 }

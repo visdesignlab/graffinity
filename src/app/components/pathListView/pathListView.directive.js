@@ -62,7 +62,6 @@ class PathListViewDirectiveController {
     this.$scope.$on("setSelectedPaths", this.setSelectedPaths.bind(this));
     this.$scope.$on("setModel", this.setModel.bind(this));
     this.$scope.$on("hoverNodes", this.onHoverNodes.bind(this));
-    this.$scope.$on("setPathListVisible", this.update.bind(this));
 
     this.ui = {};
 
@@ -70,9 +69,6 @@ class PathListViewDirectiveController {
     this.itemsPerPage = 20;
     this.currentPage = 1;
     this.currentPaths = [];
-
-    //this.$log.debug(this.element);
-
   }
 
   getClientHeight() {
@@ -81,7 +77,10 @@ class PathListViewDirectiveController {
 
   activate(element) {
     this.element = element;
-    this.$log.debug(this.getClientHeight());
+
+    // 40 is height of path items + margins
+    // 100 is room for header and footer
+    this.itemsPerPage = Math.floor((this.getClientHeight() - 100) / 40);
   }
 
   /**
@@ -95,7 +94,6 @@ class PathListViewDirectiveController {
    * User selected some paths. Draw them in the layout.
    */
   setSelectedPaths(signal, paths) {
-    this.$log.debug(this.element);
     this.paths = paths;
     this.setPage(1);
   }
@@ -114,6 +112,9 @@ class PathListViewDirectiveController {
     });
   }
 
+  /**
+   * Called when mouse is on top of a node in this view.
+   */
   hoverNodes(nodeIndex) {
     if (nodeIndex) {
       let ids = {
@@ -145,12 +146,5 @@ class PathListViewDirectiveController {
     this.$timeout(function () {
       self.$scope.$apply();
     });
-  }
-
-  update() {
-    this.$log.debug("onResize", this.element[0].offsetHeight);
-
-    this.$log.debug(this.getClientHeight());
-
   }
 }

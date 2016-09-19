@@ -89,9 +89,11 @@ body {
   display: flex;
 }
 
-/*.tab-content > .active {*/
-  /*outline: thin solid red;*/
-/*}*/
+.tab-content > .active {
+  flex-direction: column;
+  display: flex;
+  flex: 1;
+}
 
 .tab-pane {
   flex-grow: 1;
