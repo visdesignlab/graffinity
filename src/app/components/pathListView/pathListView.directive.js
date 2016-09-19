@@ -38,7 +38,7 @@ export class PathListViewDirective {
    * Save this directive's element in the controller.
    */
   linkFn(scope, element) {
-    scope.controller.activate(element);
+    scope.controller.activate(d3.select(element[0].parentNode.parentNode));
   }
 }
 
@@ -76,7 +76,7 @@ class PathListViewDirectiveController {
   }
 
   getClientHeight() {
-    return this.element[0].clientHeight;
+    return this.element[0][0].clientHeight;
   }
 
   activate(element) {

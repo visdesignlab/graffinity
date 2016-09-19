@@ -85,6 +85,16 @@ body {
 /* Overrides definition in uib */
 .tab-content {
   padding: 0 15px !important;
+  flex-grow: 1;
+  display: flex;
+}
+
+/*.tab-content > .active {*/
+  /*outline: thin solid red;*/
+/*}*/
+
+.tab-pane {
+  flex-grow: 1;
 }
 
 .top-bar {

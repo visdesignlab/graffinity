@@ -16,6 +16,8 @@ export class cmWrapperBase {
       self.setSortOrders(rowPerm, colPerm);
     });
 
+    this.maxHeight = this.element[0][0].clientHeight;
+
     // Style for the four divs displayed in this matrix.
     this.controlsElementStyle = {};
     this.topHeaderElementStyle = {};
@@ -126,7 +128,7 @@ export class cmWrapperBase {
 
     // Bound the matrix's height by screen size.
     let matrixHeight = this.matrix.getHeight() + 30;
-    let clientHeight = Math.min(angular.element(this.element)[0][0].clientHeight - this.controlsHeader.getHeight() - 50, 1000);
+    let clientHeight = this.maxHeight - this.controlsHeader.getHeight();
     if (matrixHeight > clientHeight) {
       matrixHeight = clientHeight;
     }

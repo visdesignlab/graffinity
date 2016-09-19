@@ -103,15 +103,14 @@
 
   <!-- TODO Move this id 'node-list-col' . It is used by the Layout base class.-->
   <!-- Right panel -->
-  <div ng-show="main.hasGoodData" class="pane right-pane grey-border" id="node-link-column">
-    <uib-tabset active="activePill" type="tabs">
+  <div ng-show="main.hasGoodData" class="pane right-pane grey-border vflex" id="node-link-column">
+    <uib-tabset active="activePill" type="tabs" class="grow-1 vflex">
       <!-- Tab for the node-list view -->
       <uib-tab index="0" heading="{{main.availablePanels[0]}}">
         <h4>Intermediate Nodes</h4>
-        <div id="node-list-col">
+        <div id="node-list-col" class="grow-1">
         </div>
       </uib-tab>
-
       <!-- Tab for the node-link view -->
       <uib-tab index="1" heading="{{main.availablePanels[1]}}">
         <node-link-view-directive
@@ -126,6 +125,8 @@
              view-state="main.viewState"
              main-controller="main">
         </div>
+      </uib-tab>
+      <uib-tab index="3" heading="test">
       </uib-tab>
     </uib-tabset>
   </div>
