@@ -123,14 +123,17 @@ export class Layout {
    * establishes values for this.height and this.width, which are used in other layouts
    */
   setHeightAndWidth() {
-    // // get the column containing the svg
+
     let element = d3.select("#node-link-column")[0][0];
-    // How much room do we have available in the column? Use this to size the svg.
-    // padding is of the form '0px 15px.'
-    // get the horizontal form of it
-    // use that to determine width
-    this.width = element.clientWidth;
-    this.height = element.clientHeight - 30;
+
+    if (!element.clientHeight) {
+      this.width = 442; // default values for 1080p full screen
+      this.height = 717;
+    } else {
+      this.height = element.clientHeight - 30;
+      this.width = element.clientWidth;
+    }
+
     this.svg.attr("width", this.width);
     this.svg.attr("height", this.height);
     this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
