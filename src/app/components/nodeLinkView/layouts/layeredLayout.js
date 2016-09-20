@@ -85,10 +85,10 @@ export class LayeredLayout extends Layout {
     this.createLinks(this.graphGroup, graph);
     this.createNodes(this.graphGroup, graph);
 
-    let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
-    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + this.graphYOffset + ")");
-    this.svg.attr("width", Math.max(this.width, graph.graph().width));
-    this.svg.attr("height", Math.max(graph.graph().height, 400));
+    //let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
+    this.graphGroup.attr("transform", "translate(0, " + this.graphYOffset + ")");
+    this.svg.attr("viewBox", "0 0 " + graph.graph().width + " " + Math.max(graph.graph().height, this.height));
+
   }
 
   /**
