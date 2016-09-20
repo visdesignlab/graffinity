@@ -1,21 +1,16 @@
 <!--Row holding the query text box -->
-<nav class="navbar navbar-inverse navbar-static-top top-row-container top-row">
+<div class="full-width no-shrink top-bar">
+  <span class="logo">Connectivity Matrix</span>
+</div>
 
-  <div class="navbar top-row-navbar">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <a class="navbar-brand top-row-navbar-brand">Connectivity Matrix</a>
-
-  </div>
-
-</nav>
-
-<div class="container-fluid">
-  <!-- Row holding the controls (left-most col) and matrix (right-ish cols) -->
-  <div class="row animate-show" ng-show="!main.hasActiveQuery && !main.hasQueryError">
-
-    <span class="col-md-2">
-      <h4>Query</h4>
-        <query-directive submit="main.onQuerySubmitted(query)"></query-directive>
+<div class="full-width hflex main-panel grow-1">
+  <div class="pane left-pane">
+    <h4>Query</h4>
+    <query-directive
+      submit="main.onQuerySubmitted(query)"
+      submit-disabled="main.hasActiveQuery">
+    </query-directive>
+    <div ng-show="main.hasGoodData">
       <hr>
       <h4>Matrix Controls</h4>
       <div class="control-header">
@@ -91,66 +86,49 @@
         <svg id="encoding-legend">
         </svg>
       </div>
-
-      <!-- Controls for debugging and manually hiding/showing node ids. Disabled by default-->
-      <div class="control-header" ng-show="main.ui.debugNodeHiding">
-        <input type="text" name="input" ng-model="main.ui.debugNodeHidingId">
-        <button ng-click="main.onDebugNodeHiding(main.ui.debugNodeHidingId, true)">Show</button>
-        <button ng-click="main.onDebugNodeHiding(main.ui.debugNodeHidingId, false)">Hide</button>
-      </div>
-
-      <div class="control-header" ng-show="main.ui.debugNodeLinkLayout">
-        <button ng-click="main.onToggleNodeLinkView()">Toggle node-link</button>
-      </div>
-
-    </span>
-
-    <!-- Column holding global matrix controls -->
-
-    <!-- TODO: Update the width/height of the svg elements here and in the nodeLinkView-->
-    <div class="col-md-7 no-padding-right col-matrix-wrapper">
-    <span ng-show="!main.hasActiveQuery && !main.hasQueryError" class="col-md-12 column-matrix full-height"
-          id="matrices-row">
-      <h4>Connectivity Matrix</h4>
-    </span>
-
-
     </div>
-
-    <!-- Columns holding the node link view -->
-    <span class="col-md-3 no-padding side-panel full-height" id="node-link-column">
-        <uib-tabset active="activePill" type="tabs">
-          <uib-tab index="0" heading="{{main.availablePanels[0]}}">
-              <span class="col-md-12">
-                <h4>Intermediate Nodes</h4>
-                 <div class="column-node-list" id="node-list-col">
-
-                 </div>
-              </span>
-          </uib-tab>
-          <uib-tab index="1" heading="{{main.availablePanels[1]}}">
-            <span class="col-md-12">
-              <node-link-view-directive
-                view-state="main.viewState"
-                main-controller="main">
-              </node-link-view-directive>
-            </span>
-          </uib-tab>
-          <uib-tab index="2" heading="{{main.availablePanels[2]}}">
-            <span class="col-md-12">
-              <path-list-view-directive
-                view-state="main.viewState"
-                main-controller="main">
-              </path-list-view-directive>
-            </span>
-          </uib-tab>
-        </uib-tabset>
-  </span>
   </div>
 
-  <!-- Row the replaces the matrix when there is a query running or query error. -->
-  <div ng-show="main.hasActiveQuery || main.hasQueryError" class="jumbotron row query-status-row">
+  <!-- Center pane will hold the matrix -- or error messages -->
+  <!-- TODO - move the ID matrices-row somewhere else -->
+  <div ng-show="main.hasGoodData" class="pane center-pane" id="matrices-row">
+    <h4>Connectivity Matrix</h4>
+  </div>
+
+  <!-- Error messages -->
+  <div ng-show="!main.hasGoodData" class="pane center-pane">
     <p ng-show="main.hasActiveQuery">Query is loading...</p>
     <p ng-show="main.hasQueryError">{{main.queryError}}</p>
+  </div>
+
+  <!-- Right panel -->
+  <div ng-show="main.hasGoodData" class="pane right-pane grey-border vflex">
+    <uib-tabset active="activePill" type="tabs" class="grow-1 vflex">
+      <!-- Tab for the node-list view -->
+      <uib-tab index="0" heading="{{main.availablePanels[0]}}">
+        <h4>Intermediate Nodes</h4>
+        <div id="node-list-col" class="grow-1">
+        </div>
+      </uib-tab>
+      <!-- Tab for the node-link view -->
+      <uib-tab index="1" heading="{{main.availablePanels[1]}}">
+        <div class="grow-1 vflex">
+          <node-link-view-directive
+            view-state="main.viewState"
+            main-controller="main"
+            class="vflex grow-1">
+          </node-link-view-directive>
+        </div>
+      </uib-tab>
+
+      <!-- Tab for the path list -->
+      <uib-tab index="2" heading="{{main.availablePanels[2]}}">
+        <div path-list-view-directive
+             view-state="main.viewState"
+             main-controller="main"
+             class="vflex grow-1">
+        </div>
+      </uib-tab>
+    </uib-tabset>
   </div>
 </div>

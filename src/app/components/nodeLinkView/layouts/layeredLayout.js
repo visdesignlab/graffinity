@@ -15,9 +15,9 @@ export class LayeredLayout extends Layout {
     this.nodeHeight = 20;
     this.nodeRx = 5;
     this.nodeRy = 5;
-    this.graphNodeSep = 7;
-    this.graphRankSep = 7;
-    this.graphMarginTop = 80;
+    this.graphNodeSep = 2;
+    this.graphRankSep = 2;
+    this.graphEdgeSep = 4;
     this.rankdir = "LR";
   }
 
@@ -79,16 +79,31 @@ export class LayeredLayout extends Layout {
     graph.graph().rankdir = "LR";
     graph.graph().nodesep = this.graphNodeSep;
     graph.graph().ranksep = this.graphRankSep;
-    graph.graph().margintop = this.graphMarginTop;
+    graph.graph().edgesep = this.graphEdgeSep;
     dagre.layout(graph);
 
     this.createLinks(this.graphGroup, graph);
     this.createNodes(this.graphGroup, graph);
 
-    let xCenterOffset = (this.svg.attr("width") - graph.graph().width) / 2;
-    this.graphGroup.attr("transform", "translate(" + xCenterOffset + ", " + this.graphYOffset + ")");
-    this.svg.attr("width", Math.max(this.width, graph.graph().width));
-    this.svg.attr("height", Math.max(graph.graph().height, 400));
+    let output = graph.graph();
+    let graphWidth = output.width;
+    let graphHeight = output.height;
+
+
+    if (graphHeight > this.height) {
+
+      // If the output graph is larger than the drawable size, then update the viewbox.
+      this.svg.attr("viewBox", "0 0 " + graphWidth + " " + graphHeight);
+
+    } else {
+
+      // If the output graph is smaller, then center the graph and set the viewbox to the default.
+      let graphTopLeftX = this.width / 2 - (graphWidth / 2);
+      let graphTopLeftY = this.height / 2 - (graphHeight / 2);
+
+      this.graphGroup.attr("transform", "translate( " + graphTopLeftX + ", " + graphTopLeftY + ")");
+      this.svg.attr("viewBox", "0 0 " + this.width + " " + this.height);
+    }
   }
 
   /**

@@ -5,7 +5,8 @@ export function QueryDirective() {
     restrict: 'E',
     templateUrl: 'app/components/query/query.directive.html',
     scope: {
-      submit: '&'
+      submit: '&',
+      submitDisabled: '='
     },
     controller: QueryController,
     controllerAs: 'queryController',

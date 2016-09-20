@@ -19,7 +19,7 @@ export class PathListViewDirective {
 
     // Angular directive stuff
     this.templateUrl = "app/components/pathListView/pathListView.directive.html";
-    this.restrict = 'E';
+    this.restrict = 'EA';
 
     // Parameters passed from main.controller.
     this.scope = {
@@ -38,7 +38,7 @@ export class PathListViewDirective {
    * Save this directive's element in the controller.
    */
   linkFn(scope, element) {
-    scope.controller.element = element;
+    scope.controller.activate(d3.select(element[0].parentNode.parentNode));
   }
 }
 
@@ -64,13 +64,23 @@ class PathListViewDirectiveController {
     this.$scope.$on("hoverNodes", this.onHoverNodes.bind(this));
 
     this.ui = {};
-    this.ui.availableLayouts = ["Layered", "Geographic", "Force-directed"];
-    this.ui.selectedLayout = this.ui.availableLayouts[0];
-    this.svg = d3.select("#node-link-svg");
+
     this.model = $scope.$parent.main.model;
     this.itemsPerPage = 20;
     this.currentPage = 1;
     this.currentPaths = [];
+  }
+
+  getClientHeight() {
+    return this.element[0][0].clientHeight;
+  }
+
+  activate(element) {
+    this.element = element;
+
+    // 40 is height of path items + margins
+    // 100 is room for header and footer
+    this.itemsPerPage = Math.floor((this.getClientHeight() - 100) / 40);
   }
 
   /**
@@ -102,6 +112,9 @@ class PathListViewDirectiveController {
     });
   }
 
+  /**
+   * Called when mouse is on top of a node in this view.
+   */
   hoverNodes(nodeIndex) {
     if (nodeIndex) {
       let ids = {
