@@ -5,10 +5,6 @@ import { config } from './index.config';
 import { routerConfig } from './index.route';
 import { runBlock } from './index.run';
 import { MainController } from './main/main.controller';
-import { GithubContributorService } from '../app/components/githubContributor/githubContributor.service';
-import { WebDevTecService } from '../app/components/webDevTec/webDevTec.service';
-import { NavbarDirective } from '../app/components/navbar/navbar.directive';
-import { MalarkeyDirective } from '../app/components/malarkey/malarkey.directive';
 import { cmMatrixViewFactory } from '../app/components/connectivityMatrixView/cmMatrixViewFactory';
 import { cmResource } from '../app/components/connectivityMatrix/cmResource.service';
 import { cmGraphFactory } from '../app/components/connectivityMatrix/cmGraphFactory.service';
@@ -30,8 +26,6 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .config(config)
   .config(routerConfig)
   .run(runBlock)
-  .service('githubContributor', GithubContributorService)
-  .service('webDevTec', WebDevTecService)
   .service('cmResource', cmResource)
   .service('cmGraphFactory', cmGraphFactory)
   .service('cmMatrixFactory', cmMatrixFactory)
@@ -41,10 +35,8 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .controller('MainController', MainController)
   .controller('ModalListFilterController', ModalListFilterController)
   .controller('ModalHistogramFilterController', ModalHistogramFilterController)
-  .directive('acmeNavbar', NavbarDirective)
-  .directive('acmeMalarkey', MalarkeyDirective)
   .directive('queryDirective', QueryDirective)
   .directive('numPathsDirective', () => new NumPathsDirective())
   .service('modalService', ModalService)
   .directive("nodeLinkViewDirective", () => new NodeLinkViewDirective())
-  .directive("pathListViewDirective", () => new PathListViewDirective()) ;
+  .directive("pathListViewDirective", () => new PathListViewDirective());
