@@ -51,6 +51,14 @@ export class cmNodeListBase extends cmMatrixBase {
     this.isAttributeColVisible["num paths"] = true;
   }
 
+  setModel(model) {
+    if (model.getIntermediateNodeIndexes().length) {
+      super.setModel(model);
+    } else {
+      this.isActive = false;
+    }
+  }
+
   /**
    * no-op
    */

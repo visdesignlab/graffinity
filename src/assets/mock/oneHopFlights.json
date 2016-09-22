@@ -1,0 +1,196 @@
+{
+  "lengths": {
+    "1": 5
+  },
+  "graph": {
+    "nodes": [
+      {
+        "degree": 1095,
+        "lon": -118.4080744,
+        "state": "CA",
+        "lat": 33.94253611,
+        "Airport": "LAX",
+        "city_name": "Los Angeles",
+        "ID": 13,
+        "market": "32575"
+      },
+      {
+        "degree": 470,
+        "lon": -71.00517917,
+        "state": "MA",
+        "lat": 42.3643475,
+        "Airport": "BOS",
+        "city_name": "Boston",
+        "ID": 9,
+        "market": "30721"
+      }
+    ],
+    "edges": [
+      {
+        "SourceID": 13,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 8971
+      },
+      {
+        "SourceID": 13,
+        "Carrier": "AA",
+        "TargetID": 9,
+        "ID": 7776
+      },
+      {
+        "SourceID": 13,
+        "Carrier": "DL",
+        "TargetID": 9,
+        "ID": 10456
+      },
+      {
+        "SourceID": 13,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 8989
+      },
+      {
+        "SourceID": 13,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 8755
+      }
+    ],
+    "edge_attributes": [
+      {
+        "DataType": "index",
+        "Type": "int",
+        "Unique": "true",
+        "DisplayName": "id",
+        "Name": "ID"
+      },
+      {
+        "DataType": "source-index",
+        "Type": "int",
+        "Unique": "false",
+        "DisplayName": "source id",
+        "Name": "SourceID"
+      },
+      {
+        "DataType": "target-index",
+        "Type": "int",
+        "Unique": "true",
+        "DisplayName": "target id",
+        "Name": "TargetID"
+      },
+      {
+        "DataType": "categorical",
+        "Type": "string",
+        "Unique": "false",
+        "DisplayName": "carrier",
+        "Name": "Carrier"
+      }
+    ],
+    "node_attributes": [
+      {
+        "DisplayName": "id",
+        "Name": "ID",
+        "DataType": "index",
+        "DatabaseName": "id",
+        "Unique": "true",
+        "Type": "int"
+      },
+      {
+        "DisplayName": "airport",
+        "Name": "Airport",
+        "DataType": "id",
+        "DatabaseName": "airport",
+        "Unique": "true",
+        "Type": "string"
+      },
+      {
+        "DisplayName": "city",
+        "Name": "city_name",
+        "DataType": "categorical",
+        "DatabaseName": "city_name",
+        "Unique": "false",
+        "Type": "string"
+      },
+      {
+        "DisplayName": "state",
+        "Name": "state",
+        "DataType": "categorical",
+        "DatabaseName": "state",
+        "Unique": "false",
+        "Type": "string"
+      },
+      {
+        "DisplayName": "market",
+        "Name": "market",
+        "DataType": "categorical",
+        "DatabaseName": "market",
+        "Unique": "false",
+        "Type": "string"
+      },
+      {
+        "DisplayName": "degree",
+        "Name": "degree",
+        "DataType": "quantitative",
+        "DatabaseName": "degree",
+        "Unique": "false",
+        "Type": "int"
+      },
+      {
+        "DisplayName": "lat",
+        "Name": "lat",
+        "DataType": "quantitative",
+        "DatabaseName": "lat",
+        "Unique": "false",
+        "Type": "float"
+      },
+      {
+        "DisplayName": "lon",
+        "Name": "lon",
+        "DataType": "quantitative",
+        "DatabaseName": "lon",
+        "Unique": "false",
+        "Type": "float"
+      }
+    ]
+  },
+  "matrix": {
+    "source_ids": [
+      13
+    ],
+    "matrix": [
+      [
+        [
+          [
+            13,
+            10456,
+            9
+          ],
+          [
+            13,
+            8989,
+            9
+          ],
+          [
+            13,
+            8971,
+            9
+          ],
+          [
+            13,
+            8755,
+            9
+          ],
+          [
+            13,
+            7776,
+            9
+          ]
+        ]
+      ]
+    ],
+    "target_ids": [
+      9
+    ]
+  }
+}

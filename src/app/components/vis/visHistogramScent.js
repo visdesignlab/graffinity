@@ -6,7 +6,6 @@ export class visHistogramScent {
    * Class for representing a histogram.
    */
   constructor($scope, parent, width, height, numBins, isVertical, values, offset) {
-
     this.$scope = $scope;
     this.parent = parent;
     this.numBins = numBins;
@@ -25,6 +24,17 @@ export class visHistogramScent {
 
     this.createHistogramData();
 
+    let domainMin = d3.min(this.values);
+    let domainMax = d3.max(this.values);
+
+    if (domainMin == domainMax) {
+      if (domainMax) {
+        domainMin = 0;
+      } else {
+        domainMax = 1;
+      }
+    }
+
     if (isVertical) {
       // margin allows for histogram to be properly placed -- note can change the right to 2 if you want histogram farther way from 1D scatterplots
       this.margin = {top: 5, right: 0, bottom: 5, left: 0};
@@ -32,8 +42,9 @@ export class visHistogramScent {
       this.chartWidth = this.width - this.margin.left - this.margin.right - this.offset;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
 
+
       this.xScale = d3.scale.linear()
-        .domain([d3.min(this.values), d3.max(this.values)])
+        .domain([domainMin, domainMax])
         .range([0, this.chartHeight]);
 
       this.yScale = d3.scale.linear()
@@ -52,7 +63,7 @@ export class visHistogramScent {
       this.chartHeight = this.height - this.margin.top - this.margin.bottom - this.offset;
 
       this.xScale = d3.scale.linear()
-        .domain([this.minValue, this.maxValue])
+        .domain([domainMin, domainMax])
         .range([0, this.chartWidth]);
 
       this.yScale = d3.scale.linear()
@@ -72,7 +83,6 @@ export class visHistogramScent {
     //   .attr("height", this.height)
     //   .attr("fill", "transparent")
     //   .style("outline", "thin solid black");
-
   }
 
   /**
@@ -172,19 +182,17 @@ export class visHistogramScent {
       .selectAll("text")
       .style("font-size", "10px");
 
-    // top ticks
+    // left tick - smaller value
     d3.select(ticks[0][0])
-      .style("text-anchor", "end")
-      .style("alignment-baseline", "hanging")
-      .attr("x", 0)
-      .attr("transform", "rotate(270)");
-
-    // bottom tick
-    d3.select(ticks[1][0])
       .style("text-anchor", "start")
       .style("alignment-baseline", "hanging")
-      .attr("x", 0)
-      .attr("transform", "rotate(270)");
+      .attr("transform", "rotate(270) translate(" + -(this.chartHeight + this.margin.top) + " , " + (-this.margin.left) + ")");
+
+    // right tick - larger value
+    d3.select(ticks[1][0])
+      .attr("transform", "rotate(270) translate( " + (this.chartHeight - this.margin.top) + ", " + (-this.margin.left) + " )")
+      .style("text-anchor", "end")
+      .style("alignment-baseline", "hanging");
   }
 
 

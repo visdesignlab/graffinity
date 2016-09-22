@@ -330,6 +330,11 @@ export class MainController {
     let matrix = this.matrixManager.getMajorRowsAndColsAsScalarMatrix();
     let rowPerm = undefined;
     let colPerm = undefined;
+
+    if (matrix.length == 1 && matrix[0].length == 1) {
+      this.matrixManager.setSortOrders([0], [0]);
+      return;
+    }
     if (order == 'random') {
       rowPerm = reorder.randomPermutation(matrix.length);
       colPerm = reorder.randomPermutation(matrix[0].length);

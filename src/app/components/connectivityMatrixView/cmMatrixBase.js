@@ -77,6 +77,8 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.gridPosition = [];
 
+    this.isActive = true;
+
     let self = this;
     this.$scope.$on("updatePositions", function (event, rowPerm, colPerm) {
       self.updatePositions(rowPerm, colPerm);

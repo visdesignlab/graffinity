@@ -7,7 +7,14 @@ import {cmNodeListView} from "./cmNodeListView"
 export class cmNodeListWrapper extends cmWrapperBase {
 
   constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
+
+    element.append("div")
+      .attr("id", "intermediate-nodes-warning")
+      .html("");
+
+
     super(element, $log, scope, mainController, "node-list");
+
 
     this.controlsHeader = new cmNodeListControls(this.controlsHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);
@@ -32,9 +39,47 @@ export class cmNodeListWrapper extends cmWrapperBase {
 
     this.updateElementPositions();
 
+    if (!model.getIntermediateNodeIndexes().length) {
+      this.setWarningMessageVisible(true);
+    }
+
     this.matrices.forEach(function (matrix) {
-      matrix.onSortRowsByAttribute("num paths", false)
+      if (matrix.isActive) {
+        matrix.onSortRowsByAttribute("num paths", false)
+      }
     });
+  }
+
+  setModel(model) {
+    if (model.getIntermediateNodeIndexes().length) {
+      this.setWarningMessageVisible(false);
+      super.setModel(model);
+    } else {
+      this.setWarningMessageVisible(true);
+    }
+  }
+
+  setWarningMessageVisible(visible) {
+    if (visible) {
+      this.element.select("#intermediate-nodes-warning")
+        .html("Found no intermediate nodes. All paths must be one hop.")
+        .style("display", "block");
+
+      this.element.select(".matrix-view-bottom-row")
+        .style("display", "none");
+
+      this.element.select(".node-list-top-row")
+        .style("display", "none");
+    } else {
+      this.element.select("#intermediate-nodes-warning")
+        .style("display", "none");
+
+      this.element.selectAll(".matrix-view-bottom-row")
+        .style("display", "block");
+
+      this.element.selectAll(".node-list-top-row")
+        .style("display", "block");
+    }
   }
 }
 
