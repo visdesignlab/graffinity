@@ -127,7 +127,7 @@ export class Layout {
     let element = d3.select("#node-link-column")[0][0];
 
     if (!element.clientHeight) {
-      this.width = 442; // default values for 1080p full screen
+      this.width = 368; // default values for 1080p full screen
       this.height = 717;
     } else {
       this.height = element.clientHeight - 30;

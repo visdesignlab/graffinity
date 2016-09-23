@@ -57,7 +57,7 @@ export class GeographicLayout extends Layout {
     // scale to 420 puts the map at the right location for the hard-coded size
     this.projection = d3.geo.albers()
       .translate([self.width / 2, self.height / 8 * 2])
-      .scale(600);
+      .scale(400);
 
     this.path = d3.geo.path().projection(this.projection);
 

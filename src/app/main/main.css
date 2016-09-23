@@ -59,27 +59,46 @@ body {
 .pane {
   padding: 0;
   position: relative;
+  margin-top: 3px;
 }
 
 .pane.left-pane {
-  width: 16.66%;
+  width: 15%;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
 }
 
 .pane.center-pane {
-  width: calc(100% - 16.66% - 24.99%);
-  padding-left: 25px;
+  width: calc(100% - 16.66% - 19.99% - 20%);
+  padding-left: 10px;
+  border-left: thick solid lightgray;
+  border-top: thick solid lightgray;
+  border-bottom: thick solid lightgray;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  margin-left: 0.5%;
+}
+
+.pane.pane-center-right {
+  width: auto;
+  border-top: thick solid lightgray;
+  border-right: thick solid lightgray;
+  border-bottom: thick solid lightgray;
+  border-left: thin solid lightgrey;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding-left: 10px;
 }
 
 .pane.right-pane {
-  width: 24.99%;
+  width: 20.99%;
+  margin-left: 0.5%;
+  border-radius: 5px;
 }
 
 .pane.grey-border {
-  border-color: lightgray;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 5px;
-  margin-top: 3px;
+  border: thick solid lightgray;
 }
 
 /* Overrides definition in uib */
