@@ -47,7 +47,7 @@ export class MainController {
     this.database = database;
 
     this.availablePanels = ["Node Link", "Path List"];
-    this.selectedPanel = this.availablePanels[0];
+    this.selectedPanel = this.availablePanels[1];
 
     let useLargeResult = false;
     useLargeResult = true;

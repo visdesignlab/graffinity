@@ -32,9 +32,13 @@
 
 .path-list-edge {
   display: inline-block;
-  width: 25px;
-  height: 5px;
+  width: 5px;
+  height: 21x;
   background: darkgrey;
   padding: 0;
   transform: translateY(-50%);
+}
+
+.path-list-child-row {
+  border-top: none !important;
 }

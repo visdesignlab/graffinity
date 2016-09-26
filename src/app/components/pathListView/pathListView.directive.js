@@ -2,6 +2,7 @@
  */
 
 import {Utils} from "../utils/utils"
+import {PathListModel} from "./pathListModel"
 
 /**
  * Angular directive that will contain the node-link diagrams. Interaction with this is handled by the
@@ -65,9 +66,10 @@ class PathListViewDirectiveController {
 
     this.ui = {};
 
-    this.model = $scope.$parent.main.model;
-    this.itemsPerPage = 20;
-    this.currentPage = 1;
+    this.descending = true;
+    this.orderByField = 'paths.length';
+
+    this.setModel($scope.$parent.main.model);
     this.currentPaths = [];
   }
 
@@ -77,10 +79,6 @@ class PathListViewDirectiveController {
 
   activate(element) {
     this.element = element;
-
-    // 40 is height of path items + margins
-    // 100 is room for header and footer
-    this.itemsPerPage = Math.floor((this.getClientHeight() - 100) / 40);
   }
 
   /**
@@ -88,28 +86,21 @@ class PathListViewDirectiveController {
    */
   setModel(signal, model) {
     this.model = model;
+    this.pathListModel = new PathListModel(model, this.$log);
   }
 
   /**
    * User selected some paths. Draw them in the layout.
    */
   setSelectedPaths(signal, paths) {
+    this.pathListModel.setPaths(paths);
+    this.pathListModel.aggregatePaths();
     this.paths = paths;
-    this.setPage(1);
-  }
-
-  setPage(newPage) {
-    this.currentPage = newPage;
-    this.currentPaths = [];
-    for (let i = 0; i < this.itemsPerPage; ++i) {
-      let index = (this.itemsPerPage * (this.currentPage - 1)) + i;
-      if (index < this.paths.length) {
-        this.currentPaths.push(this.paths[index]);
-      }
+    this.$log.debug(this.pathListModel);
+    this.isRowExpanded = [];
+    for (let i = 0; i < this.pathListModel.rows.length; ++i) {
+      this.isRowExpanded[i] = false;
     }
-    this.$timeout(function () {
-      angular.element('[data-toggle="tooltip"]').tooltip(); // to do - this searches entire dom for elements
-    });
   }
 
   /**

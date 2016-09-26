@@ -140,3 +140,7 @@ body {
   position: relative;
 }
 
+.vertical-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
