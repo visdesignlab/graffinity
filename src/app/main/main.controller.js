@@ -50,7 +50,7 @@ export class MainController {
     this.selectedPanel = this.availablePanels[1];
 
     let useLargeResult = false;
-    useLargeResult = true;
+    //useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;
@@ -129,7 +129,7 @@ export class MainController {
 
   activate(jsonGraph, jsonMatrix) {
     // Populate the model with default dataset
-    let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph);
+    let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph, this.database);
     let matrix = this.cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = this.cmModelFactory.createModel(graph, matrix);
     let self = this;
