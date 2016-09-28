@@ -4,35 +4,45 @@
 
 <div class="vflex grow-1 vertical-scroll">
   <div ng-if="controller.pathListModel.rows.length > 0" class="path-list-container grow-1">
-    <table class="table">
+    <table>
+      <col width="5%">
+      <col width="80%">
+      <col width="7.5%">
+      <col width="7.5%">
       <thead>
-      <tr>
-        <th></th>
-        <th>Path Motif</th>
-        <th ng-click="controller.orderByField='paths[0].length'; controller.descending=!controller.descending">Length
+      <tr class="path-list-header-row">
+        <th class="path-list-controls-col"></th>
+        <th class="path-list-motif-col">Path Motif</th>
+        <th class="path-list-length-col path-list-center-content"
+            ng-click="controller.orderByField='paths[0].length'; controller.descending=!controller.descending">
+          Length
         </th>
-        <th ng-click="controller.orderByField='paths.length'; controller.descending=!controller.descending">Count</th>
+        <th class="path-list-length-col"
+            ng-click="controller.orderByField='paths.length'; controller.descending=!controller.descending">Count
+        </th>
       </tr>
       </thead>
 
       <!-- Table to display path motifs -->
-      <tbody ng-repeat="row in controller.pathListModel.rows | orderBy:controller.orderByField:controller.descending">
-
-      <tr>
+      <tbody
+        ng-repeat="row in controller.pathListModel.rows | orderBy:controller.orderByField:controller.descending"
+        class="path-list-path-body">
+      <tr class="path-list-spacer"></tr>
+      <tr class="path-list-path-row">
         <!-- Cell for expanding/collapsing row -->
-        <td>
+        <td class="path-list-controls-col">
           <span class="matrix-view-edit-attribute-controls">
-            <i class="fa fa-plus" ng-show="!row.isExpanded"
+            <i class="fa fa-angle-right" ng-show="!row.isExpanded"
                ng-click="row.isExpanded=!row.isExpanded;">
             </i>
-            <i class="fa fa-minus" ng-show="row.isExpanded"
+            <i class="fa fa-angle-down" ng-show="row.isExpanded"
                ng-click="row.isExpanded=!row.isExpanded;">
             </i>
           </span>
         </td>
 
         <!-- Cell for motif - list of nodes -->
-        <td>
+        <td class="path-list-motif-col">
           <span ng-repeat="i in row.paths[0] track by $index">
             <span ng-if="$index%2==0" class="path-list-node"
                   ng-class="{'path-list-hovered' : controller.hoveredNodes.indexOf(row.paths[0][$index]) != -1}"
@@ -46,19 +56,26 @@
         </td>
 
         <!-- cell for path length -->
-        <td>
+        <td class="path-list-center-content">
           {{(row.paths[0].length + 1) / 2}}
         </td>
 
         <!-- cell for num paths -->
-        <td>
+        <td class="path-list-center-content">
           {{row.paths.length}}
         </td>
       </tr>
 
       <!-- Row for children -->
-      <tr ng-show=" row.isExpanded" ng-repeat="path in row.paths">
-        <td colspan="4" class="path-list-child-row">{{path}}</td>
+      <tr ng-show=" row.isExpanded" ng-repeat="path in row.paths" class="path-list-child-container">
+        <td colspan="1" class="path-list-controls-col"></td>
+        <td colspan="4" class="path-list-child-row">
+          <span ng-repeat="i in path track by $index">
+            <span ng-if="$index % 2" class="path-list-edge-item" ng-style="{left: 0.5 + (($index + 1) / 2) + 'em'}">
+              {{controller.pathListModel.getEdgeDetails(path[$index])}}
+            </span>
+          </span>
+        </td>
       </tr>
 
       </tbody>

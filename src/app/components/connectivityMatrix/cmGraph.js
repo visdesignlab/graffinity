@@ -33,6 +33,7 @@ export class cmGraph {
     }
 
     // create edges.
+    this.edgeDict = {};
     if (this.database == "marclab") {
       for (i = 0; i < this.jsonGraph.edges.length; ++i) {
         let edge = this.jsonGraph.edges[i];
@@ -53,6 +54,8 @@ export class cmGraph {
           carrier: edge.Carrier
         };
 
+        this.edgeDict[edge.ID] = attributes;
+
         this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
       }
     } else {
@@ -71,10 +74,13 @@ export class cmGraph {
           date: edge.DepDate,
           flightNum: edge.FlightNum,
           depTime: edge.DepTime,
-          arrTime: edge.ArrTime
+          arrTime: edge.ArrTime,
+          carrier: edge.Carrier
         };
 
-        this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
+        this.edgeDict[edge.ID] = attributes;
+
+        this.graph.setEdge(sourceId, targetId, edge.ID);
       }
     }
   }
@@ -219,6 +225,10 @@ export class cmGraph {
       }
     }
     return names;
+  }
+
+  getEdge(edgeIndex) {
+    return this.edgeDict[edgeIndex];
   }
 
   getEdges() {

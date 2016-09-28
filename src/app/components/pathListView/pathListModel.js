@@ -41,6 +41,12 @@ export class PathListModel {
     return this.rows;
   }
 
+  getEdgeDetails(edgeIndex) {
+    let graph = this.model.getCmGraph();
+    let edge = graph.getEdge(edgeIndex);
+    return edge.carrier + "-" + edge.flightNum + "-" + edge.depTime;
+  }
+
   setPaths(paths) {
     this.paths = paths;
     this.rows = [];
