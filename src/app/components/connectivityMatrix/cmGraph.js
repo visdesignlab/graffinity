@@ -80,7 +80,7 @@ export class cmGraph {
 
         this.edgeDict[edge.ID] = attributes;
 
-        this.graph.setEdge(sourceId, targetId, edge.ID);
+        this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
       }
     }
   }
@@ -229,6 +229,15 @@ export class cmGraph {
 
   getEdge(edgeIndex) {
     return this.edgeDict[edgeIndex];
+  }
+
+  getEdgeDetails(edgeIndex) {
+    let edge = this.getEdge(edgeIndex);
+    if(this.database == "flights") {
+      return edge.carrier + "-" + edge.flightNum;
+    } else {
+      return edge.type;
+    }
   }
 
   getEdges() {

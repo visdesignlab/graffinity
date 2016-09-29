@@ -1,7 +1,45 @@
 /* These are copied from pathfinder's style.css */
 
+/* Format for column containing freq and count*/
+.path-list-attribute-col {
+  padding-right: 2px;
+  padding-left: 2px;
+  text-align: center;
+}
+
+.path-list-child-edge {
+  width: 4em;
+  font-size: 1em;
+  margin-left: 0.2em;
+  margin-right: 0.2em;
+  position: relative;
+  display: inline-table;
+  left: 2em;
+}
+
+.path-list-header-row {
+  border-bottom: thin solid lightgrey;
+}
+
+.path-list-hovered {
+  background: #FFC800;
+}
+
+.path-list-edge {
+  display: inline-block;
+  background: darkgrey;
+  font-size: 14px;
+  width: 0.75em;
+  height: 0.25em;
+  position: relative;
+  top: -0.125em; /* half of height */
+}
+
+.path-list-edge:hover {
+  background: #FFC800;
+}
+
 .path-list-path {
-  margin: 10px;
   font-size: 0;
 }
 
@@ -13,73 +51,14 @@
   alignment-baseline: middle;
   text-align: center;
   border-radius: 3px;
-  width: 3em;
+  width: 4em;
 }
 
 .path-list-node:hover {
   background: #FFC800;
 }
 
-.path-list-hovered {
-  background: #FFC800;
-}
-
-.path-list-edge:hover {
-  background: #FFC800;
-}
-
-.path-list-edge {
-  display: inline-block;
-  background: darkgrey;
-  padding: 0;
-  width: 0.4em;
-}
-
-.path-list-child-row {
-  border-top: none !important;
-  outline: thin solid red;
-
-}
-
-.path-list-header-row {
-  border-bottom: thin solid lightgrey;
-}
-
-.path-list-motif-col {
-  width: 80%;
-}
-
-.path-list-length-col {
-  padding-right: 5px;
-  padding-left: 5px;
-}
-
-.path-list-center-content {
-  text-align: center;
-}
-
-.path-list-path-row {
-  padding-bottom: 10px;
-}
-
-
-.path-list-child-container {
-}
-
-.path-list-path-body {
-  padding-bottom: 10px;
-}
-
 .path-list-spacer {
   height: 5px;
 }
 
-.path-list-edge-item {
-  width: 3em;
-  background: red;
-  position: relative;
-}
-
-.path-list-controls-col {
-  width: 1em;
-}
