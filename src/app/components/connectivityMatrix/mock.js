@@ -297,62 +297,206 @@ mock.smallFlightResult = {
       "ID": 35,
       "market": "32457"
     }],
-    "edges": [{"SourceID": 17, "Carrier": "DL", "TargetID": 9, "ID": 10588}, {
-      "SourceID": 17,
-      "Carrier": "B6",
-      "TargetID": 9,
-      "ID": 10618
-    }, {"SourceID": 150, "Carrier": "DL", "TargetID": 170, "ID": 9607}, {
-      "SourceID": 13,
-      "Carrier": "B6",
-      "TargetID": 9,
-      "ID": 8989
-    }, {"SourceID": 26, "Carrier": "UA", "TargetID": 186, "ID": 1806}, {
-      "SourceID": 35,
-      "Carrier": "DL",
-      "TargetID": 170,
-      "ID": 9349
-    }, {"SourceID": 150, "Carrier": "HA", "TargetID": 170, "ID": 12542}, {
-      "SourceID": 26,
-      "Carrier": "NK",
-      "TargetID": 4,
-      "ID": 13441
-    }, {"SourceID": 35, "Carrier": "UA", "TargetID": 186, "ID": 6500}, {
-      "SourceID": 35,
-      "Carrier": "HA",
-      "TargetID": 150,
-      "ID": 12565
-    }, {"SourceID": 27, "Carrier": "B6", "TargetID": 9, "ID": 9053}, {
-      "SourceID": 35,
-      "Carrier": "DL",
-      "TargetID": 170,
-      "ID": 10103
-    }, {"SourceID": 27, "Carrier": "B6", "TargetID": 9, "ID": 8904}, {
-      "SourceID": 35,
-      "Carrier": "AA",
-      "TargetID": 13,
-      "ID": 8061
-    }, {"SourceID": 35, "Carrier": "UA", "TargetID": 186, "ID": 6482}, {
-      "SourceID": 4,
-      "Carrier": "B6",
-      "TargetID": 9,
-      "ID": 11013
-    }, {"SourceID": 186, "Carrier": "B6", "TargetID": 9, "ID": 11031}, {
-      "SourceID": 26,
-      "Carrier": "AS",
-      "TargetID": 9,
-      "ID": 8230
-    }, {"SourceID": 13, "Carrier": "F9", "TargetID": 27, "ID": 12519}, {
-      "SourceID": 4,
-      "Carrier": "NK",
-      "TargetID": 17,
-      "ID": 13460
-    }, {"SourceID": 35, "Carrier": "AA", "TargetID": 13, "ID": 7259}, {
-      "SourceID": 13,
-      "Carrier": "DL",
-      "TargetID": 9,
-      "ID": 10456
-    }],
+    "edges": [
+      {
+        "FlightNum": "0",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 17,
+        "Carrier": "DL",
+        "TargetID": 9,
+        "ID": 10588
+      }, {
+        "FlightNum": "1",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 17,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 10618
+      }, {
+        "SourceID": 150,
+        "Carrier": "DL",
+        "TargetID": 170,
+        "ID": 9607,
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653
+      }, {
+        "SourceID": 13,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 8989,
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 26,
+        "Carrier": "UA",
+        "TargetID": 186,
+        "ID": 1806
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "DL",
+        "TargetID": 170,
+        "ID": 9349
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 150,
+        "Carrier": "HA",
+        "TargetID": 170,
+        "ID": 12542
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 26,
+        "Carrier": "NK",
+        "TargetID": 4,
+        "ID": 13441
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "UA",
+        "TargetID": 186,
+        "ID": 6500
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "HA",
+        "TargetID": 150,
+        "ID": 12565
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 27,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 9053
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "DL",
+        "TargetID": 170,
+        "ID": 10103
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 27,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 8904
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "AA",
+        "TargetID": 13,
+        "ID": 8061
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "UA",
+        "TargetID": 186,
+        "ID": 6482
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 4,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 11013
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 186,
+        "Carrier": "B6",
+        "TargetID": 9,
+        "ID": 11031
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 26,
+        "Carrier": "AS",
+        "TargetID": 9,
+        "ID": 8230
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 13,
+        "Carrier": "F9",
+        "TargetID": 27,
+        "ID": 12519
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 4,
+        "Carrier": "NK",
+        "TargetID": 17,
+        "ID": 13460
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 35,
+        "Carrier": "AA",
+        "TargetID": 13,
+        "ID": 7259
+      }, {
+        "FlightNum": "288",
+        "DepDate": "15-1-1",
+        "ArrTime": 1445,
+        "DepTime": 653,
+        "SourceID": 13,
+        "Carrier": "DL",
+        "TargetID": 9,
+        "ID": 10456
+      }],
     "edge_attributes": [{
       "DataType": "index",
       "Type": "int",
@@ -432,12 +576,11 @@ mock.smallFlightResult = {
   },
   "matrix": {
     "source_ids": [13, 35, 26],
-    "matrix":
-      [[[[13, 12519, 27, 9053, 9], [13, 12519, 27, 8904, 9], [13, 10456, 9], [13, 8989, 9]], []],
+    "matrix": [[[[13, 12519, 27, 9053, 9], [13, 12519, 27, 8904, 9], [13, 10456, 9], [13, 8989, 9]], []],
 
-        [[[35, 8061, 13, 10456, 9], [35, 7259, 13, 10456, 9], [35, 6500, 186, 11031, 9], [35, 6482, 186, 11031, 9]], [[35, 10103, 170], [35, 9349, 170], [35, 12565, 150, 12542, 170], [35, 12565, 150, 9607, 170]]],
+      [[[35, 8061, 13, 10456, 9], [35, 7259, 13, 10456, 9], [35, 6500, 186, 11031, 9], [35, 6482, 186, 11031, 9]], [[35, 10103, 170], [35, 9349, 170], [35, 12565, 150, 12542, 170], [35, 12565, 150, 9607, 170]]],
 
-        [[[26, 8230, 9], [26, 1806, 186, 11031, 9], [26, 13441, 4, 11013, 9], [26, 13441, 4, 13460, 17, 10618, 9], [26, 13441, 4, 13460, 17, 10588, 9]], []]],
+      [[[26, 8230, 9], [26, 1806, 186, 11031, 9], [26, 13441, 4, 11013, 9], [26, 13441, 4, 13460, 17, 10618, 9], [26, 13441, 4, 13460, 17, 10588, 9]], []]],
     "target_ids": [9, 170]
   }
 };

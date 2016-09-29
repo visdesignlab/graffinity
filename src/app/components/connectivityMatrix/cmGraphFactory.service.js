@@ -25,7 +25,7 @@ export class cmGraphFactory {
     return deferred.promise;
   }
 
-  createFromJsonObject(jsonGraph) {
-    return new cmGraph(jsonGraph);
+  createFromJsonObject(jsonGraph, database) {
+    return new cmGraph(jsonGraph, database);
   }
 }

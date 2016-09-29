@@ -6,8 +6,9 @@ import {Utils} from "../utils/utils"
 
 export class cmGraph {
 
-  constructor(jsonGraph) {
+  constructor(jsonGraph, database) {
     this.jsonGraph = jsonGraph;
+    this.database = database;
     this.activate();
   }
 
@@ -32,26 +33,55 @@ export class cmGraph {
     }
 
     // create edges.
-    for (i = 0; i < this.jsonGraph.edges.length; ++i) {
-      var edge = this.jsonGraph.edges[i];
-      var sourceId = edge.SourceID;
-      var targetId = edge.TargetID;
-      var source = this.getNode(sourceId);
-      var target = this.getNode(targetId);
+    this.edgeDict = {};
+    if (this.database == "marclab") {
+      for (i = 0; i < this.jsonGraph.edges.length; ++i) {
+        let edge = this.jsonGraph.edges[i];
+        let sourceId = edge.SourceID;
+        let targetId = edge.TargetID;
+        let source = this.getNode(sourceId);
+        let target = this.getNode(targetId);
 
-      if (source == undefined || target == undefined) {
-        throw 'Error creating edge in graph! ' + sourceId + ', ' + targetId;
+        if (source == undefined || target == undefined) {
+          throw 'Error creating edge in graph! ' + sourceId + ', ' + targetId;
+        }
+
+        attributes = {
+          linkedStructures: edge.LinkedStructures,
+          sourceStructureId: edge.SourceStructureID,
+          targetStructureId: edge.TargetStructureID,
+          type: edge.Type,
+          carrier: edge.Carrier
+        };
+
+        this.edgeDict[edge.ID] = attributes;
+
+        this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
       }
+    } else {
+      for (i = 0; i < this.jsonGraph.edges.length; ++i) {
+        let edge = this.jsonGraph.edges[i];
+        let sourceId = edge.SourceID;
+        let targetId = edge.TargetID;
+        let source = this.getNode(sourceId);
+        let target = this.getNode(targetId);
 
-      attributes = {
-        linkedStructures: edge.LinkedStructures,
-        sourceStructureId: edge.SourceStructureID,
-        targetStructureId: edge.TargetStructureID,
-        type: edge.Type,
-        carrier: edge.Carrier
-      };
+        if (source == undefined || target == undefined) {
+          throw 'Error creating edge in graph! ' + sourceId + ', ' + targetId;
+        }
 
-      this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
+        attributes = {
+          date: edge.DepDate,
+          flightNum: edge.FlightNum,
+          depTime: edge.DepTime,
+          arrTime: edge.ArrTime,
+          carrier: edge.Carrier
+        };
+
+        this.edgeDict[edge.ID] = attributes;
+
+        this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
+      }
     }
   }
 
@@ -195,6 +225,19 @@ export class cmGraph {
       }
     }
     return names;
+  }
+
+  getEdge(edgeIndex) {
+    return this.edgeDict[edgeIndex];
+  }
+
+  getEdgeDetails(edgeIndex) {
+    let edge = this.getEdge(edgeIndex);
+    if(this.database == "flights") {
+      return edge.carrier + "-" + edge.flightNum;
+    } else {
+      return edge.type;
+    }
   }
 
   getEdges() {

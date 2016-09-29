@@ -2,41 +2,94 @@
   Path List
 </h4>
 
-<div class="vflex grow-1">
-  <div ng-if="controller.paths" class="path-list-container grow-1">
-    <div ng-repeat="path in controller.currentPaths" class="path-list-path">
-    <span ng-repeat="i in path track by $index">
-    <span ng-if="$index%2==0"
-          ng-model="path[$index]"
-          class="path-list-node"
-          ng-class="{'path-list-hovered': controller.hoveredNodes.indexOf(path[$index]) != -1}"
-          ng-mouseover="controller.hoverNodes([path[$index]])"
-          ng-mouseleave="controller.hoverNodes()">
-    {{controller.model.getMajorLabels([path[$index]])[0]}}
-    </span>
-    <span ng-if="$index%2==1" class="path-list-edge"
-          data-toggle="tooltip"
-          data-title="Edge: {{path[$index]}}"
-          data-container="body"
-          data-placement="top">
-    </span>
-    </span>
-    </div>
-  </div>
-  <div uib-pagination
-       ng-show="controller.paths && controller.paths.length > controller.itemsPerPage"
-       items-per-page="controller.itemsPerPage"
-       total-items="controller.paths.length"
-       ng-model="controller.currentPage"
-       max-size="5"
-       force-ellipses="true"
-       class="pagination-sm"
-       ng-change="controller.setPage(controller.currentPage)">
+<div class="vflex grow-1 vertical-scroll">
+  <div ng-if="controller.pathListModel.rows.length > 0" class="path-list-container grow-1">
+    <table>
+      <col width="3%">
+      <col width="90%">
+      <col width="3%">
+      <col width="3%">
+      <thead>
+      <tr class="path-list-header-row">
+        <th></th>
+        <th>Path Motif</th>
+        <th class="path-list-attribute-col"
+            ng-click="controller.orderByField='paths[0].length'; controller.descending=!controller.descending">
+          Len
+        </th>
+        <th class="path-list-attribute-col"
+            ng-click="controller.orderByField='paths.length'; controller.descending=!controller.descending">
+          Freq
+        </th>
+      </tr>
+      </thead>
+
+      <!-- Table to display path motifs -->
+      <tbody class="path-list-path-body"
+             ng-repeat="row in controller.pathListModel.rows | orderBy:controller.orderByField:controller.descending">
+
+      <!--Space between rows-->
+      <tr class="path-list-spacer"></tr>
+
+      <!-- Row to hold path -->
+      <tr>
+
+        <!-- Cell for expanding/collapsing row -->
+        <td>
+          <span class="matrix-view-edit-attribute-controls">
+            <i class="fa fa-angle-right" ng-show="!row.isExpanded"
+               ng-click="row.isExpanded=!row.isExpanded;">
+            </i>
+            <i class="fa fa-angle-down" ng-show="row.isExpanded"
+               ng-click="row.isExpanded=!row.isExpanded;">
+            </i>
+          </span>
+        </td>
+
+        <!-- Cell for motif - list of nodes -->
+        <td>
+          <span class="path-list-path" ng-repeat="i in row.paths[0] track by $index">
+            <span ng-if="$index%2==0"
+                  class="path-list-node"
+                  ng-class="{'path-list-hovered' : controller.hoveredNodes.indexOf(row.paths[0][$index]) != -1}"
+                  ng-mouseover="controller.hoverNodes([row.paths[0][$index]])"
+                  ng-mouseleave="controller.hoverNodes()">
+              {{controller.model.getMajorLabels([row.paths[0][$index]])[0]}}
+            </span>
+            <span ng-show="$index%2==1" class="path-list-edge">
+            </span>
+          </span>
+        </td>
+
+        <!-- cell for path length -->
+        <td class="path-list-attribute-col">
+          {{(row.paths[0].length + 1) / 2}}
+        </td>
+
+        <!-- cell for num paths -->
+        <td class="path-list-attribute-col">
+          {{row.paths.length}}
+        </td>
+      </tr>
+
+      <!-- Row for children -->
+      <tr ng-show="row.isExpanded" ng-repeat="path in row.paths">
+        <td colspan="1"></td>
+        <td colspan="4">
+          <span ng-repeat="i in path track by $index">
+            <div ng-if="$index % 2"
+                 class="path-list-child-edge"
+                 ng-bind-html="controller.pathListModel.getEdgeDetails(path[$index])">
+            </div>
+          </span>
+        </td>
+      </tr>
+
+      </tbody>
+    </table>
   </div>
 
   <div ng-if="!controller.paths">
     Select some paths to see a list!
   </div>
 </div>
-
-
