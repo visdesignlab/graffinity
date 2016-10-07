@@ -76,10 +76,10 @@ class AdjustableColorScaleController {
     newDomain.sort(function (a, b) {
       return a > b;
     });
-    self.update();
 
     self.colorScale.domain(newDomain);
     self.xAxis.tickValues(newDomain);
+    self.update();
   }
 
   dragEnd() {
