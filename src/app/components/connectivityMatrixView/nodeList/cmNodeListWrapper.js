@@ -6,15 +6,13 @@ import {cmNodeListView} from "./cmNodeListView"
 
 export class cmNodeListWrapper extends cmWrapperBase {
 
-  constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController) {
+  constructor(element, model, $log, $uibModal, scope, viewState, modalService, mainController, $compile) {
 
     element.append("div")
       .attr("id", "intermediate-nodes-warning")
       .html("");
 
-
-    super(element, $log, scope, mainController, "node-list");
-
+    super(element, $log, scope, mainController, "node-list", $compile);
 
     this.controlsHeader = new cmNodeListControls(this.controlsHeaderGroup, model, $log, $uibModal, scope, viewState,
       modalService, mainController);

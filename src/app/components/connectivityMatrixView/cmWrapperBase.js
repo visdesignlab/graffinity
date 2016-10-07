@@ -1,12 +1,13 @@
 export class cmWrapperBase {
 
-  constructor(element, $log, scope, mainController, name) {
+  constructor(element, $log, scope, mainController, name, $compile) {
     this.$log = $log;
     this.$scope = scope;
     this.element = element;
     this.mainController = mainController;
     this.matrices = [];
     this.useAnimation = true;
+    this.$compile = $compile;
     let self = this;
     this.$scope.$on("changeMatrixHeight", function () {
       self.updateElementPositions(null, null, self.useAnimation);
@@ -74,6 +75,22 @@ export class cmWrapperBase {
       .attr({width: 1024, height: 1024});
 
     this.matrixGroup = this.matrixSvg.append("g");
+
+
+    this.legendDiv = this.element.append("div");
+    if (name == "node-list") {
+
+      this.colors = this.legendDiv.append("adjustable-color-scale-directive")
+        .attr("color-scale", "main.nodeListManager.matrix.colorScales[0]")
+        .attr("values", "main.nodeListManager.matrix.colorScalesValues[0]")[0][0];
+
+    } else {
+      this.colors = this.legendDiv.append("adjustable-color-scale-directive")
+        .attr("color-scale", "main.matrixManager.matrix.colorScales[0]")
+        .attr("values", "main.matrixManager.matrix.colorScalesValues[0]")[0][0];
+    }
+
+    this.$compile(this.colors)(scope);
   }
 
   setUseAnimation(useAnimation) {
@@ -96,6 +113,7 @@ export class cmWrapperBase {
   }
 
   setModel(model) {
+
     for (let i = 0; i < this.matrices.length; ++i) {
 
       // matrix.setModel creates a bunch of rows

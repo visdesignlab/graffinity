@@ -7,7 +7,7 @@ import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database, $http) {
+              viewState, modalService, database, $http, colorScaleService) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -20,6 +20,7 @@ export class MainController {
     this.modalService = modalService;
     this.$timeout = $timeout;
     this.$http = $http;
+    this.colorScaleService = colorScaleService;
 
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
@@ -50,7 +51,7 @@ export class MainController {
     this.selectedPanel = this.availablePanels[1];
 
     let useLargeResult = false;
-    //useLargeResult = true;
+    useLargeResult = true;
 
     let jsonGraph = null;
     let jsonMatrix = null;

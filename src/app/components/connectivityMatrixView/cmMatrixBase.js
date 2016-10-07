@@ -8,7 +8,6 @@ import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
 import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
 import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
-import {cmColorMapLegend} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
@@ -123,6 +122,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$scope.$on("positionHighlights", self.onPositionHighlights.bind(self));
     this.$scope.$on("hideHighlights", self.onHideHighlights.bind(self));
     this.$scope.$on("clearSelection", self.onClearSelection.bind(self));
+    this.$scope.$on("setColorScale", self.setColorScale.bind(self));
   }
 
   addRow(row, rowHeight) {
@@ -882,7 +882,35 @@ export class cmMatrixBase extends SvgGroupElement {
       .attr("data-is-sorted", '');
   }
 
+  /**
+   * Updates the bound color scale.
+   */
+  setColorScale(signal, colorScaleIndex, colorScale) {
+
+    let cellWidth = this.colWidth;
+    let cellHeight = this.rowHeight;
+
+    let visitor = new cmColorMapVisitor(colorScale, colorScaleIndex, cellWidth, cellHeight);
+
+    let clicked = this.onCellClicked.bind(this);
+    let mouseover = this.onCellMouseOver.bind(this);
+    let mouseout = this.onCellMouseOut.bind(this);
+
+    let metricFunction = cmMatrixBase.getMetricFunction(this.metric);
+
+    visitor.setCallbacks(clicked, mouseover, mouseout);
+    visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+    visitor.setMetricFunction(metricFunction);
+    visitor.graph = this.model.graph;
+    this.applyVisitor(visitor);
+  }
+
+
   setEncoding(encoding, metric) {
+    if (!this.hasEncodings) {
+      return;
+    }
+
     this.encoding = encoding;
     this.metric = metric;
     let preprocessor = undefined;
@@ -910,24 +938,32 @@ export class cmMatrixBase extends SvgGroupElement {
 
       this.legend = undefined;
     } else if (encoding == "colormap") {
+      this.setEncodingToColorMap(metric);
+    }
+  }
 
-      let metricFunction = cmMatrixBase.getMetricFunction(metric);
+  setEncodingToColorMap(metric) {
+    let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
-      preprocessor = new cmColorMapPreprocessor();
-      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      preprocessor.setMetricFunction(metricFunction);
-      preprocessor.graph = this.model.graph;
-      this.applyVisitor(preprocessor);
+    let preprocessor = new cmColorMapPreprocessor();
+    preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+    preprocessor.setMetricFunction(metricFunction);
 
-      visitor = new cmColorMapVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setCallbacks(clicked, mouseover, mouseout);
-      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      visitor.setMetricFunction(metricFunction);
-      visitor.graph = this.model.graph;
-      this.applyVisitor(visitor);
+    // TODO - why does preprocessor get a graph?
+    preprocessor.graph = this.model.graph;
+    this.applyVisitor(preprocessor);
 
-      this.legend = new cmColorMapLegend(visitor);
+    this.colorScales = [];
+    this.colorScalesValues = [];
 
+    this.colorScales[0] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexSets, preprocessor.setRange);
+    this.colorScalesValues[0] = preprocessor.valuesOfSets;
+    this.setColorScale(null, 0, this.colorScales[0]);
+
+    if (this.colorScaleIndexNodes != -1) {
+      this.colorScales[1] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexNodes, preprocessor.nodeRange);
+      this.setColorScale(null, 1, this.colorScales[1]);
+      this.colorScalesValues[1] = preprocessor.valuesOfNodes;
     }
 
   }

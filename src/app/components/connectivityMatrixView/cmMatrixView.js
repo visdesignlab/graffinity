@@ -12,6 +12,10 @@ export class cmMatrixView extends cmMatrixBase {
     this.colWidthControl = 0;
     this.rowHeightAttr = 0;
 
+    this.hasEncodings = true;
+    this.colorScaleIndexNodes = 1;
+    this.colorScaleIndexSets = 0;
+
     this.setModel(model);
   }
 

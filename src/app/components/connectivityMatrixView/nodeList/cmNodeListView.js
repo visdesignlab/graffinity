@@ -12,6 +12,11 @@ export class cmNodeListView extends cmNodeListBase {
     this.colWidthControl = 0;
     this.rowHeightAttr = 0;
 
+    this.hasEncodings = true;
+
+    this.colorScaleIndexSets = 2;
+    this.colorScaleIndexNodes = -1;
+
     this.setModel(model);
   }
 
@@ -45,6 +50,6 @@ export class cmNodeListView extends cmNodeListBase {
       this.addRow(dataRow, this.rowHeight);
 
     }
-
   }
+
 }
