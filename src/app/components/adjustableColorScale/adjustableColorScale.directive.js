@@ -1,6 +1,6 @@
 /*globals d3
  */
-
+import {visHistogramScent} from "../vis/visHistogramScent"
 export class AdjustableColorScaleDirective {
 
   constructor($log, $timeout) {
@@ -38,8 +38,8 @@ class AdjustableColorScaleController {
     this.svg = null;
 
     this.formatNumber = d3.format("d");
-    this.marginLeft = 10;
-    this.marginRight = 10;
+    this.marginLeft = 5;
+    this.marginRight = 5;
     this.width = 180;
 
     let self = this;
@@ -56,8 +56,13 @@ class AdjustableColorScaleController {
     this.$scope.$watch(function (scope) {
       return scope.controller.values;
     }, function () {
-      // self.$log.debug("values changed", self.values);
-      // this is what gets called when the values bound to the matrix change.
+
+      if (self.histogram) {
+        self.histogram.clear();
+      }
+
+      self.histogram = new visHistogramScent(self.$scope, self.svgRoot, self.width, 40, 30, false, self.values, 0, true);
+
     });
   }
 
@@ -95,17 +100,43 @@ class AdjustableColorScaleController {
     });
   }
 
+  onResetClicked() {
+    this.setColorScale(0, this.cachedColorScale);
+  }
+
+  onTickDoubleClicked(d) {
+    let self = this;
+
+    let newDomain = [];
+    let domain = this.colorScale.domain();
+    let range = this.colorScale.range();
+    let newRange = [];
+    for (let i = 0; i < domain.length; ++i) {
+      if (domain[i] != d) {
+        newDomain.push(domain[i]);
+        newRange.push(range[i]);
+      }
+    }
+    self.colorScale.domain(newDomain);
+    self.colorScale.range(newRange);
+    self.xAxis.tickValues(newDomain);
+    self.update();
+  }
+
   setColorScale(signal, colorScale) {
+    this.cachedColorScale = colorScale.copy();
     this.colorScale = colorScale;
 
     // Create or clear the svg
     if (!this.svg) {
-
-      this.svg = d3.select(this.element[0])
+      this.svgRoot = d3.select(this.element[0])
         .select(".legend-container")
         .append("svg")
         .attr("width", this.width)
-        .attr("height", 30);
+        .attr("height", 130);
+
+      this.svg = this.svgRoot.append("g")
+        .attr("transform", `translate(0, 43)`);
 
     } else {
 
@@ -157,19 +188,20 @@ class AdjustableColorScaleController {
       .on('drag', this.drag.bind(this))
       .on('dragend', this.dragEnd.bind(this));
 
-    rect.attr("x", function (d) {
-      return self.xScale(d[0]);
-    })
+    rect
+      .attr("x", function (d) {
+        return self.xScale(d[0]);
+      })
       .attr("width", function (d) {
         return self.xScale(d[1]) - self.xScale(d[0]);
       })
       .style("fill", function (d) {
         return self.colorScale(d[0]);
       });
-
     this.group.call(this.xAxis)
       .selectAll(".tick")
       .style("cursor", "ew-resize")
+      .on("dblclick", self.onTickDoubleClicked.bind(self))
       .call(drag)
       .append("rect")
       .attr("x", -3)

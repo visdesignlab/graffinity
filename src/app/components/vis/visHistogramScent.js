@@ -5,12 +5,16 @@ export class visHistogramScent {
   /**
    * Class for representing a histogram.
    */
-  constructor($scope, parent, width, height, numBins, isVertical, values, offset) {
+  constructor($scope, parent, width, height, numBins, isVertical, values, offset, hideTicks) {
     this.$scope = $scope;
-    this.parent = parent;
+
+    this.parent = parent.append("g")
+      .classed("vis-histogram", true);
+
     this.numBins = numBins;
     this.values = values;
     this.offset = offset;
+    this.hideTicks = hideTicks;
 
     this.maxValue = d3.max(this.values);
     this.minValue = d3.min(this.values);
@@ -53,7 +57,10 @@ export class visHistogramScent {
         })])
         .range([this.chartWidth, 0]);
 
-      this.createHistogramTicksVertical();
+      if (!this.hideTicks) {
+        this.createHistogramTicksVertical();
+      }
+
       this.createHistogramBarsVertical();
     }
     else {
@@ -72,7 +79,9 @@ export class visHistogramScent {
         })])
         .range([this.chartHeight, 0]);
 
-      this.createHistogramTicksHorizontal();
+      if (!this.hideTicks) {
+        this.createHistogramTicksHorizontal();
+      }
       this.createHistogramBarsHorizontal();
     }
 
@@ -83,6 +92,13 @@ export class visHistogramScent {
     //   .attr("height", this.height)
     //   .attr("fill", "transparent")
     //   .style("outline", "thin solid black");
+  }
+
+  /**
+   * Remove this from parent svg element.
+   */
+  clear() {
+    this.parent.remove();
   }
 
   /**
@@ -136,7 +152,6 @@ export class visHistogramScent {
       })
       .style("fill", "steelblue");
   }
-
 
   createHistogramTicksHorizontal() {
     let self = this;
@@ -194,7 +209,6 @@ export class visHistogramScent {
       .style("text-anchor", "end")
       .style("alignment-baseline", "hanging");
   }
-
 
   /**
    * Generate histogram with numBins bins.
