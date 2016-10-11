@@ -91,6 +91,15 @@ body {
   padding-left: 10px;
 }
 
+.pane.loading-pane {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-right: thick solid lightgray;
+  border-bottom: thick solid lightgray;
+  justify-content: space-around;
+  align-items: center;
+}
+
 .pane.right-pane {
   width: 20.99%;
   margin-left: 0.5%;

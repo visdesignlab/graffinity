@@ -102,9 +102,19 @@
   </div>
 
   <!-- Error messages -->
-  <div ng-show="!main.hasGoodData" class="pane center-pane">
-    <p ng-show="main.hasActiveQuery">Query is loading...</p>
-    <p ng-show="main.hasQueryError">{{main.queryError}}</p>
+  <div ng-show="!main.hasGoodData" class="pane center-pane loading-pane grow-1 hflex vflex">
+    <h3 ng-show="main.hasActiveQuery">
+      Query is loading...
+    </h3>
+    <div ng-show="main.hasActiveQuery">
+      <i class="fa fa-spinner fa-spin" style="font-size:48px"></i>
+    </div>
+    <h3 ng-show="main.hasQueryError">
+      Something went wrong...
+    </h3>
+    <h4 ng-show="main.hasQueryError">
+      {{main.queryError}}
+    </h4>
   </div>
 
   <!-- Right panel -->
