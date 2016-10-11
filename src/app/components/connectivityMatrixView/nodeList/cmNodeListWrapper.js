@@ -41,17 +41,14 @@ export class cmNodeListWrapper extends cmWrapperBase {
       this.setWarningMessageVisible(true);
     }
 
-    this.matrices.forEach(function (matrix) {
-      if (matrix.isActive) {
-        matrix.onSortRowsByAttribute("num paths", false)
-      }
-    });
+    this.sortByNumPaths();
   }
 
   setModel(model) {
     if (model.getIntermediateNodeIndexes().length) {
       this.setWarningMessageVisible(false);
       super.setModel(model);
+      this.sortByNumPaths();
     } else {
       this.setWarningMessageVisible(true);
     }
@@ -78,6 +75,14 @@ export class cmNodeListWrapper extends cmWrapperBase {
       this.element.selectAll(".node-list-top-row")
         .style("display", "block");
     }
+  }
+
+  sortByNumPaths() {
+    this.matrices.forEach(function (matrix) {
+      if (matrix.isActive) {
+        matrix.onSortRowsByAttribute("num paths", false)
+      }
+    });
   }
 }
 
