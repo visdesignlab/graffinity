@@ -13,7 +13,8 @@ export class AdjustableColorScaleDirective {
     this.restrict = 'EA';
     this.scope = {
       colorScale: '=',
-      values: '='
+      values: '=',
+      colorScaleIndex: '='
     };
 
     this.controller = AdjustableColorScaleController;
@@ -38,9 +39,9 @@ class AdjustableColorScaleController {
     this.svg = null;
 
     this.formatNumber = d3.format("d");
-    this.marginLeft = 5;
-    this.marginRight = 5;
-    this.width = 180;
+    this.marginLeft = 10;
+    this.marginRight = 10;
+    this.width = 200;
 
     let self = this;
     this.$timeout(function () {
@@ -56,12 +57,18 @@ class AdjustableColorScaleController {
     this.$scope.$watch(function (scope) {
       return scope.controller.values;
     }, function () {
-
+      if (!self.values) {
+        return;
+      }
       if (self.histogram) {
         self.histogram.clear();
+      } else {
+        self.histogramGroup = self.svgRoot.append("g")
+          .attr("transform", "translate(5, 0)");
       }
 
-      self.histogram = new visHistogramScent(self.$scope, self.svgRoot, self.width, 40, 30, false, self.values, 0, true);
+
+      self.histogram = new visHistogramScent(self.$scope, self.histogramGroup, self.width - 10, 40, 30, false, self.values, 0, true);
 
     });
   }
@@ -88,7 +95,7 @@ class AdjustableColorScaleController {
   }
 
   dragEnd() {
-    this.$scope.$parent.$broadcast("setColorScale", 0, this.colorScale)
+    this.$scope.$parent.$broadcast("setColorScale", this.colorScaleIndex, this.colorScale)
   }
 
   dragStart(d) {
@@ -102,6 +109,7 @@ class AdjustableColorScaleController {
 
   onResetClicked() {
     this.setColorScale(0, this.cachedColorScale);
+    this.dragEnd(); // broadcast change
   }
 
   onTickDoubleClicked(d) {
@@ -124,6 +132,7 @@ class AdjustableColorScaleController {
   }
 
   setColorScale(signal, colorScale) {
+    if (!colorScale) return;
     this.cachedColorScale = colorScale.copy();
     this.colorScale = colorScale;
 

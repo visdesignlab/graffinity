@@ -77,20 +77,37 @@ export class cmWrapperBase {
     this.matrixGroup = this.matrixSvg.append("g");
 
 
-    this.legendDiv = this.element.append("div");
-    if (name == "node-list") {
+    this.mainController.$timeout(function () {
+      this.legendDiv = this.element.append("div")
+        .classed("matrix-view-legend-container", true);
+      this.colors = [];
+      if (name == "node-list") {
 
-      this.colors = this.legendDiv.append("adjustable-color-scale-directive")
-        .attr("color-scale", "main.nodeListManager.matrix.colorScales[0]")
-        .attr("values", "main.nodeListManager.matrix.colorScalesValues[0]")[0][0];
+        this.colors[0] = this.legendDiv.append("adjustable-color-scale-directive")
+          .attr("color-scale", "main.nodeListManager.matrix.colorScales[0]")
+          .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexSets")
+          .attr("values", "main.nodeListManager.matrix.colorScalesValues[0]")[0][0];
 
-    } else {
-      this.colors = this.legendDiv.append("adjustable-color-scale-directive")
-        .attr("color-scale", "main.matrixManager.matrix.colorScales[0]")
-        .attr("values", "main.matrixManager.matrix.colorScalesValues[0]")[0][0];
-    }
+      } else {
+        this.colors[0] = this.legendDiv.append("adjustable-color-scale-directive")
+          .classed("matrix-view-legend-container", true)
+          .attr("color-scale", "main.matrixManager.matrix.colorScales[0]")
+          .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexSets")
+          .attr("values", "main.matrixManager.matrix.colorScalesValues[0]")[0][0];
 
-    this.$compile(this.colors)(scope);
+        this.colors[1] = this.legendDiv.append("adjustable-color-scale-directive")
+          .classed("matrix-view-legend-container", true)
+          .attr("ng-show", "main.matrixManager.matrix.hasSecondLegend")
+          .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexNodes")
+          .attr("color-scale", "main.matrixManager.matrix.colorScales[1]")
+          .attr("values", "main.matrixManager.matrix.colorScalesValues[1]")[0][0];
+
+
+      }
+      for (let i = 0; i < this.colors.length; ++i) {
+        this.$compile(this.colors[i])(scope);
+      }
+    }.bind(this));
   }
 
   setUseAnimation(useAnimation) {

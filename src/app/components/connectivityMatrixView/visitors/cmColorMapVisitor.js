@@ -58,7 +58,13 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
 
     let paths = this.pathFilterFunction(cell.getPathList());
     let value = this.applyMetric(paths);
-    let isCorrectAggregation = (cell.isCellBetweenSets() && this.colorMapIndex == 0) || (!cell.isCellBetweenSets() && this.colorMapIndex == 1);
+
+    // TODO - move this
+    // colorMapIndex == 0 -> matrixView's data cells
+    // colorMapIndex == 2 -> nodeListView's data cells
+    let isCorrectAggregation = (cell.isCellBetweenSets() && (this.colorMapIndex == 0 || this.colorMapIndex == 2))
+      || (!cell.isCellBetweenSets() && this.colorMapIndex == 1);
+
     let color = this.colorScale(value);
     let group = cell.getGroup();
     if (paths.length && isCorrectAggregation) {

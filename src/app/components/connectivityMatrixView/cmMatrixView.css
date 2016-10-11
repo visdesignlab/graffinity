@@ -128,3 +128,8 @@ g.matrix-view-interaction-group.hovered rect {
 .matrix-view-toolbar-item:hover {
   color: white;
 }
+
+.matrix-view-legend-container {
+  display: inline-block;
+  margin-right: 20px;
+}

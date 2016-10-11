@@ -905,7 +905,11 @@ export class cmMatrixBase extends SvgGroupElement {
     this.applyVisitor(visitor);
   }
 
-
+  /**
+   *
+   * @param encoding
+   * @param metric
+   */
   setEncoding(encoding, metric) {
     if (!this.hasEncodings) {
       return;
@@ -942,6 +946,10 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
+  /**
+   *
+   * @param metric
+   */
   setEncodingToColorMap(metric) {
     let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
@@ -955,15 +963,19 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.colorScales = [];
     this.colorScalesValues = [];
+    this.hasSecondLegend = false;
 
     this.colorScales[0] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexSets, preprocessor.setRange);
     this.colorScalesValues[0] = preprocessor.valuesOfSets;
-    this.setColorScale(null, 0, this.colorScales[0]);
+    this.setColorScale(null, this.colorScaleIndexSets, this.colorScales[0]);
 
     if (this.colorScaleIndexNodes != -1) {
-      this.colorScales[1] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexNodes, preprocessor.nodeRange);
-      this.setColorScale(null, 1, this.colorScales[1]);
-      this.colorScalesValues[1] = preprocessor.valuesOfNodes;
+      if (preprocessor.nodeRange[0] < preprocessor.nodeRange[1]) {
+        this.hasSecondLegend = true;
+        this.colorScales[1] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexNodes, preprocessor.nodeRange);
+        this.setColorScale(null, this.colorScaleIndexNodes, this.colorScales[1]);
+        this.colorScalesValues[1] = preprocessor.valuesOfNodes;
+      }
     }
 
   }
