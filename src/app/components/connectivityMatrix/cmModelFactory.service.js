@@ -20,7 +20,7 @@ export class cmModelFactory {
 
     // We got something back from the server! Create a model.
     let success = function (data) {
-      var graph = self.cmGraphFactory.createFromJsonObject(data.graph);
+      var graph = self.cmGraphFactory.createFromJsonObject(data.graph, database);
       var matrix = self.cmMatrixFactory.createFromJsonObject(data.matrix);
       deferred.resolve(new cmModel(graph, matrix, data.lengths));
     };
