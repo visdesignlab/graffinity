@@ -66,8 +66,8 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .on("mouseleave", mouseLeave);
 
     let allControls = group.append("foreignObject")
+      .attr("width", width)
       .append('xhtml:div')
-      .style("width", width + "px")
       .style("justify-content", "space-between")
       .style("display", "flex")
       .data([isVertical])

@@ -117,10 +117,11 @@ export class cmAttributeControls extends SvgGroupElement {
 
 
     this.allControls = group.append("foreignObject")
+      .attr("width", (isVertical ? height : width))
       .append('xhtml:div')
       .style("justify-content", "space-between")
       .style("display", "flex")
-      .style("width", (isVertical ? height : width) + "px")
+
       .style("height", "auto")
       .on("mouseover", mouseEnter)
       .on("mouseleave", mouseLeave);
