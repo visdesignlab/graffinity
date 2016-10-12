@@ -188,6 +188,7 @@ class QueryController {
    */
   setNumHops(numHops) {
     let keys = ["Start"];
+    this.ui.advanced.edges = [];
     this.ui.advanced.edges.push([]);
 
     for (let i = 1; i < numHops; ++i) {
