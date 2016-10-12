@@ -174,7 +174,7 @@ export class cmWrapperBase {
     // Bound matrix's width by screen size.
     let matrixWidth, clientWidth;
     if (!width) {
-      matrixWidth = this.matrix.getWidth() + 50;
+      matrixWidth = this.matrix.getWidth() + 25;
       clientWidth = angular.element(this.element)[0][0].clientWidth - this.controlsHeader.getAttributeColWidths() - 100;
       if (matrixWidth > clientWidth) {
         matrixWidth = clientWidth;

@@ -10,6 +10,7 @@
       on-submit="main.onQuerySubmitted(query)"
       submit-disabled="main.hasActiveQuery"
       resource="main.resource"
+      allow-advanced-query="main.database == 'marclab'"
       dataset="main.database">
     </query-builder>
     <div ng-show="main.hasGoodData">
@@ -94,11 +95,11 @@
   <!-- Center pane will hold the matrix -- or error messages -->
   <!-- TODO - move the ID matrices-row somewhere else -->
   <div ng-show="main.hasGoodData" class="pane center-pane grow-1" id="matrices-row">
-    <h4>Connectivity Matrix</h4>
+    <h4 class="inline">Connectivity Matrix</h4>
   </div>
 
   <div ng-show="main.hasGoodData" class="pane pane-center-right vflex" id="shit">
-    <h4>Intermediate Nodes</h4>
+    <h4 class="no-margin">Intermediate Nodes</h4>
     <div id="node-list-col" class="grow-1">
     </div>
   </div>

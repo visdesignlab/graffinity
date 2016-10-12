@@ -23,7 +23,8 @@
 }
 
 .query-builder-addon {
-  width: 20%;
+  padding: 6px 6px !important;
+  width: 4.5em;
 }
 
 .query-builder-submit-btn {
