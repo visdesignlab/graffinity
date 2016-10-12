@@ -5,11 +5,13 @@
 
 <div class="full-width hflex main-panel grow-1">
   <div class="pane left-pane grey-border">
-    <h4>Query</h4>
-    <query-directive
-      submit="main.onQuerySubmitted(query)"
-      submit-disabled="main.hasActiveQuery">
-    </query-directive>
+    <query-builder
+      class="query-builder"
+      on-submit="main.onQuerySubmitted(query)"
+      submit-disabled="main.hasActiveQuery"
+      resource="main.resource"
+      dataset="main.database">
+    </query-builder>
     <div ng-show="main.hasGoodData">
       <hr>
       <h4>Matrix Controls</h4>

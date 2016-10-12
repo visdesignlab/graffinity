@@ -7,7 +7,7 @@ import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database, $http, colorScaleService) {
+              viewState, modalService, database, $http, colorScaleService, resource) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -21,6 +21,7 @@ export class MainController {
     this.$timeout = $timeout;
     this.$http = $http;
     this.colorScaleService = colorScaleService;
+    this.resource = resource;
 
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;

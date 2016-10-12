@@ -1,0 +1,132 @@
+<h4 class="inline">Query</h4>
+
+<!-- Radio buttons for query interface. Available interfaces depend on dataset. -->
+<div class="btn-group query-builder-radio-btn-group">
+  <label class="btn btn-xs btn-primary" uib-btn-radio="'basic'"
+         ng-model="queryController.ui.selectedInterface"
+         ng-change="queryController.onStateChanged()"
+         ng-disabled="queryController.showWarning">Basic
+  </label>
+  <label class="btn btn-xs btn-primary"
+         ng-show="queryController.allowAdvancedQuery"
+         uib-btn-radio="'advanced'"
+         ng-model="queryController.ui.selectedInterface"
+         ng-change="queryController.onStateChanged()"
+         ng-disabled="queryController.showWarning">Advanced
+  </label>
+  <label class="btn btn-xs btn-primary" uib-btn-radio="'cypher'"
+         ng-model="queryController.ui.selectedInterface"
+         ng-change="queryController.onStateChanged()"
+         ng-disabled="queryController.showWarning">Cypher
+  </label>
+</div>
+
+<!-- Warning that going from visual to cypher, will clear visual. -->
+<div class='query-builder-warning vflex' ng-show="queryController.showWarning">
+  Editing this will clear the current query state.
+  <div class="hflex grow-1"></div>
+  <div class="hflex" style="justify-content:flex-end;">
+    <button type="button" class="btn btn-default btn-sm query-builder-submit-btn query-builder-warning-button"
+            ng-click="queryController.onDismissWarning()">
+      Ok!
+    </button>
+    <button type="button" class="btn btn-default btn-sm query-builder-submit-btn query-builder-warning-button"
+            ng-click="queryController.onGoBackClicked()">
+      Go back!
+    </button>
+  </div>
+</div>
+
+<!-- Basic interface: set num hops, start and end. -->
+<div ng-show="queryController.ui.selectedInterface=='basic'">
+  <div class="input-group query-builder-item query-builder-input">
+    <span class="input-group-addon query-builder-addon">Max len</span>
+    <ui-select theme="bootstrap" ng-model="queryController.ui.selectedNumHops"
+               ng-change="queryController.setNumHops(queryController.ui.selectedNumHops); queryController.onQueryModified()"
+               ng-disabled="queryController.showWarning">
+      <ui-select-match>
+        {{queryController.ui.selectedNumHops}}
+      </ui-select-match>
+      <ui-select-choices repeat="option in queryController.ui.availableNumHops">
+        {{option}}
+      </ui-select-choices>
+    </ui-select>
+  </div>
+  <div ng-repeat="key in ['Start', 'End']" class="input-group query-builder-item query-builder-input">
+    <span class="input-group-addon query-builder-addon">{{key}}</span>
+    <tags-input placeholder="{{queryController.placeholder}}"
+                replace-spaces-with-dashes="false"
+                ng-model="queryController.ui.basic.nodes[key == 'Start' ? 0 : 1]"
+                ng-disabled="queryController.showWarning"
+                on-tag-added="queryController.onQueryModified()"
+                on-tag-removed="queryController.onQueryModified()"
+                add-from-autocomplete-only="true">
+      <auto-complete min-length="1" source="queryController.loadNodeSuggestions($query)" display-property="text">
+      </auto-complete>
+    </tags-input>
+  </div>
+</div>
+
+<!-- Advanced interface: full control. -->
+<div ng-show="queryController.ui.selectedInterface=='advanced'">
+  <div class="input-group query-builder-item query-builder-input">
+    <span class="input-group-addon query-builder-addon">Len</span>
+    <ui-select theme="bootstrap" ng-model="queryController.ui.selectedNumHops"
+               ng-change="queryController.setNumHops(queryController.ui.selectedNumHops)"
+               ng-disabled="queryController.showWarning">
+      <ui-select-match>
+        {{queryController.ui.selectedNumHops}}
+      </ui-select-match>
+      <ui-select-choices repeat="option in queryController.ui.availableNumHops">
+        {{option}}
+      </ui-select-choices>
+    </ui-select>
+  </div>
+  <div ng-repeat="key in queryController.ui.advanced.keys track by $index" style="width: 100%">
+    <div class="input-group query-builder-item query-builder-input">
+      <span class="input-group-addon query-builder-addon">{{key}}</span>
+      <tags-input ng-model="queryController.ui.advanced.nodes[$index]"
+                  placeholder="{{queryController.placeholder}}"
+                  replace-spaces-with-dashes="false"
+                  ng-disabled="queryController.showWarning"
+                  on-tag-added="queryController.onQueryModified()"
+                  on-tag-removed="queryController.onQueryModified()"
+                  add-from-autocomplete-only="true">
+        <auto-complete min-length="1" source="queryController.loadNodeSuggestions($query)" display-property="text">
+        </auto-complete>
+      </tags-input>
+    </div>
+    <div class="input-group query-builder-item query-builder-input"
+         ng-show="$index < queryController.ui.advanced.keys.length - 1">
+      <span class="input-group-addon query-builder-addon">Edge</span>
+      <tags-input placeholder="{{queryController.placeholder}}"
+                  ng-model="queryController.ui.advanced.edges[$index]"
+                  replace-spaces-with-dashes="false"
+                  ng-model="queryController.ui.advanced.edges[$index]"
+                  ng-disabled="queryController.showWarning"
+                  on-tag-added="queryController.onQueryModified()"
+                  on-tag-removed="queryController.onQueryModified()"
+                  add-from-autocomplete-only="true">
+        <auto-complete min-length="1" source="queryController.loadEdgeSuggestions($query)" display-property="text">
+        </auto-complete>
+      </tags-input>
+    </div>
+  </div>
+</div>
+
+<!-- Drop down to raw cypher. Cannot go back to visual interface. -->
+<div ng-show="queryController.ui.selectedInterface=='cypher'">
+  <textarea class="query-builder-text-area"
+            placeholder="Write a query that returns path(s) p"
+            ng-model="queryController.cypher"
+            ng-disabled="queryController.showWarning"
+            ng-change="queryController.onQueryModified()">
+  </textarea>
+</div>
+
+<div class="input-group query-builder-item query-builder-input">
+  <button type="button" class="btn btn-default btn-sm query-builder-submit-btn"
+          ng-click="queryController.onSubmitClicked()">
+    Submit
+  </button>
+</div>
