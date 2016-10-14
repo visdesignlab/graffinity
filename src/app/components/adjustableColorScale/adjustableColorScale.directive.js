@@ -142,7 +142,7 @@ class AdjustableColorScaleController {
         .select(".legend-container")
         .append("svg")
         .attr("width", this.width)
-        .attr("height", 130);
+        .attr("height", 70);
 
       this.svg = this.svgRoot.append("g")
         .attr("transform", `translate(0, 43)`);
