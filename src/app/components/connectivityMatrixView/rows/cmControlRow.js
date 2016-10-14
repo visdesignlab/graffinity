@@ -37,7 +37,7 @@ export class cmControlRow extends cmMatrixRow {
           .classed("matrix-view-edit-attribute-controls", true)
           .append("i")
           .classed("fa", true)
-          .classed("fa-angle-right", true)
+          .classed("fa-angle-down", true)
           .attr("title", "unroll")
           .on("click", function () {
             self.onUnrollColClicked(d3.select(this.parentNode.parentNode.parentNode.parentNode));
@@ -52,7 +52,7 @@ export class cmControlRow extends cmMatrixRow {
           .append("xhtml:div")
           .classed("matrix-view-edit-attribute-controls", true)
           .append("i").classed("fa", true)
-          .classed("fa-angle-down", true)
+          .classed("fa-angle-right", true)
           .attr("title", "roll up")
           .on("click", function () {
             self.onRollupColClicked(d3.select(this.parentNode.parentNode.parentNode.parentNode));

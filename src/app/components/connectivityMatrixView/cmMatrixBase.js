@@ -861,7 +861,9 @@ export class cmMatrixBase extends SvgGroupElement {
     let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
     this.resetSortState(true, false, sortBar);
     this.updatePositions(shiftedRowPerm, this.colPerm);
-    this.$scope.$apply(this.mainController.ui.selectedSortOrder = "custom");
+    if(!this.isNodeListView) {
+      this.mainController.ui.selectedSortOrder = "custom";
+    }
     this.$scope.$broadcast("updatePositions", shiftedRowPerm, this.colPerm);
   }
 
