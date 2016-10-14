@@ -7,7 +7,9 @@ export class cmControlsMatrix extends cmMatrixBase {
 
   constructor(svg, model, $log, $uibModal, scope, viewState, modalService, mainController) {
     super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
+    this.isControlsMatrix = true;
     this.setModel(model);
+
   }
 
   /**
@@ -22,7 +24,7 @@ export class cmControlsMatrix extends cmMatrixBase {
     let rowAttributes = this.rowAttributes;
 
     // Controls row is the only one with a onColControlsClicked callback.
-    let row = new cmEditAttributeRow(this.svg, this.allRows.length, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
+    let row = new cmEditAttributeRow(this.svg, this.allRows.length, [], this.numHeaderCols, this.colWidth,
       this.rowHeight, model.areColsCollapsed, this);
 
     this.addRow(row, this.rowHeight);

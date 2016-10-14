@@ -530,15 +530,29 @@ export class cmMatrixBase extends SvgGroupElement {
    * Fills this.colWidths using the data/view/attribute indexes.
    */
   initColWidths() {
-    for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
-      if (this.isControlCell(i)) {
-        this.colWidths[i] = this.colWidthControl;
-      } else if (this.isDataCell(i)) {
-        this.colWidths[i] = this.colWidth;
-      } else if (this.isAttributeCell(i)) {
-        this.colWidths[i] = this.colWidthAttr;
-      } else if (this.isLabelCell(i)) {
-        this.colWidths[i] = this.colWidthLabel;
+    if(!this.isControlsMatrix) {
+      for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
+        if (this.isControlCell(i)) {
+          this.colWidths[i] = this.colWidthControl;
+        } else if (this.isDataCell(i)) {
+          this.colWidths[i] = this.colWidth;
+        } else if (this.isAttributeCell(i)) {
+          this.colWidths[i] = this.colWidthAttr;
+        } else if (this.isLabelCell(i)) {
+          this.colWidths[i] = this.colWidthLabel;
+        }
+      }
+    } else {
+      for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
+        if (this.isControlCell(i)) {
+          this.colWidths[i] = this.colWidthControl;
+        } else if (this.isDataCell(i)) {
+          this.colWidths[i] = 0;
+        } else if (this.isAttributeCell(i)) {
+          this.colWidths[i] = this.colWidthAttr;
+        } else if (this.isLabelCell(i)) {
+          this.colWidths[i] = this.colWidthLabel;
+        }
       }
     }
   }
