@@ -96,6 +96,7 @@ g.matrix-view-interaction-group.hovered rect {
   padding: 0 2px;
   border-color: #adadad;
   font-size: 14px;
+  line-height: 0;
 }
 
 .matrix-view-edit-attribute-controls:hover {

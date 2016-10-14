@@ -114,7 +114,7 @@ export class cmMatrixBase extends SvgGroupElement {
     });
 
     this.$scope.$on("colControlsClicked", function (event, colIndex, unrolling, sender) {
-      if (sender != self) {
+      if (sender != self && !self.isControlsMatrix) {
         self.onColControlsClicked(colIndex, unrolling, true);
       }
     });
@@ -530,7 +530,7 @@ export class cmMatrixBase extends SvgGroupElement {
    * Fills this.colWidths using the data/view/attribute indexes.
    */
   initColWidths() {
-    if(!this.isControlsMatrix) {
+    if (!this.isControlsMatrix) {
       for (let i = 0; i < this.colNodeIndexes.length + this.numHeaderCols; ++i) {
         if (this.isControlCell(i)) {
           this.colWidths[i] = this.colWidthControl;

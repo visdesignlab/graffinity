@@ -28,7 +28,7 @@ export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
 
     // Create the foreignObject.
     let container = group.append("foreignObject")
-      .style("width", width / 2 + "px")
+      .style("width", width + "px")
       .style("height", height);
 
     // Create a div that will hold the icon.

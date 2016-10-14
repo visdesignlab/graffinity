@@ -66,37 +66,41 @@ export class cmMatrixRow extends SvgGroupElement {
     var self = this;
     this.unrollRowCallback = callback;
 
-    this.unrollControls = col.append("g");
+    this.unrollControls = col.append("g")
+      .style("display", "block");
 
-    this.unrollControls.append("text")
-      .text("+")
-      .style("text-anchor", "start")
-      .style("dominant-baseline", "hanging");
+    this.rollupControls = col.append("g")
+      .style("display", "none");
 
     this.unrollControls
-      .append("rect")
-      .attr("width", colWidth)
-      .attr("height", rowHeight)
-      .style("fill", "transparent")
+      .append("foreignObject")
+      .style({
+        "width": colWidth + "px",
+        "height": rowHeight + "px"
+      })
+      .append("xhtml:div")
+      .classed("matrix-view-edit-attribute-controls", true)
+      .append("i").classed("fa", true)
+      .classed("fa-angle-down", true)
+      .attr("title", "unroll")
       .on("click", function () {
         self.onUnrollRowClicked();
       });
 
-    this.rollupControls = col.append("g");
-    this.rollupControls.append("text")
-      .text("-")
-      .style("text-anchor", "start")
-      .style("dominant-baseline", "hanging");
-
-    this.rollupControls.append("rect")
-      .attr("width", colWidth)
-      .attr("height", rowHeight)
-      .style("fill", "transparent")
+    this.rollupControls
+      .append("foreignObject")
+      .style({
+        "width": colWidth + "px",
+        "height": rowHeight + "px"
+      })
+      .append("xhtml:div")
+      .classed("matrix-view-edit-attribute-controls", true)
+      .append("i").classed("fa", true)
+      .classed("fa-angle-right", true)
+      .attr("title", "roll up")
       .on("click", function () {
         self.onRollupRowClicked();
       });
-
-    this.rollupControls.style("display", "none");
 
   }
 
