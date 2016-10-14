@@ -17,38 +17,36 @@ export class cmWrapperBase {
       self.setSortOrders(rowPerm, colPerm);
     });
 
-    this.maxHeight = this.element[0][0].clientHeight;
-
-    // Style for the four divs displayed in this matrix.
-    this.controlsElementStyle = {};
-    this.topHeaderElementStyle = {};
-    this.leftHeaderElementStyle = {};
-    this.matrixElementStyle = {};
+    // Container for entire matrix.
+    this.wrapperDiv = element.append("div")
+      .classed("vflex", true);
 
     // Top row will hold controls and column headers.
-    this.topDiv = element.append("div")
-      .style("overflow", "hidden");
+    this.topDiv = this.wrapperDiv.append("div")
+      .classed("matrix-row", true)
+      .classed("matrix-row-top", true);
 
     this.controlsHeaderElement = this.topDiv.append("div")
       .attr("id", name + "-header-controls")
-      .classed("matrix-view-header-controls", true);
+      .classed("matrix-element", true);
 
     this.topHeaderElement = this.topDiv.append("div")
       .attr("id", name + "-header-top")
-      .classed("matrix-view-header-top", true);
+      .classed("matrix-element", true)
+      .classed("matrix-element-top-right", true);
 
     // Bottom row will hold row headers nad matrix
-    this.bottomDiv = element.append("div")
-      .style("overflow", "hidden")
-      .classed("matrix-view-bottom-row", true);
+    this.bottomDiv = this.wrapperDiv.append("div")
+      .classed("matrix-row", true);
 
+    // Bottom left
     this.leftHeaderElement = this.bottomDiv.append("div")
       .attr("id", name + "-header-left")
-      .classed("matrix-view-header-left", true);
+      .classed("matrix-element-bottom-left", true);
 
     // The matrix's scrolling will be connected with the headers.
     this.matrixElement = this.bottomDiv.append("div")
-      .classed("matrix-view-center", true)
+      .classed("matrix-element-bottom-right", true)
       .on("scroll", function () {
         let left = angular.element(this).scrollLeft();
         let top = angular.element(this).scrollTop();
@@ -75,7 +73,6 @@ export class cmWrapperBase {
       .attr({width: 1024, height: 1024});
 
     this.matrixGroup = this.matrixSvg.append("g");
-
 
     this.mainController.$timeout(function () {
       this.legendDiv = this.element.append("div")
@@ -150,76 +147,40 @@ export class cmWrapperBase {
    * Positions and resizes the 4 divs holding different parts of the matrices.
    */
   updateElementPositions(signal, width, useAnimation) {
-
-    let padding = 2;
-
-    // Do not check for overflow of header height. Assume we always have enough space for it.
-    this.topHeaderElementStyle.height = this.topHeader.getHeight() + padding + "px";
-    this.controlsElementStyle.height = this.topHeaderElementStyle.height;
-
-    // Again, not checking for overflow of left-header width.
-    this.controlsElementStyle.width = this.controlsHeader.getAttributeColWidths() + padding + "px";
-    this.leftHeaderElementStyle.width = this.controlsElementStyle.width;
-
-    // Bound the matrix's height by screen size.
-    let matrixHeight = this.matrix.getHeight() + 30;
-    let clientHeight = this.maxHeight - this.controlsHeader.getHeight();
-    if (matrixHeight > clientHeight) {
-      matrixHeight = clientHeight;
-    }
-
-    this.matrixElementStyle.height = matrixHeight + padding + "px";
-    this.leftHeaderElementStyle.height = matrixHeight + padding + "px";
-
-    // Bound matrix's width by screen size.
-    let matrixWidth, clientWidth;
-    if (!width) {
-      matrixWidth = this.matrix.getWidth() + 25;
-      clientWidth = angular.element(this.element)[0][0].clientWidth - this.controlsHeader.getAttributeColWidths() - 100;
-      if (matrixWidth > clientWidth) {
-        matrixWidth = clientWidth;
-      }
-    } else {
-      matrixWidth = width - this.controlsHeader.getAttributeColWidths() - 250;
-    }
-
-    this.matrixElementStyle.width = matrixWidth + padding + "px";
-    this.topHeaderElementStyle.width = matrixWidth + padding + "px";
     let duration = useAnimation ? 500 : 0;
 
-    // The matrix'x svg needs to be large enough to hold everything.
-    this.matrixSvg.transition()
-      .duration(duration).attr({
-      width: Math.max(this.matrix.getWidth() + padding, 50),
-      height: this.matrix.getHeight() + padding
-    });
+    let topRowHeight = this.controlsHeader.getHeight();
+    let topLeftWidth = this.controlsHeader.getWidth();
+    let topRightWidth = this.matrix.getWidth();
+    let bottomRowHeight = this.matrix.getHeight();
 
-    this.leftHeaderSvg.transition()
-      .duration(duration).attr({
-      height: this.matrix.getHeight() + padding
-    });
+    this.controlsHeaderSvg.transition()
+      .duration(duration)
+      .attr({
+        width: topLeftWidth,
+        height: topRowHeight
+      });
 
     this.topHeaderSvg.transition()
-      .duration(duration).attr({
-      width: Math.max(this.matrix.getWidth() + padding, 50)
-    });
-
-    // The divs need to expand/collapse depending on matrix size.
-    this.controlsHeaderElement.transition()
       .duration(duration)
-      .style(this.controlsElementStyle);
+      .attr({
+        width: topRightWidth,
+        height: topRowHeight
+      });
 
-    this.topHeaderElement.transition()
+    this.leftHeaderSvg.transition()
       .duration(duration)
-      .style(this.topHeaderElementStyle);
+      .attr({
+        width: topLeftWidth,
+        height: bottomRowHeight
+      });
 
-    this.leftHeaderElement.transition()
+    this.matrixSvg.transition()
       .duration(duration)
-      .style(this.leftHeaderElementStyle);
-
-    this.matrixElement.transition()
-      .duration(duration)
-      .style(this.matrixElementStyle);
+      .attr({
+        width: topRightWidth,
+        height: bottomRowHeight
+      });
 
   }
 }

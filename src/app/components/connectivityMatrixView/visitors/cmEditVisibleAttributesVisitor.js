@@ -57,7 +57,6 @@ export class cmEditVisibleAttributesVisitor extends cmCellVisitor {
       div.append("i")
         .classed("fa", true)
         .classed("fa-plus", true)
-        .classed("matrix-view-toolbar-item", "true")
         .attr("title", "edit visible column attributes")
         .on("click", this.editAttributeRows);
     }

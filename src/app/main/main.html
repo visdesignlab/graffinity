@@ -94,13 +94,15 @@
 
   <!-- Center pane will hold the matrix -- or error messages -->
   <!-- TODO - move the ID matrices-row somewhere else -->
-  <div ng-show="main.hasGoodData" class="pane center-pane grow-1" id="matrices-row">
-    <h4 class="inline">Connectivity Matrix</h4>
+  <div ng-show="main.hasGoodData" class="pane center-pane grow-1 vflex">
+    <h4 class="no-margin">Connectivity Matrix</h4>
+    <div id="matrices-row" class="grow-1 vflex">
+    </div>
   </div>
 
-  <div ng-show="main.hasGoodData" class="pane pane-center-right vflex" id="shit">
+  <div ng-show="main.hasGoodData" class="pane pane-center-right vflex">
     <h4 class="no-margin">Intermediate Nodes</h4>
-    <div id="node-list-col" class="grow-1">
+    <div id="node-list-col" class="grow-1 vflex">
     </div>
   </div>
 

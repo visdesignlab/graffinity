@@ -1,33 +1,32 @@
-.matrix-view-header-top {
+.matrix-row {
+  display: flex;
+  flex-direction: row;
   overflow: hidden;
-  position: relative;
+}
+
+.matrix-row-top {
+  min-height: fit-content;
+}
+
+.matrix-element {
   display: inline-block;
-  width: 100%;
+  font-size: 0;
 }
 
-.matrix-view-header-controls {
-  overflow: hidden;
-  position: relative;
-  display: inline-block;
+.matrix-element-bottom-left {
+  overflow-y: hidden;
+  min-width: fit-content;
 }
 
-.matrix-view-bottom-row {
-  position: relative;
-  overflow: hidden;
-  top: -5px;
-  width: 100%;
-}
-
-.matrix-view-header-left {
-  overflow: hidden;
-  position: relative;
-  display: inline-block;
-}
-
-.matrix-view-center {
-  overflow-x: auto;
+.matrix-element-bottom-right {
   overflow-y: auto;
-  display: inline-block;
+  overflow-x: auto;
+  max-width: inherit;
+  max-height: inherit;
+}
+
+.matrix-element-top-right {
+  overflow-x: hidden;
 }
 
 .matrix-view-string-attribute {
@@ -96,6 +95,7 @@ g.matrix-view-interaction-group.hovered rect {
   text-align: center;
   padding: 0 2px;
   border-color: #adadad;
+  font-size: 14px;
 }
 
 .matrix-view-edit-attribute-controls:hover {
@@ -113,6 +113,7 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-sortbar {
   display: flex;
+  font-size: 12px;
   width: min-content;
 }
 
@@ -122,6 +123,7 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-toolbar-item {
   color: #333;
+  font-size: 12px;
   padding-right: 2px;
 }
 
