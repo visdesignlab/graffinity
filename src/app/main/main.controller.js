@@ -22,6 +22,7 @@ export class MainController {
     this.$http = $http;
     this.colorScaleService = colorScaleService;
     this.resource = resource;
+    this.queryUi = {};
 
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
@@ -61,7 +62,7 @@ export class MainController {
     if (this.database == "marclab") {
 
       if (useLargeResult) {
-        this.requestInitialData("/assets/mock/largeMarclab.json");
+        this.requestInitialData("/assets/mock/defaultMarclab.json");
       } else {
         jsonGraph = mock.output.graph;
         jsonMatrix = mock.output.matrix;
@@ -72,7 +73,7 @@ export class MainController {
     } else if (this.database == "flights") {
 
       if (useLargeResult) {
-        this.requestInitialData("/assets/mock/largeFlights.json");
+        this.requestInitialData("/assets/mock/defaultFlights.json");
       } else {
         jsonGraph = mock.smallFlightResult.graph;
         jsonMatrix = mock.smallFlightResult.matrix;
@@ -129,14 +130,16 @@ export class MainController {
     //}, 1);
   }
 
-  activate(jsonGraph, jsonMatrix) {
+  activate(jsonGraph, jsonMatrix, jsonQuery) {
     // Populate the model with default dataset
     let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph, this.database);
     let matrix = this.cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = this.cmModelFactory.createModel(graph, matrix);
+
     let self = this;
     this.$timeout(function () {
       self.createMatrixAndUi(self.model);
+      self.$scope.$broadcast("setQuery", jsonQuery);
     }, 1);
   }
 
@@ -328,6 +331,20 @@ export class MainController {
     this.cmModelFactory.requestAndCreateModel(query, this.database).then(success, failure);
   }
 
+  onSaveClicked() {
+    this.$log.debug("onSaveClicked", this.queryUi);
+    let state = {
+      "query": this.queryUi,
+      "matrix": this.model.getCmMatrix().getJsonMatrix(),
+      "graph": this.model.getCmGraph().getJsonGraph()
+    };
+    this.$log.debug(state);
+
+    let blob = new Blob([JSON.stringify(state)], {"type": "text/plain;charset=utf-8"});
+    saveAs(blob, `${this.database}_state.json`);
+
+  }
+
   onSortOrderChanged(order) {
     let matrix = this.matrixManager.getMajorRowsAndColsAsScalarMatrix();
     let rowPerm = undefined;
@@ -412,7 +429,7 @@ export class MainController {
     let self = this;
 
     let success = function (result) {
-      self.activate(result.graph, result.matrix);
+      self.activate(result.graph, result.matrix, result.query);
     };
 
     let error = function (error) {

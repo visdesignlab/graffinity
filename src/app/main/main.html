@@ -1,6 +1,7 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
   <span class="logo">Connectivity Matrix</span>
+  <span ng-click="main.onSaveClicked()">Save</span>
 </div>
 
 <div class="full-width hflex main-panel grow-1">
@@ -11,7 +12,8 @@
       submit-disabled="main.hasActiveQuery"
       resource="main.resource"
       allow-advanced-query="main.database == 'marclab'"
-      dataset="main.database">
+      dataset="main.database",
+      main="main">
     </query-builder>
     <div ng-show="main.hasGoodData">
       <hr>
