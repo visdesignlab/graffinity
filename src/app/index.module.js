@@ -1,5 +1,5 @@
 /* global malarkey:false, moment:false*/
-let production = false;
+let production = true;
 
 import {config} from './index.config';
 import {routerConfig} from './index.route';
@@ -27,7 +27,7 @@ import {CypherGeneratorService} from "../app/components/queryBuilder/cypherGener
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select', 'ngTagsInput'])
   .constant('malarkey', malarkey)
   .constant('moment', moment)
-  .constant('resource', production ? "http://54.164.73.78:8000" : "http://localhost:8000/")
+  .constant('resource', production ? "http://54.164.73.78:8000/" : "http://localhost:8000/")
   .config(config)
   .config(routerConfig)
   .run(runBlock)
