@@ -2,8 +2,8 @@
   Path List
 </h4>
 
-<div class="vflex grow-1 vertical-scroll">
-  <div ng-if="controller.pathListModel.rows.length > 0" class="path-list-container grow-1">
+<div class="vflex grow-1 vertical-scroll" ng-if="controller.pathListModel.rows.length > 0">
+  <td class="path-list-container grow-1">
     <table>
       <col width="3%">
       <col width="90%">
@@ -12,7 +12,7 @@
       <thead>
       <tr class="path-list-header-row">
         <th></th>
-        <th>Path List</th>
+        <th>Paths</th>
         <th class="path-list-attribute-col"
             ng-click="controller.orderByField='paths[0].length'; controller.descending=!controller.descending">
           Len
@@ -76,31 +76,35 @@
       <tr ng-show="row.isExpanded">
         <td colspan="1"></td>
         <td colspan="4">
-          <span ng-repeat="i in row.paths[0] track by $index">
-            <div ng-if="$index %2"
-                 class="path-list-child-edge">
-              <b>Edge {{$index == 1 ? 1 : ($index - 2 + 1)}}</b>
-            </div>
-          </span>
+          <table>
+            <thead>
+            <tr>
+              <td ng-repeat="i in row.paths[0] track by $index">
+                <span ng-if="$index % 2"
+                      class="path-list-child-edge">
+                  <b>Edge {{$index == 1 ? 1 : ($index - 2 + 1)}}</b>
+                </span>
+              </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="path in row.paths">
+              <td ng-repeat="i in path track by $index">
+                <span ng-if="$index % 2"
+                      class="path-list-child-edge"
+                      ng-bind-html="controller.pathListModel.getEdgeDetails(path[$index])">
+                </span>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </td>
       </tr>
-      <tr ng-show="row.isExpanded" ng-repeat="path in row.paths">
-        <td colspan="1"></td>
-        <td colspan="4">
-          <span ng-repeat="i in path track by $index">
-            <div ng-if="$index % 2"
-                 class="path-list-child-edge"
-                 ng-bind-html="controller.pathListModel.getEdgeDetails(path[$index])">
-            </div>
-          </span>
-        </td>
-      </tr>
-
       </tbody>
     </table>
-  </div>
+</div>
 
-  <div ng-if="!controller.paths">
-    Select some paths to see a list!
-  </div>
+<div ng-if="!controller.paths">
+  Select some paths to see a list!
+</div>
 </div>
