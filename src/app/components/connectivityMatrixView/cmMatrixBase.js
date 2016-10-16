@@ -861,7 +861,7 @@ export class cmMatrixBase extends SvgGroupElement {
     let shiftedRowPerm = Utils.shiftPermutation(rowPerm, this.numHeaderRows);
     this.resetSortState(true, false, sortBar);
     this.updatePositions(shiftedRowPerm, this.colPerm);
-    if(!this.isNodeListView) {
+    if (!this.isNodeListView) {
       this.mainController.ui.selectedSortOrder = "custom";
     }
     this.$scope.$broadcast("updatePositions", shiftedRowPerm, this.colPerm);
@@ -903,6 +903,11 @@ export class cmMatrixBase extends SvgGroupElement {
    */
   setColorScale(signal, colorScaleIndex, colorScale) {
 
+    if (signal) {
+      let visitor = new cmClearVisitor();
+      visitor.setClearDataCells(true);
+      this.applyVisitor(visitor);
+    }
     let cellWidth = this.colWidth;
     let cellHeight = this.rowHeight;
 
