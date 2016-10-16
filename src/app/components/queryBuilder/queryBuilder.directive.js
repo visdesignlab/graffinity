@@ -9,7 +9,9 @@ export class QueryBuilderDirective {
       onSubmit: '&', /* callback after query is generated */
       allowAdvancedQuery: '=',
       dataset: '=', /* either 'marclab' or 'flights' */
-      resource: '=' /* url for sending type-ahead requests */
+      resource: '=', /* url for sending type-ahead requests */
+      main: '=',
+      defaultQuery: '='
     };
 
     this.controller = QueryController;
@@ -38,6 +40,10 @@ class QueryController {
     this.$scope.$watch(function (scope) {
       return scope.queryController.dataset;
     }, this.reset.bind(this));
+
+
+    this.$scope.$on("setQuery", this.onSetQuery.bind(this));
+
   }
 
   generateCypher(selectedInterface) {
@@ -126,12 +132,22 @@ class QueryController {
     this.showWarning = false;
   }
 
+  onSetQuery(signal, ui) {
+    if (ui) {
+      this.ui = ui;
+      this.cypher = this.generateCypher(this.ui.selectedInterface)
+    } else {
+      this.reset();
+    }
+  }
+
   /**
    * Called when a query gets modified. Used to remember when the user has changed the current query.
    */
   onQueryModified() {
     this.previousInterface = this.selectedInterface;
     this.hasActiveQuery = true;
+    this.main.queryUi = this.ui;
   }
 
   /**
@@ -168,6 +184,7 @@ class QueryController {
       this.$timeout(function () {
         self.ui = angular.fromJson('{ "basic": { "nodes": [] }, "availableNumHops": [ 1, 2, 3 ], "selectedNumHops": 2, "advanced": { "nodes": [ [ { "attribute": "label", "value": "CBb4w", "text": "CBb4w (label)" } ], [ { "attribute": "label", "value": "GC diving", "text": "GC diving (label)" } ], [ { "attribute": "label", "value": "Rod BC", "text": "Rod BC (label)" } ] ], "edges": [ [ { "text": "* (wildcard)", "attribute": "*", "name": "*" } ], [ { "text": "* (wildcard)", "attribute": "*", "name": "*" } ] ], "keys": [ "Start", "Node", "End" ] }, "selectedInterface": "advanced", "previousInterface": "advanced"}');
         self.hasActiveQuery = true;
+        self.main.queryUi = self.ui;
       });
     } else {
       this.ui = {};
@@ -176,6 +193,7 @@ class QueryController {
       this.$timeout(function () {
         self.ui = angular.fromJson('{ "basic": { "nodes": [ [ { "attribute": "airport", "value": "LAX", "text": "LAX (airport)" }, { "attribute": "airport", "value": "SFO", "text": "SFO (airport)" } ], [ { "attribute": "airport", "value": "BOS", "text": "BOS (airport)" } ] ] }, "availableNumHops": [ 1, 2, 3 ], "selectedNumHops": 2, "advanced": { "nodes": [], "edges": [], "keys": [ "Start", "Node", "End" ] }, "selectedInterface": "basic", "previousInterface": "basic" }');
         self.hasActiveQuery = true;
+        self.main.queryUi = self.ui;
       });
     }
 
