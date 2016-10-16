@@ -1,4 +1,4 @@
-/* globals d3 reorder
+/* globals d3 reorder saveAs
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
 import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
@@ -340,7 +340,7 @@ export class MainController {
     };
     this.$log.debug(state);
 
-    let blob = new Blob([JSON.stringify(state)], {"type": "text/plain;charset=utf-8"});
+    let blob = new Blob([angular.toString(state)], {"type": "text/plain;charset=utf-8"});
     saveAs(blob, `${this.database}_state.json`);
 
   }

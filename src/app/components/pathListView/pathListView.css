@@ -8,13 +8,12 @@
 }
 
 .path-list-child-edge {
-  width: 4em;
-  font-size: 1em;
+  width: 5em;
+  font-size: 12px;
   margin-left: 0.2em;
   margin-right: 0.2em;
   position: relative;
   display: inline-table;
-  left: 2em;
 }
 
 .path-list-header-row {

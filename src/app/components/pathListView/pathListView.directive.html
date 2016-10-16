@@ -12,7 +12,7 @@
       <thead>
       <tr class="path-list-header-row">
         <th></th>
-        <th>Path Motif</th>
+        <th>Path List</th>
         <th class="path-list-attribute-col"
             ng-click="controller.orderByField='paths[0].length'; controller.descending=!controller.descending">
           Len
@@ -73,6 +73,17 @@
       </tr>
 
       <!-- Row for children -->
+      <tr ng-show="row.isExpanded">
+        <td colspan="1"></td>
+        <td colspan="4">
+          <span ng-repeat="i in row.paths[0] track by $index">
+            <div ng-if="$index %2"
+                 class="path-list-child-edge">
+              <b>Edge {{$index == 1 ? 1 : ($index - 2 + 1)}}</b>
+            </div>
+          </span>
+        </td>
+      </tr>
       <tr ng-show="row.isExpanded" ng-repeat="path in row.paths">
         <td colspan="1"></td>
         <td colspan="4">
