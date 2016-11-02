@@ -317,9 +317,9 @@ export class cmModel {
 
   getAvailableAttributes() {
     if (this.availableAttributes == null) {
-      this.availableAttributes = this.getCmGraph().getQuantNodeAttrNames();
+      this.availableAttributes = ["num paths"];
+      this.availableAttributes = this.availableAttributes.concat(this.getCmGraph().getQuantNodeAttrNames());
       this.availableAttributes = this.availableAttributes.concat(this.getCmGraph().getCategoricalNodeAttrNames());
-      this.availableAttributes.push("num paths");
     }
     return this.availableAttributes;
   }

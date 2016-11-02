@@ -1,5 +1,5 @@
 /* global malarkey:false, moment:false*/
-let production = true;
+let production = false;
 
 import {config} from './index.config';
 import {routerConfig} from './index.route';

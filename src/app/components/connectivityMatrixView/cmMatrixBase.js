@@ -173,8 +173,15 @@ export class cmMatrixBase extends SvgGroupElement {
           let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
           visitor = new cmStringAttributeVisitor(i, attributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
           visitor.isVisitingColsCollapsedAttr = attribute == this.model.colsCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.TARGET;
-          visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.SOURCE;
-          visitor.areRowsCollapsed = this.model.areRowsCollapsed;
+
+          if (!this.isNodeListView) {
+            visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.SOURCE;
+            visitor.areRowsCollapsed = this.model.areRowsCollapsed;
+          } else {
+            visitor.isVisitingRowsCollapsedAttr = false;
+            visitor.areRowsCollapsed = false;
+          }
+
           visitor.areColsCollapsed = this.model.areColsCollapsed;
           visitor.setCallbacks(null, this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
 
