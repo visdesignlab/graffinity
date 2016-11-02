@@ -197,35 +197,39 @@ export class MainController {
     if (attr == "none") {
       this.model.expandAllCols();
     } else {
+      this.model.expandAllCols();
       this.model.collapseColsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
 
     // We are collapsing the matrix cols by an attribute. Make sure that attribute is visibile!
+    this.matrixManager.setUseAnimation(false);
     if (this.model.areColsCollapsed) {
-      this.matrixManager.setUseAnimation(false);
       this.matrixManager.matrices.forEach(function (matrix) {
         matrix.onToggleAttributeRow(this.matrixManager.matrix.attributes.indexOf(attr), true);
       }.bind(this));
-      this.matrixManager.setUseAnimation(true);
     }
+    this.onSortOrderChanged(this.ui.selectedSortOrder);
+    this.matrixManager.setUseAnimation(true);
   }
 
   onCollapseRowsByAttr(attr) {
     if (attr == "none") {
       this.model.expandAllRows();
     } else {
+      this.model.expandAllRows();
       this.model.collapseRowsByAttr(attr);
     }
     this.createMatrix(this.model, this.ui.selectedEncoding);
 
+    this.matrixManager.setUseAnimation(false);
     if (this.model.areRowsCollapsed) {
-      this.matrixManager.setUseAnimation(false);
       this.matrixManager.matrices.forEach(function (matrix) {
         matrix.onToggleAttributeCol(this.matrixManager.matrix.attributes.indexOf(attr), true);
       }.bind(this));
-      this.matrixManager.setUseAnimation(true);
     }
+    this.onSortOrderChanged(this.ui.selectedSortOrder);
+    this.matrixManager.setUseAnimation(true);
   }
 
   /**
@@ -332,7 +336,6 @@ export class MainController {
   }
 
   onSaveClicked() {
-    this.$log.debug("onSaveClicked", this.queryUi);
     let state = {
       "query": this.queryUi,
       "matrix": this.model.getCmMatrix().getJsonMatrix(),
@@ -342,7 +345,6 @@ export class MainController {
 
     let blob = new Blob([angular.toString(state)], {"type": "text/plain;charset=utf-8"});
     saveAs(blob, `${this.database}_state.json`);
-
   }
 
   onSortOrderChanged(order) {
