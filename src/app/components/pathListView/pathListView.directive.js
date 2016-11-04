@@ -96,7 +96,6 @@ class PathListViewDirectiveController {
     this.pathListModel.setPaths(paths);
     this.pathListModel.aggregatePaths();
     this.paths = paths;
-    this.$log.debug(this.pathListModel);
     this.isRowExpanded = [];
     for (let i = 0; i < this.pathListModel.rows.length; ++i) {
       this.isRowExpanded[i] = false;
