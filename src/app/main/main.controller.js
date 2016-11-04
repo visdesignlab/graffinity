@@ -341,7 +341,6 @@ export class MainController {
       "matrix": this.model.getCmMatrix().getJsonMatrix(),
       "graph": this.model.getCmGraph().getJsonGraph()
     };
-    this.$log.debug(state);
 
     let blob = new Blob([angular.toString(state)], {"type": "text/plain;charset=utf-8"});
     saveAs(blob, `${this.database}_state.json`);
@@ -400,6 +399,7 @@ export class MainController {
 
       let modalSuccess = function (selection) {
         this.viewState.setCategoricalFilter(attribute, nodeAttributeGroup, selection);
+        this.$log.debug("categorical filter", attribute, nodeAttributeGroup, selection)
         this.updateLegend();
       }.bind(this);
 
@@ -414,6 +414,7 @@ export class MainController {
         let attribute = result.attribute;
         let range = result.range;
         this.viewState.setQuantitativeFilter(attribute, nodeAttributeGroup, range);
+        this.$log.debug("categorical filter", attribute, nodeAttributeGroup, range);
         this.updateLegend();
       }.bind(this);
 

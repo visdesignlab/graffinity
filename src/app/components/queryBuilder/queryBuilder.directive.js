@@ -14,6 +14,7 @@ export class QueryBuilderDirective {
       defaultQuery: '='
     };
 
+
     this.controller = QueryController;
     this.controllerAs = 'queryController';
     this.bindToController = true;
@@ -34,6 +35,7 @@ class QueryController {
     this.$timeout = $timeout;
     this.$scope = $scope;
     this.cypherGenerator = cypherGeneratorService;
+    this.isMarclabData = this.allowAdvancedQuery;
 
     this.reset();
 
@@ -48,11 +50,15 @@ class QueryController {
 
   generateCypher(selectedInterface) {
     let result = "";
-    if (selectedInterface == "basic") {
-      result = this.cypherGenerator.generateBasicQuery(this.ui.basic, this.ui.selectedNumHops, this.dataset == "flights");
-    } else if (selectedInterface == "advanced") {
-      result = this.cypherGenerator.generateAdvancedQuery(this.ui.advanced);
-    } else if (selectedInterface == "cypher") {
+    if (!this.isCypherWritable) {
+      if (!this.isMarclabData) {
+        let input = {};
+        input.nodes = [this.ui.nodes[0], this.ui.nodes[this.ui.nodes.length - 1]];
+        result = this.cypherGenerator.generateBasicQuery(input, this.ui.selectedNumHops, this.dataset == "flights");
+      } else {
+        result = this.cypherGenerator.generateAdvancedQuery(this.ui);
+      }
+    } else {
       result = this.cypher;
     }
     return result;
@@ -108,59 +114,17 @@ class QueryController {
     return deferred.promise;
   }
 
-  /**
-   * Called when user clicks 'ok' on the state-change warning
-   */
-  onDismissWarning() {
-    this.showWarning = false;
-    if (this.ui.previousInterface == 'cypher') {
-      this.cypher = ' ';
-    } else {
-      this.ui[this.ui.previousInterface] = {
-        nodes: [],
-        edges: []
-      };
-    }
-    this.setNumHops(this.ui.selectedNumHops);
-  }
-
-  /**
-   * Called when user clicks 'go back' on the state-change warning.
-   */
-  onGoBackClicked() {
-    this.ui.selectedInterface = this.ui.previousInterface;
-    this.showWarning = false;
-  }
-
   onSetQuery(signal, ui) {
+    this.reset();
     if (ui) {
       this.ui = ui;
-      this.cypher = this.generateCypher(this.ui.selectedInterface)
-    } else {
-      this.reset();
+      this.onQueryModified();
     }
   }
 
-  /**
-   * Called when a query gets modified. Used to remember when the user has changed the current query.
-   */
   onQueryModified() {
-    this.previousInterface = this.selectedInterface;
-    this.hasActiveQuery = true;
     this.main.queryUi = this.ui;
-  }
-
-  /**
-   * Called when user changes view state -- e.g., from 'basic' to 'cypher'
-   */
-  onStateChanged() {
-    if (this.hasActiveQuery) {
-      this.showWarning = true;
-      if (this.ui.selectedInterface == 'cypher') {
-        this.cypher = this.generateCypher(this.ui.previousInterface);
-      }
-    }
-    this.setNumHops(this.ui.selectedNumHops)
+    this.cypher = this.generateCypher();
   }
 
   /**
@@ -176,27 +140,10 @@ class QueryController {
 
   reset() {
     let self = this;
-
-    if (this.dataset == 'marclab') {
-      this.ui = {};
-      this.ui.selectedInterface = "advanced";
-
-      this.$timeout(function () {
-        self.ui = angular.fromJson('{ "basic": { "nodes": [] }, "availableNumHops": [ 1, 2, 3 ], "selectedNumHops": 2, "advanced": { "nodes": [ [ { "attribute": "label", "value": "CBb4w", "text": "CBb4w (label)" } ], [ { "attribute": "label", "value": "GC diving", "text": "GC diving (label)" } ], [ { "attribute": "label", "value": "Rod BC", "text": "Rod BC (label)" } ] ], "edges": [ [ { "text": "* (wildcard)", "attribute": "*", "name": "*" } ], [ { "text": "* (wildcard)", "attribute": "*", "name": "*" } ] ], "keys": [ "Start", "Node", "End" ] }, "selectedInterface": "advanced", "previousInterface": "advanced"}');
-        self.hasActiveQuery = true;
-        self.main.queryUi = self.ui;
-      });
-    } else {
-      this.ui = {};
-      this.ui.selectedInterface = "basic";
-
-      this.$timeout(function () {
-        self.ui = angular.fromJson('{ "basic": { "nodes": [ [ { "attribute": "airport", "value": "LAX", "text": "LAX (airport)" }, { "attribute": "airport", "value": "SFO", "text": "SFO (airport)" } ], [ { "attribute": "airport", "value": "BOS", "text": "BOS (airport)" } ] ] }, "availableNumHops": [ 1, 2, 3 ], "selectedNumHops": 2, "advanced": { "nodes": [], "edges": [], "keys": [ "Start", "Node", "End" ] }, "selectedInterface": "basic", "previousInterface": "basic" }');
-        self.hasActiveQuery = true;
-        self.main.queryUi = self.ui;
-      });
-    }
-
+    this.ui = {};
+    this.ui.availableNumHops = [1, 2, 3];
+    this.ui.selectedNumHops = 2;
+    this.setNumHops(2);
     this.cypher = "";
     this.placeholder = " ";
   }
@@ -206,15 +153,22 @@ class QueryController {
    */
   setNumHops(numHops) {
     let keys = ["Start"];
-    this.ui.advanced.edges = [];
-    this.ui.advanced.edges.push([]);
+    this.ui.edges = [];
+    this.ui.edges.push([]);
+
+    this.ui.nodes = [];
+    this.ui.nodes[0] = [];
 
     for (let i = 1; i < numHops; ++i) {
       keys.push("Node");
-      this.ui.advanced.edges.push([]);
+      this.ui.edges.push([]);
+      this.ui.nodes[i] = [];
     }
+
     keys.push("End");
-    this.ui.advanced.keys = keys;
+
+    this.ui.keys = keys;
+    this.onQueryModified();
   }
 
 }
