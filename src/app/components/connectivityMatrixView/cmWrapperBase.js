@@ -151,6 +151,7 @@ export class cmWrapperBase {
 
     let topRowHeight = this.controlsHeader.getHeight();
     let topLeftWidth = this.controlsHeader.getWidth();
+
     let topRightWidth = this.matrix.getWidth();
     let bottomRowHeight = this.matrix.getHeight();
 

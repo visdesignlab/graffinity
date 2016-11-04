@@ -771,8 +771,10 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   onFilterChanged() {
-    this.updateDataRows();
-    this.updateDataCols();
+    if (!this.isControlsMatrix) {
+      this.updateDataRows();
+      this.updateDataCols();
+    }
     this.setEncoding(this.encoding, this.metric);
     this.updatePositions(this.rowPerm, this.colPerm);
   }
