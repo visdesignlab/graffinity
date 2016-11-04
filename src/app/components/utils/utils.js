@@ -94,8 +94,12 @@ Utils = (function () {
   function getFlattenedLists(listOfLists) {
     let list = [];
     for (var i = 0; i < listOfLists.length; ++i) {
-      for (var j = 0; j < listOfLists[i].length; ++j) {
-        list.push(listOfLists[i][j]);
+      if (listOfLists[i].length) {
+        for (var j = 0; j < listOfLists[i].length; ++j) {
+          list.push(listOfLists[i][j]);
+        }
+      } else {
+        list.push(listOfLists[i]);
       }
     }
     return list;

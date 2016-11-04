@@ -215,14 +215,38 @@ export class ViewState {
   }
 
   setCategoricalFilter(attribute, attributeNodeGroup, filter) {
+    let keys = Object.keys(filter);
+    let isEmptyFilter = true;
+    for (let i = 0; i < keys.length; ++i) {
+      if (!filter[keys[i]]) {
+        isEmptyFilter = false;
+        break;
+      }
+    }
+
     this.categoricalFilters[attributeNodeGroup][attribute] = filter;
-    this.$scope.$broadcast('filterChanged');
+    this.$scope.$broadcast('filterChanged', attribute, attributeNodeGroup, filter, false, isEmptyFilter);
   }
 
   setQuantitativeFilter(attribute, attributeNodeGroup, filter) {
+    let isEmptyFilter = this.initialQuantitativeFilters[attributeNodeGroup][attribute][0] == filter[0] &&
+      this.initialQuantitativeFilters[attributeNodeGroup][attribute][1] == filter[1];
+
     this.quantitativeFilters[attributeNodeGroup][attribute] = filter;
-    this.$scope.$broadcast('filterChanged');
+
+    this.$scope.$broadcast('filterChanged', attribute, attributeNodeGroup, filter, true, isEmptyFilter);
     this.$scope.$broadcast("updateQuantitativeAttributeFilter", attribute, attributeNodeGroup, filter);
+  }
+
+  resetAttributeFilter(attribute, attributeNodeGroup) {
+    let isCategorical = this.model.isCategoricalAttribute(attribute) || attribute == this.model.getCmGraph().getNodeIdName();
+    if (isCategorical) {
+      this.categoricalFilters[attributeNodeGroup][attribute] = this.initialCategoricalFilter[attributeNodeGroup][attribute];
+    } else {
+      this.quantitativeFilters[attributeNodeGroup][attribute] = this.initialQuantitativeFilters[attributeNodeGroup][attribute];
+      this.$scope.$broadcast("updateQuantitativeAttributeFilter", attribute, attributeNodeGroup, this.quantitativeFilters[attributeNodeGroup][attribute]);
+    }
+    this.$scope.$broadcast('filterChanged', attribute, attributeNodeGroup, null, !isCategorical, true);
   }
 
   /**
@@ -269,6 +293,9 @@ export class ViewState {
         this.categoricalFilters[i][id][values[k]] = true;
       }
     }
+
+    this.initialCategoricalFilter = angular.copy(this.categoricalFilters);
+    this.initialQuantitativeFilters = angular.copy(this.quantitativeFilters);
   }
 
   //setFilterRange(attribute, attributeNodeGroup, range) {

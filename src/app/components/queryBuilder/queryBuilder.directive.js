@@ -43,7 +43,7 @@ class QueryController {
       return scope.queryController.dataset;
     }, this.reset.bind(this));
 
-
+    this.$scope.$on("filterChanged", this.onFilterChanged.bind(this));
     this.$scope.$on("setQuery", this.onSetQuery.bind(this));
 
   }
@@ -114,6 +114,56 @@ class QueryController {
     return deferred.promise;
   }
 
+  onFilterChanged(signal, attribute, attributeNodeGroup, filter, isQuantitative, isEmptyFilter) {
+    let key = "";
+    if (attributeNodeGroup == 0) {
+      key = "Start";
+    } else if (attributeNodeGroup == 2) {
+      key = "Node";
+    } else if (attributeNodeGroup == 1) {
+      key = "End";
+    }
+
+    if (!this.filters[key]) {
+      this.filters[key] = {};
+    }
+
+    let filterTexts = [];
+    if (filter && !isQuantitative) {
+      let filterNames = Object.keys(filter);
+      for (let i = 0; i < filterNames.length; ++i) {
+        if (!filter[filterNames[i]]) {
+          filterTexts.push(filterNames[i]);
+        }
+      }
+    }
+
+    if (!isEmptyFilter) {
+      this.filters[key][attribute] = {
+        attribute: attribute,
+        attributeNodeGroup: attributeNodeGroup,
+        filter: filter,
+        filterTexts: filterTexts,
+        isQuantitative: isQuantitative
+      };
+    } else {
+      this.filters[key][attribute] = null;
+    }
+
+  }
+
+  hasIntermediateNodeFilters() {
+    if (this.filters && this.filters["Node"]) {
+      let keys = Object.keys(this.filters["Node"]);
+      for (let i = 0; i < keys.length; ++i) {
+        if (this.filters["Node"][keys[i]]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   onSetQuery(signal, ui) {
     this.reset();
     if (ui) {
@@ -136,10 +186,12 @@ class QueryController {
         query: this.generateCypher(this.ui.selectedInterface)
       }
     );
+    this.filters = {};
   }
 
   reset() {
     let self = this;
+    this.filters = {};
     this.ui = {};
     this.ui.availableNumHops = [1, 2, 3];
     this.ui.selectedNumHops = 2;
@@ -153,6 +205,7 @@ class QueryController {
    */
   setNumHops(numHops) {
     let keys = ["Start"];
+    this.filters = {};
     this.ui.edges = [];
     this.ui.edges.push([]);
 

@@ -383,6 +383,10 @@ export class MainController {
   openNodeAttributeFilter(attribute, nodeIndexes, nodeAttributeGroup) {
     let useCategoricalFilter = false;
 
+    if (!nodeIndexes) {
+      nodeIndexes = this.viewState.getAttributeNodeGroup(nodeAttributeGroup);
+    }
+
     if (attribute == this.model.getCmGraph().getNodeIdName()) {
       useCategoricalFilter = true;
     } else {
@@ -399,7 +403,6 @@ export class MainController {
 
       let modalSuccess = function (selection) {
         this.viewState.setCategoricalFilter(attribute, nodeAttributeGroup, selection);
-        this.$log.debug("categorical filter", attribute, nodeAttributeGroup, selection)
         this.updateLegend();
       }.bind(this);
 
@@ -414,13 +417,16 @@ export class MainController {
         let attribute = result.attribute;
         let range = result.range;
         this.viewState.setQuantitativeFilter(attribute, nodeAttributeGroup, range);
-        this.$log.debug("categorical filter", attribute, nodeAttributeGroup, range);
         this.updateLegend();
       }.bind(this);
 
       // Open the modal.
       this.modalService.getValueRange("Filter by " + attribute, nodeAttributes, range, flattenedIndexes, attribute, callback);
     }
+  }
+
+  resetAttributeFilter(attribute, attributeNodeGroup) {
+    this.viewState.resetAttributeFilter(attribute, attributeNodeGroup);
   }
 
 

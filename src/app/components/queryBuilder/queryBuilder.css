@@ -68,3 +68,10 @@
   margin-bottom: 5px;
   margin-right: 15px;
 }
+
+.query-builder-filter {
+  background: #adadad;
+  border-color: #adadad;
+  padding: 1px 5px;
+  border-radius: 5px;
+}
