@@ -58,16 +58,17 @@ export class cmMatrixBase extends SvgGroupElement {
 
     this.colWidth = 15;
     this.rowHeight = 15;
-    this.colWidthAttr = 80;
-    this.colWidthLabel = 80;
+    this.colWidthAttr = 70;
+    this.colWidthLabel = 70;
     this.colWidthControl = 15;
     this.labelRowHeight = this.colWidthLabel;
-    this.rowHeightAttr = 80;
+    this.rowHeightAttr = 70;
 
     this.paddingBottom = 4;
     this.paddingRight = 4;
 
     this.svg = svg;
+
 
     this.highlights = [];
     this.rowHeights = [];
@@ -1025,6 +1026,21 @@ export class cmMatrixBase extends SvgGroupElement {
 
     // Delete old stuff
     this.clearChildren();
+
+    this.defs = this.svg.append("defs");
+    this.defs.append("clipPath")
+      .attr("id", "horizontal-attribute-clip")
+      .append("rect")
+      .attr("transform", "translate(0, -7.5)")
+      .attr("width", 70)
+      .attr("height", 15);
+
+    this.defs.append("clipPath")
+      .attr("id", "vertical-attribute-clip")
+      .append("rect")
+      .attr("transform", "translate(0, -7.5)")
+      .attr("width",70)
+      .attr("height", 15);
 
     // Prepare internal state for creating the svg table
     this.initNodeIndexes(model);

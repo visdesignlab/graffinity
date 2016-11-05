@@ -20,12 +20,13 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
 
       if (cell.data.isVertical) {
 
-        if(this.areColsCollapsed && !this.isVisitingColsCollapsedAttr && cell.isMajorCell) {
+        if (this.areColsCollapsed && !this.isVisitingColsCollapsedAttr && cell.isMajorCell) {
           text = "----";
         }
 
         group.append("g")
           .attr("transform", "translate(" + this.labelRowWidth / 2 + "," + this.labelRowHeight + ")rotate(270)")
+          .attr("clip-path", "url(#vertical-attribute-clip")
           .append("text")
           .text(text)
           .classed("matrix-view-string-attribute", true);
@@ -35,15 +36,15 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
 
       } else {
 
-        if(cell.isInMajorRow && this.areRowsCollapsed && !this.isVisitingRowsCollapsedAttr) {
+        if (cell.isInMajorRow && this.areRowsCollapsed && !this.isVisitingRowsCollapsedAttr) {
           text = "----"
         }
 
         group.append("g")
+          .attr("transform", "translate(" + 0 + "," + this.labelColHeight / 2 + ")")
+          .attr("clip-path", "url(#horizontal-attribute-clip)")
           .append("text")
           .text(text)
-          .attr("x", 0)
-          .attr("y", this.labelColHeight / 2)
           .classed("matrix-view-string-attribute", true);
 
         this.width = this.labelColWidth;

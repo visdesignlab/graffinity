@@ -46,9 +46,9 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
       if (this.callbacks) {
         if (data.isVertical) {
           this.width = 15;
-          this.height = 80;
+          this.height = 70;
         } else {
-          this.width = 80;
+          this.width = 70;
           this.height = 15;
         }
         this.createInteractionGroup(cell);
@@ -65,10 +65,10 @@ export class cmScatterPlot1DVisitor extends cmAttributeCellVisitor {
 
       if (data.isVertical) {
 
-        new visScatterPlot1D(cell.interactionGroup, 15, 80, this.radius, values, this.valueRange, data.orientation, mouseover, mouseout);
+        new visScatterPlot1D(cell.interactionGroup, 15, 70, this.radius, values, this.valueRange, data.orientation, mouseover, mouseout);
 
       } else {
-        new visScatterPlot1D(cell.interactionGroup, 80, 15, this.radius, values, this.valueRange, data.orientation, mouseover, mouseout);
+        new visScatterPlot1D(cell.interactionGroup, 70, 15, this.radius, values, this.valueRange, data.orientation, mouseover, mouseout);
       }
 
     }

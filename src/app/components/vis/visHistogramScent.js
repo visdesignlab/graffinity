@@ -41,7 +41,7 @@ export class visHistogramScent {
 
     if (isVertical) {
       // margin allows for histogram to be properly placed -- note can change the right to 2 if you want histogram farther way from 1D scatterplots
-      this.margin = {top: 5, right: 0, bottom: 5, left: 0};
+      this.margin = {top: 2, right: 0, bottom: 2, left: 0};
 
       this.chartWidth = this.width - this.margin.left - this.margin.right - this.offset;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
@@ -65,7 +65,7 @@ export class visHistogramScent {
     }
     else {
       // margin allows for histogram to be properly placed-- note can change the bottom to 2 if you want histogram farther way from 1D scatterplots
-      this.margin = {top: 0, right: 5, bottom: 0, left: 5};
+      this.margin = {top: 0, right: 2, bottom: 0, left: 2};
       this.chartWidth = this.width - this.margin.left - this.margin.right;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom - this.offset;
 
