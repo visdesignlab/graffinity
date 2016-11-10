@@ -68,7 +68,7 @@ class AdjustableColorScaleController {
       }
 
 
-      self.histogram = new visHistogramScent(self.$scope, self.histogramGroup, self.width - 10, 40, 30, false, self.values, 0, true);
+      //self.histogram = new visHistogramScent(self.$scope, self.histogramGroup, self.width - 10, 40, 30, false, self.values, 0, true);
 
     });
   }
@@ -145,7 +145,7 @@ class AdjustableColorScaleController {
         .attr("height", 70);
 
       this.svg = this.svgRoot.append("g")
-        .attr("transform", `translate(0, 43)`);
+        .attr("transform", `translate(0, 0)`);
 
     } else {
 
@@ -157,7 +157,7 @@ class AdjustableColorScaleController {
     let colorScaleDomain = colorScale.domain();
     let xDomain = [colorScaleDomain[0], colorScaleDomain[colorScaleDomain.length - 1]];
 
-    this.xScale = d3.scale.linear()
+    this.xScale = d3.scale.log()
       .domain(xDomain)
       .range([this.marginRight, this.width - this.marginLeft]);
 

@@ -85,12 +85,15 @@ body {
   margin-left: 0.5%;
 }
 
+.pane.intermediate-nodes{
+  border-left: thin solid lightgrey;
+}
+
 .pane.pane-center-right {
   width: auto;
   border-top: thick solid lightgray;
   border-right: thick solid lightgray;
   border-bottom: thick solid lightgray;
-  border-left: thin solid lightgrey;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   padding-left: 10px;
