@@ -24,13 +24,10 @@
 }
 
 .path-list-edge {
-  display: inline-block;
   background: darkgrey;
-  font-size: 14px;
+  font-size: 12px;
   width: 0.75em;
   height: 0.25em;
-  position: relative;
-  top: -0.125em; /* half of height */
 }
 
 .path-list-edge:hover {
@@ -39,10 +36,12 @@
 
 .path-list-path {
   font-size: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .path-list-node {
-  display: inline-block;
   background: #c8c8c8;
   border: thin solid #505050;
   font-size: 12px;
