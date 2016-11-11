@@ -39,7 +39,7 @@ export class QueryPath {
   }
 
   static getCypherSkeletonPostfix() {
-    return " RETURN p"
+    return " RETURN p";
   }
 
   toString() {

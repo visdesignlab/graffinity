@@ -1,6 +1,6 @@
 /*globals d3
  */
-import {visHistogramScent} from "../vis/visHistogramScent"
+//import {visHistogramScent} from "../vis/visHistogramScent"
 export class AdjustableColorScaleDirective {
 
   constructor($log, $timeout) {

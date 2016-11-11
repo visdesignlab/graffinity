@@ -60,6 +60,7 @@ export class MainController {
 
     // Populate starting data with something intelligent
     if (this.database == "marclab") {
+      this.isMarclabData = true;
 
       if (useLargeResult) {
         this.requestInitialData("/assets/mock/defaultMarclab.json");
