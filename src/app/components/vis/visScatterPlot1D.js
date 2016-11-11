@@ -123,7 +123,6 @@ export class visScatterPlot1D {
     mark.attr("data-container", "body");
 
 
-    angular.element('[data-toggle="tooltip"]').tooltip();
   }
 
   static getOrientations() {

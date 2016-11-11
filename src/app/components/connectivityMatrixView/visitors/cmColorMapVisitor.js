@@ -102,7 +102,6 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
         .attr("data-placement", "right")
         .attr("data-container", "body");
 
-      angular.element('[data-toggle="tooltip"]').tooltip();
 
     } else {
       this.createEmptyCellOutline(cell);

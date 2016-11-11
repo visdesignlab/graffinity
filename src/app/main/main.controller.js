@@ -259,10 +259,12 @@ export class MainController {
       this.matrixManager.matrix.setEncoding(encoding);
       this.updateLegend();
     }
+    angular.element('[data-toggle="tooltip"]').tooltip();
   }
 
   onMetricChanged(metric, encoding) {
     this.matrixManager.matrix.setEncoding(encoding, metric);
+    angular.element('[data-toggle="tooltip"]').tooltip();
     this.updateLegend();
   }
 
