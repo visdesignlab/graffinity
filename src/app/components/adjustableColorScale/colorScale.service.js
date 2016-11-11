@@ -40,9 +40,6 @@ export class ColorScaleService {
       .domain(domain)
       .range([0, 100]);
 
-    this.$log.debug("creating color scale");
-    this.$log.debug(domain, range);
-
     let numBins = range.length;
     let step = domain[1] / (numBins - 1);
     let thresholdDomain = [];
