@@ -56,6 +56,7 @@
                   ng-mouseover="controller.hoverNodes([row.paths[0][$index]])"
                   ng-mouseleave="controller.hoverNodes()">
               {{controller.model.getMajorLabels([row.paths[0][$index]])[0]}}<br>
+              {{controller.mainController.isMarclabData ? controller.model.getNodeAttr([row.paths[0][$index]], "label")[0] : ""}}
             </span>
             <span ng-show="$index%2==1" class="path-list-edge">
             </span>
