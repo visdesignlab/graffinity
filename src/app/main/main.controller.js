@@ -23,7 +23,7 @@ export class MainController {
     this.colorScaleService = colorScaleService;
     this.resource = resource;
     this.queryUi = {};
-
+    this.areDetailsVisible = true;
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
