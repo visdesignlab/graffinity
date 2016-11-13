@@ -231,12 +231,22 @@ export class cmGraph {
     return this.edgeDict[edgeIndex];
   }
 
-  getEdgeDetails(edgeIndex) {
+  getEdgeDescription(edgeIndex) {
     let edge = this.getEdge(edgeIndex);
-    if(this.database == "flights") {
+    if (this.database == "flights") {
       return edge.carrier + "-" + edge.flightNum;
     } else {
       return edge.type;
+    }
+  }
+
+  getEdgeDetails(edgeIndex) {
+    let edge = this.getEdge(edgeIndex);
+
+    if (this.database == "flights") {
+      return "Dep: " + edge.depTime + "<br>Arr: " + edge.arrTime;
+    } else {
+      return edge.linkedStructures;
     }
   }
 

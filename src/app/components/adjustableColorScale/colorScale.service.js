@@ -20,9 +20,13 @@ export class ColorScaleService {
    */
   createColorScale(colorScaleIndex, domain) {
     let name = this.colorScaleNames[colorScaleIndex];
-    if (domain[0] === domain[1]) {
-      domain[1]++;
+
+    if (domain[0] === 0) {
+      domain[0]++;
     }
+
+    domain[1]++;
+
     let range = ColorScaleService.getColorScaleRange(colorbrewer[name], domain);
 
     // let scale = d3.scale.quantize()
@@ -32,11 +36,16 @@ export class ColorScaleService {
     //   return scale.invertExtent(d)[1] + 1;
     // });
 
+    let logScale = d3.scale.log()
+      .domain(domain)
+      .range([0, 100]);
+
     let numBins = range.length;
     let step = domain[1] / (numBins - 1);
     let thresholdDomain = [];
     for (let i = 0; i < numBins; ++i) {
-      thresholdDomain.push(step * i + 1);
+      let percent = step * i / domain[1] * 100;
+      thresholdDomain.push(logScale.invert(percent));
     }
 
     let scale = d3.scale.threshold()
@@ -49,7 +58,8 @@ export class ColorScaleService {
   /**
    *
    */
-  static getColorScaleRange(colors, domain) {
+  static
+  getColorScaleRange(colors, domain) {
     if (domain[0] == 1 && domain[1] == 1) {
       return [colors[3][2]];
     } else if (domain[0] == 1 && domain[1] == 2) {

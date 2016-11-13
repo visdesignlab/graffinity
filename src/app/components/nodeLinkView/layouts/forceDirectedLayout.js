@@ -123,6 +123,7 @@ export class ForceDirectedLayout extends Layout {
             id: node,
             attributes: attributes,
             name: self.model.getMajorLabels([node])[0],
+            label: self.model.getNodeAttr([node], "label")[0],
             x: self.width / 10, //left side
             y: self.height * leftNodeIndex / leftVerticalBalanceIndex,
             fixed: true
@@ -135,6 +136,7 @@ export class ForceDirectedLayout extends Layout {
             id: node,
             attributes: attributes,
             name: self.model.getMajorLabels([node])[0],
+            label: self.model.getNodeAttr([node], "label")[0],
             x: 9 * self.width / 10, //right side
             y: self.height * rightNodeIndex / rightVerticalBalanceIndex,
             fixed: true
@@ -146,7 +148,8 @@ export class ForceDirectedLayout extends Layout {
           {
             id: node,
             attributes: attributes,
-            name: self.model.getMajorLabels([node])[0]
+            name: self.model.getMajorLabels([node])[0],
+            label: self.model.getNodeAttr([node], "label")[0]
           });
       }
 
@@ -223,20 +226,47 @@ export class ForceDirectedLayout extends Layout {
       .classed("node", true)
       .call(force.drag);
 
-    this.nodes.append("rect")
-      .attr("rx", self.rx)
-      .attr("ry", self.ry)
-      .attr({"height": self.nodeHeight})
-      .attr({"width": self.nodeWidth});
+    //this.nodes.append("rect")
+    //  .attr("rx", self.rx)
+    //  .attr("ry", self.ry)
+    //  .attr({"height": self.nodeHeight})
+    //  .attr({"width": self.nodeWidth});
 
     //node text
-    this.nodeLabels = this.nodes.append("text")
-      .text(function (d) {
-        return d.name;
-      });
+    this.nodeLabels = this.nodes.append("foreignObject")
+      .attr("width", "4em")
+      .attr("height", "2em")
+      .classed("node", true);
+
+    this.nodeLabels.append("xhtml:div")
+      .classed("path-list-node", true)
+      .html(function (d) {
+          return d.name + (d.label ? "<br>" + d.label : "")
+        }
+      );
+
+
+    //this.nodeLabels.append("tspan")
+    //  .text(function (d) {
+    //    return d.name;
+    //  })
+    //  .attr("x", self.nodeWidth / 2);
+    //
+    //this.nodeLabels.append("tspan")
+    //  .text(function (d) {
+    //    return d.name;
+    //  })
+    //  .attr("dy", "1.2em")
+    //  .attr("x", self.nodeWidth / 2);
 
     //arrowheads
-    this.graphGroup.append('defs').append('marker')
+    this
+      .graphGroup
+      .append(
+        'defs'
+      ).append(
+      'marker'
+      )
       .attr({
         'id': 'arrowhead',
         'viewBox': '-0 -5 10 10',
@@ -247,50 +277,79 @@ export class ForceDirectedLayout extends Layout {
         'markerHeight': 10,
         'xoverflow': 'visible'
       })
-      .append('svg:path')
-      .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-      .attr('fill', '#ccc')
-      .attr('stroke', '#ccc');
+
+      .append(
+        'svg:path'
+      )
+      .attr(
+        'd'
+        ,
+        'M 0,-5 L 10 ,0 L 0,5'
+      )
+      .attr(
+        'fill'
+        ,
+        '#ccc'
+      )
+      .attr(
+        'stroke'
+        ,
+        '#ccc'
+      )
+    ;
 
 
-    let accessor = function (d) {
-      return d.id;
-    };
-    this.addHoverCallbacks(this.nodeGroup, "g.node", accessor);
+    let
+      accessor = function (d) {
+        return d.id;
+      };
+    this
+      .addHoverCallbacks(
+        this
+          .nodeGroup
+        ,
+        "g.node"
+        ,
+        accessor
+      )
+    ;
 
     //force functions
-    force.on("tick", function () {
+    force
+      .on(
+        "tick"
+        ,
+        function () {
 
-      self.edges.attr({
-        "x1": function (d) {
-          return d.source.x;
-        },
-        "y1": function (d) {
-          return d.source.y;
-        },
-        "x2": function (d) {
-          return d.target.x;
-        },
-        "y2": function (d) {
-          return d.target.y;
+          self.edges.attr({
+            "x1": function (d) {
+              return d.source.x;
+            },
+            "y1": function (d) {
+              return d.source.y;
+            },
+            "x2": function (d) {
+              return d.target.x;
+            },
+            "y2": function (d) {
+              return d.target.y;
+            }
+          });
+
+          self.nodes.attr("transform", function (d) {
+            //return "translate(" + (graph.node(d).x-self.nodeWidth/2) + "," + (graph.node(d).y-self.nodeHeight/2) + ")";
+            return "translate(" + (d.x - self.nodeWidth / 2) + "," + (d.y - self.nodeHeight / 2) + ")";
+          });
+
+
+          self.edgePaths.attr('d', function (d) {
+            var path = 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
+            return path
+          });
+
         }
-      });
-
-      self.nodes.attr("transform", function (d) {
-        //return "translate(" + (graph.node(d).x-self.nodeWidth/2) + "," + (graph.node(d).y-self.nodeHeight/2) + ")";
-        return "translate(" + (d.x - self.nodeWidth / 2) + "," + (d.y - self.nodeHeight / 2) + ")";
-      });
-
-      self.nodeLabels.attr("x", self.nodeWidth / 2)
-        .attr("y", self.nodeHeight / 2)
-        .attr("pointer-events", "none");
-
-      self.edgePaths.attr('d', function (d) {
-        var path = 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
-        return path
-      });
-
-    });
+      )
+    ;
 
   }
 

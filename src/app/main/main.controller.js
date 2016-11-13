@@ -23,7 +23,7 @@ export class MainController {
     this.colorScaleService = colorScaleService;
     this.resource = resource;
     this.queryUi = {};
-
+    this.areDetailsVisible = true;
     // Variables for displaying current state of the query to the user.
     this.hasActiveQuery = false;
     this.hasQueryError = false;
@@ -60,6 +60,7 @@ export class MainController {
 
     // Populate starting data with something intelligent
     if (this.database == "marclab") {
+      this.isMarclabData = true;
 
       if (useLargeResult) {
         this.requestInitialData("/assets/mock/defaultMarclab.json");
@@ -258,10 +259,12 @@ export class MainController {
       this.matrixManager.matrix.setEncoding(encoding);
       this.updateLegend();
     }
+    angular.element('[data-toggle="tooltip"]').tooltip();
   }
 
   onMetricChanged(metric, encoding) {
     this.matrixManager.matrix.setEncoding(encoding, metric);
+    angular.element('[data-toggle="tooltip"]').tooltip();
     this.updateLegend();
   }
 

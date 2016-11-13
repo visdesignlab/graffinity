@@ -930,7 +930,6 @@ export class cmModel {
         }
       }
     }
-
     self.numPathsPerNode = numPathsPerNode;
   }
 

@@ -36,6 +36,7 @@ class QueryController {
     this.$scope = $scope;
     this.cypherGenerator = cypherGeneratorService;
     this.isMarclabData = this.allowAdvancedQuery;
+    this.isCypherWritable = false;
 
     this.reset();
 
@@ -48,7 +49,7 @@ class QueryController {
 
   }
 
-  generateCypher(selectedInterface) {
+  generateCypher() {
     let result = "";
     if (!this.isCypherWritable) {
       if (!this.isMarclabData) {
@@ -190,7 +191,6 @@ class QueryController {
   }
 
   reset() {
-    let self = this;
     this.filters = {};
     this.ui = {};
     this.ui.availableNumHops = [1, 2, 3];

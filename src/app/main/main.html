@@ -1,7 +1,19 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
   <span class="logo">Connectivity Matrix</span>
-  <span ng-show="true" ng-click="main.onSaveClicked()">Save</span>
+  <span ng-show="false" ng-click="main.onSaveClicked()">Save</span>
+
+
+  <div style="position: absolute; right: 1em; top:1em">
+    <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
+            ng-click="main.areDetailsVisible = true;">
+      Show panel
+    </button>
+    <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
+            ng-click="main.areDetailsVisible = false;">
+      Hide panel
+    </button>
+  </div>
 </div>
 
 <div class="full-width hflex main-panel grow-1">
@@ -12,7 +24,7 @@
       submit-disabled="main.hasActiveQuery"
       resource="main.resource"
       allow-advanced-query="main.database == 'marclab'"
-      dataset="main.database",
+      dataset="main.database" ,
       main="main">
     </query-builder>
     <div ng-show="main.hasGoodData">
@@ -102,10 +114,17 @@
     </div>
   </div>
 
-  <div ng-show="main.hasGoodData" class="pane pane-center-right vflex">
-    <h4 class="no-margin">Intermediate Nodes</h4>
-    <div id="node-list-col" class="grow-1 vflex">
+  <div ng-show="main.hasGoodData && main.model.getIntermediateNodeIndexes().length"
+       class="pane pane-center-right vflex intermediate-nodes">
+    <div ng-show="main.model.getIntermediateNodeIndexes().length" class="vflex grow-1">
+      <h4 class="no-margin">Intermediate Nodes</h4>
+      <div id="node-list-col" class="grow-1 vflex">
+      </div>
     </div>
+  </div>
+
+  <div ng-show="!main.model.getIntermediateNodeIndexes().length"
+       class="pane pane-center-right">
   </div>
 
   <!-- Error messages -->
@@ -125,8 +144,9 @@
   </div>
 
   <!-- Right panel -->
-  <div ng-show="main.hasGoodData" class="pane right-pane grey-border vflex">
-    <uib-tabset active="1" type="tabs" class="grow-1 vflex">
+  <div ng-show="main.areDetailsVisible && main.hasGoodData" class="pane right-pane grey-border vflex">
+
+    <uib-tabset active="1" type="tabs" class="grow-1 vflex" style="display: inline-flex !important;">
       <!-- Tab for the node-link view -->
       <uib-tab index="0" heading="{{main.availablePanels[0]}}">
         <div class="grow-1 vflex">
@@ -147,5 +167,8 @@
         </div>
       </uib-tab>
     </uib-tabset>
+
   </div>
+
+
 </div>

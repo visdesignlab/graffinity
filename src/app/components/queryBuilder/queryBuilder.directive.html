@@ -58,23 +58,21 @@
           </span>
       </div>
     </div>
+    <div class="input-group query-builder-item query-builder-input"
+         ng-show="$index < queryController.ui.keys.length - 1 && queryController.isMarclabData">
+      <span class="input-group-addon query-builder-addon">Edge</span>
+      <tags-input placeholder="{{queryController.placeholder}}"
+                  ng-model="queryController.ui.edges[$index]"
+                  replace-spaces-with-dashes="false"
+                  ng-disabled="queryController.isCypherWritable"
+                  on-tag-added="queryController.onQueryModified()"
+                  on-tag-removed="queryController.onQueryModified()"
+                  add-from-autocomplete-only="true">
+        <auto-complete min-length="1" source="queryController.loadEdgeSuggestions($query)" display-property="text">
+        </auto-complete>
+      </tags-input>
+    </div>
   </div>
-  <div class="input-group query-builder-item query-builder-input"
-       ng-if="queryController.isMarclabData"
-       ng-show="$index < queryController.ui.keys.length - 1">
-    <span class="input-group-addon query-builder-addon">Edge</span>
-    <tags-input placeholder="{{queryController.placeholder}}"
-                ng-model="queryController.ui.edges[$index]"
-                replace-spaces-with-dashes="false"
-                ng-disabled="queryController.isCypherWritable"
-                on-tag-added="queryController.onQueryModified()"
-                on-tag-removed="queryController.onQueryModified()"
-                add-from-autocomplete-only="true">
-      <auto-complete min-length="1" source="queryController.loadEdgeSuggestions($query)" display-property="text">
-      </auto-complete>
-    </tags-input>
-  </div>
-</div>
 </div>
 
 <!-- Drop down to raw cypher. Cannot go back to visual interface. -->

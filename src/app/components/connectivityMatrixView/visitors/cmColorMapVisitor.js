@@ -20,8 +20,8 @@ export class cmColorMapVisitorBase extends cmCellVisitor {
 export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
   constructor() {
     super();
-    this.setRange = [1, 1];
-    this.nodeRange = [1, 0];
+    this.setRange = [-1, -1];
+    this.nodeRange = [-1, -1];
     this.visitDataCells = true;
     this.valuesOfSets = [];
     this.valuesOfNodes = [];
@@ -35,9 +35,19 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
     let value = this.applyMetric(paths);
     if (cell.isCellBetweenSets()) {
       this.valuesOfSets.push(value);
+      if (this.setRange[0] == -1) {
+        this.setRange[0] = value;
+      } else {
+        this.setRange[0] = Math.min(this.setRange[0], value);
+      }
       this.setRange[1] = Math.max(this.setRange[1], value);
     } else {
       this.valuesOfNodes.push(value);
+      if (this.nodeRange[0] == -1) {
+        this.nodeRange[0] = value;
+      } else {
+        this.nodeRange[0] = Math.min(this.nodeRange[0], value);
+      }
       this.nodeRange[1] = Math.max(this.nodeRange[1], value);
     }
   }
@@ -92,7 +102,6 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
         .attr("data-placement", "right")
         .attr("data-container", "body");
 
-      angular.element('[data-toggle="tooltip"]').tooltip();
 
     } else {
       this.createEmptyCellOutline(cell);

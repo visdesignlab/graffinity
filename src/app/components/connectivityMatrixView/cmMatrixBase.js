@@ -1039,8 +1039,10 @@ export class cmMatrixBase extends SvgGroupElement {
       .attr("id", "vertical-attribute-clip")
       .append("rect")
       .attr("transform", "translate(0, -7.5)")
-      .attr("width",70)
+      .attr("width", 70)
       .attr("height", 15);
+
+    this.svg.attr("transform", "translate(1, 1)");
 
     // Prepare internal state for creating the svg table
     this.initNodeIndexes(model);
