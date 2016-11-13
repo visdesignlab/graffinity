@@ -9,8 +9,17 @@ body {
 
 .control-header {
   margin-top: 5px;
+  display: flex;
+    align-items: center;
+     justify-content: space-between;
+
 }
 
+.control-input {
+  flex-grow: 1;
+  padding-left: 5px;
+  max-width: 70%;
+}
 .full-height {
   height: 100%;
 }
@@ -52,6 +61,12 @@ body {
   border-radius: 3px;
 }
 
+.left-pane-wrappers {
+  width: 20%;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
 .no-shrink {
   flex-shrink: 0;
 }
@@ -65,10 +80,11 @@ body {
   position: relative;
   margin-top: 3px;
   padding-top: 5px;
+  padding-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 .pane.left-pane {
-  width: 18%;
   padding-left: 5px;
   padding-right: 5px;
   border-radius: 5px;
@@ -85,7 +101,7 @@ body {
   margin-left: 0.5%;
 }
 
-.pane.intermediate-nodes{
+.pane.intermediate-nodes {
   border-left: thin solid lightgrey;
 }
 
