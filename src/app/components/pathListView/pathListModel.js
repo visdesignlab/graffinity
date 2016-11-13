@@ -41,6 +41,10 @@ export class PathListModel {
     return this.rows;
   }
 
+  getEdgeDescription(edgeIndex) {
+    return this.model.getCmGraph().getEdgeDescription(edgeIndex);
+  }
+
   getEdgeDetails(edgeIndex) {
     return this.model.getCmGraph().getEdgeDetails(edgeIndex);
   }
@@ -58,6 +62,7 @@ export class PathListRow {
    */
   constructor(path) {
     this.paths = [path];
+    this.isPathExpanded = [false];
   }
 
   /**
@@ -83,5 +88,6 @@ export class PathListRow {
    */
   addPath(other) {
     this.paths.push(other);
+    this.isPathExpanded.push(false);
   }
 }

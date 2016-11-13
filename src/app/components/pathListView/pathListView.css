@@ -28,6 +28,7 @@
   font-size: 12px;
   width: 0.75em;
   height: 0.25em;
+  line-height: 0;
 }
 
 .path-list-edge:hover {
@@ -55,7 +56,10 @@
   background: #FFC800;
 }
 
+.path-list-small-cell {
+  width: 1em;
+}
+
 .path-list-spacer {
   height: 5px;
 }
-
