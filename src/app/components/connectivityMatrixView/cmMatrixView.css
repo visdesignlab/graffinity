@@ -1,5 +1,5 @@
 .matrix-row {
-  display: flex;
+  display: flex !important;
   flex-direction: row;
   overflow: hidden;
 }
