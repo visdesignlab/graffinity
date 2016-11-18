@@ -3,7 +3,6 @@
   <span class="logo">Connectivity Matrix</span>
   <span ng-show="false" ng-click="main.onSaveClicked()">Save</span>
 
-
   <div style="position: absolute; right: 1em; top:1em">
     <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
             ng-click="main.areDetailsVisible = true;">
@@ -12,6 +11,17 @@
     <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
             ng-click="main.areDetailsVisible = false;">
       Hide panel
+    </button>
+  </div>
+
+  <div style="position: absolute; right: 6.5em; top:1em">
+    <button type="button" ng-show="!main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs"
+            ng-click="main.isNodeListVisible= true;">
+      Show list
+    </button>
+    <button type="button" ng-show="main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs"
+            ng-click="main.isNodeListVisible= false;">
+      Hide list
     </button>
   </div>
 </div>
@@ -75,21 +85,21 @@
         </div>
 
         <!--<div class="control-header">-->
-          <!--Cell encoding-->
-          <!--<ui-select class="control-input"-->
-                     <!--id="select-encoding"-->
-                     <!--ng-model="main.ui.selectedEncoding"-->
-                     <!--ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">-->
-            <!--<ui-select-match placeholder="Cell encoding">-->
-              <!--{{main.ui.selectedEncoding}}-->
-            <!--</ui-select-match>-->
-            <!--<ui-select-choices repeat="option in main.ui.encodings track by option">-->
-              <!--{{option}}-->
-            <!--</ui-select-choices>-->
-          <!--</ui-select>-->
+        <!--Cell encoding-->
+        <!--<ui-select class="control-input"-->
+        <!--id="select-encoding"-->
+        <!--ng-model="main.ui.selectedEncoding"-->
+        <!--ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">-->
+        <!--<ui-select-match placeholder="Cell encoding">-->
+        <!--{{main.ui.selectedEncoding}}-->
+        <!--</ui-select-match>-->
+        <!--<ui-select-choices repeat="option in main.ui.encodings track by option">-->
+        <!--{{option}}-->
+        <!--</ui-select-choices>-->
+        <!--</ui-select>-->
         <!--</div>-->
 
-          <div class="control-header">
+        <div class="control-header">
           Color scale
           <ui-select class="control-input"
                      id="select-encoding"
@@ -137,7 +147,7 @@
     </div>
   </div>
 
-  <div ng-show="main.hasGoodData && main.model.getIntermediateNodeIndexes().length"
+  <div ng-show="main.hasGoodData && main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible"
        class="pane pane-center-right vflex intermediate-nodes">
     <div ng-show="main.model.getIntermediateNodeIndexes().length" class="vflex grow-1">
       <h4 class="no-margin">Intermediate Nodes</h4>
@@ -146,7 +156,7 @@
     </div>
   </div>
 
-  <div ng-show="!main.model.getIntermediateNodeIndexes().length"
+  <div ng-show="!main.model.getIntermediateNodeIndexes().length || !main.isNodeListVisible"
        class="pane pane-center-right">
   </div>
 
@@ -164,9 +174,9 @@
     <h4 ng-show="main.hasQueryError">
       {{main.queryError}}
     </h4>
-  </div>
+  </div
 
-  <!-- Right panel -->
+    <!-- Right panel -->
   <div ng-show="main.areDetailsVisible && main.hasGoodData" class="pane right-pane grey-border vflex">
 
     <uib-tabset active="1" type="tabs" class="grow-1 vflex" style="display: inline-flex !important;">

@@ -38,6 +38,8 @@ export class MainController {
     this.database = database;
 
     this.isMarclabData = this.database == "marclab";
+    this.isNodeListVisible = true;
+
     // If true, enable manual controls of what nodes are shown/hidden.
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
@@ -49,8 +51,6 @@ export class MainController {
     this.ui.debugColFilterScents = false;
 
     // Setup a default query and dataset depending on our database.
-
-
     this.availablePanels = ["Node Link", "Path List"];
     this.selectedPanel = this.availablePanels[1];
 
