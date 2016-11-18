@@ -67,7 +67,7 @@ class NodeLinkViewDirectiveController {
 
     this.ui = {};
     this.ui.availableLayouts = ["Layered", "Geographic", "Force-directed"];
-    this.ui.selectedLayout = this.ui.availableLayouts[0];
+    this.ui.selectedLayout = this.ui.availableLayouts[2];
     this.svg = d3.select("#node-link-svg");
     this.model = $scope.$parent.main.model;
 

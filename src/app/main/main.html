@@ -35,107 +35,105 @@
         submit-disabled="main.hasActiveQuery"
         resource="main.resource"
         allow-advanced-query="main.database == 'marclab'"
-        dataset="main.database" ,
+        dataset="main.database"
         main="main">
       </query-builder>
     </div>
-    <div class="pane left-pane grey-border">
-      <div ng-show="main.hasGoodData">
-        <h4 class="no-margin">Matrix Controls</h4>
-        <div class="control-header">
-          Aggregate rows
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedCategoricalRowAttr"
-                     ng-change="main.onCollapseRowsByAttr(main.ui.selectedCategoricalRowAttr)">
-            <ui-select-match placeholder="Categorical attribute to collapse rows">
-              {{main.ui.selectedCategoricalRowAttr}}
-            </ui-select-match>
-            <ui-select-choices repeat="option in main.ui.availableCategoricalAttr track by option">
-              {{option}}
-            </ui-select-choices>
-          </ui-select>
-        </div>
+    <div class="pane left-pane grey-border" ng-show="main.hasGoodData">
+      <h4 class="no-margin">Matrix Controls</h4>
+      <div class="control-header">
+        Aggregate rows
+        <ui-select class="control-input"
+                   ng-model="main.ui.selectedCategoricalRowAttr"
+                   ng-change="main.onCollapseRowsByAttr(main.ui.selectedCategoricalRowAttr)">
+          <ui-select-match placeholder="Categorical attribute to collapse rows">
+            {{main.ui.selectedCategoricalRowAttr}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.availableCategoricalAttr track by option">
+            {{option}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-        <div class="control-header">
-          Aggregate cols
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedCategoricalColAttr"
-                     ng-change="main.onCollapseColsByAttr(main.ui.selectedCategoricalColAttr)">
-            <ui-select-match placeholder="Categorical attribute to collapse cols">
-              {{main.ui.selectedCategoricalColAttr}}
-            </ui-select-match>
-            <ui-select-choices repeat="option in main.ui.availableCategoricalAttr track by option">
-              {{option}}
-            </ui-select-choices>
-          </ui-select>
-        </div>
+      <div class="control-header">
+        Aggregate cols
+        <ui-select class="control-input"
+                   ng-model="main.ui.selectedCategoricalColAttr"
+                   ng-change="main.onCollapseColsByAttr(main.ui.selectedCategoricalColAttr)">
+          <ui-select-match placeholder="Categorical attribute to collapse cols">
+            {{main.ui.selectedCategoricalColAttr}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.availableCategoricalAttr track by option">
+            {{option}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-        <div class="control-header">
-          Sort order
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedSortOrder"
-                     ng-change="main.onSortOrderChanged(main.ui.selectedSortOrder)">
-            <ui-select-match placeholder="Selected sort order">
-              {{main.ui.selectedSortOrder}}
-            </ui-select-match>
-            <ui-select-choices repeat="option in main.ui.orders track by option">
-              {{option}}
-            </ui-select-choices>
-          </ui-select>
-        </div>
+      <div class="control-header">
+        Sort order
+        <ui-select class="control-input"
+                   ng-model="main.ui.selectedSortOrder"
+                   ng-change="main.onSortOrderChanged(main.ui.selectedSortOrder)">
+          <ui-select-match placeholder="Selected sort order">
+            {{main.ui.selectedSortOrder}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.orders track by option">
+            {{option}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-        <!--<div class="control-header">-->
-        <!--Cell encoding-->
-        <!--<ui-select class="control-input"-->
-        <!--id="select-encoding"-->
-        <!--ng-model="main.ui.selectedEncoding"-->
-        <!--ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">-->
-        <!--<ui-select-match placeholder="Cell encoding">-->
-        <!--{{main.ui.selectedEncoding}}-->
-        <!--</ui-select-match>-->
-        <!--<ui-select-choices repeat="option in main.ui.encodings track by option">-->
-        <!--{{option}}-->
-        <!--</ui-select-choices>-->
-        <!--</ui-select>-->
-        <!--</div>-->
+      <!--<div class="control-header">-->
+      <!--Cell encoding-->
+      <!--<ui-select class="control-input"-->
+      <!--id="select-encoding"-->
+      <!--ng-model="main.ui.selectedEncoding"-->
+      <!--ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">-->
+      <!--<ui-select-match placeholder="Cell encoding">-->
+      <!--{{main.ui.selectedEncoding}}-->
+      <!--</ui-select-match>-->
+      <!--<ui-select-choices repeat="option in main.ui.encodings track by option">-->
+      <!--{{option}}-->
+      <!--</ui-select-choices>-->
+      <!--</ui-select>-->
+      <!--</div>-->
 
-        <div class="control-header">
-          Color scale
-          <ui-select class="control-input"
-                     id="select-encoding"
-                     ng-model="main.ui.selectedColorScale"
-                     ng-change="main.onColorScaleChanged(main.ui.selectedColorScale)">
-            <ui-select-match placeholder="Color scale">
-              {{main.ui.selectedColorScale}}
-            </ui-select-match>
-            <ui-select-choices repeat="option in main.ui.availableColorScales track by option">
-              {{option}}
-            </ui-select-choices>
-          </ui-select>
-        </div>
+      <div class="control-header">
+        Color scale
+        <ui-select class="control-input"
+                   id="select-encoding"
+                   ng-model="main.ui.selectedColorScale"
+                   ng-change="main.onColorScaleChanged(main.ui.selectedColorScale)">
+          <ui-select-match placeholder="Color scale">
+            {{main.ui.selectedColorScale}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.availableColorScales track by option">
+            {{option}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
 
-        <div class="control-header" ng-show="main.ui.metrics">
-          Path metric
-          <ui-select class="control-input"
-                     id="select-metric"
-                     ng-model="main.ui.selectedMetric"
-                     ng-change="main.onMetricChanged(main.ui.selectedMetric, main.ui.selectedEncoding)">
-            <ui-select-match placeholder="Path metric">
-              {{main.ui.selectedMetric}}
-            </ui-select-match>
-            <ui-select-choices repeat="option in main.ui.metrics track by option">
-              {{option}}
-            </ui-select-choices>
-          </ui-select>
-        </div>
+      <div class="control-header" ng-show="main.ui.metrics">
+        Path metric
+        <ui-select class="control-input"
+                   id="select-metric"
+                   ng-model="main.ui.selectedMetric"
+                   ng-change="main.onMetricChanged(main.ui.selectedMetric, main.ui.selectedEncoding)">
+          <ui-select-match placeholder="Path metric">
+            {{main.ui.selectedMetric}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.metrics track by option">
+            {{option}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-        <!-- Legend of matrix cell encodings -->
-        <div class="control-header" ng-show="main.ui.hasLegend">
-          <b>Legend</b>
-          <svg id="encoding-legend">
-          </svg>
-        </div>
+      <!-- Legend of matrix cell encodings -->
+      <div class="control-header" ng-show="main.ui.hasLegend">
+        <b>Legend</b>
+        <svg id="encoding-legend">
+        </svg>
       </div>
     </div>
   </div>
