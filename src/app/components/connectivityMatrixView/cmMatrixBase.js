@@ -55,7 +55,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.$scope = scope;
     this.mainController = mainController;
     this.viewState = viewState;
-
+    this.isActive = true;
     this.colWidth = 15;
     this.rowHeight = 15;
     this.colWidthAttr = 70;
@@ -784,6 +784,10 @@ export class cmMatrixBase extends SvgGroupElement {
    * Called when the mouse is on top of a node in another view.
    */
   onHoverNodes(event, nodeIndexes, matchPaths) {
+    if (!this.isActive) {
+      return;
+    }
+
     if (!this.hoverVisitor) {
       this.hoverVisitor = new cmHoverVisitor();
     }
@@ -982,6 +986,10 @@ export class cmMatrixBase extends SvgGroupElement {
    * @param metric
    */
   setEncodingToColorMap(metric) {
+
+    if (this.isNodeListView && !this.isActive) {
+      return;
+    }
     let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
     let preprocessor = new cmColorMapPreprocessor();

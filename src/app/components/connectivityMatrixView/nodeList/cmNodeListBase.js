@@ -52,9 +52,12 @@ export class cmNodeListBase extends cmMatrixBase {
   }
 
   setModel(model) {
+    this.model = model;
     if (model.getIntermediateNodeIndexes().length) {
       super.setModel(model);
+      this.isActive = true;
     } else {
+      this.model = model;
       this.isActive = false;
     }
   }

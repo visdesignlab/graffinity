@@ -371,7 +371,11 @@ export class MainController {
     if (matrix.length == 1 && matrix[0].length == 1) {
       this.matrixManager.setSortOrders([0], [0]);
       return;
+    } else if (matrix.length == 1 && matrix[0].length > 1) {
+      this.matrixManager.setSortOrders([0], reorder.permutation(matrix[0].length));
+      return;
     }
+
     if (order == 'random') {
       rowPerm = reorder.randomPermutation(matrix.length);
       colPerm = reorder.randomPermutation(matrix[0].length);
