@@ -14,7 +14,9 @@ export class AdjustableColorScaleDirective {
     this.scope = {
       colorScale: '=',
       values: '=',
-      colorScaleIndex: '='
+      colorScaleIndex: '=',
+      useLinearColorScale: '=',
+      metric: '='
     };
 
     this.controller = AdjustableColorScaleController;
@@ -157,9 +159,15 @@ class AdjustableColorScaleController {
     let colorScaleDomain = colorScale.domain();
     let xDomain = [colorScaleDomain[0], colorScaleDomain[colorScaleDomain.length - 1]];
 
-    this.xScale = d3.scale.log()
-      .domain(xDomain)
-      .range([this.marginRight, this.width - this.marginLeft]);
+    if (this.useLinearColorScale) {
+      this.xScale = d3.scale.linear()
+        .domain(xDomain)
+        .range([this.marginRight, this.width - this.marginLeft]);
+    } else {
+      this.xScale = d3.scale.log()
+        .domain(xDomain)
+        .range([this.marginRight, this.width - this.marginLeft]);
+    }
 
     this.xAxis = d3.svg.axis()
       .scale(this.xScale)

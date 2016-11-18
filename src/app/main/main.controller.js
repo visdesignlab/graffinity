@@ -35,11 +35,14 @@ export class MainController {
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
+    this.database = database;
 
+    this.isMarclabData = this.database == "marclab";
     // If true, enable manual controls of what nodes are shown/hidden.
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
     this.ui.debugNodeLinkLayout = false;
+
 
     // Set these to true to automatically set attributes on the filter ranges. (see below)
     this.ui.debugRowFilterScents = false;
@@ -47,10 +50,15 @@ export class MainController {
 
     // Setup a default query and dataset depending on our database.
 
-    this.database = database;
 
     this.availablePanels = ["Node Link", "Path List"];
     this.selectedPanel = this.availablePanels[1];
+
+    this.ui.availableColorScales = ["linear", "log"];
+    this.ui.selectedColorScale = this.isMarclabData ? this.ui.availableColorScales[0] : this.ui.availableColorScales[1];
+    if (this.isMarclabData) {
+      this.colorScaleService.setUseLinearColorScale(true);
+    }
 
     let useLargeResult = false;
     useLargeResult = true;
@@ -60,7 +68,6 @@ export class MainController {
 
     // Populate starting data with something intelligent
     if (this.database == "marclab") {
-      this.isMarclabData = true;
 
       if (useLargeResult) {
         this.requestInitialData("/assets/mock/defaultMarclab.json");
@@ -233,6 +240,11 @@ export class MainController {
     this.matrixManager.setUseAnimation(true);
   }
 
+  onColorScaleChanged(colorScale) {
+    this.colorScaleService.setUseLinearColorScale(colorScale == 'linear');
+    this.onEncodingChanged("colormap");
+  }
+
   /**
    * Called when we enter a node into the debugging contorls.
    */
@@ -257,6 +269,7 @@ export class MainController {
     } else {
       this.ui.metrics = null;
       this.matrixManager.matrix.setEncoding(encoding);
+      this.nodeListManager.matrix.setEncoding(encoding);
       this.updateLegend();
     }
     angular.element('[data-toggle="tooltip"]').tooltip();
@@ -264,6 +277,7 @@ export class MainController {
 
   onMetricChanged(metric, encoding) {
     this.matrixManager.matrix.setEncoding(encoding, metric);
+    this.nodeListManager.matrix.setEncoding(encoding, "path count");
     angular.element('[data-toggle="tooltip"]').tooltip();
     this.updateLegend();
   }

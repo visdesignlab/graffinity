@@ -29,30 +29,43 @@ export class ColorScaleService {
 
     let range = ColorScaleService.getColorScaleRange(colorbrewer[name], domain);
 
-    // let scale = d3.scale.quantize()
-    //   .range(range)
-    //   .domain([0, domain[1]]);
-    // let quantizeDomain = scale.range().map(function (d, i) {
-    //   return scale.invertExtent(d)[1] + 1;
-    // });
+    if (this.useLinear) {
+      let numBins = range.length;
+      let thresholdDomain = [];
+      let step = domain[1] / (numBins - 1);
+      for (let i = 0; i < numBins; ++i) {
+        thresholdDomain.push(step * i + 1);
+      }
 
-    let logScale = d3.scale.log()
-      .domain(domain)
-      .range([0, 100]);
+      return d3.scale.threshold()
+        .domain(thresholdDomain)
+        .range(range);
 
-    let numBins = range.length;
-    let step = domain[1] / (numBins - 1);
-    let thresholdDomain = [];
-    for (let i = 0; i < numBins; ++i) {
-      let percent = step * i / domain[1] * 100;
-      thresholdDomain.push(logScale.invert(percent));
+    } else {
+
+      let logScale = d3.scale.log()
+        .domain(domain)
+        .range([0, 100]);
+
+      let numBins = range.length;
+      let step = domain[1] / (numBins - 1);
+      let thresholdDomain = [];
+      for (let i = 0; i < numBins; ++i) {
+        let percent = step * i / domain[1] * 100;
+        thresholdDomain.push(logScale.invert(percent));
+      }
+
+      return d3.scale.threshold()
+        .domain(thresholdDomain)
+        .range(range);
     }
+  }
 
-    let scale = d3.scale.threshold()
-      .domain(thresholdDomain)
-      .range(range);
-
-    return scale;
+  /**
+   *
+   */
+  setUseLinearColorScale(useLinear) {
+    this.useLinear = useLinear;
   }
 
   /**

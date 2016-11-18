@@ -74,20 +74,36 @@
           </ui-select>
         </div>
 
-        <div class="control-header">
-          Cell encoding
+        <!--<div class="control-header">-->
+          <!--Cell encoding-->
+          <!--<ui-select class="control-input"-->
+                     <!--id="select-encoding"-->
+                     <!--ng-model="main.ui.selectedEncoding"-->
+                     <!--ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">-->
+            <!--<ui-select-match placeholder="Cell encoding">-->
+              <!--{{main.ui.selectedEncoding}}-->
+            <!--</ui-select-match>-->
+            <!--<ui-select-choices repeat="option in main.ui.encodings track by option">-->
+              <!--{{option}}-->
+            <!--</ui-select-choices>-->
+          <!--</ui-select>-->
+        <!--</div>-->
+
+          <div class="control-header">
+          Color scale
           <ui-select class="control-input"
                      id="select-encoding"
-                     ng-model="main.ui.selectedEncoding"
-                     ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">
-            <ui-select-match placeholder="Cell encoding">
-              {{main.ui.selectedEncoding}}
+                     ng-model="main.ui.selectedColorScale"
+                     ng-change="main.onColorScaleChanged(main.ui.selectedColorScale)">
+            <ui-select-match placeholder="Color scale">
+              {{main.ui.selectedColorScale}}
             </ui-select-match>
-            <ui-select-choices repeat="option in main.ui.encodings track by option">
+            <ui-select-choices repeat="option in main.ui.availableColorScales track by option">
               {{option}}
             </ui-select-choices>
           </ui-select>
         </div>
+
 
         <div class="control-header" ng-show="main.ui.metrics">
           Path metric
