@@ -112,6 +112,8 @@ export class MainController {
     if (!useLargeResult) {
       this.activate(jsonGraph, jsonMatrix);
     }
+
+
     // Wait until after the current digest cycle to activate the ui.
 
     // If debugging, then automatically manipulate the GUI.
@@ -460,6 +462,13 @@ export class MainController {
 
     let success = function (result) {
       self.activate(result.graph, result.matrix, result.query);
+      //self.debugCollapse = true;
+      //if (self.debugCollapse) {
+      //  self.$timeout(function () {
+      //    self.onCollapseColsByAttr("label");
+      //    self.onCollapseRowsByAttr("label");
+      //  });
+      //}
     };
 
     let error = function (error) {

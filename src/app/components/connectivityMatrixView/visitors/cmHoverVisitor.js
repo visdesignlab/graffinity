@@ -32,6 +32,7 @@ export class cmHoverVisitor extends cmCellVisitor {
         // data cells are hovered if their paths contain a node in this.nodeIndexes
         // label cells are hovered if the intersection of their nodeIndexes and this.nodeIndexes is not null
         if (cell.isDataCell) {
+
           let ids = cell.data.ids;
 
           if (this.matchPaths) {

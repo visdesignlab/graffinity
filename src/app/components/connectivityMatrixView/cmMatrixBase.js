@@ -660,6 +660,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
   onCellMouseOver(cell) {
 
+    // this.$log.debug("onCellMouseOver", this, cell);
     // this.$log.debug("sources", sources, cell.data.ids.sources);
     // this.$log.debug("intermediates", intermediates, cell.data.ids.intermediates);
     // this.$log.debug("targets", targets, cell.data.ids.targets);
@@ -784,6 +785,7 @@ export class cmMatrixBase extends SvgGroupElement {
    * Called when the mouse is on top of a node in another view.
    */
   onHoverNodes(event, nodeIndexes, matchPaths) {
+    // this.$log.debug(this, "onHoverNodes", nodeIndexes, matchPaths);
     if (!this.isActive) {
       return;
     }
