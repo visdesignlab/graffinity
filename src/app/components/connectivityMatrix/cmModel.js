@@ -617,11 +617,14 @@ export class cmModel {
           if (maxAttrValue == null) {
             maxAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute, attributeNodeGroup);
           } else {
-            maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue, attributeNodeGroup);
+            // maxAttrValue = Math.max(self.getNodeAttr([currentRowNodeIndex], attribute), maxAttrValue, attributeNodeGroup);
+            let currentAttrValue = self.getNodeAttr([currentRowNodeIndex], attribute, attributeNodeGroup);
+            maxAttrValue = maxAttrValue < currentAttrValue ? currentAttrValue : maxAttrValue;
           }
-
-          nodeValues.push(maxAttrValue);
         }
+
+        nodeValues.push(maxAttrValue);
+
       } else {
         nodeValues.push(nodeIndexes[i]);
       }

@@ -29,9 +29,7 @@ export class MainController {
     this.hasQueryError = false;
     this.hasGoodData = true;
     this.queryError = "";
-
-    this.matrixClass = "col-lg-8";
-    this.nodeLinkClass = "";
+    this.debug = false;
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -39,7 +37,6 @@ export class MainController {
 
     this.isMarclabData = this.database == "marclab";
     this.isNodeListVisible = true;
-
     // If true, enable manual controls of what nodes are shown/hidden.
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
@@ -259,6 +256,13 @@ export class MainController {
   }
 
   /**
+   * Load some debugging data.
+   */
+  onLoadClicked() {
+    this.requestInitialData("/assets/mock/marclabCBbFeedback.json");
+  }
+
+  /**
    * Called when the user changes the encoding dropdown box. This tells the matrix to change cell encodings and
    * updates the legend displayed in the sidebar.
    */
@@ -360,8 +364,10 @@ export class MainController {
       "matrix": this.model.getCmMatrix().getJsonMatrix(),
       "graph": this.model.getCmGraph().getJsonGraph()
     };
-
-    let blob = new Blob([angular.toString(state)], {"type": "text/plain;charset=utf-8"});
+    let stateString = JSON.stringify(state);
+    this.$log.debug(stateString);
+    let blob = new Blob([stateString], {"type": "text/plain;"});
+    this.$log.debug(blob);
     saveAs(blob, `${this.database}_state.json`);
   }
 
@@ -462,13 +468,6 @@ export class MainController {
 
     let success = function (result) {
       self.activate(result.graph, result.matrix, result.query);
-      //self.debugCollapse = true;
-      //if (self.debugCollapse) {
-      //  self.$timeout(function () {
-      //    self.onCollapseColsByAttr("label");
-      //    self.onCollapseRowsByAttr("label");
-      //  });
-      //}
     };
 
     let error = function (error) {

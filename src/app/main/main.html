@@ -1,7 +1,8 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
   <span class="logo">Connectivity Matrix</span>
-  <span ng-show="false" ng-click="main.onSaveClicked()">Save</span>
+  <span ng-show="main.debug" ng-click="main.onSaveClicked()">Save</span>
+  <span ng-show="main.debug" ng-click="main.onLoadClicked()">Load</span>
 
   <div style="position: absolute; right: 1em; top:1em">
     <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
