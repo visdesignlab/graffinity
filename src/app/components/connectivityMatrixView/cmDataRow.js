@@ -106,7 +106,7 @@ export class cmDataRow extends cmMatrixRow {
           ids = {
             sources: modelRow.getAllNodeIndexes(),
             intermediates: Utils.getIntermediateNodesFromPaths(cell.getPathList()),
-            targets: colNodeIndexes[dataIndex],
+            targets: colNodeIndexes[dataIndex]
           };
         }
 
