@@ -51,8 +51,9 @@ export class MainController {
     this.availablePanels = ["Node Link", "Path List"];
     this.selectedPanel = this.availablePanels[1];
 
-    this.ui.availableColorScales = ["linear", "log"];
-    this.ui.selectedColorScale = this.isMarclabData ? this.ui.availableColorScales[0] : this.ui.availableColorScales[1];
+    this.ui.matrixScales = ["linear", "log"];
+    this.ui.selectedMatrixScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
+    this.ui.selectedNodeListScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
     if (this.isMarclabData) {
       this.colorScaleService.setUseLinearColorScale(true);
     }
@@ -178,38 +179,42 @@ export class MainController {
     this.setMetric("matrix", this.ui.selectedMatrixMetric);
 
     metrics = this.nodeListManager.matrix.getAvailableMetrics(this.database);
-    this.$log.error("metrics of the nodelist are", metrics)
     this.ui.nodeListMetrics = angular.copy(metrics);
     this.ui.selectedNodeListMetric = this.ui.nodeListMetrics[0];
     this.setMetric("nodeList", this.ui.selectedNodeListMetric);
   }
 
   setMetric(view, metric) {
-    this.$log.debug("set metric", view, metric);
     let matrix = null;
     let encoding = null;
     if (view == "matrix") {
       matrix = this.matrixManager.matrix;
-      this.ui.availableMatrixEncodings = matrix.getAvailableEncodings(metric.output);
-      this.ui.selectedMatrixEncoding = this.ui.availableMatrixEncodings[0];
+      this.ui.matrixEncodings = matrix.getAvailableEncodings(metric.output);
+      this.ui.selectedMatrixEncoding = this.ui.matrixEncodings[0];
       encoding = this.ui.selectedMatrixEncoding;
     } else if (view == "nodeList") {
       matrix = this.nodeListManager.matrix;
-      this.ui.availableNodeListEncodings = matrix.getAvailableEncodings(metric.output);
-      this.$log.debug(this.ui.availableNodeListEncodings, metric, matrix);
-      this.ui.selectedNodeListEncoding = this.ui.availableNodeListEncodings[0];
+      this.ui.nodeListEncodings = matrix.getAvailableEncodings(metric.output);
+      this.ui.selectedNodeListEncoding = this.ui.nodeListEncodings[0];
       encoding = this.ui.selectedNodeListEncoding;
     }
-    this.setEncoding(matrix, metric, encoding);
+    this.setEncoding(view, metric, encoding);
 
     // matrix.setEncoding(encoding, metric);
 
     // this.nodeListManager.matrix.setEncoding(encoding, this.matrixManager.matrix.getAvailableMetrics()[0]);
   }
 
-  setEncoding(matrix, metric, encoding) {
-    this.$log.debug(this, "setEncoding", matrix, metric);
-    matrix.setEncoding(null, metric);
+  setEncoding(view, metric, encoding) {
+    let matrix = this.matrixManager.matrix;
+    if (view == "matrix") {
+      this.ui.matrixHasScaleOption = encoding.hasScaleOption;
+    } else {
+      this.ui.nodeListHasScaleOption = encoding.hasScaleOption;
+      matrix = this.nodeListManager.matrix;
+    }
+    this.$log.debug(this, "setEncoding", matrix, metric, encoding);
+    matrix.setEncoding(encoding, metric);
 
   }
 

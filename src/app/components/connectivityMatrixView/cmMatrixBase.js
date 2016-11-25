@@ -331,11 +331,30 @@ export class cmMatrixBase extends SvgGroupElement {
   }
 
   getAvailableEncodings(metricOutput) {
-    if(metricOutput == "scalar") {
-      return ["colormap", "bar chart", "raw value"];
-    } else if(metricOutput == "list") {
-      return ["bar chart"];
+    let metrics = null;
+    if (metricOutput == "scalar") {
+      metrics = [
+        {
+          "name": "colormap",
+          "hasScaleOption": true
+        },
+        {
+          "name": "bar chart",
+          "hasScaleOption": true
+        },
+        {
+          "name": "raw value",
+          "hasScaleOption": false
+        }
+      ];
+    } else if (metricOutput == "list") {
+      metrics = [
+        {
+          "name": "bar chart",
+          hasScaleOption: false
+        }];
     }
+    return metrics
   }
 
   /**
@@ -978,6 +997,8 @@ export class cmMatrixBase extends SvgGroupElement {
    * @param metric
    */
   setEncoding(encoding, metric) {
+
+
     if (!this.hasEncodings) {
       return;
     }
@@ -997,6 +1018,11 @@ export class cmMatrixBase extends SvgGroupElement {
     let mouseover = this.onCellMouseOver.bind(this);
     let mouseout = this.onCellMouseOut.bind(this);
 
+    if (encoding.name == "colormap") {
+      this.setEncodingToColorMap(metric);
+    } else {
+      this.$log.error("setEncoding", this, metric, encoding);
+    }
     //if (encoding == "bar chart") {
     //  preprocessor = new cmBarChartPreprocessor();
     //  preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
@@ -1009,7 +1035,7 @@ export class cmMatrixBase extends SvgGroupElement {
     //
     //  this.legend = undefined;
     //} else if (encoding == "colormap") {
-    this.setEncodingToColorMap(metric);
+    //this.setEncodingToColorMap(metric);
     //}
   }
 

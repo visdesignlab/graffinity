@@ -41,7 +41,7 @@
       </query-builder>
     </div>
     <div class="pane left-pane grey-border" ng-show="main.hasGoodData">
-      <h4 class="no-margin">Controls</h4>
+      <h4 class="no-margin">Matrix Controls</h4>
       <div class="control-header">
         Aggregate rows
         <ui-select class="control-input"
@@ -114,33 +114,78 @@
         </ui-select>
       </div>
 
-      <div class="control-header">
-        Color scale
+      <div class="control-header" ng-show="main.ui.matrixMetrics">
+        Matrix encoding
         <ui-select class="control-input"
-                   id="select-encoding"
-                   ng-model="main.ui.selectedColorScale"
-                   ng-change="main.onColorScaleChanged(main.ui.selectedColorScale)">
-          <ui-select-match placeholder="Color scale">
-            {{main.ui.selectedColorScale}}
+                   ng-model="main.ui.selectedMatrixEncoding"
+                   ng-change="main.setEncoding('matrix', main.ui.selectedMatrixMetric, main.ui.selectedMatrixEncoding)">
+          <ui-select-match placeholder="Matrix encoding">
+            {{main.ui.selectedMatrixEncoding.name}}
           </ui-select-match>
-          <ui-select-choices repeat="option in main.ui.availableColorScales track by option">
+          <ui-select-choices repeat="option in main.ui.matrixEncodings track by $index">
+            {{main.ui.matrixEncodings[$index].name}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
+
+      <div class="control-header" ng-show="main.ui.matrixHasScaleOption">
+        Matrix scale
+        <ui-select class="control-input"
+                   ng-model="main.ui.selectedMatrixScale"
+                   ng-change="main.setEncoding('matrix', main.ui.selectedMatrixMetric, main.ui.selectedMatrixEncoding, main.ui.selectedMatrixScale)">
+          <ui-select-match placeholder="Color scale">
+            {{main.ui.selectedMatrixScale}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.matrixScales track by option">
             {{option}}
           </ui-select-choices>
         </ui-select>
       </div>
 
+      <div ng-show="main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible">
+        <h4>List Controls</h4>
+
         <div class="control-header" ng-show="main.ui.matrixMetrics">
-        Node list metric
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedNodeListMetric"
-                   ng-change="main.setMetric('nodeList', main.ui.selectedNodeListMetric)">
-          <ui-select-match placeholder="Path metric">
-            {{main.ui.selectedNodeListMetric.name}}
-          </ui-select-match>
-          <ui-select-choices repeat="option in main.ui.nodeListMetrics track by $index">
-            {{main.ui.nodeListMetrics[$index].name}}
-          </ui-select-choices>
-        </ui-select>
+          Node list metric
+          <ui-select class="control-input"
+                     ng-model="main.ui.selectedNodeListMetric"
+                     ng-change="main.setMetric('nodeList', main.ui.selectedNodeListMetric)">
+            <ui-select-match placeholder="Path metric">
+              {{main.ui.selectedNodeListMetric.name}}
+            </ui-select-match>
+            <ui-select-choices repeat="option in main.ui.nodeListMetrics track by $index">
+              {{main.ui.nodeListMetrics[$index].name}}
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        <div class="control-header" ng-show="main.ui.matrixMetrics">
+          Node list enc.
+          <ui-select class="control-input"
+                     ng-model="main.ui.selectedNodeListEncoding"
+                     ng-change="main.setEncoding('nodeList', main.ui.selectedNodeListMetric, main.ui.selectedNodeListEncoding)">
+            <ui-select-match placeholder="Matrix encoding">
+              {{main.ui.selectedNodeListEncoding.name}}
+            </ui-select-match>
+            <ui-select-choices repeat="option in main.ui.matrixEncodings track by $index">
+              {{main.ui.nodeListEncodings[$index].name}}
+            </ui-select-choices>
+          </ui-select>
+        </div>
+
+        <div class="control-header" ng-show="main.ui.nodeListHasScaleOption">
+          Scale
+          <ui-select class="control-input"
+                     ng-model="main.ui.selectedNodeListScale"
+                     ng-change="main.setEncoding('matrix', main.ui.selectedNodeListMetric, main.ui.selectedNodeListEncoding, main.ui.selectedNodeListScale)">
+            <ui-select-match placeholder="Color scale">
+              {{main.ui.selectedNodeListScale}}
+            </ui-select-match>
+            <ui-select-choices repeat="option in main.ui.matrixScales track by option">
+              {{option}}
+            </ui-select-choices>
+          </ui-select>
+        </div>
       </div>
 
       <!-- Legend of matrix cell encodings -->
