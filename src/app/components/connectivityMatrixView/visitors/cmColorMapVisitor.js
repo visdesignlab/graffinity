@@ -13,7 +13,7 @@ export class cmColorMapVisitorBase extends cmCellVisitor {
   }
 
   setMetricFunction(metric) {
-    this.metric = metric;
+    this.metric = angular.copy(metric);
   }
 }
 

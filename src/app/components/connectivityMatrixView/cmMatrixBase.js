@@ -292,20 +292,50 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
-  static getAvailableMetrics(encoding, database) {
+  getAvailableMetrics(database) {
+    let metrics = [{
+      "name": "path count",
+      "metricFn": function (paths) {
+        return paths.length;
+      },
+      "output": "scalar"
+    }, {
+      "name": "node count",
+      "metricFn": function (paths) {
+        return Utils.getIntermediateNodesFromPaths(paths).length;
+      },
+      "output": "scalar"
+    }];
 
-    let metrics = null;
-    if (encoding == "colormap") {
-      metrics = ["path count", "node count"];
-      if (database == "flights") {
-        metrics.push("carrier count");
-      }
+    if (database == "flights") {
+      metrics.push({
+        "name": "carrier count",
+        "metricFn": function (paths, graph) {
+          let carriers = [];
+          for (var i = 0; i < paths.length; ++i) {
+            let edge = paths[i][1];
+
+            let carrier = graph.graph.edge(paths[i][0], paths[i][2], edge).carrier;
+
+            if (carriers.indexOf(carrier) == -1) {
+              carriers.push(carrier);
+            }
+          }
+          return carriers.length;
+        },
+        "output": "scalar"
+      });
     }
     return metrics;
+
   }
 
-  static getAvailableEncodings() {
-    return ["colormap", "bar chart"];
+  getAvailableEncodings(metricOutput) {
+    if(metricOutput == "scalar") {
+      return ["colormap", "bar chart", "raw value"];
+    } else if(metricOutput == "list") {
+      return ["bar chart"];
+    }
   }
 
   /**
@@ -933,7 +963,7 @@ export class cmMatrixBase extends SvgGroupElement {
     let mouseover = this.onCellMouseOver.bind(this);
     let mouseout = this.onCellMouseOut.bind(this);
 
-    let metricFunction = cmMatrixBase.getMetricFunction(this.metric);
+    let metricFunction = this.metric.metricFn;
 
     visitor.setCallbacks(clicked, mouseover, mouseout);
     visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
@@ -967,20 +997,20 @@ export class cmMatrixBase extends SvgGroupElement {
     let mouseover = this.onCellMouseOver.bind(this);
     let mouseout = this.onCellMouseOut.bind(this);
 
-    if (encoding == "bar chart") {
-      preprocessor = new cmBarChartPreprocessor();
-      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      this.applyVisitor(preprocessor);
-
-      visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      visitor.setCallbacks(clicked, mouseover, mouseout);
-      this.applyVisitor(visitor);
-
-      this.legend = undefined;
-    } else if (encoding == "colormap") {
-      this.setEncodingToColorMap(metric);
-    }
+    //if (encoding == "bar chart") {
+    //  preprocessor = new cmBarChartPreprocessor();
+    //  preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+    //  this.applyVisitor(preprocessor);
+    //
+    //  visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
+    //  visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+    //  visitor.setCallbacks(clicked, mouseover, mouseout);
+    //  this.applyVisitor(visitor);
+    //
+    //  this.legend = undefined;
+    //} else if (encoding == "colormap") {
+    this.setEncodingToColorMap(metric);
+    //}
   }
 
   /**
@@ -988,15 +1018,14 @@ export class cmMatrixBase extends SvgGroupElement {
    * @param metric
    */
   setEncodingToColorMap(metric) {
-
+    this.$log.debug("setEncodingToColorMap", metric);
     if (this.isNodeListView && !this.isActive) {
       return;
     }
-    let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
     let preprocessor = new cmColorMapPreprocessor();
     preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-    preprocessor.setMetricFunction(metricFunction);
+    preprocessor.setMetricFunction(metric.metricFn);
 
     // TODO - why does preprocessor get a graph?
     preprocessor.graph = this.model.graph;
@@ -1066,7 +1095,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.createRows(model);
 
     // Data is ready - create encodings
-    this.setEncoding("colormap", "path count");
+    // this.setEncoding("colormap", "path count");
     this.createAttributeEncodings();
 
     // Put stuff in the correct place.

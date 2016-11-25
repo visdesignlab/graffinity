@@ -41,7 +41,7 @@
       </query-builder>
     </div>
     <div class="pane left-pane grey-border" ng-show="main.hasGoodData">
-      <h4 class="no-margin">Matrix Controls</h4>
+      <h4 class="no-margin">Controls</h4>
       <div class="control-header">
         Aggregate rows
         <ui-select class="control-input"
@@ -99,6 +99,21 @@
       <!--</ui-select>-->
       <!--</div>-->
 
+
+      <div class="control-header" ng-show="main.ui.matrixMetrics">
+        Matrix metric
+        <ui-select class="control-input"
+                   ng-model="main.ui.selectedMatrixMetric"
+                   ng-change="main.setMetric('matrix', main.ui.selectedMatrixMetric)">
+          <ui-select-match placeholder="Path metric">
+            {{main.ui.selectedMatrixMetric.name}}
+          </ui-select-match>
+          <ui-select-choices repeat="option in main.ui.matrixMetrics track by $index">
+            {{main.ui.matrixMetrics[$index].name}}
+          </ui-select-choices>
+        </ui-select>
+      </div>
+
       <div class="control-header">
         Color scale
         <ui-select class="control-input"
@@ -114,18 +129,16 @@
         </ui-select>
       </div>
 
-
-      <div class="control-header" ng-show="main.ui.metrics">
-        Path metric
+        <div class="control-header" ng-show="main.ui.matrixMetrics">
+        Node list metric
         <ui-select class="control-input"
-                   id="select-metric"
-                   ng-model="main.ui.selectedMetric"
-                   ng-change="main.onMetricChanged(main.ui.selectedMetric, main.ui.selectedEncoding)">
+                   ng-model="main.ui.selectedNodeListMetric"
+                   ng-change="main.setMetric('nodeList', main.ui.selectedNodeListMetric)">
           <ui-select-match placeholder="Path metric">
-            {{main.ui.selectedMetric}}
+            {{main.ui.selectedNodeListMetric.name}}
           </ui-select-match>
-          <ui-select-choices repeat="option in main.ui.metrics track by option">
-            {{option}}
+          <ui-select-choices repeat="option in main.ui.nodeListMetrics track by $index">
+            {{main.ui.nodeListMetrics[$index].name}}
           </ui-select-choices>
         </ui-select>
       </div>
