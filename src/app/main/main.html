@@ -101,7 +101,7 @@
 
 
       <div class="control-header" ng-show="main.ui.matrixMetrics">
-        Matrix metric
+        Metric
         <ui-select class="control-input"
                    ng-model="main.ui.selectedMatrixMetric"
                    ng-change="main.setMetric('matrix', main.ui.selectedMatrixMetric)">
@@ -115,7 +115,7 @@
       </div>
 
       <div class="control-header" ng-show="main.ui.matrixMetrics">
-        Matrix encoding
+        Encoding
         <ui-select class="control-input"
                    ng-model="main.ui.selectedMatrixEncoding"
                    ng-change="main.setEncoding('matrix', main.ui.selectedMatrixMetric, main.ui.selectedMatrixEncoding)">
@@ -129,10 +129,10 @@
       </div>
 
       <div class="control-header" ng-show="main.ui.matrixHasScaleOption">
-        Matrix scale
+        Scale
         <ui-select class="control-input"
                    ng-model="main.ui.selectedMatrixScale"
-                   ng-change="main.setEncoding('matrix', main.ui.selectedMatrixMetric, main.ui.selectedMatrixEncoding, main.ui.selectedMatrixScale)">
+                   ng-change="main.setEncodingScale('matrix', main.ui.selectedMatrixScale)">
           <ui-select-match placeholder="Color scale">
             {{main.ui.selectedMatrixScale}}
           </ui-select-match>
@@ -146,7 +146,7 @@
         <h4>List Controls</h4>
 
         <div class="control-header" ng-show="main.ui.matrixMetrics">
-          Node list metric
+          Metric
           <ui-select class="control-input"
                      ng-model="main.ui.selectedNodeListMetric"
                      ng-change="main.setMetric('nodeList', main.ui.selectedNodeListMetric)">
@@ -160,7 +160,7 @@
         </div>
 
         <div class="control-header" ng-show="main.ui.matrixMetrics">
-          Node list enc.
+          Encoding
           <ui-select class="control-input"
                      ng-model="main.ui.selectedNodeListEncoding"
                      ng-change="main.setEncoding('nodeList', main.ui.selectedNodeListMetric, main.ui.selectedNodeListEncoding)">
@@ -177,7 +177,7 @@
           Scale
           <ui-select class="control-input"
                      ng-model="main.ui.selectedNodeListScale"
-                     ng-change="main.setEncoding('matrix', main.ui.selectedNodeListMetric, main.ui.selectedNodeListEncoding, main.ui.selectedNodeListScale)">
+                     ng-change="main.setEncodingScale('nodeList', main.ui.selectedNodeListScale)">
             <ui-select-match placeholder="Color scale">
               {{main.ui.selectedNodeListScale}}
             </ui-select-match>

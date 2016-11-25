@@ -11,6 +11,7 @@ import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
+import {cmRawValueVisitor} from "./visitors/cmRawValueVisitor"
 import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributesVisitor"
 import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
 import {cmHoverVisitor} from "./visitors/cmHoverVisitor"
@@ -326,6 +327,38 @@ export class cmMatrixBase extends SvgGroupElement {
         "output": "scalar"
       });
     }
+
+    if (!this.isNodeListView) {
+      metrics.push({
+        "name": "len vs paths",
+        "metricFn": function (paths) {
+          let summary = {};
+          for (var i = 0; i < paths.length; ++i) {
+            let path = paths[i];
+
+            // Have we globally seen a path with this many hops before?
+            let numHops = Utils.getNumHops(path);
+
+            // Record this numHops locally. Summary is map[numHops] -> numPaths.
+            if (summary[numHops] == undefined) {
+              summary[numHops] = 1;
+            } else {
+              summary[numHops] += 1;
+            }
+          }
+          return summary;
+        },
+        "output": "list"
+      });
+    } else {
+      metrics.push({
+        "name": "num start | num end",
+        "metricFn": function (paths) {
+          return Utils.getIntermediateNodesFromPaths(paths).length;
+        },
+        "output": "list"
+      });
+    }
     return metrics;
 
   }
@@ -351,7 +384,7 @@ export class cmMatrixBase extends SvgGroupElement {
       metrics = [
         {
           "name": "bar chart",
-          hasScaleOption: false
+          "hasScaleOption": true
         }];
     }
     return metrics
@@ -998,7 +1031,6 @@ export class cmMatrixBase extends SvgGroupElement {
    */
   setEncoding(encoding, metric) {
 
-
     if (!this.hasEncodings) {
       return;
     }
@@ -1020,8 +1052,33 @@ export class cmMatrixBase extends SvgGroupElement {
 
     if (encoding.name == "colormap") {
       this.setEncodingToColorMap(metric);
-    } else {
-      this.$log.error("setEncoding", this, metric, encoding);
+    } else if (encoding.name == "raw value") {
+
+      let visitor = new cmRawValueVisitor(cellWidth, cellHeight);
+      let metricFunction = this.metric.metricFn;
+
+      visitor.setCallbacks(clicked, mouseover, mouseout);
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      visitor.setMetricFunction(metricFunction);
+      visitor.graph = this.model.graph;
+
+      this.applyVisitor(visitor);
+
+    } else if (encoding.name == 'bar chart') {
+
+      preprocessor = new cmBarChartPreprocessor(metric.metricFn);
+      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      preprocessor.isList = metric.output == 'list';
+      this.applyVisitor(preprocessor);
+      console.log(preprocessor);
+      visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight, metric.output == 'list');
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      visitor.setCallbacks(clicked, mouseover, mouseout);
+
+      console.log(visitor);
+      this.applyVisitor(visitor);
+
+      //this.$log.error("setEncoding", this, metric, encoding);
     }
     //if (encoding == "bar chart") {
     //  preprocessor = new cmBarChartPreprocessor();

@@ -188,11 +188,25 @@ export class MainController {
     let matrix = null;
     let encoding = null;
     if (view == "matrix") {
+      if (this.model.areRowsCollapsed && this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "set-to-set ";
+        this.ui.secondaryScaleName = "";
+      } else if (this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "set-to-node ";
+        this.ui.secondaryScaleName = "node-to-node ";
+      } else if (!this.model.areRowsCollapsed && this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "node-to-set ";
+        this.ui.secondaryScaleName = "node-to-node ";
+      } else if (!this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "";
+        this.ui.secondaryScaleName = "";
+      }
       matrix = this.matrixManager.matrix;
       this.ui.matrixEncodings = matrix.getAvailableEncodings(metric.output);
       this.ui.selectedMatrixEncoding = this.ui.matrixEncodings[0];
       encoding = this.ui.selectedMatrixEncoding;
     } else if (view == "nodeList") {
+      this.ui.nodeListScaleName = metric.name;
       matrix = this.nodeListManager.matrix;
       this.ui.nodeListEncodings = matrix.getAvailableEncodings(metric.output);
       this.ui.selectedNodeListEncoding = this.ui.nodeListEncodings[0];
@@ -218,7 +232,20 @@ export class MainController {
 
   }
 
-  setEncodingScale(view, encoding, useLinear) {
+  setEncodingScale(view, scale) {
+    let matrix = this.matrixManager.matrix;
+    if (view == "matrix") {
+
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 0);
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 1);
+
+      matrix.setEncoding(this.ui.selectedMatrixEncoding, this.ui.selectedMatrixMetric);
+    } else {
+      matrix = this.nodeListManager.matrix;
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 2);
+      matrix.setEncoding(this.ui.selectedNodeListEncoding, this.ui.selectedNodeListMetric);
+    }
+
 
   }
 
