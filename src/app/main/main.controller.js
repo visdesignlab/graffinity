@@ -1,8 +1,6 @@
 /* globals d3 reorder saveAs
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
-import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
-import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 import {Utils} from "../components/utils/utils";
 
 export class MainController {
@@ -51,8 +49,9 @@ export class MainController {
     this.availablePanels = ["Node Link", "Path List"];
     this.selectedPanel = this.availablePanels[1];
 
-    this.ui.availableColorScales = ["linear", "log"];
-    this.ui.selectedColorScale = this.isMarclabData ? this.ui.availableColorScales[0] : this.ui.availableColorScales[1];
+    this.ui.matrixScales = ["linear", "log"];
+    this.ui.selectedMatrixScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
+    this.ui.selectedNodeListScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
     if (this.isMarclabData) {
       this.colorScaleService.setUseLinearColorScale(true);
     }
@@ -158,7 +157,7 @@ export class MainController {
     this.ui.selectedCategoricalRowAttr = this.ui.availableCategoricalAttr[0];
   }
 
-  createMatrix(model, encoding) {
+  createMatrix(model) {
     // this.svg.selectAll("*").remove();
     this.model = model;
     this.viewState.setModel(model);
@@ -169,10 +168,18 @@ export class MainController {
       this.matrixManager.setModel(model);
       this.nodeListManager.setModel(model);
     }
+
     this.$scope.$broadcast("setModel", model);
 
-    // this.viewState.setCategoricalFilter("airport", 2, {"DEN": true, "LAX": true, "IAD": true, "HNL": true, "LAS": true, "DTW": true});
-    this.onEncodingChanged(encoding);
+    let metrics = this.matrixManager.matrix.getAvailableMetrics(this.database);
+    this.ui.matrixMetrics = angular.copy(metrics);
+    this.ui.selectedMatrixMetric = this.ui.matrixMetrics[0];
+    this.setMetric("matrix", this.ui.selectedMatrixMetric);
+
+    metrics = this.nodeListManager.matrix.getAvailableMetrics(this.database);
+    this.ui.nodeListMetrics = angular.copy(metrics);
+    this.ui.selectedNodeListMetric = this.ui.nodeListMetrics[0];
+    this.setMetric("nodeList", this.ui.selectedNodeListMetric);
   }
 
   createMatrixAndUi(model) {
@@ -181,8 +188,7 @@ export class MainController {
 
     this.createCategoricalCollapseControls(model);
     this.createReorderControls();
-    this.createEncodingControls();
-    this.createMatrix(model, this.ui.selectedEncoding);
+    this.createMatrix(model);
 
     // Disable animation of the matrix so that its initial position is the sorted one.
     this.matrixManager.setUseAnimation(false);
@@ -195,11 +201,6 @@ export class MainController {
     this.ui.selectedSortOrder = this.ui.orders[1];
   }
 
-  createEncodingControls() {
-    this.ui.encodings = cmMatrixView.getAvailableEncodings();
-    this.ui.selectedEncoding = this.ui.encodings[0];
-  }
-
   onCollapseColsByAttr(attr) {
     if (attr == "none") {
       this.model.expandAllCols();
@@ -207,7 +208,7 @@ export class MainController {
       this.model.expandAllCols();
       this.model.collapseColsByAttr(attr);
     }
-    this.createMatrix(this.model, this.ui.selectedEncoding);
+    this.createMatrix(this.model);
 
     // We are collapsing the matrix cols by an attribute. Make sure that attribute is visibile!
     this.matrixManager.setUseAnimation(false);
@@ -227,7 +228,7 @@ export class MainController {
       this.model.expandAllRows();
       this.model.collapseRowsByAttr(attr);
     }
-    this.createMatrix(this.model, this.ui.selectedEncoding);
+    this.createMatrix(this.model);
 
     this.matrixManager.setUseAnimation(false);
     if (this.model.areRowsCollapsed) {
@@ -241,7 +242,7 @@ export class MainController {
 
   onColorScaleChanged(colorScale) {
     this.colorScaleService.setUseLinearColorScale(colorScale == 'linear');
-    this.onEncodingChanged("colormap");
+    this.onMetricChanged("colormap");
   }
 
   /**
@@ -266,27 +267,34 @@ export class MainController {
    * Called when the user changes the encoding dropdown box. This tells the matrix to change cell encodings and
    * updates the legend displayed in the sidebar.
    */
-  onEncodingChanged(encoding) {
-    let metrics = cmMatrixBase.getAvailableMetrics(encoding, this.database);
-    if (metrics) {
-      this.ui.metrics = angular.copy(metrics);
-      this.ui.selectedMetric = this.ui.metrics[0];
-      this.onMetricChanged(this.ui.selectedMetric, encoding);
-    } else {
-      this.ui.metrics = null;
-      this.matrixManager.matrix.setEncoding(encoding);
-      this.nodeListManager.matrix.setEncoding(encoding);
-      this.updateLegend();
-    }
-    angular.element('[data-toggle="tooltip"]').tooltip();
-  }
+  //onEncodingChanged(encoding) {
+  //  this.$log.debug(this, "onEncodingChanged");
+  //  let metrics = cmMatrixBase.getAvailableMetrics(encoding, this.database);
+  //  if (metrics) {
+  //    this.ui.matrixMertics = angular.copy(metrics);
+  //    this.ui.selectedMatrixMetric = this.ui.matrixMertics[0];
+  //    this.onMetricChanged(this.ui.selectedMatrixMetric, encoding);
+  //  } else {
+  //    this.ui.matrixMertics = null;
+  //    this.matrixManager.matrix.setEncoding(encoding);
+  //    this.nodeListManager.matrix.setEncoding(encoding);
+  //    this.updateLegend();
+  //  }
+  //  angular.element('[data-toggle="tooltip"]').tooltip();
+  //}
+  //
+  //onMetricChanged(metric, encoding) {
+  //  this.$log.debug(this, "onMetricChanged");
+  //  this.matrixManager.matrix.setEncoding(encoding, metric);
+  //  this.nodeListManager.matrix.setEncoding(encoding, "path count");
+  //  angular.element('[data-toggle="tooltip"]').tooltip();
+  //  this.updateLegend();
+  //}
 
-  onMetricChanged(metric, encoding) {
-    this.matrixManager.matrix.setEncoding(encoding, metric);
-    this.nodeListManager.matrix.setEncoding(encoding, "path count");
-    angular.element('[data-toggle="tooltip"]').tooltip();
-    this.updateLegend();
-  }
+  //onMetricChanged(metric) {
+  //  this.$log.debug(this, "onMetricChanged");
+  //
+  //}
 
   /**
    * This gets called when the user clicks on a cell in the matrix view. It will populate the node-link view with a list
@@ -477,6 +485,67 @@ export class MainController {
     self.$http.get(filename)
       .success(success)
       .error(error);
+  }
+
+  setEncoding(view, metric, encoding) {
+    let matrix = this.matrixManager.matrix;
+    if (view == "matrix") {
+      this.ui.matrixHasScaleOption = encoding.hasScaleOption;
+    } else {
+      this.ui.nodeListHasScaleOption = encoding.hasScaleOption;
+      matrix = this.nodeListManager.matrix;
+    }
+    matrix.setEncoding(encoding, metric);
+    angular.element('[data-toggle="tooltip"]').tooltip();
+  }
+
+  setEncodingScale(view, scale) {
+    let matrix = this.matrixManager.matrix;
+    if (view == "matrix") {
+
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 0);
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 1);
+
+      matrix.setEncoding(this.ui.selectedMatrixEncoding, this.ui.selectedMatrixMetric);
+    } else {
+      matrix = this.nodeListManager.matrix;
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 2);
+      matrix.setEncoding(this.ui.selectedNodeListEncoding, this.ui.selectedNodeListMetric);
+    }
+
+    angular.element('[data-toggle="tooltip"]').tooltip();
+  }
+
+  setMetric(view, metric) {
+    let matrix = null;
+    let encoding = null;
+    if (view == "matrix") {
+      if (this.model.areRowsCollapsed && this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "set-to-set ";
+        this.ui.secondaryScaleName = "";
+      } else if (this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "set-to-node ";
+        this.ui.secondaryScaleName = "node-to-node ";
+      } else if (!this.model.areRowsCollapsed && this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "node-to-set ";
+        this.ui.secondaryScaleName = "node-to-node ";
+      } else if (!this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "";
+        this.ui.secondaryScaleName = "";
+      }
+      matrix = this.matrixManager.matrix;
+      this.ui.matrixEncodings = matrix.getAvailableEncodings(metric.output);
+      this.ui.selectedMatrixEncoding = this.ui.matrixEncodings[0];
+      encoding = this.ui.selectedMatrixEncoding;
+    } else if (view == "nodeList") {
+      this.ui.nodeListScaleName = metric.name;
+      matrix = this.nodeListManager.matrix;
+      this.ui.nodeListEncodings = matrix.getAvailableEncodings(metric.output);
+      this.ui.selectedNodeListEncoding = this.ui.nodeListEncodings[0];
+      encoding = this.ui.selectedNodeListEncoding;
+    }
+
+    this.setEncoding(view, metric, encoding);
   }
 
   updateLegend() {

@@ -13,6 +13,7 @@ export class ColorScaleService {
     this.hasColorScales = false;
     this.colorScaleNames = ["Greys", "Greens", "Blues"];
     this.colorScales = [];
+    this.useLinear = [];
   }
 
   /**
@@ -29,7 +30,7 @@ export class ColorScaleService {
 
     let range = ColorScaleService.getColorScaleRange(colorbrewer[name], domain);
 
-    if (this.useLinear) {
+    if (this.useLinear[colorScaleIndex]) {
       let numBins = range.length;
       let thresholdDomain = [];
       let step = domain[1] / (numBins - 1);
@@ -64,8 +65,8 @@ export class ColorScaleService {
   /**
    *
    */
-  setUseLinearColorScale(useLinear) {
-    this.useLinear = useLinear;
+  setUseLinearColorScale(useLinear, colorScaleIndex) {
+    this.useLinear[colorScaleIndex] = useLinear;
   }
 
   /**

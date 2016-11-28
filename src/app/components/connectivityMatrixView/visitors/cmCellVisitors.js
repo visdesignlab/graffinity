@@ -19,6 +19,7 @@ export class cmCellVisitor {
     this.visitLabelCells = false;
 
     this.pathFilterFunction = null;
+    this.metrics = [];
   }
 
   setCallbacks(clicked, mouseOver, mouseOut) {
@@ -28,7 +29,7 @@ export class cmCellVisitor {
     this.callbacks.mouseOut = mouseOut;
   }
 
-  createInteractionGroup(cell) {
+  createInteractionGroup(cell, paths, graph) {
     let self = this;
     let group = cell.getGroup();
 
@@ -56,6 +57,34 @@ export class cmCellVisitor {
       .on("mouseout", function () {
         self.callbacks.mouseOut(cell);
       });
+
+    //return "<b>" + paths.length + (paths.length == 1 ? " path" : " paths" + "<br>" + "SHIT</b>");
+    if (paths) {
+      cell.interactionGroup
+        .select("rect")
+        .attr("data-toggle", "tooltip")
+        .attr("data-html", "true")
+        .attr("data-title", function () {
+          let value = "";
+          for (let i = 0; i < self.metrics.length; ++i) {
+            let metric = self.metrics[i];
+            if (metric.output == "scalar") {
+              if (value.length) {
+                value += "<br>"
+              }
+              value = value + metric.metricFn(paths, graph) + " " + metric.tooltip;
+            }
+          }
+          return value;
+        })
+        .attr("data-placement", "right")
+        .attr("data-container", "body")
+        .attr("data-template",
+          '<div class="tooltip" role="tooltip">' +
+          '<div class="tooltip-arrow"></div>' +
+          '<div class="matrix-tooltip tooltip-inner"></div>' +
+          '</div>');
+    }
   }
 
   createEmptyCellOutline(cell) {
@@ -108,5 +137,9 @@ export class cmCellVisitor {
 
   setPathFilterFunction(filterPaths) {
     this.pathFilterFunction = filterPaths;
+  }
+
+  setTooltipMetrics(metrics) {
+    this.metrics = metrics;
   }
 }

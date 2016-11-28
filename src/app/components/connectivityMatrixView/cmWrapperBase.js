@@ -82,27 +82,30 @@ export class cmWrapperBase {
 
         this.colors[0] = this.legendDiv.append("adjustable-color-scale-directive")
           .attr("color-scale", "main.nodeListManager.matrix.colorScales[0]")
-          .attr("use-linear-color-scale", "main.colorScaleService.useLinear")
+          .attr("use-linear-color-scale", "main.colorScaleService.useLinear[2]")
           .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexSets")
-          .attr("metric", "'path count'")
-          .attr("values", "main.nodeListManager.matrix.colorScalesValues[0]")[0][0];
+          .attr("metric", "main.ui.nodeListScaleName")
+          .attr("values", "main.nodeListManager.matrix.colorScalesValues[0]")
+          .attr("ng-show", "main.ui.selectedNodeListEncoding.name == 'colormap'")[0][0];
 
       } else {
+
         this.colors[0] = this.legendDiv.append("adjustable-color-scale-directive")
           .classed("matrix-view-legend-container", true)
-          .attr("use-linear-color-scale", "main.colorScaleService.useLinear")
+          .attr("ng-show", "main.ui.selectedMatrixEncoding.name == 'colormap'")
+          .attr("use-linear-color-scale", "main.colorScaleService.useLinear[0]")
           .attr("color-scale", "main.matrixManager.matrix.colorScales[0]")
           .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexSets")
-          .attr("metric", "main.ui.selectedMetric")
+          .attr("metric", "main.ui.primaryScaleName + main.ui.selectedMatrixMetric.name")
           .attr("values", "main.matrixManager.matrix.colorScalesValues[0]")[0][0];
 
         this.colors[1] = this.legendDiv.append("adjustable-color-scale-directive")
           .classed("matrix-view-legend-container", true)
-          .attr("ng-show", "main.matrixManager.matrix.hasSecondLegend")
-          .attr("use-linear-color-scale", "main.colorScaleService.useLinear")
+          .attr("ng-show", "main.matrixManager.matrix.hasSecondLegend && main.ui.selectedMatrixEncoding.name == 'colormap'")
+          .attr("use-linear-color-scale", "main.colorScaleService.useLinear[1]")
           .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexNodes")
           .attr("color-scale", "main.matrixManager.matrix.colorScales[1]")
-          .attr("metric", "main.ui.selectedMetric")
+          .attr("metric", "main.ui.secondaryScaleName + main.ui.selectedMatrixMetric.name")
           .attr("values", "main.matrixManager.matrix.colorScalesValues[1]")[0][0];
 
 

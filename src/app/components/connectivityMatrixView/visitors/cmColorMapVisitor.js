@@ -13,7 +13,7 @@ export class cmColorMapVisitorBase extends cmCellVisitor {
   }
 
   setMetricFunction(metric) {
-    this.metric = metric;
+    this.metric = angular.copy(metric);
   }
 }
 
@@ -91,16 +91,7 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
         .attr("fill", color);
 
 
-      this.createInteractionGroup(cell);
-
-      group.select(".matrix-view-interaction-group")
-        .select("rect")
-        .attr("data-toggle", "tooltip")
-        .attr("data-title", function () {
-          return paths.length + (paths.length == 1 ? " path" : " paths");
-        })
-        .attr("data-placement", "right")
-        .attr("data-container", "body");
+      this.createInteractionGroup(cell, paths, this.graph);
 
 
     } else {

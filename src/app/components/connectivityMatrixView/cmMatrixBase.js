@@ -11,6 +11,7 @@ import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
 import {cmClearVisitor} from "./visitors/cmClearVisitor"
 import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
 import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
+import {cmRawValueVisitor} from "./visitors/cmRawValueVisitor"
 import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributesVisitor"
 import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
 import {cmHoverVisitor} from "./visitors/cmHoverVisitor"
@@ -292,20 +293,104 @@ export class cmMatrixBase extends SvgGroupElement {
     }
   }
 
-  static getAvailableMetrics(encoding, database) {
+  getAvailableMetrics(database) {
+    let metrics = [{
+      "name": "path count",
+      "tooltip": "path(s)",
+      "metricFn": function (paths) {
+        return paths.length;
+      },
+      "output": "scalar"
+    }, {
+      "name": "node count",
+      "tooltip": "middle node(s)",
+      "metricFn": function (paths) {
+        return Utils.getIntermediateNodesFromPaths(paths).length;
+      },
+      "output": "scalar"
+    }];
 
-    let metrics = null;
-    if (encoding == "colormap") {
-      metrics = ["path count", "node count"];
-      if (database == "flights") {
-        metrics.push("carrier count");
-      }
+    if (database == "flights") {
+      metrics.push({
+        "name": "carrier count",
+        "tooltip": "carrier(s)",
+        "metricFn": function (paths, graph) {
+          let carriers = [];
+          for (var i = 0; i < paths.length; ++i) {
+            let edge = paths[i][1];
+
+            let carrier = graph.graph.edge(paths[i][0], paths[i][2], edge).carrier;
+
+            if (carriers.indexOf(carrier) == -1) {
+              carriers.push(carrier);
+            }
+          }
+          return carriers.length;
+        },
+        "output": "scalar"
+      });
+    }
+
+    if (!this.isNodeListView) {
+      metrics.push({
+        "name": "len vs paths",
+        "metricFn": function (paths) {
+          let summary = {};
+          for (var i = 0; i < paths.length; ++i) {
+            let path = paths[i];
+
+            // Have we globally seen a path with this many hops before?
+            let numHops = Utils.getNumHops(path);
+
+            // Record this numHops locally. Summary is map[numHops] -> numPaths.
+            if (summary[numHops] == undefined) {
+              summary[numHops] = 1;
+            } else {
+              summary[numHops] += 1;
+            }
+          }
+          return summary;
+        },
+        "output": "list"
+      });
+    } else {
+      metrics.push({
+        "name": "num start | num end",
+        "metricFn": function (paths) {
+          return Utils.getIntermediateNodesFromPaths(paths).length;
+        },
+        "output": "list"
+      });
     }
     return metrics;
+
   }
 
-  static getAvailableEncodings() {
-    return ["colormap", "bar chart"];
+  getAvailableEncodings(metricOutput) {
+    let metrics = null;
+    if (metricOutput == "scalar") {
+      metrics = [
+        {
+          "name": "colormap",
+          "hasScaleOption": true
+        },
+        {
+          "name": "bar chart",
+          "hasScaleOption": true
+        },
+        {
+          "name": "raw value",
+          "hasScaleOption": false
+        }
+      ];
+    } else if (metricOutput == "list") {
+      metrics = [
+        {
+          "name": "bar chart",
+          "hasScaleOption": true
+        }];
+    }
+    return metrics
   }
 
   /**
@@ -933,8 +1018,9 @@ export class cmMatrixBase extends SvgGroupElement {
     let mouseover = this.onCellMouseOver.bind(this);
     let mouseout = this.onCellMouseOut.bind(this);
 
-    let metricFunction = cmMatrixBase.getMetricFunction(this.metric);
+    let metricFunction = this.metric.metricFn;
 
+    visitor.setTooltipMetrics(this.getAvailableMetrics(this.mainController.database));
     visitor.setCallbacks(clicked, mouseover, mouseout);
     visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
     visitor.setMetricFunction(metricFunction);
@@ -948,6 +1034,7 @@ export class cmMatrixBase extends SvgGroupElement {
    * @param metric
    */
   setEncoding(encoding, metric) {
+
     if (!this.hasEncodings) {
       return;
     }
@@ -967,19 +1054,37 @@ export class cmMatrixBase extends SvgGroupElement {
     let mouseover = this.onCellMouseOver.bind(this);
     let mouseout = this.onCellMouseOut.bind(this);
 
-    if (encoding == "bar chart") {
-      preprocessor = new cmBarChartPreprocessor();
-      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-      this.applyVisitor(preprocessor);
+    if (encoding.name == "colormap") {
+      this.setEncodingToColorMap(metric);
+    } else if (encoding.name == "raw value") {
 
-      visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
-      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      let visitor = new cmRawValueVisitor(cellWidth, cellHeight);
+      visitor.setTooltipMetrics(this.getAvailableMetrics(this.mainController.database));
+
+      let metricFunction = this.metric.metricFn;
+
       visitor.setCallbacks(clicked, mouseover, mouseout);
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      visitor.setMetricFunction(metricFunction);
+      visitor.graph = this.model.graph;
+
       this.applyVisitor(visitor);
 
-      this.legend = undefined;
-    } else if (encoding == "colormap") {
-      this.setEncodingToColorMap(metric);
+    } else if (encoding.name == 'bar chart') {
+
+      preprocessor = new cmBarChartPreprocessor(metric.metricFn);
+      preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      preprocessor.isList = metric.output == 'list';
+      this.applyVisitor(preprocessor);
+
+      visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight, metric.output == 'list');
+      visitor.graph = this.model.graph;
+      visitor.setTooltipMetrics(this.getAvailableMetrics(this.mainController.database));
+      visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
+      visitor.setCallbacks(clicked, mouseover, mouseout);
+
+      this.applyVisitor(visitor);
+
     }
   }
 
@@ -992,11 +1097,10 @@ export class cmMatrixBase extends SvgGroupElement {
     if (this.isNodeListView && !this.isActive) {
       return;
     }
-    let metricFunction = cmMatrixBase.getMetricFunction(metric);
 
     let preprocessor = new cmColorMapPreprocessor();
     preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-    preprocessor.setMetricFunction(metricFunction);
+    preprocessor.setMetricFunction(metric.metricFn);
 
     // TODO - why does preprocessor get a graph?
     preprocessor.graph = this.model.graph;
@@ -1066,7 +1170,7 @@ export class cmMatrixBase extends SvgGroupElement {
     this.createRows(model);
 
     // Data is ready - create encodings
-    this.setEncoding("colormap", "path count");
+    // this.setEncoding("colormap", "path count");
     this.createAttributeEncodings();
 
     // Put stuff in the correct place.
