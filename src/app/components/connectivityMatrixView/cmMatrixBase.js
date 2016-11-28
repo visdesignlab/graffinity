@@ -180,8 +180,8 @@ export class cmMatrixBase extends SvgGroupElement {
             visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.SOURCE;
             visitor.areRowsCollapsed = this.model.areRowsCollapsed;
           } else {
-            visitor.isVisitingRowsCollapsedAttr = false;
-            visitor.areRowsCollapsed = false;
+            visitor.isVisitingRowsCollapsedAttr = attribute == this.model.intermediateNodeCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.INTERMEDIATE;
+            visitor.areRowsCollapsed = this.model.areIntermediateNodesCollapsed;
           }
 
           visitor.areColsCollapsed = this.model.areColsCollapsed;
@@ -227,7 +227,12 @@ export class cmMatrixBase extends SvgGroupElement {
       let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
       visitor = new cmStringAttributeVisitor(-1, attributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
       visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
-      visitor.areRowsCollapsed = (!this.isNodeListView) && this.model.areRowsCollapsed;
+      // visitor.areRowsCollapsed = (!this.isNodeListView) && this.model.areRowsCollapsed;
+      if (this.isNodeListView) {
+        visitor.areRowsCollapsed = this.model.areIntermediateNodesCollapsed;
+      } else {
+        visitor.areRowsCollapsed = this.model.areRowsCollapsed;
+      }
       visitor.areColsCollapsed = this.model.areColsCollapsed;
       this.applyVisitor(visitor);
     }
@@ -1118,6 +1123,7 @@ export class cmMatrixBase extends SvgGroupElement {
       if (preprocessor.nodeRange[0] < preprocessor.nodeRange[1]) {
         this.hasSecondLegend = true;
         this.colorScales[1] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexNodes, preprocessor.nodeRange);
+
         this.setColorScale(null, this.colorScaleIndexNodes, this.colorScales[1]);
         this.colorScalesValues[1] = preprocessor.valuesOfNodes;
       }

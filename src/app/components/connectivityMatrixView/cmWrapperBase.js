@@ -83,10 +83,19 @@ export class cmWrapperBase {
         this.colors[0] = this.legendDiv.append("adjustable-color-scale-directive")
           .attr("color-scale", "main.nodeListManager.matrix.colorScales[0]")
           .attr("use-linear-color-scale", "main.colorScaleService.useLinear[2]")
-          .attr("color-scale-index", "main.matrixManager.matrix.colorScaleIndexSets")
-          .attr("metric", "main.ui.nodeListScaleName")
+          .attr("color-scale-index", "main.nodeListManager.matrix.colorScaleIndexSets")
+          .attr("metric", "main.ui.primaryNodeListScaleName + main.ui.selectedNodeListMetric.name")
           .attr("values", "main.nodeListManager.matrix.colorScalesValues[0]")
           .attr("ng-show", "main.ui.selectedNodeListEncoding.name == 'colormap'")[0][0];
+
+        this.colors[1] = this.legendDiv.append("adjustable-color-scale-directive")
+          .classed("matrix-view-legend-container", true)
+          .attr("ng-show", "main.nodeListManager.matrix.hasSecondLegend && main.ui.selectedNodeListEncoding.name == 'colormap'")
+          .attr("use-linear-color-scale", "main.colorScaleService.useLinear[3]")
+          .attr("color-scale-index", "main.nodeListManager.matrix.colorScaleIndexNodes")
+          .attr("color-scale", "main.nodeListManager.matrix.colorScales[1]")
+          .attr("metric", "main.ui.secondaryNodeListScaleName + main.ui.selectedNodeListMetric.name")
+          .attr("values", "main.nodeListManager.matrix.colorScalesValues[1]")[0][0];
 
       } else {
 
@@ -138,7 +147,6 @@ export class cmWrapperBase {
   setModel(model) {
 
     for (let i = 0; i < this.matrices.length; ++i) {
-
       // matrix.setModel creates a bunch of rows
       this.matrices[i].setModel(model);
       this.matrices[i].setPosition(1, 1);

@@ -94,10 +94,9 @@ export class cmModel {
     self.collapseCols(colIndexesToCollapse);
   }
 
-  collapseRows(rowIndexesToCollapse) {
+  collapseRows(rowIndexesToCollapse, rowNodeIndexes) {
     var self = this;
     self.rowsAreDirty = true;
-    var rowNodeIndexes = self.getRowNodeIndexes();
     var oldNumRows = rowNodeIndexes.length;
 
     var collapsedRowIndexes = [];
@@ -131,22 +130,20 @@ export class cmModel {
       }
     }
 
+    return newRowNodeIndexes;
+
     // update the current matrix
-    self.current.rowNodeIndexes = newRowNodeIndexes;
+
 
   }
 
-  collapseRowsByAttr(attr) {
-    var self = this;
-    self.rowCollapseAttr = attr;
-    self.areRowsCollapsed = true;
-    var rowNodeIndexes = self.getRowNodeIndexes();
-
+  collapseRowIndexesByAttr(attr, nodeIndexes) {
+    let self = this;
     // labels[i] will contain the label of rowNodeIndexes[i].
     var labels = [];
     var rowIndexes = [];
-    for (var i = 0; i < rowNodeIndexes.length; ++i) {
-      var label = self.getNodeAttr([rowNodeIndexes[i]], attr);
+    for (var i = 0; i < nodeIndexes.length; ++i) {
+      var label = self.getNodeAttr([nodeIndexes[i]], attr);
 
       if (label.length > 1) {
         throw 'Trying to collapse rows by column, but there was already a collapsed row!';
@@ -155,7 +152,6 @@ export class cmModel {
       labels.push(label[0]);
       rowIndexes.push(i);
     }
-
     // map['label'] = [list of rows to be combined]
     var map = Utils.createMap(rowIndexes, labels);
     labels = Object.keys(map);
@@ -167,7 +163,24 @@ export class cmModel {
       rowIndexesToCollapse.push(map[labels[i]]);
     }
 
-    self.collapseRows(rowIndexesToCollapse);
+    return self.collapseRows(rowIndexesToCollapse, nodeIndexes);
+
+  }
+
+  collapseRowsByAttr(attr) {
+    var self = this;
+    self.rowCollapseAttr = attr;
+    self.areRowsCollapsed = true;
+    self.current.rowNodeIndexes = self.collapseRowIndexesByAttr(attr, self.getRowNodeIndexes());
+    self.rowsAreDirty = true;
+  }
+
+  collapseIntermediateNodesByAttr(attr) {
+    var self = this;
+    self.intermediateNodeCollapseAttr = attr;
+    self.areIntermediateNodesCollapsed = true;
+    self.current.intermediateNodeIndexes = self.collapseRowIndexesByAttr(attr, self.getIntermediateNodeIndexes());
+    self.intermediateNodesAreDirty = true;
   }
 
   expandAllCols() {
@@ -194,6 +207,14 @@ export class cmModel {
       }
     }
     self.expandRows(rowsToExpand);
+  }
+
+  expandIntermediateRows() {
+    let self = this;
+    self.intermediateNodeCollapseAttr = "";
+    self.areIntermediateNodesCollapsed = false;
+    self.current.intermediateNodeIndexes = self.intermediateNodeIndexes;
+    self.intermediateNodesAreDirty = true;
   }
 
   expandCols(colIndexesToExpand) {
@@ -356,6 +377,24 @@ export class cmModel {
   // TODO - enable people to collapse these rows by attributes.
   getCurrentIntermediateNodeRows() {
     var self = this;
+    if (self.intermediateNodesAreDirty) {
+      self.current.intermediateRows = [];
+      var rowNodeIndexes = self.current.intermediateNodeIndexes;
+      for (var i = 0; i < rowNodeIndexes.length; ++i) {
+        var row = undefined;
+        var currentRowNodeIndexes = rowNodeIndexes[i];
+        for (var j = 0; j < currentRowNodeIndexes.length; ++j) {
+          var currentRowNodeIndex = currentRowNodeIndexes[j];
+          if (row == undefined) {
+            row = self.intermediateRows[currentRowNodeIndex].getCopy();
+          } else {
+            row.addChildRow(self.intermediateRows[currentRowNodeIndex].getCopy());
+          }
+        }
+        self.current.intermediateRows.push(row);
+      }
+    }
+    self.intermediateNodesAreDirty = false;
     return self.current.intermediateRows;
   }
 
@@ -391,6 +430,11 @@ export class cmModel {
       }
     }
     return self.current.rows;
+  }
+
+  getCurrentIntermediateNodeIndexes() {
+    let self = this;
+    return self.current.intermediateNodeIndexes;
   }
 
   getCurrentScalarMatrix() {
@@ -433,7 +477,7 @@ export class cmModel {
 
   getIntermediateNodeAttributeValues() {
     let self = this;
-    return self.getAttributeValues(self.getIntermediateNodeIndexes(), self.AttributeNodeGroups.INTERMEDIATE);
+    return self.getAttributeValues(self.getCurrentIntermediateNodeIndexes(), self.AttributeNodeGroups.INTERMEDIATE);
   }
 
   getIntermediateRowNodeAttributeValues() {
@@ -887,18 +931,20 @@ export class cmModel {
     }
 
     self.intermediateNodeCounts = intermediateNodeCounts;
-    self.intermediateRows = [];
+    self.intermediateRows = {};
+    self.current.intermediateRows = [];
 
     for (let i = 0; i < self.intermediateNodeIndexes.length; ++i) {
       var currentRowNodeIndex = self.intermediateNodeIndexes[i][0];
 
       var row = new cmModelRow();
       row.activate(currentRowNodeIndex, self.intermediateNodeCounts[currentRowNodeIndex], positionKeys);
-      self.intermediateRows.push(row);
+      self.intermediateRows[currentRowNodeIndex] = row;
+      self.current.intermediateRows.push(row);
     }
 
     self.current.intermediateNodeIndexes = angular.copy(self.intermediateNodeIndexes);
-    self.current.intermediateRows = angular.copy(self.intermediateRows);
+    //self.current.intermediateRows = angular.copy(self.intermediateRows);
   }
 
   resetNumPathsPerNode() {

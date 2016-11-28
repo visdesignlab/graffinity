@@ -8,6 +8,7 @@ export class cmNodeListLeftHeader extends cmNodeListBase {
     super(svg, model, $log, $uibModal, scope, viewState, modalService, mainController);
     this.setModel(model);
   }
+
   /**
    * Creates empty rows at top of the matrix
    * Creates rows using the intermediate node row indexes
@@ -21,15 +22,17 @@ export class cmNodeListLeftHeader extends cmNodeListBase {
 
     // Create each of the data rows!
     let modelRows = model.getCurrentIntermediateNodeRows();
-    let majorRowLabels = model.getMajorLabels(model.getIntermediateNodeIndexes());
-    let minorRowLabels = model.getMinorRowLabels();
-    let rowNodeAttributes = this.rowNodeAttributes;
+    let majorRowLabels = model.getMajorLabels(model.getCurrentIntermediateNodeIndexes(), model.intermediateNodeCollapseAttr);
+    let minorRowLabels = model.getMinorLabels(model.getCurrentIntermediateNodeIndexes());
+    let rowNodeAttributes = model.getIntermediateRowNodeAttributeValues();
+
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmNodeListRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, this.rowAttributeNodeGroup);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this,
+        this.rowAttributeNodeGroup, false, model.areIntermediateNodesCollapsed);
 
       // If row has minor rows, then we want the controls to be visible!
-      if (modelRows[i].getNumChildren() > 0) {
+      if (model.areIntermediateNodesCollapsed) {
         let callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }

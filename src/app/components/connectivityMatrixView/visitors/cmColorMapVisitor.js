@@ -73,7 +73,7 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
     // colorMapIndex == 0 -> matrixView's data cells
     // colorMapIndex == 2 -> nodeListView's data cells
     let isCorrectAggregation = (cell.isCellBetweenSets() && (this.colorMapIndex == 0 || this.colorMapIndex == 2))
-      || (!cell.isCellBetweenSets() && this.colorMapIndex == 1);
+      || (!cell.isCellBetweenSets() && this.colorMapIndex == 1 || !cell.isCellBetweenSets() && this.colorMapIndex == 3);
 
     let color = this.colorScale(value);
     let group = cell.getGroup();
@@ -90,9 +90,7 @@ export class cmColorMapVisitor extends cmColorMapVisitorBase {
         .style("stroke-width", "1px")
         .attr("fill", color);
 
-
       this.createInteractionGroup(cell, paths, this.graph);
-
 
     } else {
       this.createEmptyCellOutline(cell);

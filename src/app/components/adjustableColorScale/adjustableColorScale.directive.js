@@ -69,7 +69,6 @@ class AdjustableColorScaleController {
           .attr("transform", "translate(5, 0)");
       }
 
-
       //self.histogram = new visHistogramScent(self.$scope, self.histogramGroup, self.width - 10, 40, 30, false, self.values, 0, true);
 
     });
@@ -144,7 +143,7 @@ class AdjustableColorScaleController {
         .select(".legend-container")
         .append("svg")
         .attr("width", this.width)
-        .attr("height", 70);
+        .attr("height", 30);
 
       this.svg = this.svgRoot.append("g")
         .attr("transform", `translate(0, 0)`);

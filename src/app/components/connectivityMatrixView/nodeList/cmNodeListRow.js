@@ -4,22 +4,23 @@ import {cmDataRow} from "../cmDataRow"
 export class cmNodeListRow extends cmMatrixRow {
 
   constructor(svg, rowIndex, colNodeIndexes, numHeaderCols, colWidth, rowHeight, isMinorRow, modelRow, label,
-              minorLabels, rowNodeAttributes, matrix, attributeNodeGroup) {
+              minorLabels, rowNodeAttributes, matrix, attributeNodeGroup, areColsCollapsed, areRowsCollapsed) {
     super(svg, rowIndex, [], numHeaderCols, colWidth, rowHeight, isMinorRow, matrix);
+
     this.unrollControls = [];
     this.rollupControls = [];
 
     // If this is not a minor row - there might be children. Try adding them.
     if (!isMinorRow) {
       let numChildren = modelRow.getNumChildren();
-      if (numChildren > 0) {
+      if (areRowsCollapsed) {
         let childIndex = 0;
         let isChildRow = true;
         let childLabels = null;
 
         let minorRow = new cmNodeListRow(this.minorRowContainer, childIndex, [], numHeaderCols, colWidth,
           rowHeight, isChildRow, modelRow, minorLabels[childIndex], childLabels,
-          cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix);
+          cmDataRow.getAttributes(rowNodeAttributes, childIndex), matrix, attributeNodeGroup, false, areRowsCollapsed);
 
         minorRow.setVisible(false);
         this.addMinorRow(minorRow);
@@ -29,7 +30,7 @@ export class cmNodeListRow extends cmMatrixRow {
 
           minorRow = new cmNodeListRow(this.minorRowContainer, childIndex, [], numHeaderCols, colWidth,
             rowHeight, isChildRow, modelRow.getChildRowAt(i), minorLabels[childIndex], childLabels,
-            cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix);
+            cmDataRow.getAttributes(rowNodeAttributes, i + 1), matrix, attributeNodeGroup, false, areRowsCollapsed);
 
           minorRow.setVisible(false);
           this.addMinorRow(minorRow);
@@ -86,8 +87,8 @@ export class cmNodeListRow extends cmMatrixRow {
         });
 
         cell.isInNodeListView = true;
+        cell.isLabelCell = true;
         cell.isAttributeCell = true;
-
         cell.data.ids = {
           sources: [-1],
           intermediates: this.isMinorRow ? [modelRow.getNodeIndex()] : modelRow.getAllNodeIndexes(),

@@ -15,7 +15,7 @@ export class cmNodeListView extends cmNodeListBase {
     this.hasEncodings = true;
 
     this.colorScaleIndexSets = 2;
-    this.colorScaleIndexNodes = -1;
+    this.colorScaleIndexNodes = 3;
 
     this.setModel(model);
   }
@@ -28,19 +28,18 @@ export class cmNodeListView extends cmNodeListBase {
       this.addRow(new cmMatrixRow(this.svg, i, this.colNodeIndexes, this.numHeaderCols), 0);
     }
 
-    let rowNodeAttributes = this.rowNodeAttributes;
-
     // Create each of the data rows!
     let modelRows = model.getCurrentIntermediateNodeRows();
-    let majorRowLabels = model.getMajorRowLabels();
-    let minorRowLabels = model.getMinorRowLabels();
+    let majorRowLabels = model.getMajorLabels(model.getCurrentIntermediateNodeIndexes(), model.intermediateNodeCollapseAttr);
+    let minorRowLabels = model.getMinorLabels(model.getCurrentIntermediateNodeIndexes());
+    let rowNodeAttributes = this.rowNodeAttributes;
 
     for (i = 0; i < this.rowNodeIndexes.length; ++i) {
       let dataRow = new cmDataRow(this.svg, i + this.numHeaderRows, this.colNodeIndexes, this.numHeaderCols, this.colWidth,
-        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, false, false, true);
+        this.rowHeight, false, modelRows[i], majorRowLabels[i], minorRowLabels[i], rowNodeAttributes[i], this, false, model.areIntermediateNodesCollapsed, true);
 
       // If row has minor rows, then we want the controls to be visible!
-      if (model.areRowsCollapsed) {
+      if (model.areIntermediateNodesCollapsed) {
         let callback = this.onRowControlsClicked.bind(this);
         dataRow.createControlsCell(this.colWidth, this.rowHeight, callback);
       }

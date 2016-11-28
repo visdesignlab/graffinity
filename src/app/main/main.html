@@ -144,6 +144,19 @@
 
       <div ng-show="main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible">
         <h4>List Controls</h4>
+        <div class="control-header">
+          Aggregate rows
+          <ui-select class="control-input"
+                     ng-model="main.ui.selectedIntermediateRowAttr"
+                     ng-change="main.onCollapseIntermediateRows(main.ui.selectedIntermediateRowAttr)">
+            <ui-select-match placeholder="Categorical attribute to collapse rows">
+              {{main.ui.selectedIntermediateRowAttr}}
+            </ui-select-match>
+            <ui-select-choices repeat="option in main.ui.availableCategoricalAttr track by option">
+              {{option}}
+            </ui-select-choices>
+          </ui-select>
+        </div>
 
         <div class="control-header" ng-show="main.ui.matrixMetrics">
           Metric
@@ -187,6 +200,7 @@
           </ui-select>
         </div>
       </div>
+
 
       <!-- Legend of matrix cell encodings -->
       <div class="control-header" ng-show="main.ui.hasLegend">
