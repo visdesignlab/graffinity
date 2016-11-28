@@ -13,6 +13,13 @@
   font-size: 0;
 }
 
+.matrix-tooltip {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+
 .matrix-element-bottom-left {
   overflow-y: hidden;
   min-width: fit-content;

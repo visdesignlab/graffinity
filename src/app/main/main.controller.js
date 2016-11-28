@@ -1,8 +1,6 @@
 /* globals d3 reorder saveAs
  */
 import {mock} from "../components/connectivityMatrix/mock.js";
-import {cmMatrixBase} from "../components/connectivityMatrixView/cmMatrixBase";
-import {cmMatrixView} from "../components/connectivityMatrixView/cmMatrixView";
 import {Utils} from "../components/utils/utils";
 
 export class MainController {
@@ -159,7 +157,7 @@ export class MainController {
     this.ui.selectedCategoricalRowAttr = this.ui.availableCategoricalAttr[0];
   }
 
-  createMatrix(model, encoding) {
+  createMatrix(model) {
     // this.svg.selectAll("*").remove();
     this.model = model;
     this.viewState.setModel(model);
@@ -182,71 +180,6 @@ export class MainController {
     this.ui.nodeListMetrics = angular.copy(metrics);
     this.ui.selectedNodeListMetric = this.ui.nodeListMetrics[0];
     this.setMetric("nodeList", this.ui.selectedNodeListMetric);
-  }
-
-  setMetric(view, metric) {
-    let matrix = null;
-    let encoding = null;
-    if (view == "matrix") {
-      if (this.model.areRowsCollapsed && this.model.areColsCollapsed) {
-        this.ui.primaryScaleName = "set-to-set ";
-        this.ui.secondaryScaleName = "";
-      } else if (this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
-        this.ui.primaryScaleName = "set-to-node ";
-        this.ui.secondaryScaleName = "node-to-node ";
-      } else if (!this.model.areRowsCollapsed && this.model.areColsCollapsed) {
-        this.ui.primaryScaleName = "node-to-set ";
-        this.ui.secondaryScaleName = "node-to-node ";
-      } else if (!this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
-        this.ui.primaryScaleName = "";
-        this.ui.secondaryScaleName = "";
-      }
-      matrix = this.matrixManager.matrix;
-      this.ui.matrixEncodings = matrix.getAvailableEncodings(metric.output);
-      this.ui.selectedMatrixEncoding = this.ui.matrixEncodings[0];
-      encoding = this.ui.selectedMatrixEncoding;
-    } else if (view == "nodeList") {
-      this.ui.nodeListScaleName = metric.name;
-      matrix = this.nodeListManager.matrix;
-      this.ui.nodeListEncodings = matrix.getAvailableEncodings(metric.output);
-      this.ui.selectedNodeListEncoding = this.ui.nodeListEncodings[0];
-      encoding = this.ui.selectedNodeListEncoding;
-    }
-    this.setEncoding(view, metric, encoding);
-
-    // matrix.setEncoding(encoding, metric);
-
-    // this.nodeListManager.matrix.setEncoding(encoding, this.matrixManager.matrix.getAvailableMetrics()[0]);
-  }
-
-  setEncoding(view, metric, encoding) {
-    let matrix = this.matrixManager.matrix;
-    if (view == "matrix") {
-      this.ui.matrixHasScaleOption = encoding.hasScaleOption;
-    } else {
-      this.ui.nodeListHasScaleOption = encoding.hasScaleOption;
-      matrix = this.nodeListManager.matrix;
-    }
-    this.$log.debug(this, "setEncoding", matrix, metric, encoding);
-    matrix.setEncoding(encoding, metric);
-
-  }
-
-  setEncodingScale(view, scale) {
-    let matrix = this.matrixManager.matrix;
-    if (view == "matrix") {
-
-      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 0);
-      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 1);
-
-      matrix.setEncoding(this.ui.selectedMatrixEncoding, this.ui.selectedMatrixMetric);
-    } else {
-      matrix = this.nodeListManager.matrix;
-      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 2);
-      matrix.setEncoding(this.ui.selectedNodeListEncoding, this.ui.selectedNodeListMetric);
-    }
-
-
   }
 
   createMatrixAndUi(model) {
@@ -552,6 +485,67 @@ export class MainController {
     self.$http.get(filename)
       .success(success)
       .error(error);
+  }
+
+  setEncoding(view, metric, encoding) {
+    let matrix = this.matrixManager.matrix;
+    if (view == "matrix") {
+      this.ui.matrixHasScaleOption = encoding.hasScaleOption;
+    } else {
+      this.ui.nodeListHasScaleOption = encoding.hasScaleOption;
+      matrix = this.nodeListManager.matrix;
+    }
+    matrix.setEncoding(encoding, metric);
+    angular.element('[data-toggle="tooltip"]').tooltip();
+  }
+
+  setEncodingScale(view, scale) {
+    let matrix = this.matrixManager.matrix;
+    if (view == "matrix") {
+
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 0);
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 1);
+
+      matrix.setEncoding(this.ui.selectedMatrixEncoding, this.ui.selectedMatrixMetric);
+    } else {
+      matrix = this.nodeListManager.matrix;
+      this.colorScaleService.setUseLinearColorScale(scale == 'linear', 2);
+      matrix.setEncoding(this.ui.selectedNodeListEncoding, this.ui.selectedNodeListMetric);
+    }
+
+    angular.element('[data-toggle="tooltip"]').tooltip();
+  }
+
+  setMetric(view, metric) {
+    let matrix = null;
+    let encoding = null;
+    if (view == "matrix") {
+      if (this.model.areRowsCollapsed && this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "set-to-set ";
+        this.ui.secondaryScaleName = "";
+      } else if (this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "set-to-node ";
+        this.ui.secondaryScaleName = "node-to-node ";
+      } else if (!this.model.areRowsCollapsed && this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "node-to-set ";
+        this.ui.secondaryScaleName = "node-to-node ";
+      } else if (!this.model.areRowsCollapsed && !this.model.areColsCollapsed) {
+        this.ui.primaryScaleName = "";
+        this.ui.secondaryScaleName = "";
+      }
+      matrix = this.matrixManager.matrix;
+      this.ui.matrixEncodings = matrix.getAvailableEncodings(metric.output);
+      this.ui.selectedMatrixEncoding = this.ui.matrixEncodings[0];
+      encoding = this.ui.selectedMatrixEncoding;
+    } else if (view == "nodeList") {
+      this.ui.nodeListScaleName = metric.name;
+      matrix = this.nodeListManager.matrix;
+      this.ui.nodeListEncodings = matrix.getAvailableEncodings(metric.output);
+      this.ui.selectedNodeListEncoding = this.ui.nodeListEncodings[0];
+      encoding = this.ui.selectedNodeListEncoding;
+    }
+
+    this.setEncoding(view, metric, encoding);
   }
 
   updateLegend() {

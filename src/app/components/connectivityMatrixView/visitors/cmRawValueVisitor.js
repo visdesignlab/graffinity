@@ -38,16 +38,7 @@ export class cmRawValueVisitor extends cmCellVisitor {
         .text(value);
 
 
-      this.createInteractionGroup(cell);
-
-      group.select(".matrix-view-interaction-group")
-        .select("rect")
-        .attr("data-toggle", "tooltip")
-        .attr("data-title", function () {
-          return paths.length + (paths.length == 1 ? " path" : " paths");
-        })
-        .attr("data-placement", "right")
-        .attr("data-container", "body");
+      this.createInteractionGroup(cell, paths, this.graph);
 
 
     } else {

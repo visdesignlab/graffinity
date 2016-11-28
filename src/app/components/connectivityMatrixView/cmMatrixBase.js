@@ -296,12 +296,14 @@ export class cmMatrixBase extends SvgGroupElement {
   getAvailableMetrics(database) {
     let metrics = [{
       "name": "path count",
+      "tooltip": "path(s)",
       "metricFn": function (paths) {
         return paths.length;
       },
       "output": "scalar"
     }, {
       "name": "node count",
+      "tooltip": "middle node(s)",
       "metricFn": function (paths) {
         return Utils.getIntermediateNodesFromPaths(paths).length;
       },
@@ -311,6 +313,7 @@ export class cmMatrixBase extends SvgGroupElement {
     if (database == "flights") {
       metrics.push({
         "name": "carrier count",
+        "tooltip": "carrier(s)",
         "metricFn": function (paths, graph) {
           let carriers = [];
           for (var i = 0; i < paths.length; ++i) {
@@ -1017,6 +1020,7 @@ export class cmMatrixBase extends SvgGroupElement {
 
     let metricFunction = this.metric.metricFn;
 
+    visitor.setTooltipMetrics(this.getAvailableMetrics(this.mainController.database));
     visitor.setCallbacks(clicked, mouseover, mouseout);
     visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
     visitor.setMetricFunction(metricFunction);
@@ -1055,6 +1059,8 @@ export class cmMatrixBase extends SvgGroupElement {
     } else if (encoding.name == "raw value") {
 
       let visitor = new cmRawValueVisitor(cellWidth, cellHeight);
+      visitor.setTooltipMetrics(this.getAvailableMetrics(this.mainController.database));
+
       let metricFunction = this.metric.metricFn;
 
       visitor.setCallbacks(clicked, mouseover, mouseout);
@@ -1070,30 +1076,16 @@ export class cmMatrixBase extends SvgGroupElement {
       preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       preprocessor.isList = metric.output == 'list';
       this.applyVisitor(preprocessor);
-      console.log(preprocessor);
+
       visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight, metric.output == 'list');
+      visitor.graph = this.model.graph;
+      visitor.setTooltipMetrics(this.getAvailableMetrics(this.mainController.database));
       visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
       visitor.setCallbacks(clicked, mouseover, mouseout);
 
-      console.log(visitor);
       this.applyVisitor(visitor);
 
-      //this.$log.error("setEncoding", this, metric, encoding);
     }
-    //if (encoding == "bar chart") {
-    //  preprocessor = new cmBarChartPreprocessor();
-    //  preprocessor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-    //  this.applyVisitor(preprocessor);
-    //
-    //  visitor = new cmBarChartVisitor(preprocessor, cellWidth, cellHeight);
-    //  visitor.setPathFilterFunction(this.viewState.getFilterPathFunction());
-    //  visitor.setCallbacks(clicked, mouseover, mouseout);
-    //  this.applyVisitor(visitor);
-    //
-    //  this.legend = undefined;
-    //} else if (encoding == "colormap") {
-    //this.setEncodingToColorMap(metric);
-    //}
   }
 
   /**
@@ -1101,7 +1093,7 @@ export class cmMatrixBase extends SvgGroupElement {
    * @param metric
    */
   setEncodingToColorMap(metric) {
-    this.$log.debug("setEncodingToColorMap", metric);
+
     if (this.isNodeListView && !this.isActive) {
       return;
     }

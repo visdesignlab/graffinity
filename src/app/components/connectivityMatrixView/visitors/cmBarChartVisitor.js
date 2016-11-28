@@ -2,7 +2,6 @@
  */
 
 import {cmCellVisitor} from "./cmCellVisitors"
-import {Utils} from "../../utils/utils"
 
 export class cmBarChartPreprocessor extends cmCellVisitor {
   constructor(metric) {
@@ -147,7 +146,7 @@ export class cmBarChartVisitor extends cmCellVisitor {
       .style("stroke-width", "1px")
       .attr("fill", "none");
 
-    this.createInteractionGroup(cell);
+    this.createInteractionGroup(cell, paths, this.graph);
 
   }
 }
