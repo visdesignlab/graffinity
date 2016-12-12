@@ -61,9 +61,9 @@ export class MainController {
     }
 
     let useLargeResult = false;
-    useLargeResult = true;
 
-    let jsonGraph = null;
+    let jsonGraph = null;    useLargeResult = true;
+
     let jsonMatrix = null;
 
     // Populate starting data with something intelligent
@@ -197,12 +197,13 @@ export class MainController {
 
     // Disable animation of the matrix so that its initial position is the sorted one.
     this.matrixManager.setUseAnimation(false);
-    this.onSortOrderChanged("optimal leaf");
+    this.onSortOrderChanged("random");
     this.matrixManager.setUseAnimation(true);
   }
 
   createReorderControls() {
-    this.ui.orders = ["custom", "optimal leaf", "database", "random"];
+    this.ui.orders = ["custom", "optimal leaf", "database", "" +
+    ""];
     this.ui.selectedSortOrder = this.ui.orders[1];
   }
 

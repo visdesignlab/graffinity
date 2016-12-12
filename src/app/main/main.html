@@ -1,6 +1,6 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
-  <span class="logo">Connectivity Matrix</span>
+  <span class="logo">Graffinity</span>
   <span ng-show="main.debug" ng-click="main.onSaveClicked()">Save</span>
   <span ng-show="main.debug" ng-click="main.onLoadClicked()">Load</span>
 
@@ -41,7 +41,7 @@
       </query-builder>
     </div>
     <div class="pane left-pane grey-border" ng-show="main.hasGoodData">
-      <h4 class="no-margin">Matrix Controls</h4>
+      <h4 class="no-margin">Connectivity Matrix Controls</h4>
       <div class="control-header">
         Aggregate rows
         <ui-select class="control-input"
@@ -143,7 +143,7 @@
       </div>
 
       <div ng-show="main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible">
-        <h4>List Controls</h4>
+        <h4>Int. Node Table Controls</h4>
         <div class="control-header">
           Aggregate rows
           <ui-select class="control-input"
@@ -221,7 +221,7 @@
   <div ng-show="main.hasGoodData && main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible"
        class="pane pane-center-right vflex intermediate-nodes">
     <div ng-show="main.model.getIntermediateNodeIndexes().length" class="vflex grow-1">
-      <h4 class="no-margin">Intermediate Nodes</h4>
+      <h4 class="no-margin">Int. Node Table</h4>
       <div id="node-list-col" class="grow-1 vflex">
       </div>
     </div>

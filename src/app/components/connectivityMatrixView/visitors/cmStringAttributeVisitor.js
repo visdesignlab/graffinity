@@ -24,12 +24,18 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
           text = "----";
         }
 
-        group.append("g")
+        let textGroup = group.append("g")
           .attr("transform", "translate(" + this.labelRowWidth / 2 + "," + this.labelRowHeight + ")rotate(270)")
           .attr("clip-path", "url(#vertical-attribute-clip")
           .append("text")
           .text(text)
           .classed("matrix-view-string-attribute", true);
+
+        if(this.isVisitingAirportOrState) {
+          textGroup.attr("transform", "translate( "+ this.labelRowHeight / 2 +  ",0)" );
+          textGroup
+            .style("text-anchor", "middle");
+        }
 
         this.width = this.labelRowWidth;
         this.height = this.labelRowHeight;
@@ -40,12 +46,19 @@ export class cmStringAttributeVisitor extends cmAttributeCellVisitor {
           text = "----"
         }
 
-        group.append("g")
+        let textGroup = group.append("g")
           .attr("transform", "translate(" + 0 + "," + this.labelColHeight / 2 + ")")
           .attr("clip-path", "url(#horizontal-attribute-clip)")
           .append("text")
           .text(text)
           .classed("matrix-view-string-attribute", true);
+
+        if(this.isVisitingAirportOrState) {
+          textGroup.attr("transform", "translate( "+ this.labelColWidth / 2 + ", 0)" );
+          textGroup
+            .style("text-anchor", "middle");
+
+        }
 
         this.width = this.labelColWidth;
         this.height = this.labelColHeight;

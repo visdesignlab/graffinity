@@ -175,7 +175,7 @@ export class cmMatrixBase extends SvgGroupElement {
           let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
           visitor = new cmStringAttributeVisitor(i, attributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
           visitor.isVisitingColsCollapsedAttr = attribute == this.model.colsCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.TARGET;
-
+          visitor.isVisitingAirportOrState = attribute == 'state' || attribute == "airport";
           if (!this.isNodeListView) {
             visitor.isVisitingRowsCollapsedAttr = attribute == this.model.rowCollapseAttr && attributeNodeGroup == this.model.AttributeNodeGroups.SOURCE;
             visitor.areRowsCollapsed = this.model.areRowsCollapsed;
@@ -227,6 +227,7 @@ export class cmMatrixBase extends SvgGroupElement {
       let attributeNodeGroup = this.attributeNodeGroupsBeingDisplayed[j];
       visitor = new cmStringAttributeVisitor(-1, attributeNodeGroup, this.colWidth, this.labelRowHeight, this.colWidthLabel, this.rowHeight);
       visitor.setCallbacks(this.onCellClicked.bind(this), this.onCellMouseOver.bind(this), this.onCellMouseOut.bind(this));
+      visitor.isVisitingAirportOrState = true;
       // visitor.areRowsCollapsed = (!this.isNodeListView) && this.model.areRowsCollapsed;
       if (this.isNodeListView) {
         visitor.areRowsCollapsed = this.model.areIntermediateNodesCollapsed;
@@ -597,6 +598,7 @@ export class cmMatrixBase extends SvgGroupElement {
     // If this is the first time setModal has been called, then by default, set all attributes as hidden. Else, show
     // attributes that the user already selected.
     if (!this.isInitialized) {
+      this.isInitialized = true;
       this.isAttributeColVisible = {};
       this.isAttributeRowVisible = {};
       for (var i = 0; i < attributes.length; ++i) {

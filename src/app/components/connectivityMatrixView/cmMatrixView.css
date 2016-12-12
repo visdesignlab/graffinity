@@ -87,7 +87,7 @@ g.matrix-view-interaction-group.hovered rect {
 
 .matrix-view-highlight-rect {
   fill: none;
-  /*stroke: #AFAFAF;*/
+  stroke: #FFC800;
 }
 
 .matrix-view-attribute-controls {
