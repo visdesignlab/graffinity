@@ -28,6 +28,15 @@ export class ColorScaleService {
 
     domain[1]++;
 
+    // if (colorScaleIndex == 0) {
+    //   domain[0] = 1;
+    //   domain[1] = 49;
+    // } else if (colorScaleIndex == 2) {
+    //   domain[0] = 1;
+    //   domain[1] = 749;
+    // }
+
+
     let range = ColorScaleService.getColorScaleRange(colorbrewer[name], domain);
 
     if (this.useLinear[colorScaleIndex]) {

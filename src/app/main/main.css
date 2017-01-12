@@ -10,9 +10,8 @@ body {
 .control-header {
   margin-top: 5px;
   display: flex;
-    align-items: center;
-     justify-content: space-between;
-
+  align-items: center;
+  justify-content: space-between;
 }
 
 .control-input {
@@ -20,6 +19,7 @@ body {
   padding-left: 5px;
   max-width: 70%;
 }
+
 .full-height {
   height: 100%;
 }
