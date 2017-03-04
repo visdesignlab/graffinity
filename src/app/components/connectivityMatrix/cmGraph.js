@@ -45,13 +45,12 @@ export class cmGraph {
         if (source == undefined || target == undefined) {
           throw 'Error creating edge in graph! ' + sourceId + ', ' + targetId;
         }
-
         attributes = {
           linkedStructures: edge.LinkedStructures,
           sourceStructureId: edge.SourceStructureID,
           targetStructureId: edge.TargetStructureID,
           type: edge.Type,
-          carrier: edge.Carrier
+          carrier: edge.Carrier,
         };
 
         this.edgeDict[edge.ID] = attributes;
@@ -75,7 +74,8 @@ export class cmGraph {
           flightNum: edge.FlightNum,
           depTime: edge.DepTime,
           arrTime: edge.ArrTime,
-          carrier: edge.Carrier
+          carrier: edge.Carrier,
+          delay: edge.DepDelay
         };
 
         this.edgeDict[edge.ID] = attributes;

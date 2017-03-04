@@ -27,7 +27,7 @@ export class MainController {
     this.hasQueryError = false;
     this.hasGoodData = true;
     this.queryError = "";
-    this.debug = false;
+    this.debug = true;
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -304,7 +304,7 @@ export class MainController {
    * Load some debugging data.
    */
   onLoadClicked() {
-    this.requestInitialData("/assets/mock/marclabCBbFeedback.json");
+    this.requestInitialData("/assets/mock/test.json");
   }
 
   /**
@@ -376,6 +376,7 @@ export class MainController {
   }
 
   onSaveClicked() {
+    console.log("save was fucking clicked");
     let state = {
       "query": this.queryUi,
       "matrix": this.model.getCmMatrix().getJsonMatrix(),
@@ -383,7 +384,7 @@ export class MainController {
     };
     let stateString = JSON.stringify(state);
     let blob = new Blob([stateString], {"type": "text/plain;"});
-
+    console.log(stateString);
     saveAs(blob, `${this.database}_state.json`);
   }
 

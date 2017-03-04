@@ -335,6 +335,31 @@ export class cmMatrixBase extends SvgGroupElement {
         },
         "output": "scalar"
       });
+
+      metrics.push({
+        "name": "delay percent",
+        "tooltip": "delays(s)",
+        "metricFn": function (paths, graph) {
+          let delays = 0;
+          if (!paths.length) {
+            return 0;
+          }
+          for (var i = 0; i < paths.length; ++i) {
+            let edge = paths[i][1];
+
+            let wasDelayed = graph.graph.edge(paths[i][0], paths[i][2], edge).delay;
+
+            if (wasDelayed > 15) {
+              delays++;
+            }
+          }
+
+          let value = Math.round((delays / paths.length) * 100);
+          console.log(value, delays);
+          return value;
+        },
+        "output": "scalar"
+      });
     }
 
     if (!this.isNodeListView) {

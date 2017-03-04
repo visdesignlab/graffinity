@@ -11,7 +11,7 @@ export class ColorScaleService {
     this.$log = $log;
     this.colorScales = {};
     this.hasColorScales = false;
-    this.colorScaleNames = ["Blues", "Oranges", "Purples", "Greens"];
+    this.colorScaleNames = ["Reds", "Oranges", "Purples", "Greens"];
     this.colorScales = [];
     this.useLinear = [];
   }
