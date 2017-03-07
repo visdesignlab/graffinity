@@ -2,7 +2,7 @@
 
 Graffinity is a prototype implementation of two visualization techniques for visualizing connectivity realtionships in large graphs. These techniques are the connectivity matrix and intermediate node table. Graffinity also includes a query interface and supplemental views in the form of path lists and node-link diagrams. 
 
-This project contains the client application written in HTML and JavaScript, using various open-source web frameworks. In order to use all the features of Graffinity, you must also have a running version of the [Graffinity Server](http://github.com/visdesignlab/graffinity_server)
+This project contains the client application written in HTML and JavaScript, using various open-source web frameworks. In order to use all the features of Graffinity, you must also have a running version of the [Graffinity Server](http://github.com/visdesignlab/graffinity_server).
 
 # Setup 
 
