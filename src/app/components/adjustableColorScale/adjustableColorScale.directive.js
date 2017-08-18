@@ -43,7 +43,7 @@ class AdjustableColorScaleController {
     this.formatNumber = d3.format("d");
     this.marginLeft = 10;
     this.marginRight = 10;
-    this.width = 200;
+    this.width = 400;
 
     let self = this;
     this.$timeout(function () {

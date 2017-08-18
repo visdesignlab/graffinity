@@ -314,6 +314,21 @@ export class cmMatrixBase extends SvgGroupElement {
         return Utils.getIntermediateNodesFromPaths(paths).length;
       },
       "output": "scalar"
+    }, {
+      "name": "contact area",
+      "tooltip": "contact area",
+      "metricFn": function (paths, graph) {
+          for (var i = 0; i < paths.length; ++i) {
+            let edgeId = paths[i][1];
+            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
+            let sourceSizes = edge.sourceSizes.reduce(function(sum, value) {
+              return sum + value;
+            },0);
+            return Math.round(sourceSizes);
+          }
+        return 0;
+      },
+      "output": "scalar"
     }];
 
     if (database == "flights") {

@@ -48,6 +48,8 @@ export class cmGraph {
 
         attributes = {
           linkedStructures: edge.LinkedStructures,
+          sourceSizes: edge.SourceSizes,
+          targetSizes: edge.TargetSizes,
           sourceStructureId: edge.SourceStructureID,
           targetStructureId: edge.TargetStructureID,
           type: edge.Type,

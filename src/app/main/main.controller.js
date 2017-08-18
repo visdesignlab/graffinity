@@ -27,7 +27,7 @@ export class MainController {
     this.hasQueryError = false;
     this.hasGoodData = true;
     this.queryError = "";
-    this.debug = false;
+    this.debug = true;
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -304,7 +304,7 @@ export class MainController {
    * Load some debugging data.
    */
   onLoadClicked() {
-    this.requestInitialData("/assets/mock/marclabCBbFeedback.json");
+    this.requestInitialData("/assets/mock/defaultMarclab.json");
   }
 
   /**
