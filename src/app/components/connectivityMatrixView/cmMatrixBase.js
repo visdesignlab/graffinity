@@ -314,22 +314,7 @@ export class cmMatrixBase extends SvgGroupElement {
         return Utils.getIntermediateNodesFromPaths(paths).length;
       },
       "output": "scalar"
-    }, {
-      "name": "contact area",
-      "tooltip": "contact area",
-      "metricFn": function (paths, graph) {
-          for (var i = 0; i < paths.length; ++i) {
-            let edgeId = paths[i][1];
-            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
-            let sourceSizes = edge.sourceSizes.reduce(function(sum, value) {
-              return sum + value;
-            },0);
-            return Math.round(sourceSizes);
-          }
-        return 0;
-      },
-      "output": "scalar"
-    }];
+    }]
 
     if (database == "flights") {
       metrics.push({
@@ -350,6 +335,84 @@ export class cmMatrixBase extends SvgGroupElement {
         },
         "output": "scalar"
       });
+    } else {
+      metrics.push({
+        "name": "source area",
+        "tooltip": "source area",
+        "metricFn": function (paths, graph) {
+          for (var i = 0; i < paths.length; ++i) {
+            let edgeId = paths[i][1];
+            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
+            let sourceSizes = edge.sourceSizes.reduce(function (sum, value) {
+              return sum + value;
+            }, 0);
+            return Math.round(sourceSizes);
+          }
+          return 0;
+        },
+        "output": "scalar"
+      });
+
+      metrics.push({
+        "name": "target area",
+        "tooltip": "target area",
+        "metricFn": function (paths, graph) {
+          for (var i = 0; i < paths.length; ++i) {
+            let edgeId = paths[i][1];
+            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
+            let sourceSizes = edge.targetSizes.reduce(function (sum, value) {
+              return sum + value;
+            }, 0);
+            return Math.round(sourceSizes);
+          }
+          return 0;
+        },
+        "output": "scalar"
+      });
+
+      metrics.push({
+        "name": "area diff",
+        "tooltip": "area diff",
+        "metricFn": function (paths, graph) {
+          let sourceSizes = 0;
+          let targetSizes = 0;
+          for (var i = 0; i < paths.length; ++i) {
+            let edgeId = paths[i][1];
+            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
+            sourceSizes = edge.sourceSizes.reduce(function (sum, value) {
+              return sum + value;
+            }, 0);
+          }
+
+          for (var i = 0; i < paths.length; ++i) {
+            let edgeId = paths[i][1];
+            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
+            targetSizes = edge.targetSizes.reduce(function (sum, value) {
+              return sum + value;
+            }, 0);
+          }
+          return Math.abs(targetSizes - sourceSizes);
+        },
+        "output": "scalar"
+      });
+
+      metrics.push({
+        "name": "child count",
+        "tooltip": "child count",
+        "metricFn": function (paths, graph) {
+          for (var i = 0; i < paths.length; ++i) {
+            let edgeId = paths[i][1];
+            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
+            let sum = edge.sourceSizes.reduce(function (sum, value) {
+              return sum + 1;
+            }, 0);
+            return Math.round(sum);
+          }
+          return 0;
+        },
+        "output": "scalar"
+      });
+
     }
 
     if (!this.isNodeListView) {
