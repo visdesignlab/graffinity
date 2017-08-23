@@ -7,6 +7,7 @@ Utils = (function () {
     compareLists: compareLists,
     createMap: createMap,
     deleteCol: deleteCol,
+    getAreaFromPaths: getAreaFromPaths,
     getEdgesFromPaths: getEdgesFromPaths,
     getFilteredPaths: getFilteredPaths,
     getFlattenedLists: getFlattenedLists,
@@ -60,6 +61,21 @@ Utils = (function () {
     }
 
     return map;
+  }
+
+  function getAreaFromPaths(area, paths, graph) {
+    let sizes = 0;
+    for (let i = 0; i < paths.length; ++i) {
+      let path = paths[i];
+      for (let j = 1; j < path.length; j = j + 2) {
+        let edgeId = path[j];
+        let edge = graph.graph.edge(path[j - 1], path[j + 1], edgeId);
+        sizes = sizes + edge[area].reduce(function (sum, value) {
+            return sum + value;
+          }, 0);
+      }
+    }
+    return Math.round(sizes);
   }
 
   function getEdgesFromPaths(paths) {

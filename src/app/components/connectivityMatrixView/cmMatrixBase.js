@@ -36,6 +36,7 @@ import {UtilsD3} from "../utils/utilsd3"
  * - updatePositions
  *
  * Stack for hiding major rows:
+ *
  * - updateDataRows
  * -- updateRow - toggles visibilty of major rows
  * - updatePositions
@@ -314,7 +315,7 @@ export class cmMatrixBase extends SvgGroupElement {
         return Utils.getIntermediateNodesFromPaths(paths).length;
       },
       "output": "scalar"
-    }]
+    }];
 
     if (database == "flights") {
       metrics.push({
@@ -340,15 +341,7 @@ export class cmMatrixBase extends SvgGroupElement {
         "name": "source area",
         "tooltip": "source area",
         "metricFn": function (paths, graph) {
-          for (var i = 0; i < paths.length; ++i) {
-            let edgeId = paths[i][1];
-            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
-            let sourceSizes = edge.sourceSizes.reduce(function (sum, value) {
-              return sum + value;
-            }, 0);
-            return Math.round(sourceSizes);
-          }
-          return 0;
+          return Utils.getAreaFromPaths("sourceSizes", paths, graph);
         },
         "output": "scalar"
       });
@@ -357,60 +350,20 @@ export class cmMatrixBase extends SvgGroupElement {
         "name": "target area",
         "tooltip": "target area",
         "metricFn": function (paths, graph) {
-          for (var i = 0; i < paths.length; ++i) {
-            let edgeId = paths[i][1];
-            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
-            let sourceSizes = edge.targetSizes.reduce(function (sum, value) {
-              return sum + value;
-            }, 0);
-            return Math.round(sourceSizes);
-          }
-          return 0;
+          return Utils.getAreaFromPaths("targetSizes", paths, graph);
         },
         "output": "scalar"
       });
 
       metrics.push({
-        "name": "area diff",
-        "tooltip": "area diff",
-        "metricFn": function (paths, graph) {
-          let sourceSizes = 0;
-          let targetSizes = 0;
-          for (var i = 0; i < paths.length; ++i) {
-            let edgeId = paths[i][1];
-            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
-            sourceSizes = edge.sourceSizes.reduce(function (sum, value) {
-              return sum + value;
-            }, 0);
-          }
-
-          for (var i = 0; i < paths.length; ++i) {
-            let edgeId = paths[i][1];
-            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
-            targetSizes = edge.targetSizes.reduce(function (sum, value) {
-              return sum + value;
-            }, 0);
-          }
-          return Math.abs(targetSizes - sourceSizes);
-        },
-        "output": "scalar"
-      });
-
-      metrics.push({
-        "name": "child count",
-        "tooltip": "child count",
-        "metricFn": function (paths, graph) {
-          for (var i = 0; i < paths.length; ++i) {
-            let edgeId = paths[i][1];
-            let edge = graph.graph.edge(paths[i][0], paths[i][2], edgeId);
-            let sum = edge.sourceSizes.reduce(function (sum, value) {
-              return sum + 1;
-            }, 0);
-            return Math.round(sum);
-          }
-          return 0;
-        },
-        "output": "scalar"
+          "name": "area diff",
+          "tooltip": "area diff",
+          "metricFn": function (paths, graph) {
+              let sourceSizes = Utils.getAreaFromPaths("sourceSizes", paths, graph);
+              let targetSizes = Utils.getAreaFromPaths("targetSizes", paths, graph);
+              return Math.abs(sourceSizes - targetSizes);
+          },
+          "output": "scalar"
       });
 
     }
@@ -1208,7 +1161,6 @@ export class cmMatrixBase extends SvgGroupElement {
         this.colorScalesValues[1] = preprocessor.valuesOfNodes;
       }
     }
-
   }
 
   /**
