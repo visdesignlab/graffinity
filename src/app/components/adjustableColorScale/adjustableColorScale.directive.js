@@ -41,8 +41,8 @@ class AdjustableColorScaleController {
     this.svg = null;
 
     this.formatNumber = d3.format("d");
-    this.marginLeft = 10;
-    this.marginRight = 10;
+    this.marginLeft = 25;
+    this.marginRight = 25;
     this.width = 400;
 
     let self = this;
@@ -174,7 +174,7 @@ class AdjustableColorScaleController {
       .tickSize(13)
       .tickValues(colorScale.domain())
       .tickFormat(function (d) {
-        return Math.floor(d);
+        return d3.format(".3n")(Math.floor(d));
       });
 
     this.group = this.svg.append("g")
