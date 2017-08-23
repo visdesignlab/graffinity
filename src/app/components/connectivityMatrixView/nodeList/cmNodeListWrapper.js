@@ -45,12 +45,10 @@ export class cmNodeListWrapper extends cmWrapperBase {
   }
 
   setModel(model) {
-
-    super.setModel(model);
-
     if (model.getIntermediateNodeIndexes().length) {
       this.sortByNumPaths();
       this.setWarningMessageVisible(false);
+      super.setModel(model);
     } else {
       this.setWarningMessageVisible(true);
     }
