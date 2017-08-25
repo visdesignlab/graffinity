@@ -22,11 +22,12 @@ export class ColorScaleService {
   createColorScale(colorScaleIndex, domain) {
     let name = this.colorScaleNames[colorScaleIndex];
 
-    if (domain[0] === 0) {
-      domain[0]++;
+    if (domain[0] === domain[1]) {
+      domain[0] = domain[0] - 1;
     }
 
-    domain[1]++;
+    //domain[1];
+    domain[1] = domain[1]*1.01;
 
     // if (colorScaleIndex == 0) {
     //   domain[0] = 1;
@@ -38,13 +39,14 @@ export class ColorScaleService {
 
 
     let range = ColorScaleService.getColorScaleRange(colorbrewer[name], domain);
-
+    console.log(range);
     if (this.useLinear[colorScaleIndex]) {
       let numBins = range.length;
       let thresholdDomain = [];
-      let step = domain[1] / (numBins - 1);
+      let domainExtent = domain[1] - domain[0] ;
+      let step = domainExtent / (numBins - 1);
       for (let i = 0; i < numBins; ++i) {
-        thresholdDomain.push(step * i + 1);
+        thresholdDomain.push(domain[0] + (step * i));
       }
 
       return d3.scale.threshold()

@@ -34,6 +34,7 @@ export class cmColorMapPreprocessor extends cmColorMapVisitorBase {
     let paths = this.pathFilterFunction(cell.getPathList());
     let value = this.applyMetric(paths);
     if (cell.isCellBetweenSets()) {
+      if(value == 0.0) return;
       this.valuesOfSets.push(value);
       if (this.setRange[0] == -1) {
         this.setRange[0] = value;

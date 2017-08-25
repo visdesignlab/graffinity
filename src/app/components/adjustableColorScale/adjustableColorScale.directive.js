@@ -174,7 +174,7 @@ class AdjustableColorScaleController {
       .tickSize(13)
       .tickValues(colorScale.domain())
       .tickFormat(function (d) {
-        return d3.format(".3n")(Math.floor(d));
+        return d3.format(".3n")(d);
       });
 
     this.group = this.svg.append("g")

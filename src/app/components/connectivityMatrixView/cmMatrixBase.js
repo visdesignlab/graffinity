@@ -341,7 +341,7 @@ export class cmMatrixBase extends SvgGroupElement {
         "name": "source area",
         "tooltip": "source area",
         "metricFn": function (paths, graph) {
-          return Utils.getAreaFromPaths("sourceSizes", paths, graph);
+          return Utils.getAreaFromPaths("sourceSizes", paths, graph) / 1000000;
         },
         "output": "scalar"
       });
@@ -350,7 +350,7 @@ export class cmMatrixBase extends SvgGroupElement {
         "name": "target area",
         "tooltip": "target area",
         "metricFn": function (paths, graph) {
-          return Utils.getAreaFromPaths("targetSizes", paths, graph);
+          return Utils.getAreaFromPaths("targetSizes", paths, graph) / 1000000;
         },
         "output": "scalar"
       });
@@ -359,8 +359,8 @@ export class cmMatrixBase extends SvgGroupElement {
           "name": "area diff",
           "tooltip": "area diff",
           "metricFn": function (paths, graph) {
-              let sourceSizes = Utils.getAreaFromPaths("sourceSizes", paths, graph);
-              let targetSizes = Utils.getAreaFromPaths("targetSizes", paths, graph);
+              let sourceSizes = Utils.getAreaFromPaths("sourceSizes", paths, graph) / 1000000;
+              let targetSizes = Utils.getAreaFromPaths("targetSizes", paths, graph) / 1000000;
               return Math.abs(sourceSizes - targetSizes);
           },
           "output": "scalar"
