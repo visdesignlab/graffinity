@@ -60,7 +60,7 @@ describe('viewState', () => {
 
       keys = Object.keys(viewState.quantitativeFilters);
       expect(keys.length).toEqual(numAttributeNodeGroups);
-      expect(Object.keys(viewState.quantitativeFilters[colAttributeNodeGroup]).length).toEqual(3);
+      expect(Object.keys(viewState.quantitativeFilters[colAttributeNodeGroup]).length).toEqual(4);
 
       expect(Object.keys(viewState.categoricalFilters[intermediateAttributeNodeGroup]["state"]).length).toEqual(6);
     }
