@@ -22,7 +22,8 @@ import {AdjustableColorScaleDirective} from "../app/components/adjustableColorSc
 import {ColorScaleService} from "../app/components/adjustableColorScale/colorScale.service"
 import {QueryBuilderDirective} from "../app/components/queryBuilder/queryBuilder.directive"
 import {CypherGeneratorService} from "../app/components/queryBuilder/cypherGenerator.service"
-
+import {DataSelectionService} from "../app/components/dataSelection/dataSelection.service"
+import {DataSelectionController} from '../app/components/dataSelection/dataSelection.controller'
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select', 'ngTagsInput'])
   .constant('malarkey', malarkey)
@@ -48,4 +49,6 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .directive("adjustableColorScaleDirective", () => new AdjustableColorScaleDirective())
   .service("colorScaleService", ColorScaleService)
   .service("cypherGeneratorService", CypherGeneratorService)
-  .directive("queryBuilder", () => new QueryBuilderDirective());
+  .directive("queryBuilder", () => new QueryBuilderDirective())
+  .service("dataSelectionService", DataSelectionService)
+  .controller("DataSelectionController", DataSelectionController);

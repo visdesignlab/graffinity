@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <h3 class="modal-title">{{modalController.title}}</h3>
+</div>
+
+<div class="modal-body">
+  <!-- Optionally show an error message if the user puts in garbage values" -->
+  <div ng-show="modalController.errorMessage">
+    {{modalController.errorMessage}}
+  </div>
+
+  <input type="file">
+
+  <div>
+  </div>
+  <!-- This is the svg that will hold the histogram. It doesn't have a width and height yet.
+  These get assigned in ModalHistogramFilterController::activateUi() -->
+  <svg>
+  </svg>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" ng-click="modalController.ok()">OK</button>
+</div>

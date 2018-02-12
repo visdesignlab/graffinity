@@ -5,7 +5,7 @@ import {Utils} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database, $http, colorScaleService, resource) {
+              viewState, modalService, database, $http, colorScaleService, resource, dataSelectionService) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -28,6 +28,7 @@ export class MainController {
     this.hasGoodData = true;
     this.queryError = "";
     this.debug = true;
+    this.dataSelectionService = dataSelectionService;
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -59,6 +60,10 @@ export class MainController {
       this.colorScaleService.setUseLinearColorScale(true, 2);
       this.colorScaleService.setUseLinearColorScale(true, 3);
     }
+
+    //this.modalService.getSelectionFromList("Filter by " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
+    let availableDatasets = ["Marclab small", "Marclab large"];
+    this.dataSelectionService.getSelectionFromList("Select a dataset", availableDatasets, function(){});
 
     let useLargeResult = false;
 
