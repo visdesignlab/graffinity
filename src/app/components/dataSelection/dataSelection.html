@@ -3,39 +3,40 @@
 </div>
 
 <div class="modal-body">
-  <!-- Optionally show an error message if the user puts in garbage values" -->
-  <!--<div ng-show="modalController.errorMessage">-->
-  <!--{{modalController.errorMessage}}-->
-  <!--</div>-->
-  <!--<div ng-show="modalController.isParsingFile">-->
-  <!--<i class="fa fa-spinner fa-spin" style="font-size:48px"></i>-->
-  <!--</div>-->
+  <!-- Ask the user to upload data -->
   <div style="border-bottom: 1px solid #e5e5e5; padding-bottom: 10px">
-    <span class="modal-line-header">Load file:</span>
-    <input class="btn btn-default btn-xs" readonly=true type="text" ng-model="modalController.filename">
+    <span class="modal-line-header">Load data:</span>
+    <input class="btn btn-default btn-xs" readonly=true type="text" ng-model="controller.filename">
     <label class="btn btn-xs btn-default btn-file">
       Select file
       <input style="display:none;"
              type="file"
              accept=".json"
-             ng-model="modalController.filename"
-             onchange="angular.element(this).scope().modalController.onFileChanged(this)">
+             ng-model="controller.filename"
+             onchange="angular.element(this).scope().controller.onFileChanged(this)">
     </label>
-
-
     <div class="float-right">
-      <span ng-show="modalController.isDataOk">Network parsed! Nodes: {{modalController.data.nodes.length}} Edges: {{modalController.data.edges.length}}</span>
-      <button ng-disabled="!modalController.isDataOk" class="btn btn-xs btn-primary" type="button">Go!</button>
+      <span ng-show="controller.isUserDataOk">
+        Network parsed! Nodes: {{controller.userData.nodes.length}} Edges: {{controller.userData.edges.length}}</span>
+
+      <span ng-show="controller.userDataError" class="red-text">
+        Could not find nodes and edges in {{controller.filename}}
+      </span>
+      <button ng-disabled="!controller.isUserDataOk" class="btn btn-xs btn-primary" type="button"
+              ng-click="controller.go(controller.userData)">Go!
+      </button>
     </div>
-
-  <span ng-show="modalController.hasError" class="float-right error-message">
-    Could not find nodes & edges in {{modalController.filename}}.
-  </span>
   </div>
-  <div style="padding-top: 10px">
-    <span class="modal-line-header">Preset data: ... </span>
+
+  <!-- Display list of preloaded datasets. -->
+  <div style="padding-top: 10px" ng-repeat="dataName in controller.defaultDataName">
+    <span class="modal-line-header">Preset data: </span> {{dataName}}
     <div class="float-right">
-      <button class="btn btn-xs btn-primary" type="button">Go!</button>
+      Nodes: {{controller.defaultData[$index].nodes.length}} Edges:
+      {{controller.defaultData[$index].edges.length}}
+      <button class="btn btn-xs btn-primary" type="button"
+              ng-click="controller.go(controller.defaultData[$index])">Go!
+      </button>
     </div>
   </div>
 </div>

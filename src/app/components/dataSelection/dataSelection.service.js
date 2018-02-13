@@ -1,10 +1,7 @@
 export class DataSelectionService {
 
   /**
-   * Singleton service for getting user input through a bootstrap modal.
-   *
-   * Whenever this launches a modal, the arguments to 'callback' get passed from inside the modal's controller's
-   * ok() function.
+   * Singleton service for asking user to select a dataset.
    */
   constructor($uibModal) {
     "ngInject";
@@ -12,30 +9,30 @@ export class DataSelectionService {
   }
 
   /**
-   * Ask the user to select items with a checkbox list. Callback will be called with isItemSelected updated
-   * to match the user's preference.
-   * @param title - displayed in modal header
-   * @param items - list of items to be selected
-   * @param callback - called with isItemSelected when user resolves modal
+   * Asks the user which dataset to use
+   * @param defaultDataNames - list of file names for pre-loaded data
+   * @param defaultData - list of pre-loaded data.
+   * @param callback - called when the user clicks 'go' - returns the selected data
    */
-  getSelectionFromList(title, items, callback) {
+  getSelectionFromList(defaultDataNames, defaultData, callback) {
 
     let modalInstance = this.$uibModal.open({
       animation: true,
       templateUrl: '/app/components/dataSelection/dataSelection.html',
       controller: 'DataSelectionController',
-      controllerAs: 'modalController',
+      controllerAs: 'controller',
       bindToController: true,
       size: 'lg',
       backdrop  : 'static',
       keyboard  : false,
       resolve: {
-        title: function () {
-          return title;
+        defaultData: function () {
+          return defaultData;
         },
-        items: function () {
-          return items;
+        defaultDataNames: function() {
+          return defaultDataNames;
         }
+
       }
     });
     modalInstance.result.then(callback);

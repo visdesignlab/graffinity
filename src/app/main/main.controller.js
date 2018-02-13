@@ -4,7 +4,7 @@ import {mock} from "../components/connectivityMatrix/mock.js";
 import {Utils} from "../components/utils/utils";
 
 export class MainController {
-  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
+  constructor($log, $timeout, $scope, $q, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
               viewState, modalService, database, $http, colorScaleService, resource, dataSelectionService) {
     'ngInject';
     this.viewState = viewState;
@@ -28,6 +28,7 @@ export class MainController {
     this.hasGoodData = true;
     this.queryError = "";
     this.debug = true;
+    this.$q = $q;
     this.dataSelectionService = dataSelectionService;
 
     // Object for representing what the user has currently selected or entered in the ui.
@@ -62,12 +63,13 @@ export class MainController {
     }
 
     //this.modalService.getSelectionFromList("Filter by " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
-    let availableDatasets = ["Marclab small", "Marclab large"];
-    this.dataSelectionService.getSelectionFromList("Select a dataset", availableDatasets, function(){});
+    this.activateWithClientOnlyData();
+
 
     let useLargeResult = false;
 
-    let jsonGraph = null;    useLargeResult = true;
+    let jsonGraph = null;
+    useLargeResult = true;
 
     let jsonMatrix = null;
 
@@ -143,6 +145,42 @@ export class MainController {
     //    self.updateLegend();
     //  }
     //}, 1);
+  }
+
+  /**
+   *
+   */
+  activateWithClientOnlyData() {
+    let self = this;
+    let defaultDataNames = ["/assets/mock/2018.01.23-network-514-1-hop.json", "/assets/mock/2018.01.23-network-all-hops.json"];
+
+    // Callback after the user selects a dataset.
+    let userSelectedDataCallback = function (result) {
+      self.$log.debug(result);
+    };
+
+    // Called after we have loaded all of the default datasets.
+    // Asks the use what dataset to use through the dataSelectModal..
+    let success = function (results) {
+
+      // Pull out data from http responses.
+      let dataValues = [];
+      for (let i = 0; i < results.length; ++i) {
+        dataValues.push(results[i].data);
+      }
+
+      // Ask user.
+      self.dataSelectionService.getSelectionFromList(defaultDataNames, dataValues, userSelectedDataCallback);
+    };
+
+
+    // Load all of the default data.
+    let requests = [];
+    for (let i = 0; i < defaultDataNames.length; ++i) {
+      requests.push(self.$http.get(defaultDataNames[i]));
+    }
+
+    self.$q.all(requests).then(success);
   }
 
   activate(jsonGraph, jsonMatrix, jsonQuery) {
