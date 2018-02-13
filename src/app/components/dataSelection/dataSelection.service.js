@@ -25,7 +25,10 @@ export class DataSelectionService {
       templateUrl: '/app/components/dataSelection/dataSelection.html',
       controller: 'DataSelectionController',
       controllerAs: 'modalController',
+      bindToController: true,
       size: 'lg',
+      backdrop  : 'static',
+      keyboard  : false,
       resolve: {
         title: function () {
           return title;

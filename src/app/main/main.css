@@ -20,6 +20,10 @@ body {
   max-width: 70%;
 }
 
+.float-right {
+  float: right;
+}
+
 .full-height {
   height: 100%;
 }
@@ -59,6 +63,12 @@ body {
 .main-icon-control:hover {
   background: #6D6C6C;
   border-radius: 3px;
+}
+
+.modal-line-header {
+  vertical-align: middle;
+  font-weight: bold;
+  min-width:100px;
 }
 
 .left-pane-wrappers {

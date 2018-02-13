@@ -12,6 +12,39 @@ export class DataSelectionController {
     this.title = title;
     this.items = items;
     this.useDefaultDataSet = true;
+    this.isParsingFile = false;
+    this.data = {};
+    this.hasError = false;
+  }
+
+  /**
+   * Why does changing self here not update what gets rendered in the modal?
+   */
+  onFileChanged(inputTag) {
+    let self = this;
+    let reader = new FileReader();
+
+    self.isParsingFile = true;
+    self.hasError = false;
+    console.log(inputTag);
+    self.filename = inputTag.files[0].name;
+    self.$root.$apply();
+    reader.onload = self.onFileLoadedSuccess.bind(self);
+    reader.readAsText(inputTag.files[0]);
+  }
+
+  /**
+   *
+   */
+  onFileLoadedSuccess(contents) {
+    let self = this;
+    self.data = angular.fromJson(contents.target.result);
+    self.isDataOk = self.data.nodes && self.data.edges;
+    if(!self.isDataOk) {
+      self.hasError = true;
+    }
+    self.isParsingFile = false;
+    self.$root.$apply();
   }
 
   /**
