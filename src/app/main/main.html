@@ -30,7 +30,16 @@
 <div class="full-width hflex main-panel grow-1">
   <div class="vflex left-pane-wrappers">
     <div class="pane left-pane grey-border">
-      <query-builder
+      <!--<query-builder-->
+        <!--class="query-builder"-->
+        <!--on-submit="main.onQuerySubmitted(query)"-->
+        <!--submit-disabled="main.hasActiveQuery"-->
+        <!--resource="main.resource"-->
+        <!--allow-advanced-query="main.database == 'marclab'"-->
+        <!--dataset="main.database"-->
+        <!--main="main">-->
+      <!--</query-builder>-->
+      <query-builder-regex
         class="query-builder"
         on-submit="main.onQuerySubmitted(query)"
         submit-disabled="main.hasActiveQuery"
@@ -38,7 +47,7 @@
         allow-advanced-query="main.database == 'marclab'"
         dataset="main.database"
         main="main">
-      </query-builder>
+      </query-builder-regex>
     </div>
     <div class="pane left-pane grey-border" ng-show="main.hasGoodData">
       <h4 class="no-margin">Connectivity Matrix Controls</h4>

@@ -24,6 +24,7 @@ import {QueryBuilderDirective} from "../app/components/queryBuilder/queryBuilder
 import {CypherGeneratorService} from "../app/components/queryBuilder/cypherGenerator.service"
 import {DataSelectionService} from "../app/components/dataSelection/dataSelection.service"
 import {DataSelectionController} from '../app/components/dataSelection/dataSelection.controller'
+import {QueryBuilderRegexDirective} from "../app/components/queryBuilderRegex/queryBuilderRegex.directive"
 
 angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngMessages', 'ngAria', 'ui.router', 'ui.bootstrap', 'toastr', 'ui.select', 'ngTagsInput'])
   .constant('malarkey', malarkey)
@@ -50,5 +51,6 @@ angular.module('connectivityMatrixJs', ['ngAnimate', 'ngCookies', 'ngTouch', 'ng
   .service("colorScaleService", ColorScaleService)
   .service("cypherGeneratorService", CypherGeneratorService)
   .directive("queryBuilder", () => new QueryBuilderDirective())
+  .directive("queryBuilderRegex", () => new QueryBuilderRegexDirective())
   .service("dataSelectionService", DataSelectionService)
   .controller("DataSelectionController", DataSelectionController);

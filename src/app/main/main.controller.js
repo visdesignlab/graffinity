@@ -173,7 +173,6 @@ export class MainController {
       self.dataSelectionService.getSelectionFromList(defaultDataNames, dataValues, userSelectedDataCallback);
     };
 
-
     // Load all of the default data.
     let requests = [];
     for (let i = 0; i < defaultDataNames.length; ++i) {
@@ -185,14 +184,20 @@ export class MainController {
 
   activate(jsonGraph, jsonMatrix, jsonQuery) {
     // Populate the model with default dataset
+    this.$log.debug(jsonQuery);
     let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph, this.database);
     let matrix = this.cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = this.cmModelFactory.createModel(graph, matrix);
-
+    let query = {
+      availableNumHops: [1, 2, 3],
+      selectedNumHops: 2,
+      nodes: ["*", "*", "*"],
+      edges: ["*", "*"]
+    };
     let self = this;
     this.$timeout(function () {
       self.createMatrixAndUi(self.model);
-      self.$scope.$broadcast("setQuery", jsonQuery);
+      self.$scope.$broadcast("setQuery", query);
     }, 1);
   }
 
