@@ -1,4 +1,4 @@
-<h4 class="inline">{{queryController.isMarclabData ? "Connectome" : "Flight"}} Query</h4>
+<h4 class="inline">Connectome Query</h4>
 
 <div>
   <!-- Dropdown to select number of hops -->
@@ -32,13 +32,9 @@
 
 
 <div class="input-group query-builder-item query-builder-input">
-  <tr>
-    <td>
-      <button type="button" class="btn btn-default btn-xs query-builder-submit-btn"
-              ng-click="queryController.onSubmitClicked()">
-        Submit
-      </button>
-    </td>
-  </tr>
+  <button type="button" class="btn btn-default btn-xs query-builder-submit-btn"
+          ng-click="queryController.onSubmitClicked()">
+    Submit
+  </button>
 </div>
 
