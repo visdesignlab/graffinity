@@ -155,7 +155,7 @@ export class cmNodeLabelControls extends SvgGroupElement {
       this.verticalOutline.attr("stroke", visible ? "black" : "none");
       this.verticalControls.style("display", visible ? "flex" : "none");
 
-      if (!visible && !Boolean(this.verticalSortControls.select(".fa").attr("data-is-sorted"))) {
+      if (!visible && !this.verticalSortControls.select(".fa").attr("data-is-sorted")) {
         this.verticalSortControls.style("display", "none");
       } else if (visible) {
         this.verticalSortControls.style("display", "flex");
@@ -165,7 +165,7 @@ export class cmNodeLabelControls extends SvgGroupElement {
       this.outline.attr("stroke", visible ? "black" : "none");
       this.controls.style("display", visible ? "flex" : "none");
 
-      if (!visible && !Boolean(this.sortControls.select(".fa").attr("data-is-sorted"))) {
+      if (!visible && !this.sortControls.select(".fa").attr("data-is-sorted")) {
         this.sortControls.style("display", "none");
       } else if (visible) {
         this.sortControls.style("display", "flex");

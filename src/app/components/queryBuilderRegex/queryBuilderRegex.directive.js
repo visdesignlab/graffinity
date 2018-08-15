@@ -167,10 +167,10 @@ class QueryController {
 
   onSetQuery(signal, ui) {
     this.reset();
-    // if (ui) {
-      // this.ui = ui;
-      // this.onQueryModified();
-    // }
+    if (ui) {
+      this.ui = ui;
+      this.onQueryModified();
+    }
   }
 
   onQueryModified() {
@@ -213,14 +213,13 @@ class QueryController {
     // this.ui.nodes[0] = "node0";
 
     for (let i = 0; i < numHops; ++i) {
-      this.ui.nodes.push("node"+i);
-      this.ui.edges.push("edge"+i);
+      this.ui.nodes.push("");
+      this.ui.edges.push("");
     }
-    this.ui.nodes.push("node"+numHops);
+    this.ui.nodes.push("");
 
     this.ui.keys = keys;
     this.onQueryModified();
-    console.error(this.ui);
   }
 
 }

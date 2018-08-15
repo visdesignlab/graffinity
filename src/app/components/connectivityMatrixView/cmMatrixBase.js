@@ -291,15 +291,6 @@ export class cmMatrixBase extends SvgGroupElement {
     return total;
   }
 
-  getAttributeRowHeights() {
-    let total = 0;
-    for (var i = 0; i < this.rowHeights.length; ++i) {
-      if (this.isAttributeRow(i) || this.isControlRow(i) || this.isLabelRow(i)) {
-        total += this.rowHeights[i];
-      }
-    }
-  }
-
   getAvailableMetrics(database) {
     let metrics = [{
       "name": "path count",

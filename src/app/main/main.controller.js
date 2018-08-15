@@ -1,11 +1,11 @@
 /* globals d3 reorder saveAs
  */
-import {mock} from "../components/connectivityMatrix/mock.js";
-import {Utils} from "../components/utils/utils";
+import { mock } from "../components/connectivityMatrix/mock.js";
+import { Utils } from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, $q, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database, $http, colorScaleService, resource, dataSelectionService) {
+    viewState, modalService, database, $http, colorScaleService, resource, dataSelectionService) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -42,7 +42,6 @@ export class MainController {
     this.ui.debugNodeHidingId = 168;
     this.ui.debugNodeLinkLayout = false;
 
-
     // Set these to true to automatically set attributes on the filter ranges. (see below)
     this.ui.debugRowFilterScents = false;
     this.ui.debugColFilterScents = false;
@@ -54,6 +53,10 @@ export class MainController {
     this.ui.matrixScales = ["linear", "log"];
     this.ui.selectedMatrixScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
     this.ui.selectedNodeListScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
+
+    // This is a hack to load data from the correct location when graffinity is deployed.
+    // if in production, we have to load data from http://vdl.sci.utah.edu/graffinity/
+    this.isProduction = window.location.href.indexOf('vdl') > 0;
 
     if (this.isMarclabData) {
       this.colorScaleService.setUseLinearColorScale(true, 0);
@@ -77,7 +80,11 @@ export class MainController {
     if (this.database == "marclab") {
 
       if (useLargeResult) {
-        this.requestInitialData("/assets/mock/defaultMarclab.json");
+        let initialData = "/assets/mock/defaultMarclab.json";
+        if (this.isProduction) {
+          initialData = "http://vdl.sci.utah.edu/graffinity/assets/mock/defaultMarclab.json";
+        }
+        this.requestInitialData(initialData);
       } else {
         jsonGraph = mock.output.graph;
         jsonMatrix = mock.output.matrix;
@@ -152,7 +159,17 @@ export class MainController {
    */
   activateWithClientOnlyData() {
     let self = this;
-    let defaultDataNames = ["/assets/mock/2018.01.23-network-514-1-hop.json", "/assets/mock/2018.01.23-network-all-hops.json"];
+
+    let defaultDataNames = [
+      "/assets/mock/2018.01.23-network-514-1-hop.json",
+      "/assets/mock/2018.01.23-network-all-hops.json"
+    ];
+    if (this.isProduction) {
+      defaultDataNames = [
+        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-514-1-hop.json",
+        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-all-hops.json"
+      ];
+    }
 
     // Callback after the user selects a dataset.
     let userSelectedDataCallback = function (result) {
@@ -191,7 +208,7 @@ export class MainController {
     let query = {
       availableNumHops: [1, 2, 3],
       selectedNumHops: 2,
-      nodes: ["*", "*", "*"],
+      nodes: ["CBb.*", "AC", "CBb.*"],
       edges: ["*", "*"]
     };
     let self = this;
@@ -251,7 +268,7 @@ export class MainController {
 
   createReorderControls() {
     this.ui.orders = ["custom", "optimal leaf", "database", "" +
-    ""];
+      ""];
     this.ui.selectedSortOrder = this.ui.orders[1];
   }
 
@@ -352,7 +369,12 @@ export class MainController {
    * Load some debugging data.
    */
   onLoadClicked() {
-    this.requestInitialData("/assets/mock/defaultMarclab.json");
+    let initialData = "/assets/mock/defaultMarclab.json";
+    if (this.isProduction) {
+      initialData = "http://vdl.sci.utah.edu/graffinity/assets/mock/defaultMarclab.json";
+    }
+    this.requestInitialData(initialData);
+
   }
 
   /**
@@ -430,7 +452,7 @@ export class MainController {
       "graph": this.model.getCmGraph().getJsonGraph()
     };
     let stateString = JSON.stringify(state);
-    let blob = new Blob([stateString], {"type": "text/plain;"});
+    let blob = new Blob([stateString], { "type": "text/plain;" });
 
     saveAs(blob, `${this.database}_state.json`);
   }

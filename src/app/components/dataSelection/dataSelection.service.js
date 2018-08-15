@@ -18,7 +18,7 @@ export class DataSelectionService {
 
     let modalInstance = this.$uibModal.open({
       animation: true,
-      templateUrl: '/app/components/dataSelection/dataSelection.html',
+      templateUrl: 'app/components/dataSelection/dataSelection.html',
       controller: 'DataSelectionController',
       controllerAs: 'controller',
       bindToController: true,

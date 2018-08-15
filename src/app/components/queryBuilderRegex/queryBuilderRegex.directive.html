@@ -19,12 +19,12 @@
   <!-- Loop over template for nodes -->
   <div ng-repeat="node in queryController.ui.nodes track by $index" style="width: 100%">
     <div class="input-group query-builder-item query-builder-input">
-      <span class="input-group-addon query-builder-addon">{{node}}</span>
+      <span class="input-group-addon query-builder-addon">Node #{{$index}}</span>
       <input type="text" class="form-control" ng-model="queryController.ui.nodes[$index]">
     </div>
     <!-- Each node has an edge field associated with it, execpt for the last one-->
     <div ng-if="$index < queryController.ui.nodes.length-1" class="input-group query-builder-item query-builder-input">
-      <span class="input-group-addon query-builder-addon">{{queryController.ui.edges[$index]}}</span>
+      <span class="input-group-addon query-builder-addon">Edge #{{$index}}</span>
       <input type="text" class="form-control" ng-model="queryController.ui.edges[$index]">
     </div>
   </div>

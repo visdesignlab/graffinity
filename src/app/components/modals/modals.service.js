@@ -23,7 +23,7 @@ export class ModalService {
 
     let modalInstance = this.$uibModal.open({
       animation: true,
-      templateUrl: '/app/components/modals/modalListFilter.html',
+      templateUrl: 'app/components/modals/modalListFilter.html',
       controller: 'ModalListFilterController',
       controllerAs: 'modalController',
       size: 'sm',
@@ -56,7 +56,7 @@ export class ModalService {
 
     let modalInstance = this.$uibModal.open({
       animation: true,
-      templateUrl: '/app/components/modals/modalHistogramFilter.html',
+      templateUrl: 'app/components/modals/modalHistogramFilter.html',
       controller: 'ModalHistogramFilterController',
       controllerAs: 'modalController',
       size: 'lg',

@@ -220,8 +220,7 @@ export class visHistogramScent {
 
     // Generate a histogram using uniformly-spaced bins.
     this.histogramData = d3.layout.histogram()
-      .bins(this.tickArray)
-      (this.values);
+      .bins(this.tickArray)(this.values);
   }
 
   /**

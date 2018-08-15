@@ -82,8 +82,8 @@ gulp.task('other', function () {
   });
 
   return gulp.src([
-    path.join(conf.paths.src, '/**/*'),
-    path.join('!' + conf.paths.src, '/**/*.{html,css,js}')
+    path.join(conf.paths.src, '/**/*.json'),
+    path.join(conf.paths.src, '/**/ext/*.js')
   ])
     .pipe(fileFilter)
     .pipe(gulp.dest(path.join(conf.paths.dist, '/')));
