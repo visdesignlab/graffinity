@@ -68,7 +68,6 @@ export class MainController {
     //this.modalService.getSelectionFromList("Filter by " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
     this.activateWithClientOnlyData();
 
-
     let useLargeResult = false;
 
     let jsonGraph = null;
@@ -126,8 +125,6 @@ export class MainController {
     if (!useLargeResult) {
       this.activate(jsonGraph, jsonMatrix);
     }
-
-
     // Wait until after the current digest cycle to activate the ui.
 
     // If debugging, then automatically manipulate the GUI.
@@ -173,7 +170,7 @@ export class MainController {
 
     // Callback after the user selects a dataset.
     let userSelectedDataCallback = function (result) {
-      self.$log.debug(result);
+      self.cmModelFactory.setGraphData(result);
     };
 
     // Called after we have loaded all of the default datasets.
@@ -183,7 +180,12 @@ export class MainController {
       // Pull out data from http responses.
       let dataValues = [];
       for (let i = 0; i < results.length; ++i) {
-        dataValues.push(results[i].data);
+        let value = {
+          "name": results[i].config.url,
+          "nodes": results[i].data.nodes,
+          "edges": results[i].data.edges
+        }
+        dataValues.push(value);
       }
 
       // Ask user.
@@ -200,24 +202,23 @@ export class MainController {
   }
 
   activate(jsonGraph, jsonMatrix, jsonQuery) {
-    // Populate the model with default dataset
-    this.$log.debug(jsonQuery);
     let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph, this.database);
     let matrix = this.cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = this.cmModelFactory.createModel(graph, matrix);
-    let query = {
-      availableNumHops: [1, 2, 3],
-      selectedNumHops: 2,
-      nodes: ["CBb.*", "AC", "CBb.*"],
-      edges: ["*", "*"]
-    };
+    if (!jsonQuery) {
+      jsonQuery = {
+        availableNumHops: [1, 2, 3],
+        selectedNumHops: 2,
+        nodes: ["CBb.*", "AC", "CBb.*"],
+        edges: ["*", "*"]
+      };
+    }
     let self = this;
     this.$timeout(function () {
       self.createMatrixAndUi(self.model);
-      self.$scope.$broadcast("setQuery", query);
+      self.$scope.$broadcast("setQuery", jsonQuery);
     }, 1);
   }
-
 
   createCategoricalCollapseControls(model) {
     this.ui.availableCategoricalAttr = ["none"];
@@ -268,7 +269,8 @@ export class MainController {
 
   createReorderControls() {
     this.ui.orders = ["custom", "optimal leaf", "database", "" +
-      ""];
+      ""
+    ];
     this.ui.selectedSortOrder = this.ui.orders[1];
   }
 
@@ -366,15 +368,24 @@ export class MainController {
   }
 
   /**
-   * Load some debugging data.
+   * Use the hidden file input field to select a json file.
    */
   onLoadClicked() {
-    let initialData = "/assets/mock/defaultMarclab.json";
-    if (this.isProduction) {
-      initialData = "http://vdl.sci.utah.edu/graffinity/assets/mock/defaultMarclab.json";
-    }
-    this.requestInitialData(initialData);
+    angular.element('#fileInputElement').click();
+  }
 
+  /**
+   * Called when the user selects a file to load.
+   */
+  onLoadFile(fileInput) {
+    let self = this;
+    let reader = new FileReader();
+    reader.onload = (contents) => {
+      let data = angular.fromJson(contents.target.result);
+      self.cmModelFactory.setGraphData(data.data);
+      self.activate(data.graph, data.matrix, data.query);
+    }
+    reader.readAsText(fileInput.files[0]);
   }
 
   /**
@@ -449,10 +460,13 @@ export class MainController {
     let state = {
       "query": this.queryUi,
       "matrix": this.model.getCmMatrix().getJsonMatrix(),
-      "graph": this.model.getCmGraph().getJsonGraph()
+      "graph": this.model.getCmGraph().getJsonGraph(),
+      "data": this.cmModelFactory.graph
     };
     let stateString = JSON.stringify(state);
-    let blob = new Blob([stateString], { "type": "text/plain;" });
+    let blob = new Blob([stateString], {
+      "type": "text/plain;"
+    });
 
     saveAs(blob, `${this.database}_state.json`);
   }
@@ -489,7 +503,6 @@ export class MainController {
 
     this.matrixManager.setSortOrders(rowPerm, colPerm);
   }
-
 
   /**
    * Called when the user wants to filter nodes by a quantitative attributes. Opens a modal containing a
@@ -544,10 +557,8 @@ export class MainController {
     this.viewState.resetAttributeFilter(attribute, attributeNodeGroup);
   }
 
-
   /**
    * Used for loading local mocked results.
-   * @param filename
    */
   requestInitialData(filename) {
     let self = this;

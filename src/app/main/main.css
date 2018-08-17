@@ -7,6 +7,10 @@ body {
   padding: 0;
 }
 
+.btn-header {
+  min-width: 6em;
+}
+
 .control-header {
   margin-top: 5px;
   display: flex;
@@ -51,9 +55,7 @@ body {
 }
 
 .logo {
-  height: 33px;
   font-size: 28px;
-  font-weight: bold;
 }
 
 .main-icon-control {
@@ -171,6 +173,9 @@ body {
   color: lightgrey;
   border-radius: 10px;
   padding-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .vflex {
