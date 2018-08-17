@@ -10,6 +10,7 @@ export class cmModelFactory {
     this.cmResource = cmResource;
     this.cmGraphFactory = cmGraphFactory;
     this.cmMatrixFactory = cmMatrixFactory;
+    this.graph = null;
   }
 
   requestAndCreateModel(query, database) {
@@ -43,5 +44,9 @@ export class cmModelFactory {
 
   createModelRow() {
     return new cmModelRow();
+  }
+
+  setGraphData(graph) {
+    this.graph = graph;
   }
 }

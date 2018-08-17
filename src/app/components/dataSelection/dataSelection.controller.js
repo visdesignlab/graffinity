@@ -36,6 +36,7 @@ export class DataSelectionController {
     self.isUserDataOk = self.userData.nodes && self.userData.edges;
     self.userDataError = !self.isUserDataOk;
     self.isParsingFile = false;
+    self.userData.name = self.filename;
     self.$root.$apply();
   }
 

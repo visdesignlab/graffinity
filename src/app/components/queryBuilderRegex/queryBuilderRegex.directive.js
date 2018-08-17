@@ -175,7 +175,6 @@ class QueryController {
 
   onQueryModified() {
     this.main.queryUi = this.ui;
-    // this.cypher = this.generateCypher();
   }
 
   /**
@@ -183,12 +182,6 @@ class QueryController {
    */
   onSubmitClicked() {
     this.$log.debug(this.ui);
-    // this.onSubmit(
-    //   {
-    //     query: this.generateCypher(this.ui.selectedInterface)
-    //   }
-    // );
-    // this.filters = {};
   }
 
   reset() {
@@ -209,15 +202,12 @@ class QueryController {
     this.filters = {};
     this.ui.edges = [];
     this.ui.nodes = [];
-
-    // this.ui.nodes[0] = "node0";
-
+    this.ui.selectedNumHops = numHops;
     for (let i = 0; i < numHops; ++i) {
       this.ui.nodes.push("");
       this.ui.edges.push("");
     }
     this.ui.nodes.push("");
-
     this.ui.keys = keys;
     this.onQueryModified();
   }
