@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/55440347.svg)](https://zenodo.org/badge/latestdoi/55440347)
+
 # Graffinity
 
 Graffinity is a prototype implementation of two visualization techniques for visualizing connectivity realtionships in large graphs. These techniques are the connectivity matrix and intermediate node table. Graffinity also includes a query interface and supplemental views in the form of path lists and node-link diagrams. 
