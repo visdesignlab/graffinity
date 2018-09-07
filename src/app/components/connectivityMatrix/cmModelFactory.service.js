@@ -30,9 +30,11 @@ export class cmModelFactory {
     return deferred.promise;
   }
 
+  /**
+   * Iterative BFS to find paths that match constraints specified by query.
+   */
   fillInPathsByRegex(query, paths) {
     let self = this;
-    self.$log.debug('fillInPathsByRegex', query, paths);
 
     let maxNumHops = query.edges.length;
     let finishedPaths = [];
@@ -42,48 +44,61 @@ export class cmModelFactory {
 
     while (paths.length && counter > 0) {
       let currentPath = paths.shift();
+
       let currentNode = currentPath[currentPath.length - 1];
       let currentHop = Math.floor(currentPath.length / 2);
-      console.log(currentNode, currentHop);
-      
+
       if (currentHop >= maxNumHops) {
-        if (self.verbose) {
-          console.log('finished path', currentPath);
-        }
         finishedPaths.push(currentPath);
         continue;
       } else {
-      
         let nextNodeConstraint = query.nodes[currentHop + 1];
         let nextEdgeConstraint = query.edges[currentHop];
-        let currentNodeOutEdges = graph.outEdges(currentNode);        console.log(currentNodeOutEdges)
+        let currentNodeOutEdges = graph.outEdges(currentNode);
 
-        for (let i = 0; i < currentNodeOutEdges.length; ++i) {
-          let edgeIndex = currentNodeOutEdges[i].name;
-          let currentEdge = self.dataset.edgeDict[edgeIndex];
-          console.log(currentEdge);
+        if (!currentNodeOutEdges) {
+          continue;
         }
 
+        for (let i = 0; i < currentNodeOutEdges.length; ++i) {
+          let currentEdge = currentNodeOutEdges[i];
+          let edgeIndex = currentNodeOutEdges[i].name;
+          let currentAttributes = self.dataset.edgeDict[edgeIndex];
+          let edgeType = currentAttributes.type;
+          if (edgeType.match(nextEdgeConstraint)) {
+            let nextNodeId = currentEdge.w;
+            let nextNode = graph.node(nextNodeId);
+            if (nextNode.label.match(nextNodeConstraint)) {
+              let newPath = JSON.parse(JSON.stringify(currentPath));
+              newPath.push(edgeIndex);
+              newPath.push(nextNodeId.toString());
+              paths.push(newPath);
+            }
+          }
+        }
       }
     }
+    return finishedPaths;
   }
 
+  /**
+   * Search for all nodes that match the first regex in query.nodes.
+   * Then, build the paths that start with those nodes.
+   */
   findPathsByRegex(query) {
     let self = this;
-    self.$log.debug('findPathsByRegex', query);
     let paths = [];
     let graph = self.dataset.graph;
     let nodes = graph.nodes();
+
     for (let i = 0; i < nodes.length; ++i) {
       let node = graph.node(nodes[i]);
       if (node.label.match(query.nodes[0])) {
         let path = [nodes[i]];
         paths.push(path);
-        if (self.verbose) {
-          self.$log.debug('created seed path', path, node)
-        }
       }
     }
+
     self.fillInPathsByRegex(query, paths)
   }
 
@@ -127,8 +142,7 @@ export class cmModelFactory {
    */
   setGraphData(graph) {
 
-    graph.node_attributes = [
-      {
+    graph.node_attributes = [{
         "DisplayName": "id",
         "Name": "ID",
         "DataType": "index",
@@ -151,19 +165,10 @@ export class cmModelFactory {
         "DatabaseName": "StructureID",
         "Unique": "true",
         "Type": "int"
-      },
-      // {
-      //     "DisplayName": "area",
-      //     "Name": "HullArea",
-      //     "DataType": "quantitative",
-      //     "DatabaseName": "hull",
-      //     "Unique": "false",
-      //     "Type": "float"
-      // }
+      }
     ];
 
-    graph.edge_attributes = [
-      {
+    graph.edge_attributes = [{
         "DataType": "index",
         "Type": "int",
         "Unique": "true",

@@ -2,7 +2,7 @@
  graphlib
  */
 
-import {Utils} from "../utils/utils"
+import { Utils } from "../utils/utils"
 
 export class cmGraph {
 
@@ -13,12 +13,15 @@ export class cmGraph {
   }
 
   activate() {
-    this.graph = new graphlib.Graph({multigraph: true});
+    let self = this;
+    this.graph = new graphlib.Graph({
+      multigraph: true
+    });
 
     // create nodes
-    this.nodeAttributes = this.activateNodeAttributes(this.jsonGraph.node_attributes);
-    for (var i = 0; i < this.nodeAttributes.length; ++i) {
-      if (this.nodeAttributes[i].isIndex) {
+    self.nodeAttributes = self.activateNodeAttributes(self.jsonGraph.node_attributes);
+    for (var i = 0; i < self.nodeAttributes.length; ++i) {
+      if (self.nodeAttributes[i].isIndex) {
         this.indexAttributeIndex = i;
       } else if (this.nodeAttributes[i].isId) {
         this.idAttributeIndex = i;
@@ -59,6 +62,12 @@ export class cmGraph {
         this.edgeDict[edge.ID] = attributes;
 
         this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
+
+        if (!edge.Directional) {
+          let id = (-Number(edge.ID)).toString();
+          self.edgeDict[id] = attributes;
+          this.graph.setEdge(targetId, sourceId, attributes, id);
+        }
       }
     } else {
       // TODO - delete control flow for flight data. 
@@ -129,7 +138,7 @@ export class cmGraph {
           throw 'Bad datatype!';
         } else {
           current.parseFn = function (x) {
-            return x ? x : 'Null'; 
+            return x ? x : 'Null';
           }
         }
       }
@@ -185,11 +194,10 @@ export class cmGraph {
       var node = nodes[i];
       var attributes = this.graph.node(node);
       if ((nodeIdFilter == undefined) || (nodeIdFilter != undefined && nodeIdFilter.indexOf(Number(node)) != -1)) {
-        result.nodes.push(
-          {
-            id: node,
-            attributes: attributes
-          });
+        result.nodes.push({
+          id: node,
+          attributes: attributes
+        });
       }
     }
 
@@ -293,7 +301,9 @@ export class cmGraph {
     let nodes = Utils.getNodesFromPaths(paths);
     let edges = Utils.getEdgesFromPaths(paths);
 
-    let subgraph = new graphlib.Graph({multigraph: true});
+    let subgraph = new graphlib.Graph({
+      multigraph: true
+    });
 
     // the subgraph's graph is an object used by dagre layout.
     subgraph.setGraph({});
