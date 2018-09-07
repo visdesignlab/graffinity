@@ -14,7 +14,6 @@ export class QueryBuilderRegexDirective {
       defaultQuery: '='
     };
 
-
     this.controller = QueryController;
     this.controllerAs = 'queryController';
     this.bindToController = true;
@@ -181,7 +180,9 @@ class QueryController {
    * Give the query to whatever owns this component.
    */
   onSubmitClicked() {
-    this.$log.debug(this.ui);
+    this.onSubmit({
+      query: this.ui
+    });
   }
 
   reset() {

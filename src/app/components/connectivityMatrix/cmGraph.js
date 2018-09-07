@@ -27,7 +27,7 @@ export class cmGraph {
 
     for (i = 0; i < this.jsonGraph.nodes.length; ++i) {
       var node = this.jsonGraph.nodes[i];
-      var index = this.parseNodeId(node, this.nodeAttributes, this.indexAttributeIndex);
+      var index = this.parseNodeId(node, this.nodeAttributes, this.idAttributeIndex);
       var attributes = this.parseAttributes(node, this.nodeAttributes, this.indexAttributeIndex);
       this.graph.setNode(index, attributes);
     }
@@ -37,8 +37,8 @@ export class cmGraph {
     if (this.database == "marclab") {
       for (i = 0; i < this.jsonGraph.edges.length; ++i) {
         let edge = this.jsonGraph.edges[i];
-        let sourceId = edge.SourceID;
-        let targetId = edge.TargetID;
+        let sourceId = edge.SourceStructureID;
+        let targetId = edge.TargetStructureID;
         let source = this.getNode(sourceId);
         let target = this.getNode(targetId);
 
@@ -61,6 +61,7 @@ export class cmGraph {
         this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
       }
     } else {
+      // TODO - delete control flow for flight data. 
       for (i = 0; i < this.jsonGraph.edges.length; ++i) {
         let edge = this.jsonGraph.edges[i];
         let sourceId = edge.SourceID;
@@ -128,7 +129,7 @@ export class cmGraph {
           throw 'Bad datatype!';
         } else {
           current.parseFn = function (x) {
-            return x;
+            return x ? x : 'Null'; 
           }
         }
       }

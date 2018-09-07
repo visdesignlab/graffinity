@@ -407,6 +407,8 @@ export class MainController {
   onQuerySubmitted(query) {
     let self = this;
 
+    self.$log.debug('onQuerySubmitted', query);
+
     self.hasActiveQuery = true;
     self.hasQueryError = false;
     self.hasGoodData = false;
@@ -453,7 +455,7 @@ export class MainController {
     };
 
     // Give the model factory a query string. Async call success or failure.
-    this.cmModelFactory.requestAndCreateModel(query, this.database).then(success, failure);
+    this.cmModelFactory.createModelFromGraphSearch(query).then(success, failure);
   }
 
   onSaveClicked() {
