@@ -1,13 +1,19 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
   <span class="logo">Graffinity</span>
-  <span style="display: inline-flex; flex-direction: column; font-size: x-small; padding-left: 1em;">
-    <span><span style="font-weight:bold;">File:</span> {{main.cmModelFactory.graph.name}}</span>
+  <span style="display: inline-flex; flex-direction: column; font-size: x-small; padding-left: 2em;">
+    <span><span style="font-weight:bold;">File:</span> {{main.cmModelFactory.rawGraph.name}}</span>
     <span>
-      <span style="font-weight:bold;">Nodes:</span> {{main.cmModelFactory.graph.nodes.length}}
-      <span style="font-weight:bold; padding-left:1em;">Edges:</span> {{main.cmModelFactory.graph.edges.length}}
+      <span style="font-weight:bold;">Nodes:</span> {{main.cmModelFactory.rawGraph.nodes.length}}
+      <span style="font-weight:bold; padding-left:1em;">Edges:</span> {{main.cmModelFactory.rawGraph.edges.length}}
     </span>
   </span>
+  <span style="display: inline-flex; flex-direction: column; font-size: x-small; padding-left: 2em;">
+    <span><span style="font-weight:bold;">Query:</span> {{main.queryString}}</span>
+    <span>
+      <span style="font-weight:bold;">Paths:</span> {{main.numPaths}}
+    </span>
+    </span>
   <div style="margin-left: auto; padding-right: 1em;">
     <button class="btn btn-default btn-xs" ng-show="main.debug" ng-click="main.onSaveClicked()">Save state</button>
     <input type="file" id="fileInputElement" multiple accept="application/json" style="display:none" onchange="angular.element(this).scope().main.onLoadFile(this);">

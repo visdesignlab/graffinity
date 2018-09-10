@@ -1,5 +1,9 @@
-import { cmModel } from "./cmModel"
-import { cmModelRow } from "./cmModelRow"
+import {
+  cmModel
+} from "./cmModel"
+import {
+  cmModelRow
+} from "./cmModelRow"
 
 export class cmModelFactory {
 
@@ -10,9 +14,56 @@ export class cmModelFactory {
     this.cmResource = cmResource;
     this.cmGraphFactory = cmGraphFactory;
     this.cmMatrixFactory = cmMatrixFactory;
+    this.rawGraph = null;
     this.dataset = null; //  holds the graph that gets searched for paths.
     this.verbose = true;
     this.maxNumPaths = 1000000;
+  }
+
+  createConnectivityMatrixModel(paths) {
+    let self = this;
+
+    let sources = [];
+    let targets = [];
+    let matrix = [];
+
+    for (let i = 0; i < paths.length; ++i) {
+      let path = paths[i];
+      let source = path[0];
+      let target = path[path.length - 1];
+      if (sources.indexOf(source) == -1) {
+        sources.push(source);
+      }
+
+      if (targets.indexOf(target) == -1) {
+        targets.push(target);
+      }
+    }
+
+    for (let row = 0; row < sources.length; row++) {
+      matrix[row] = [];
+      for (let col = 0; col < targets.length; col++) {
+        matrix[row][col] = [];
+      }
+    }
+
+    for (let i = 0; i < paths.length; ++i) {
+      let path = paths[i];
+      let source = path[0];
+      let target = path[path.length - 1];
+      let rowIndex = sources.indexOf(source);
+      let colIndex = targets.indexOf(target);
+      matrix[rowIndex][colIndex].push(path);
+    }
+
+    let jsonMatrix = {
+      source_ids: sources,
+      target_ids: targets,
+      matrix: matrix
+    };
+
+    let cmMatrix = self.cmMatrixFactory.createFromJsonObject(jsonMatrix);
+    return new cmModel(self.dataset, cmMatrix);
   }
 
   createModelFromGraphSearch(query) {
@@ -22,7 +73,8 @@ export class cmModelFactory {
 
     if (this.dataset) {
       let paths = self.findPathsByRegex(query);
-      deferred.resolve(paths);
+      let model = self.createConnectivityMatrixModel(paths);
+      deferred.resolve(model);
     } else {
       deferred.reject();
     }
@@ -99,7 +151,7 @@ export class cmModelFactory {
       }
     }
 
-    self.fillInPathsByRegex(query, paths)
+    return self.fillInPathsByRegex(query, paths)
   }
 
   requestAndCreateModel(query, database) {
@@ -141,6 +193,8 @@ export class cmModelFactory {
    * TODO - this should be cleaned up and potentially deleted. It is left over * from when graffinity had to support many different datasets.
    */
   setGraphData(graph) {
+
+    this.rawGraph = graph;
 
     graph.node_attributes = [{
         "DisplayName": "id",

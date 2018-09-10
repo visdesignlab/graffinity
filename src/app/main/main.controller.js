@@ -30,6 +30,7 @@ export class MainController {
     this.debug = true;
     this.$q = $q;
     this.dataSelectionService = dataSelectionService;
+    this.queryString = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -274,6 +275,17 @@ export class MainController {
     this.ui.selectedSortOrder = this.ui.orders[1];
   }
 
+  createQueryString(query) {
+    let result = "";
+    for(let i=0; i<query.nodes.length; ++i){
+      result = result + "(" + query.nodes[i] + ")";
+      if (i<query.edges.length) {
+        result = result + "-[" + query.edges[i] + "]->";
+      }
+    }
+    return result;
+  }
+
   onCollapseColsByAttr(attr) {
     if (attr == "none") {
       this.model.expandAllCols();
@@ -409,6 +421,8 @@ export class MainController {
 
     self.$log.debug('onQuerySubmitted', query);
 
+    self.queryString = self.createQueryString(query);
+
     self.hasActiveQuery = true;
     self.hasQueryError = false;
     self.hasGoodData = false;
@@ -430,8 +444,15 @@ export class MainController {
       // Update the model
       self.model = model;
       self.viewState.setModel(model);
-      // self.viewState.reset();
 
+      let paths = self.model.getAllPaths();
+      self.numPaths = 0;
+      let keys = Object.keys(paths);
+      for(let i=0; i<keys.length; ++i) {
+        let key = keys[i];
+        self.numPaths = self.numPaths + paths[key].length;
+      }
+      
       // Actually create the matrix
       self.$timeout(function () {
         self.hasGoodData = true;
