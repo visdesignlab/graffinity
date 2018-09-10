@@ -85,7 +85,8 @@ class NodeLinkViewDirectiveController {
   setSelectedPaths(signal, paths) {
     this.paths = paths;
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
-
+    console.log(paths);
+    console.log(this.selectedSubgraph);
     let self = this;
     this.$timeout(function () {
       if (self.layout) {

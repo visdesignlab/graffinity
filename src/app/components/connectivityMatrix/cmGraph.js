@@ -313,7 +313,7 @@ export class cmGraph {
 
     // if a node is in paths, add it to the subgraph
     graph.nodes().forEach(function (key) {
-      let id = parseInt(key);
+      let id = key;
       if (nodes.indexOf(id) != -1) {
         let value = graph.node(key);
         subgraph.setNode(id, value);
@@ -322,7 +322,7 @@ export class cmGraph {
 
     // if an edge's source and target nodes in paths, add it to the subgraph
     graph.edges().forEach(function (key) {
-      let id = parseInt(key.name);
+      let id = key.name;
       if (edges.indexOf(id) != -1) {
         subgraph.setEdge(key.v, key.w, graph.edge(key), key.name);
       }
