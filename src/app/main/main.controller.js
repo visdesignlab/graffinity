@@ -1,7 +1,11 @@
 /* globals d3 reorder saveAs
  */
-import { mock } from "../components/connectivityMatrix/mock.js";
-import { Utils } from "../components/utils/utils";
+import {
+  mock
+} from "../components/connectivityMatrix/mock.js";
+import {
+  Utils
+} from "../components/utils/utils";
 
 export class MainController {
   constructor($log, $timeout, $scope, $q, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
@@ -230,7 +234,6 @@ export class MainController {
   }
 
   createMatrix(model) {
-    // this.svg.selectAll("*").remove();
     this.model = model;
     this.viewState.setModel(model);
     if (!this.matrixManager) {
@@ -277,9 +280,9 @@ export class MainController {
 
   createQueryString(query) {
     let result = "";
-    for(let i=0; i<query.nodes.length; ++i){
+    for (let i = 0; i < query.nodes.length; ++i) {
       result = result + "(" + query.nodes[i] + ")";
-      if (i<query.edges.length) {
+      if (i < query.edges.length) {
         result = result + "-[" + query.edges[i] + "]->";
       }
     }
@@ -448,11 +451,11 @@ export class MainController {
       let paths = self.model.getAllPaths();
       self.numPaths = 0;
       let keys = Object.keys(paths);
-      for(let i=0; i<keys.length; ++i) {
+      for (let i = 0; i < keys.length; ++i) {
         let key = keys[i];
         self.numPaths = self.numPaths + paths[key].length;
       }
-      
+
       // Actually create the matrix
       self.$timeout(function () {
         self.hasGoodData = true;
@@ -476,7 +479,9 @@ export class MainController {
     };
 
     // Give the model factory a query string. Async call success or failure.
-    this.cmModelFactory.createModelFromGraphSearch(query).then(success, failure);
+    self.$timeout(function () {
+      self.cmModelFactory.createModelFromGraphSearch(query).then(success, failure)
+    }, 0);
   }
 
   onSaveClicked() {

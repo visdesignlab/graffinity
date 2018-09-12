@@ -1,9 +1,15 @@
 /*global d3
  */
 
-import {LayeredLayout} from "./layouts/layeredLayout"
-import {ForceDirectedLayout} from "./layouts/forceDirectedLayout"
-import {Utils} from "../utils/utils"
+import {
+  LayeredLayout
+} from "./layouts/layeredLayout"
+import {
+  ForceDirectedLayout
+} from "./layouts/forceDirectedLayout"
+import {
+  Utils
+} from "../utils/utils"
 
 /**
  * Angular directive that will contain the node-link diagrams. Interaction with this is handled by the
@@ -85,8 +91,6 @@ class NodeLinkViewDirectiveController {
   setSelectedPaths(signal, paths) {
     this.paths = paths;
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
-    console.log(paths);
-    console.log(this.selectedSubgraph);
     let self = this;
     this.$timeout(function () {
       if (self.layout) {
@@ -103,7 +107,6 @@ class NodeLinkViewDirectiveController {
    * We don't connect this directly to this.layout b/c of angular memory leaks.
    */
   onHoverNodes(signal, ids) {
-
     if (this.layout) {
       if (ids) {
         let nodeIndexes = [];

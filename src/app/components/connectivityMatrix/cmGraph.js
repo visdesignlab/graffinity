@@ -2,7 +2,9 @@
  graphlib
  */
 
-import { Utils } from "../utils/utils"
+import {
+  Utils
+} from "../utils/utils"
 
 export class cmGraph {
 
@@ -50,7 +52,7 @@ export class cmGraph {
         }
 
         attributes = {
-          linkedStructures: edge.LinkedStructures,
+          links: edge.Links,
           sourceSizes: edge.SourceSizes,
           targetSizes: edge.TargetSizes,
           sourceStructureId: edge.SourceStructureID,
@@ -59,11 +61,27 @@ export class cmGraph {
           carrier: edge.Carrier
         };
 
+        let linkedStructures = "";
+        if (edge.Links) {
+          for (let i = 0; i < edge.Links.length; ++i) {
+            let link = edge.Links[i];
+            let description = link.SourceID;
+            description = description + (link.Directional ? " -> " : " <-> ");
+            description = description + link.TargetID;
+            if (linkedStructures.length) {
+              linkedStructures = linkedStructures + ";";
+            }
+            linkedStructures = linkedStructures + description;
+          }
+        }
+
+        attributes.linkedStructures = linkedStructures;
+
         this.edgeDict[edge.ID] = attributes;
 
         this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
 
-        if (!edge.Directional) {
+        if (!edge.Directional && edge.SourceStructureID != edge.TargetStructureID) {
           let id = (-Number(edge.ID)).toString();
           self.edgeDict[id] = attributes;
           this.graph.setEdge(targetId, sourceId, attributes, id);
@@ -138,7 +156,7 @@ export class cmGraph {
           throw 'Bad datatype!';
         } else {
           current.parseFn = function (x) {
-            return x ? x : 'Null';
+            return x ? x.trim() : 'Null';
           }
         }
       }
