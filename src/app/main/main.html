@@ -195,7 +195,7 @@
   </div>
   <!-- Error messages -->
   <div ng-show="!main.hasGoodData" class="pane center-pane loading-pane grow-1 hflex vflex">
-    <h3 ng-show="!main.hasGoodData && !main.hasActiveQuery && !main.isLoadingFromFile">
+    <h3 ng-show="!main.hasGoodData && !main.hasActiveQuery && ! main.hasQueryError && !main.isLoadingFromFile">
       Run a query to create a matrix...
     </h3>
     <h3 ng-show="main.isLoadingFromFile && !main.hasActiveQuery">
@@ -208,11 +208,8 @@
       <i class="fa fa-spinner fa-spin" style="font-size:48px"></i>
     </div>
     <h3 ng-show="main.hasQueryError">
-      Something went wrong...
-    </h3>
-    <h4 ng-show="main.hasQueryError">
       {{main.queryError}}
-    </h4>
+    </h3>
   </div>
   <!-- Right panel -->
   <div ng-show="main.areDetailsVisible && main.hasGoodData" class="pane right-pane grey-border vflex">

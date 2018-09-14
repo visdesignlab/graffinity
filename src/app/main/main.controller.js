@@ -226,7 +226,12 @@ export class MainController {
     self.updateNumPaths();
 
     this.$timeout(function () {
-      self.createMatrixAndUi(self.model);
+      if (self.numPaths > 0) {
+        self.createMatrixAndUi(self.model);
+      } else {
+        self.hasQueryError = true;
+        self.queryError = "No paths found."
+      }
       self.$scope.$broadcast("setQuery", jsonQuery);
     }, 1);
   }
@@ -405,19 +410,19 @@ export class MainController {
     let reader = new FileReader();
     self.isLoadingFromFile = true;
     self.hasGoodData = false;
-    self.isNodeListVisible= false;
+    self.isNodeListVisible = false;
     reader.onload = (contents) => {
       let data = angular.fromJson(contents.target.result);
       self.cmModelFactory.setGraphData(data.graph);
       self.activate(data.graph, data.matrix, data.query);
       self.queryString = self.createQueryString(data.query);
-      self.$timeout(function() {
+      self.$timeout(function () {
         self.hasGoodData = true;
         self.isLoadingFromFile = false;
       }, 0);
     }
 
-    self.$timeout(function() {
+    self.$timeout(function () {
       reader.readAsText(fileInput.files[0]);
     }, 0);
   }
@@ -468,8 +473,14 @@ export class MainController {
 
       // Actually create the matrix
       self.$timeout(function () {
-        self.hasGoodData = true;
-        self.createMatrixAndUi(model);
+        if (self.numPaths > 0) {
+          self.hasGoodData = true;
+          self.createMatrixAndUi(model);
+        } else {
+          self.hasQueryError = true;
+          self.hasGoodData = false;
+          self.queryError = "No paths found."
+        }
         self.hasActiveQuery = false;
       }, 0);
     };
