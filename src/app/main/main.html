@@ -1,6 +1,15 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
-  <span class="logo">Graffinity</span>
+  <span class="logo" style="padding-left:0.25em">Graffinity</span>
+  <span class="logo" style="padding-left:0.5em" uib-dropdown>
+    <i class="fa fa-bars" aria-hidden="true" uib-dropdown-toggle></i>
+    <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown" role="menu">
+      <li role="menuitem" ng-click="main.onSaveClicked()"><a href="#">Save state</a></li>
+      <li role="menuitem" ng-click="main.onLoadClicked()"><a href="#">Load state</a>
+      </li>
+    </ul>
+  </span>
+  <input type="file" id="fileInputElement" multiple accept="application/json" style="display:none" onchange="angular.element(this).scope().main.onLoadFile(this);">
   <span style="display: inline-flex; flex-direction: column; font-size: x-small; padding-left: 2em;">
     <span><span style="font-weight:bold;">File:</span> {{main.cmModelFactory.rawGraph.name}}</span>
     <span>
@@ -13,24 +22,26 @@
     <span>
       <span style="font-weight:bold;">Paths:</span> {{main.numPaths}}
     </span>
-    </span>
+  </span>
   <div style="margin-left: auto; padding-right: 1em;">
-    <button class="btn btn-default btn-xs" ng-show="main.debug" ng-click="main.onSaveClicked()">Save state</button>
-    <input type="file" id="fileInputElement" multiple accept="application/json" style="display:none" onchange="angular.element(this).scope().main.onLoadFile(this);">
-    <button class="btn btn-default btn-xs" ng-show="main.debug" ng-click="main.onLoadClicked()">Load state</button>
+
     <span>
-      <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header" ng-click="main.areDetailsVisible = true;">
+      <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.areDetailsVisible = true;">
         Show panel
       </button>
-      <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header" ng-click="main.areDetailsVisible = false;">
+      <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.areDetailsVisible = false;">
         Hide panel
       </button>
     </span>
     <span>
-      <button type="button" ng-show="!main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header" ng-click="main.isNodeListVisible= true;">
+      <button type="button" ng-show="!main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.isNodeListVisible= true;" ng-disabled="!main.model.getIntermediateNodeIndexes().length">
         Show list
       </button>
-      <button type="button" ng-show="main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header" ng-click="main.isNodeListVisible= false;">
+      <button type="button" ng-show="main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.isNodeListVisible= false;">
         Hide list
       </button>
     </span>
@@ -180,14 +191,20 @@
       </div>
     </div>
   </div>
-  <div ng-show="!main.model.getIntermediateNodeIndexes().length || !main.isNodeListVisible" class="pane pane-center-right">
+  <div ng-show="main.hasGoodData && !main.isNodeListVisible" class="pane pane-center-right">
   </div>
   <!-- Error messages -->
   <div ng-show="!main.hasGoodData" class="pane center-pane loading-pane grow-1 hflex vflex">
-    <h3 ng-show="main.hasActiveQuery">
-      Query is loading...
+    <h3 ng-show="!main.hasGoodData && !main.hasActiveQuery && !main.isLoadingFromFile">
+      Run a query to create a matrix...
     </h3>
-    <div ng-show="main.hasActiveQuery">
+    <h3 ng-show="main.isLoadingFromFile && !main.hasActiveQuery">
+      Loading matrix from file...
+    </h3>
+    <h3 ng-show="main.hasActiveQuery">
+      Running query and building matrix...
+    </h3>
+    <div ng-show="main.hasActiveQuery || main.isLoadingFromFile">
       <i class="fa fa-spinner fa-spin" style="font-size:48px"></i>
     </div>
     <h3 ng-show="main.hasQueryError">

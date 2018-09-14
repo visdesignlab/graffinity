@@ -162,6 +162,9 @@ export class MainController {
   activateWithClientOnlyData() {
     let self = this;
 
+    self.hasGoodData = false;
+    self.isNodeListVisible = false;
+
     let defaultDataNames = [
       "/assets/mock/2018.01.23-network-514-1-hop.json",
       "/assets/mock/2018.01.23-network-all-hops.json"
@@ -219,6 +222,9 @@ export class MainController {
       };
     }
     let self = this;
+
+    self.updateNumPaths();
+
     this.$timeout(function () {
       self.createMatrixAndUi(self.model);
       self.$scope.$broadcast("setQuery", jsonQuery);
@@ -386,7 +392,9 @@ export class MainController {
    * Use the hidden file input field to select a json file.
    */
   onLoadClicked() {
-    angular.element('#fileInputElement').click();
+    this.$timeout(function () {
+      angular.element('#fileInputElement').click();
+    }, 0);
   }
 
   /**
@@ -395,12 +403,23 @@ export class MainController {
   onLoadFile(fileInput) {
     let self = this;
     let reader = new FileReader();
+    self.isLoadingFromFile = true;
+    self.hasGoodData = false;
+    self.isNodeListVisible= false;
     reader.onload = (contents) => {
       let data = angular.fromJson(contents.target.result);
-      self.cmModelFactory.setGraphData(data.data);
+      self.cmModelFactory.setGraphData(data.graph);
       self.activate(data.graph, data.matrix, data.query);
+      self.queryString = self.createQueryString(data.query);
+      self.$timeout(function() {
+        self.hasGoodData = true;
+        self.isLoadingFromFile = false;
+      }, 0);
     }
-    reader.readAsText(fileInput.files[0]);
+
+    self.$timeout(function() {
+      reader.readAsText(fileInput.files[0]);
+    }, 0);
   }
 
   /**
@@ -441,25 +460,17 @@ export class MainController {
      * the matrix. That's why the timeout is wrapped around createMatrixAndUi.
      */
     let success = function (model) {
-      // Turn off the query loading screen.
-      self.hasActiveQuery = false;
-
       // Update the model
       self.model = model;
       self.viewState.setModel(model);
 
-      let paths = self.model.getAllPaths();
-      self.numPaths = 0;
-      let keys = Object.keys(paths);
-      for (let i = 0; i < keys.length; ++i) {
-        let key = keys[i];
-        self.numPaths = self.numPaths + paths[key].length;
-      }
+      self.updateNumPaths();
 
       // Actually create the matrix
       self.$timeout(function () {
         self.hasGoodData = true;
         self.createMatrixAndUi(model);
+        self.hasActiveQuery = false;
       }, 0);
     };
 
@@ -671,6 +682,17 @@ export class MainController {
     }
 
     this.setEncoding(view, metric, encoding);
+  }
+
+  updateNumPaths() {
+    let self = this;
+    let paths = self.model.getAllPaths();
+    self.numPaths = 0;
+    let keys = Object.keys(paths);
+    for (let i = 0; i < keys.length; ++i) {
+      let key = keys[i];
+      self.numPaths = self.numPaths + paths[key].length;
+    }
   }
 
   updateLegend() {
