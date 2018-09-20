@@ -29,5 +29,5 @@ export function routerConfig($stateProvider, $urlRouterProvider) {
       }
     });
 
-  $urlRouterProvider.otherwise('/flights');
+  $urlRouterProvider.otherwise('/marclab');
 }

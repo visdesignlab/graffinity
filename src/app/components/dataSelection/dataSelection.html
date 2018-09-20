@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h4 class="inline modal-title">Select dataset</h4>
+</div>
+
+<div class="modal-body">
+  <!-- Ask the user to upload data -->
+  <div style="border-bottom: 1px solid #e5e5e5; padding-bottom: 10px">
+    <span class="modal-line-header">Load data:</span>
+    <input class="btn btn-default btn-xs" readonly=true type="text" ng-model="controller.filename">
+    <label class="btn btn-xs btn-default btn-file">
+      Select file
+      <input style="display:none;"
+             type="file"
+             accept=".json"
+             ng-model="controller.filename"
+             onchange="angular.element(this).scope().controller.onFileChanged(this)">
+    </label>
+    <div class="float-right">
+      <span ng-show="controller.isUserDataOk">
+        Network parsed! Nodes: {{controller.userData.nodes.length}} Edges: {{controller.userData.edges.length}}</span>
+
+      <span ng-show="controller.userDataError" class="red-text">
+        Could not find nodes and edges in {{controller.filename}}
+      </span>
+      <button ng-disabled="!controller.isUserDataOk" class="btn btn-xs btn-primary" type="button"
+              ng-click="controller.go(controller.userData)">Go!
+      </button>
+    </div>
+  </div>
+
+  <!-- Display list of preloaded datasets. -->
+  <div style="padding-top: 10px" ng-repeat="dataName in controller.defaultDataName">
+    <span class="modal-line-header">Preset data: </span> {{dataName}}
+    <div class="float-right">
+      Nodes: {{controller.defaultData[$index].nodes.length}} Edges:
+      {{controller.defaultData[$index].edges.length}}
+      <button class="btn btn-xs btn-primary" type="button"
+              ng-click="controller.go(controller.defaultData[$index])">Go!
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-xs btn-primary btn-warning" type="button">Help!</button>
+</div>

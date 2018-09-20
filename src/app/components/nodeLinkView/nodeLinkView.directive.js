@@ -1,10 +1,15 @@
 /*global d3
  */
 
-import {LayeredLayout} from "./layouts/layeredLayout"
-import {GeographicLayout} from "./layouts/geographicLayout"
-import {ForceDirectedLayout} from "./layouts/forceDirectedLayout"
-import {Utils} from "../utils/utils"
+import {
+  LayeredLayout
+} from "./layouts/layeredLayout"
+import {
+  ForceDirectedLayout
+} from "./layouts/forceDirectedLayout"
+import {
+  Utils
+} from "../utils/utils"
 
 /**
  * Angular directive that will contain the node-link diagrams. Interaction with this is handled by the
@@ -66,20 +71,10 @@ class NodeLinkViewDirectiveController {
     this.$scope.$on("hoverNodes", this.onHoverNodes.bind(this));
 
     this.ui = {};
-    this.ui.availableLayouts = ["Layered", "Geographic", "Force-directed"];
+    this.ui.availableLayouts = ["Layered", "Force-directed"];
     this.ui.selectedLayout = this.ui.availableLayouts[2];
     this.svg = d3.select("#node-link-svg");
     this.model = $scope.$parent.main.model;
-
-    let self = this;
-
-    // Load the map used by the geographic layout.
-    this.$http.get("/assets/mock/usMap.json")
-      .success(function (result) {
-        self.usMap = result;
-      }).error(function (error) {
-      self.$log.error("NodeLinkController failed to get US Map!", error);
-    });
   }
 
   /**
@@ -96,7 +91,6 @@ class NodeLinkViewDirectiveController {
   setSelectedPaths(signal, paths) {
     this.paths = paths;
     this.selectedSubgraph = this.model.getCmGraph().getSubgraph(this.paths);
-
     let self = this;
     this.$timeout(function () {
       if (self.layout) {
@@ -113,7 +107,6 @@ class NodeLinkViewDirectiveController {
    * We don't connect this directly to this.layout b/c of angular memory leaks.
    */
   onHoverNodes(signal, ids) {
-
     if (this.layout) {
       if (ids) {
         let nodeIndexes = [];
@@ -141,8 +134,6 @@ class NodeLinkViewDirectiveController {
     // Create the layout
     if (layout == "Layered") {
       this.layout = new LayeredLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
-    } else if (layout == "Geographic") {
-      this.layout = new GeographicLayout(this.svg, this.model, this.$log, this.viewState, this.mainController, this.usMap);
     } else /* if (layout == "Force-directed") */ {
       this.layout = new ForceDirectedLayout(this.svg, this.model, this.$log, this.viewState, this.mainController);
     }

@@ -222,7 +222,7 @@ export class cmAttributeControls extends SvgGroupElement {
     this.outline.attr("stroke", visible ? "black" : "none");
     this.controls.style("display", visible ? "flex" : "none");
 
-    if (!Boolean(this.sortControls.select(".fa").attr("data-is-sorted")) && !visible) {
+    if (!this.sortControls.select(".fa").attr("data-is-sorted") && !visible) {
       this.sortControls.style("display", "none");
     } else if (visible) {
       this.sortControls.style("display", "flex");

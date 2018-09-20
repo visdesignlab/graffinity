@@ -1,25 +1,61 @@
 /*global reorder
  */
-import {SvgGroupElement} from "./svgGroupElement"
-import {cmAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
-import {cmAttributeLabelScentVisitor} from "./visitors/cmAttributeLabelScentVisitor"
-import {cmNodeLabelVisitor} from "./visitors/cmNodeLabelVisitor"
-import {cmScatterPlot1DVisitor} from "./visitors/cmScatterPlot1DVisitor"
-import {cmScatterPlot1DPreprocessor} from "./visitors/cmScatterPlot1DVisitor"
-import {cmColorMapPreprocessor} from "./visitors/cmColorMapVisitor"
-import {cmColorMapVisitor} from "./visitors/cmColorMapVisitor"
-import {cmClearVisitor} from "./visitors/cmClearVisitor"
-import {cmBarChartPreprocessor} from "./visitors/cmBarChartVisitor"
-import {cmBarChartVisitor} from "./visitors/cmBarChartVisitor"
-import {cmRawValueVisitor} from "./visitors/cmRawValueVisitor"
-import {cmEditVisibleAttributesVisitor} from "./visitors/cmEditVisibleAttributesVisitor"
-import {cmStringAttributeVisitor} from "./visitors/cmStringAttributeVisitor"
-import {cmHoverVisitor} from "./visitors/cmHoverVisitor"
+import {
+  SvgGroupElement
+} from "./svgGroupElement"
+import {
+  cmAttributeLabelVisitor
+} from "./visitors/cmAttributeLabelVisitor"
+import {
+  cmAttributeLabelScentVisitor
+} from "./visitors/cmAttributeLabelScentVisitor"
+import {
+  cmNodeLabelVisitor
+} from "./visitors/cmNodeLabelVisitor"
+import {
+  cmScatterPlot1DVisitor
+} from "./visitors/cmScatterPlot1DVisitor"
+import {
+  cmScatterPlot1DPreprocessor
+} from "./visitors/cmScatterPlot1DVisitor"
+import {
+  cmColorMapPreprocessor
+} from "./visitors/cmColorMapVisitor"
+import {
+  cmColorMapVisitor
+} from "./visitors/cmColorMapVisitor"
+import {
+  cmClearVisitor
+} from "./visitors/cmClearVisitor"
+import {
+  cmBarChartPreprocessor
+} from "./visitors/cmBarChartVisitor"
+import {
+  cmBarChartVisitor
+} from "./visitors/cmBarChartVisitor"
+import {
+  cmRawValueVisitor
+} from "./visitors/cmRawValueVisitor"
+import {
+  cmEditVisibleAttributesVisitor
+} from "./visitors/cmEditVisibleAttributesVisitor"
+import {
+  cmStringAttributeVisitor
+} from "./visitors/cmStringAttributeVisitor"
+import {
+  cmHoverVisitor
+} from "./visitors/cmHoverVisitor"
 
-import {cmCategoricalAttributeLabelVisitor} from "./visitors/cmAttributeLabelVisitor"
+import {
+  cmCategoricalAttributeLabelVisitor
+} from "./visitors/cmAttributeLabelVisitor"
 
-import {Utils} from "../utils/utils"
-import {UtilsD3} from "../utils/utilsd3"
+import {
+  Utils
+} from "../utils/utils"
+import {
+  UtilsD3
+} from "../utils/utilsd3"
 
 /**
  * Manages the matrix svg.
@@ -291,15 +327,6 @@ export class cmMatrixBase extends SvgGroupElement {
     return total;
   }
 
-  getAttributeRowHeights() {
-    let total = 0;
-    for (var i = 0; i < this.rowHeights.length; ++i) {
-      if (this.isAttributeRow(i) || this.isControlRow(i) || this.isLabelRow(i)) {
-        total += this.rowHeights[i];
-      }
-    }
-  }
-
   getAvailableMetrics(database) {
     let metrics = [{
       "name": "path count",
@@ -337,34 +364,34 @@ export class cmMatrixBase extends SvgGroupElement {
         "output": "scalar"
       });
     } else {
-      metrics.push({
-        "name": "source area",
-        "tooltip": "source area",
-        "metricFn": function (paths, graph) {
-          return Utils.getAreaFromPaths("sourceSizes", paths, graph);
-        },
-        "output": "scalar"
-      });
+      // metrics.push({
+      //   "name": "source area",
+      //   "tooltip": "source area",
+      //   "metricFn": function (paths, graph) {
+      //     return Utils.getAreaFromPaths("sourceSizes", paths, graph);
+      //   },
+      //   "output": "scalar"
+      // });
 
-      metrics.push({
-        "name": "target area",
-        "tooltip": "target area",
-        "metricFn": function (paths, graph) {
-          return Utils.getAreaFromPaths("targetSizes", paths, graph);
-        },
-        "output": "scalar"
-      });
+      // metrics.push({
+      //   "name": "target area",
+      //   "tooltip": "target area",
+      //   "metricFn": function (paths, graph) {
+      //     return Utils.getAreaFromPaths("targetSizes", paths, graph);
+      //   },
+      //   "output": "scalar"
+      // });
 
-      metrics.push({
-          "name": "area diff",
-          "tooltip": "area diff",
-          "metricFn": function (paths, graph) {
-              let sourceSizes = Utils.getAreaFromPaths("sourceSizes", paths, graph);
-              let targetSizes = Utils.getAreaFromPaths("targetSizes", paths, graph);
-              return Math.abs(sourceSizes - targetSizes);
-          },
-          "output": "scalar"
-      });
+      // metrics.push({
+      //     "name": "area diff",
+      //     "tooltip": "area diff",
+      //     "metricFn": function (paths, graph) {
+      //         let sourceSizes = Utils.getAreaFromPaths("sourceSizes", paths, graph);
+      //         let targetSizes = Utils.getAreaFromPaths("targetSizes", paths, graph);
+      //         return Math.abs(sourceSizes - targetSizes);
+      //     },
+      //     "output": "scalar"
+      // });
 
     }
 
@@ -406,8 +433,7 @@ export class cmMatrixBase extends SvgGroupElement {
   getAvailableEncodings(metricOutput) {
     let metrics = null;
     if (metricOutput == "scalar") {
-      metrics = [
-        {
+      metrics = [{
           "name": "colormap",
           "hasScaleOption": true
         },
@@ -421,11 +447,10 @@ export class cmMatrixBase extends SvgGroupElement {
         }
       ];
     } else if (metricOutput == "list") {
-      metrics = [
-        {
-          "name": "bar chart",
-          "hasScaleOption": true
-        }];
+      metrics = [{
+        "name": "bar chart",
+        "hasScaleOption": true
+      }];
     }
     return metrics
   }
@@ -1153,7 +1178,8 @@ export class cmMatrixBase extends SvgGroupElement {
     this.setColorScale(null, this.colorScaleIndexSets, this.colorScales[0]);
 
     if (this.colorScaleIndexNodes != -1) {
-      if (preprocessor.nodeRange[0] < preprocessor.nodeRange[1]) {
+      if (preprocessor.nodeRange[0] <= preprocessor.nodeRange[1] &&
+        preprocessor.nodeRange[1] > 0) {
         this.hasSecondLegend = true;
         this.colorScales[1] = this.mainController.colorScaleService.createColorScale(this.colorScaleIndexNodes, preprocessor.nodeRange);
 
@@ -1199,6 +1225,7 @@ export class cmMatrixBase extends SvgGroupElement {
     // Prepare internal state for creating the svg table
     this.initNodeIndexes(model);
     this.initAttributeState(model);
+
     this.initAttributeData(model);
     this.initViewIndexes(this.attributes);
     this.initColStates();

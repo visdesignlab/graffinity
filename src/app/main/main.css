@@ -7,6 +7,10 @@ body {
   padding: 0;
 }
 
+.btn-header {
+  min-width: 6em;
+}
+
 .control-header {
   margin-top: 5px;
   display: flex;
@@ -18,6 +22,10 @@ body {
   flex-grow: 1;
   padding-left: 5px;
   max-width: 70%;
+}
+
+.float-right {
+  float: right;
 }
 
 .full-height {
@@ -47,9 +55,7 @@ body {
 }
 
 .logo {
-  height: 33px;
   font-size: 28px;
-  font-weight: bold;
 }
 
 .main-icon-control {
@@ -59,6 +65,12 @@ body {
 .main-icon-control:hover {
   background: #6D6C6C;
   border-radius: 3px;
+}
+
+.modal-line-header {
+  vertical-align: middle;
+  font-weight: bold;
+  min-width:100px;
 }
 
 .left-pane-wrappers {
@@ -135,6 +147,10 @@ body {
   border: thick solid lightgray;
 }
 
+.red-text {
+  color: red;
+}
+
 /* Overrides definition in uib */
 .tab-content {
   padding: 0 15px !important;
@@ -157,6 +173,9 @@ body {
   color: lightgrey;
   border-radius: 10px;
   padding-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .vflex {

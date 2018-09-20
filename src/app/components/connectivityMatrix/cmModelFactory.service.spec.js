@@ -30,54 +30,6 @@ describe('cmModelFactory', () => {
     $httpBackend.flush();
   }));
 
-  it('cmModel - collapseRows', inject(($httpBackend, $q, cmModelFactory)=> {
-    requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
-      var expectedRowNodeIndexes = [[168], [120], [142], [1724], [5107]];
-      var rowNodeIndexes = model.getRowNodeIndexes();
-      expect(Utils.compareLists(rowNodeIndexes, expectedRowNodeIndexes)).toEqual(true);
-
-      var matrix = model.getCurrentMatrix();
-
-      var expectedMatrix = [
-        [[], [], [], [], []],
-        [[], [], [], [], [[120, 3, 1, 4, 5107]]],
-        [[], [], [], [], []],
-        [[], [], [[1724, 1, 35894, 6, 142]], [], []],
-        [[], [], [], [], []]];
-
-      expect(Utils.compareLists(expectedMatrix, matrix)).toEqual(true);
-
-      model.collapseRowsByAttr("label");
-      rowNodeIndexes = model.getRowNodeIndexes();
-      expectedRowNodeIndexes = [[168, 120, 1724], [142, 5107]]; // 6 and 3 are rows 2,4
-      expect(Utils.compareLists(rowNodeIndexes, expectedRowNodeIndexes)).toEqual(true);
-
-      expectedMatrix = [
-        [[], [], [[1724, 1, 35894, 6, 142]], [], [[120, 3, 1, 4, 5107]]],
-        [[], [], [], [], []]];
-      matrix = model.getCurrentMatrix();
-      expect(Utils.compareLists(expectedMatrix, matrix)).toEqual(true);
-
-      model.collapseRows([[0, 1]]);
-      expectedRowNodeIndexes = [[168, 120, 1724, 142, 5107]];
-      rowNodeIndexes = model.getRowNodeIndexes();
-      expect(Utils.compareLists(rowNodeIndexes, expectedRowNodeIndexes)).toEqual(true);
-
-      expectedMatrix = [
-        [[], [], [[1724, 1, 35894, 6, 142]], [], [[120, 3, 1, 4, 5107]]]];
-
-      matrix = model.getCurrentMatrix();
-      expect(Utils.compareLists(expectedMatrix, matrix)).toEqual(true);
-
-      model.reset();
-      model.collapseRows([[0, 1]]);
-      expectedRowNodeIndexes = [[168, 120], [142], [1724], [5107]];
-      rowNodeIndexes = model.getRowNodeIndexes();
-      expect(Utils.compareLists(rowNodeIndexes, expectedRowNodeIndexes)).toEqual(true);
-    });
-    $httpBackend.flush();
-  }));
-
   it('cmModel - expandRows', inject(($httpBackend, $q, cmModelFactory)=> {
     requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
       var expectedRowNodeIndexes = [[168], [120], [142], [1724], [5107]];
@@ -374,7 +326,7 @@ describe('cmModelFactory', () => {
   it('cmModel - getAvailableAttributes', inject(($httpBackend, $q, cmModelFactory)=> {
     requestAndCreateModel($httpBackend, $q, cmModelFactory).then(function (model) {
       let attributes = model.getAvailableAttributes();
-      expect(attributes.length).toEqual(4);
+      expect(attributes.length).toEqual(5);
     });
     $httpBackend.flush();
   }));
@@ -382,7 +334,7 @@ describe('cmModelFactory', () => {
   it('cmModel - flights - getAvailableAttributes', inject(($httpBackend, $q, cmModelFactory)=> {
     requestAndCreateModel($httpBackend, $q, cmModelFactory, true).then(function (model) {
       let attributes = model.getAvailableAttributes();
-      expect(attributes.length).toEqual(6);
+      expect(attributes.length).toEqual(7);
     });
     $httpBackend.flush();
   }));

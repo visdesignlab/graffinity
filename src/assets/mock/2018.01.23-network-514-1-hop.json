@@ -1,0 +1,47 @@
+{
+	"nodes": [{
+		"StructureID": 179,
+		"TypeID": 1,
+		"Label": "YAC Ai",
+		"Tags": "\u003cStructure\u003e\u003cAttrib Name=\"S1\" Value=\"1.0\" /\u003e\u003c/Structure\u003e"
+	},
+	{
+		"StructureID": 308,
+		"TypeID": 1,
+		"Label": "CBb3",
+		"Tags": ""
+	},
+	{
+		"StructureID": 410,
+		"TypeID": 1,
+		"Label": "CBb4",
+		"Tags": ""
+	}
+	],
+	"edges": [{
+		"ID": 0,
+		"SourceStructureID": 308,
+		"TargetStructureID": 179,
+		"Label": "514-179 via Adherens from 103814 -\u003e 103813",
+		"Type": "Gap Junction",
+		"Directional": false,
+		"Links": [{
+			"SourceID": 103814,
+			"TargetID": 103813,
+			"Directional": false
+		}]
+	},
+	{
+		"ID": 1,
+		"SourceStructureID": 179,
+		"TargetStructureID": 410,
+		"Label": "5303-179 via Gap Junction from 101399 -\u003e 104984",
+		"Type": "Gap Junction",
+		"Directional": false,
+		"Links": [{
+			"SourceID": 101399,
+			"TargetID": 104984,
+			"Directional": false
+		}]
+	}]
+}

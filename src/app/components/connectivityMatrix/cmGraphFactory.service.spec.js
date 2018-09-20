@@ -40,31 +40,6 @@ describe('cmGraphFactory', () => {
     $httpBackend.flush();
   }));
 
-  it('getAsD3Input', inject(($httpBackend, $q, cmGraphFactory)=> {
-    requestAndCreateGraph($httpBackend, $q, cmGraphFactory).then(function (graph) {
-      var result = graph.getAsD3Input();
-      expect(result.nodes.length == graph.getNodes().length).toEqual(true);
-      expect(result.links.length == graph.getEdges().length).toEqual(true);
-
-      for (var i = 0; i < result.links.length; ++i) {
-        var link = result.links[i];
-        expect(result.nodes[link.source].attributes.structure == link.value.sourceStructureId).toBe(true);
-        expect(result.nodes[link.target].attributes.structure == link.value.targetStructureId).toBe(true);
-      }
-
-      result = graph.getAsD3Input([168, 18693]);
-      expect(result.nodes.length == 2).toEqual(true);
-      expect(result.links.length == 1).toEqual(true);
-
-      for (i = 0; i < result.links.length; ++i) {
-        link = result.links[i];
-        expect(result.nodes[link.source].attributes.structure == link.value.sourceStructureId).toBe(true);
-        expect(result.nodes[link.target].attributes.structure == link.value.targetStructureId).toBe(true);
-      }
-    });
-    $httpBackend.flush();
-  }));
-
   it('getNodeAttributes', inject(($httpBackend, $q, cmGraphFactory)=> {
     requestAndCreateGraph($httpBackend, $q, cmGraphFactory).then(function (graph) {
       expect(Utils.compareLists(['label'], graph.getCategoricalNodeAttrNames())).toEqual(true);

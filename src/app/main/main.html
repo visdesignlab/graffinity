@@ -1,52 +1,63 @@
 <!--Row holding the query text box -->
 <div class="full-width no-shrink top-bar">
-  <span class="logo">Graffinity</span>
-  <span ng-show="main.debug" ng-click="main.onSaveClicked()">Save</span>
-  <span ng-show="main.debug" ng-click="main.onLoadClicked()">Load</span>
-
-  <div style="position: absolute; right: 1em; top:1em">
-    <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
-            ng-click="main.areDetailsVisible = true;">
-      Show panel
-    </button>
-    <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs"
-            ng-click="main.areDetailsVisible = false;">
-      Hide panel
-    </button>
-  </div>
-
-  <div style="position: absolute; right: 6.5em; top:1em">
-    <button type="button" ng-show="!main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs"
-            ng-click="main.isNodeListVisible= true;">
-      Show list
-    </button>
-    <button type="button" ng-show="main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs"
-            ng-click="main.isNodeListVisible= false;">
-      Hide list
-    </button>
+  <span class="logo" style="padding-left:0.25em">Graffinity</span>
+  <span class="logo" style="padding-left:0.5em" uib-dropdown>
+    <i class="fa fa-bars" aria-hidden="true" uib-dropdown-toggle></i>
+    <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown" role="menu">
+      <li role="menuitem" ng-click="main.onSaveClicked()"><a href="#">Save state</a></li>
+      <li role="menuitem" ng-click="main.onLoadClicked()"><a href="#">Load state</a>
+      </li>
+    </ul>
+  </span>
+  <input type="file" id="fileInputElement" multiple accept="application/json" style="display:none" onchange="angular.element(this).scope().main.onLoadFile(this);">
+  <span style="display: inline-flex; flex-direction: column; font-size: x-small; padding-left: 2em;">
+    <span><span style="font-weight:bold;">File:</span> {{main.cmModelFactory.rawGraph.name}}</span>
+    <span>
+      <span style="font-weight:bold;">Nodes:</span> {{main.cmModelFactory.rawGraph.nodes.length}}
+      <span style="font-weight:bold; padding-left:1em;">Edges:</span> {{main.cmModelFactory.rawGraph.edges.length}}
+    </span>
+  </span>
+  <span style="display: inline-flex; flex-direction: column; font-size: x-small; padding-left: 2em;">
+    <span><span style="font-weight:bold;">Query:</span> {{main.queryString}}</span>
+    <span>
+      <span style="font-weight:bold;">Paths:</span> {{main.numPaths}}
+    </span>
+  </span>
+  <div style="margin-left: auto; padding-right: 1em;">
+    <span>
+      <button type="button" ng-show="!main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.isNodeListVisible= true;" ng-disabled="!main.model.getIntermediateNodeIndexes().length">
+        Show Int. Nodes
+      </button>
+      <button type="button" ng-show="main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.isNodeListVisible= false;">
+        Hide Int. Nodes
+      </button>
+    </span>
+    <span>
+      <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.areDetailsVisible = true;">
+        Show Details
+      </button>
+      <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.areDetailsVisible = false;">
+        Hide Details
+      </button>
+    </span>
   </div>
 </div>
-
 <div class="full-width hflex main-panel grow-1">
   <div class="vflex left-pane-wrappers">
     <div class="pane left-pane grey-border">
-      <query-builder
-        class="query-builder"
-        on-submit="main.onQuerySubmitted(query)"
-        submit-disabled="main.hasActiveQuery"
-        resource="main.resource"
-        allow-advanced-query="main.database == 'marclab'"
-        dataset="main.database"
-        main="main">
-      </query-builder>
+      <query-builder-regex class="query-builder" on-submit="main.onQuerySubmitted(query)" submit-disabled="main.hasActiveQuery"
+        resource="main.resource" allow-advanced-query="main.database == 'marclab'" dataset="main.database" main="main">
+      </query-builder-regex>
     </div>
     <div class="pane left-pane grey-border" ng-show="main.hasGoodData">
       <h4 class="no-margin">Connectivity Matrix Controls</h4>
       <div class="control-header">
         Aggregate rows
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedCategoricalRowAttr"
-                   ng-change="main.onCollapseRowsByAttr(main.ui.selectedCategoricalRowAttr)">
+        <ui-select class="control-input" ng-model="main.ui.selectedCategoricalRowAttr" ng-change="main.onCollapseRowsByAttr(main.ui.selectedCategoricalRowAttr)">
           <ui-select-match placeholder="Categorical attribute to collapse rows">
             {{main.ui.selectedCategoricalRowAttr}}
           </ui-select-match>
@@ -55,12 +66,9 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
       <div class="control-header">
         Aggregate cols
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedCategoricalColAttr"
-                   ng-change="main.onCollapseColsByAttr(main.ui.selectedCategoricalColAttr)">
+        <ui-select class="control-input" ng-model="main.ui.selectedCategoricalColAttr" ng-change="main.onCollapseColsByAttr(main.ui.selectedCategoricalColAttr)">
           <ui-select-match placeholder="Categorical attribute to collapse cols">
             {{main.ui.selectedCategoricalColAttr}}
           </ui-select-match>
@@ -69,12 +77,9 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
       <div class="control-header">
         Sort order
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedSortOrder"
-                   ng-change="main.onSortOrderChanged(main.ui.selectedSortOrder)">
+        <ui-select class="control-input" ng-model="main.ui.selectedSortOrder" ng-change="main.onSortOrderChanged(main.ui.selectedSortOrder)">
           <ui-select-match placeholder="Selected sort order">
             {{main.ui.selectedSortOrder}}
           </ui-select-match>
@@ -83,28 +88,9 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
-      <!--<div class="control-header">-->
-      <!--Cell encoding-->
-      <!--<ui-select class="control-input"-->
-      <!--id="select-encoding"-->
-      <!--ng-model="main.ui.selectedEncoding"-->
-      <!--ng-change="main.onEncodingChanged(main.ui.selectedEncoding)">-->
-      <!--<ui-select-match placeholder="Cell encoding">-->
-      <!--{{main.ui.selectedEncoding}}-->
-      <!--</ui-select-match>-->
-      <!--<ui-select-choices repeat="option in main.ui.encodings track by option">-->
-      <!--{{option}}-->
-      <!--</ui-select-choices>-->
-      <!--</ui-select>-->
-      <!--</div>-->
-
-
       <div class="control-header" ng-show="main.ui.matrixMetrics">
         Metric
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedMatrixMetric"
-                   ng-change="main.setMetric('matrix', main.ui.selectedMatrixMetric)">
+        <ui-select class="control-input" ng-model="main.ui.selectedMatrixMetric" ng-change="main.setMetric('matrix', main.ui.selectedMatrixMetric)">
           <ui-select-match placeholder="Path metric">
             {{main.ui.selectedMatrixMetric.name}}
           </ui-select-match>
@@ -113,12 +99,9 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
       <div class="control-header" ng-show="main.ui.matrixMetrics">
         Encoding
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedMatrixEncoding"
-                   ng-change="main.setEncoding('matrix', main.ui.selectedMatrixMetric, main.ui.selectedMatrixEncoding)">
+        <ui-select class="control-input" ng-model="main.ui.selectedMatrixEncoding" ng-change="main.setEncoding('matrix', main.ui.selectedMatrixMetric, main.ui.selectedMatrixEncoding)">
           <ui-select-match placeholder="Matrix encoding">
             {{main.ui.selectedMatrixEncoding.name}}
           </ui-select-match>
@@ -127,12 +110,9 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
       <div class="control-header" ng-show="main.ui.matrixHasScaleOption">
         Scale
-        <ui-select class="control-input"
-                   ng-model="main.ui.selectedMatrixScale"
-                   ng-change="main.setEncodingScale('matrix', main.ui.selectedMatrixScale)">
+        <ui-select class="control-input" ng-model="main.ui.selectedMatrixScale" ng-change="main.setEncodingScale('matrix', main.ui.selectedMatrixScale)">
           <ui-select-match placeholder="Color scale">
             {{main.ui.selectedMatrixScale}}
           </ui-select-match>
@@ -141,14 +121,11 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
       <div ng-show="main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible">
         <h4>Int. Node Table Controls</h4>
         <div class="control-header">
           Aggregate rows
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedIntermediateRowAttr"
-                     ng-change="main.onCollapseIntermediateRows(main.ui.selectedIntermediateRowAttr)">
+          <ui-select class="control-input" ng-model="main.ui.selectedIntermediateRowAttr" ng-change="main.onCollapseIntermediateRows(main.ui.selectedIntermediateRowAttr)">
             <ui-select-match placeholder="Categorical attribute to collapse rows">
               {{main.ui.selectedIntermediateRowAttr}}
             </ui-select-match>
@@ -157,12 +134,9 @@
             </ui-select-choices>
           </ui-select>
         </div>
-
         <div class="control-header" ng-show="main.ui.matrixMetrics">
           Metric
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedNodeListMetric"
-                     ng-change="main.setMetric('nodeList', main.ui.selectedNodeListMetric)">
+          <ui-select class="control-input" ng-model="main.ui.selectedNodeListMetric" ng-change="main.setMetric('nodeList', main.ui.selectedNodeListMetric)">
             <ui-select-match placeholder="Path metric">
               {{main.ui.selectedNodeListMetric.name}}
             </ui-select-match>
@@ -171,12 +145,9 @@
             </ui-select-choices>
           </ui-select>
         </div>
-
         <div class="control-header" ng-show="main.ui.matrixMetrics">
           Encoding
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedNodeListEncoding"
-                     ng-change="main.setEncoding('nodeList', main.ui.selectedNodeListMetric, main.ui.selectedNodeListEncoding)">
+          <ui-select class="control-input" ng-model="main.ui.selectedNodeListEncoding" ng-change="main.setEncoding('nodeList', main.ui.selectedNodeListMetric, main.ui.selectedNodeListEncoding)">
             <ui-select-match placeholder="Matrix encoding">
               {{main.ui.selectedNodeListEncoding.name}}
             </ui-select-match>
@@ -185,12 +156,9 @@
             </ui-select-choices>
           </ui-select>
         </div>
-
         <div class="control-header" ng-show="main.ui.nodeListHasScaleOption">
           Scale
-          <ui-select class="control-input"
-                     ng-model="main.ui.selectedNodeListScale"
-                     ng-change="main.setEncodingScale('nodeList', main.ui.selectedNodeListScale)">
+          <ui-select class="control-input" ng-model="main.ui.selectedNodeListScale" ng-change="main.setEncodingScale('nodeList', main.ui.selectedNodeListScale)">
             <ui-select-match placeholder="Color scale">
               {{main.ui.selectedNodeListScale}}
             </ui-select-match>
@@ -200,8 +168,6 @@
           </ui-select>
         </div>
       </div>
-
-
       <!-- Legend of matrix cell encodings -->
       <div class="control-header" ng-show="main.ui.hasLegend">
         <b>Legend</b>
@@ -217,62 +183,48 @@
     <div id="matrices-row" class="grow-1 vflex">
     </div>
   </div>
-
-  <div ng-show="main.hasGoodData && main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible"
-       class="pane pane-center-right vflex intermediate-nodes">
+  <div ng-show="main.hasGoodData && main.model.getIntermediateNodeIndexes().length && main.isNodeListVisible" class="pane pane-center-right vflex intermediate-nodes">
     <div ng-show="main.model.getIntermediateNodeIndexes().length" class="vflex grow-1">
       <h4 class="no-margin">Int. Node Table</h4>
       <div id="node-list-col" class="grow-1 vflex">
       </div>
     </div>
   </div>
-
-  <div ng-show="!main.model.getIntermediateNodeIndexes().length || !main.isNodeListVisible"
-       class="pane pane-center-right">
+  <div ng-show="main.hasGoodData && !main.isNodeListVisible" class="pane pane-center-right">
   </div>
-
   <!-- Error messages -->
   <div ng-show="!main.hasGoodData" class="pane center-pane loading-pane grow-1 hflex vflex">
-    <h3 ng-show="main.hasActiveQuery">
-      Query is loading...
+    <h3 ng-show="!main.hasGoodData && !main.hasActiveQuery && ! main.hasQueryError && !main.isLoadingFromFile">
+      Run a query to create a matrix...
     </h3>
-    <div ng-show="main.hasActiveQuery">
+    <h3 ng-show="main.isLoadingFromFile && !main.hasActiveQuery">
+      Loading matrix from file...
+    </h3>
+    <h3 ng-show="main.hasActiveQuery">
+      Running query and building matrix...
+    </h3>
+    <div ng-show="main.hasActiveQuery || main.isLoadingFromFile">
       <i class="fa fa-spinner fa-spin" style="font-size:48px"></i>
     </div>
     <h3 ng-show="main.hasQueryError">
-      Something went wrong...
-    </h3>
-    <h4 ng-show="main.hasQueryError">
       {{main.queryError}}
-    </h4>
+    </h3>
   </div>
-
   <!-- Right panel -->
   <div ng-show="main.areDetailsVisible && main.hasGoodData" class="pane right-pane grey-border vflex">
-
     <uib-tabset active="1" type="tabs" class="grow-1 vflex" style="display: inline-flex !important;">
       <!-- Tab for the node-link view -->
       <uib-tab index="0" heading="{{main.availablePanels[0]}}">
         <div class="grow-1 vflex">
-          <node-link-view-directive
-            view-state="main.viewState"
-            main-controller="main"
-            class="vflex grow-1">
+          <node-link-view-directive view-state="main.viewState" main-controller="main" class="vflex grow-1">
           </node-link-view-directive>
         </div>
       </uib-tab>
-
       <!-- Tab for the path list -->
       <uib-tab index="1" heading="{{main.availablePanels[1]}}">
-        <div path-list-view-directive
-             view-state="main.viewState"
-             main-controller="main"
-             class="vflex grow-1">
+        <div path-list-view-directive view-state="main.viewState" main-controller="main" class="vflex grow-1">
         </div>
       </uib-tab>
     </uib-tabset>
-
   </div>
-
-
 </div>

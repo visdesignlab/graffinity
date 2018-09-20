@@ -1,11 +1,15 @@
 /* globals d3 reorder saveAs
  */
-import {mock} from "../components/connectivityMatrix/mock.js";
-import {Utils} from "../components/utils/utils";
+import {
+  mock
+} from "../components/connectivityMatrix/mock.js";
+import {
+  Utils
+} from "../components/utils/utils";
 
 export class MainController {
-  constructor($log, $timeout, $scope, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
-              viewState, modalService, database, $http, colorScaleService, resource) {
+  constructor($log, $timeout, $scope, $q, toastr, cmMatrixViewFactory, cmModelFactory, cmMatrixFactory, cmGraphFactory,
+    viewState, modalService, database, $http, colorScaleService, resource, dataSelectionService) {
     'ngInject';
     this.viewState = viewState;
     this.$scope = $scope;
@@ -28,6 +32,9 @@ export class MainController {
     this.hasGoodData = true;
     this.queryError = "";
     this.debug = true;
+    this.$q = $q;
+    this.dataSelectionService = dataSelectionService;
+    this.queryString = "";
 
     // Object for representing what the user has currently selected or entered in the ui.
     this.ui = {};
@@ -39,7 +46,6 @@ export class MainController {
     this.ui.debugNodeHiding = false;
     this.ui.debugNodeHidingId = 168;
     this.ui.debugNodeLinkLayout = false;
-
 
     // Set these to true to automatically set attributes on the filter ranges. (see below)
     this.ui.debugRowFilterScents = false;
@@ -53,6 +59,10 @@ export class MainController {
     this.ui.selectedMatrixScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
     this.ui.selectedNodeListScale = this.isMarclabData ? this.ui.matrixScales[0] : this.ui.matrixScales[1];
 
+    // This is a hack to load data from the correct location when graffinity is deployed.
+    // if in production, we have to load data from http://vdl.sci.utah.edu/graffinity/
+    this.isProduction = window.location.href.indexOf('vdl') > 0;
+
     if (this.isMarclabData) {
       this.colorScaleService.setUseLinearColorScale(true, 0);
       this.colorScaleService.setUseLinearColorScale(true, 1);
@@ -60,9 +70,13 @@ export class MainController {
       this.colorScaleService.setUseLinearColorScale(true, 3);
     }
 
+    //this.modalService.getSelectionFromList("Filter by " + attribute, Object.keys(isValueSelected), isValueSelected, modalSuccess);
+    this.activateWithClientOnlyData();
+
     let useLargeResult = false;
 
-    let jsonGraph = null;    useLargeResult = true;
+    let jsonGraph = null;
+    useLargeResult = true;
 
     let jsonMatrix = null;
 
@@ -70,7 +84,11 @@ export class MainController {
     if (this.database == "marclab") {
 
       if (useLargeResult) {
-        this.requestInitialData("/assets/mock/defaultMarclab.json");
+        let initialData = "/assets/mock/defaultMarclab.json";
+        if (this.isProduction) {
+          initialData = "http://vdl.sci.utah.edu/graffinity/assets/mock/defaultMarclab.json";
+        }
+        this.requestInitialData(initialData);
       } else {
         jsonGraph = mock.output.graph;
         jsonMatrix = mock.output.matrix;
@@ -112,8 +130,6 @@ export class MainController {
     if (!useLargeResult) {
       this.activate(jsonGraph, jsonMatrix);
     }
-
-
     // Wait until after the current digest cycle to activate the ui.
 
     // If debugging, then automatically manipulate the GUI.
@@ -140,19 +156,85 @@ export class MainController {
     //}, 1);
   }
 
+  /**
+   *
+   */
+  activateWithClientOnlyData() {
+    let self = this;
+
+    self.hasGoodData = false;
+    self.isNodeListVisible = false;
+
+    let defaultDataNames = [
+      "/assets/mock/2018.01.23-network-514-1-hop.json",
+      "/assets/mock/2018.01.23-network-all-hops.json"
+    ];
+    if (this.isProduction) {
+      defaultDataNames = [
+        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-514-1-hop.json",
+        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-all-hops.json"
+      ];
+    }
+
+    // Callback after the user selects a dataset.
+    let userSelectedDataCallback = function (result) {
+      self.cmModelFactory.setGraphData(result);
+    };
+
+    // Called after we have loaded all of the default datasets.
+    // Asks the use what dataset to use through the dataSelectModal..
+    let success = function (results) {
+
+      // Pull out data from http responses.
+      let dataValues = [];
+      for (let i = 0; i < results.length; ++i) {
+        let value = {
+          "name": results[i].config.url,
+          "nodes": results[i].data.nodes,
+          "edges": results[i].data.edges
+        }
+        dataValues.push(value);
+      }
+
+      // Ask user.
+      self.dataSelectionService.getSelectionFromList(defaultDataNames, dataValues, userSelectedDataCallback);
+    };
+
+    // Load all of the default data.
+    let requests = [];
+    for (let i = 0; i < defaultDataNames.length; ++i) {
+      requests.push(self.$http.get(defaultDataNames[i]));
+    }
+
+    self.$q.all(requests).then(success);
+  }
+
   activate(jsonGraph, jsonMatrix, jsonQuery) {
-    // Populate the model with default dataset
     let graph = this.cmGraphFactory.createFromJsonObject(jsonGraph, this.database);
     let matrix = this.cmMatrixFactory.createFromJsonObject(jsonMatrix);
     this.model = this.cmModelFactory.createModel(graph, matrix);
-
+    if (!jsonQuery) {
+      jsonQuery = {
+        availableNumHops: [1, 2, 3],
+        selectedNumHops: 2,
+        nodes: ["CBb.*", "AC", "CBb.*"],
+        edges: ["*", "*"]
+      };
+    }
     let self = this;
+
+    self.updateNumPaths();
+
     this.$timeout(function () {
-      self.createMatrixAndUi(self.model);
+      if (self.numPaths > 0) {
+        self.createMatrixAndUi(self.model);
+      } else {
+        self.hasQueryError = true;
+        self.queryError = "No paths found."
+      }
       self.$scope.$broadcast("setQuery", jsonQuery);
     }, 1);
   }
-
 
   createCategoricalCollapseControls(model) {
     this.ui.availableCategoricalAttr = ["none"];
@@ -163,7 +245,6 @@ export class MainController {
   }
 
   createMatrix(model) {
-    // this.svg.selectAll("*").remove();
     this.model = model;
     this.viewState.setModel(model);
     if (!this.matrixManager) {
@@ -203,8 +284,20 @@ export class MainController {
 
   createReorderControls() {
     this.ui.orders = ["custom", "optimal leaf", "database", "" +
-    ""];
+      ""
+    ];
     this.ui.selectedSortOrder = this.ui.orders[1];
+  }
+
+  createQueryString(query) {
+    let result = "";
+    for (let i = 0; i < query.nodes.length; ++i) {
+      result = result + "(" + query.nodes[i] + ")";
+      if (i < query.edges.length) {
+        result = result + "-[" + query.edges[i] + "]->";
+      }
+    }
+    return result;
   }
 
   onCollapseColsByAttr(attr) {
@@ -301,10 +394,37 @@ export class MainController {
   }
 
   /**
-   * Load some debugging data.
+   * Use the hidden file input field to select a json file.
    */
   onLoadClicked() {
-    this.requestInitialData("/assets/mock/defaultMarclab.json");
+    this.$timeout(function () {
+      angular.element('#fileInputElement').click();
+    }, 0);
+  }
+
+  /**
+   * Called when the user selects a file to load.
+   */
+  onLoadFile(fileInput) {
+    let self = this;
+    let reader = new FileReader();
+    self.isLoadingFromFile = true;
+    self.hasGoodData = false;
+    self.isNodeListVisible = false;
+    reader.onload = (contents) => {
+      let data = angular.fromJson(contents.target.result);
+      self.cmModelFactory.setGraphData(data.graph);
+      self.activate(data.graph, data.matrix, data.query);
+      self.queryString = self.createQueryString(data.query);
+      self.$timeout(function () {
+        self.hasGoodData = true;
+        self.isLoadingFromFile = false;
+      }, 0);
+    }
+
+    self.$timeout(function () {
+      reader.readAsText(fileInput.files[0]);
+    }, 0);
   }
 
   /**
@@ -326,6 +446,10 @@ export class MainController {
   onQuerySubmitted(query) {
     let self = this;
 
+    self.$log.debug('onQuerySubmitted', query);
+
+    self.queryString = self.createQueryString(query);
+
     self.hasActiveQuery = true;
     self.hasQueryError = false;
     self.hasGoodData = false;
@@ -341,18 +465,23 @@ export class MainController {
      * the matrix. That's why the timeout is wrapped around createMatrixAndUi.
      */
     let success = function (model) {
-      // Turn off the query loading screen.
-      self.hasActiveQuery = false;
-
       // Update the model
       self.model = model;
       self.viewState.setModel(model);
-      // self.viewState.reset();
+
+      self.updateNumPaths();
 
       // Actually create the matrix
       self.$timeout(function () {
-        self.hasGoodData = true;
-        self.createMatrixAndUi(model);
+        if (self.numPaths > 0) {
+          self.hasGoodData = true;
+          self.createMatrixAndUi(model);
+        } else {
+          self.hasQueryError = true;
+          self.hasGoodData = false;
+          self.queryError = "No paths found."
+        }
+        self.hasActiveQuery = false;
       }, 0);
     };
 
@@ -372,17 +501,22 @@ export class MainController {
     };
 
     // Give the model factory a query string. Async call success or failure.
-    this.cmModelFactory.requestAndCreateModel(query, this.database).then(success, failure);
+    self.$timeout(function () {
+      self.cmModelFactory.createModelFromGraphSearch(query).then(success, failure)
+    }, 0);
   }
 
   onSaveClicked() {
     let state = {
       "query": this.queryUi,
       "matrix": this.model.getCmMatrix().getJsonMatrix(),
-      "graph": this.model.getCmGraph().getJsonGraph()
+      "graph": this.model.getCmGraph().getJsonGraph(),
+      "data": this.cmModelFactory.graph
     };
     let stateString = JSON.stringify(state);
-    let blob = new Blob([stateString], {"type": "text/plain;"});
+    let blob = new Blob([stateString], {
+      "type": "text/plain;"
+    });
 
     saveAs(blob, `${this.database}_state.json`);
   }
@@ -419,7 +553,6 @@ export class MainController {
 
     this.matrixManager.setSortOrders(rowPerm, colPerm);
   }
-
 
   /**
    * Called when the user wants to filter nodes by a quantitative attributes. Opens a modal containing a
@@ -474,10 +607,8 @@ export class MainController {
     this.viewState.resetAttributeFilter(attribute, attributeNodeGroup);
   }
 
-
   /**
    * Used for loading local mocked results.
-   * @param filename
    */
   requestInitialData(filename) {
     let self = this;
@@ -562,6 +693,17 @@ export class MainController {
     }
 
     this.setEncoding(view, metric, encoding);
+  }
+
+  updateNumPaths() {
+    let self = this;
+    let paths = self.model.getAllPaths();
+    self.numPaths = 0;
+    let keys = Object.keys(paths);
+    for (let i = 0; i < keys.length; ++i) {
+      let key = keys[i];
+      self.numPaths = self.numPaths + paths[key].length;
+    }
   }
 
   updateLegend() {

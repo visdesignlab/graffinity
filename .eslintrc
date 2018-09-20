@@ -6,12 +6,12 @@
     "browser": true,
     "jasmine": true
   },
-  "ecmaFeatures": {
-    "modules": true
-  },
   "globals": {
     "angular": true,
     "module": true,
     "inject": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
   }
 }

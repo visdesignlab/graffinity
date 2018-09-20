@@ -1,5 +1,5 @@
 describe('service cypherGenerator', () => {
-  beforeEach(angular.mock.module('ngNeo4jQuery'));
+  beforeEach(angular.mock.module('connectivityMatrixJs'));
 
   let advanced = {
     "nodes": [
@@ -120,7 +120,7 @@ describe('service cypherGenerator', () => {
     expect(cypher == query).toBe(true);
   }));
 
-  fit('generateBasicQuery - flights', inject(cypherGeneratorService => {
+  it('generateBasicQuery - flights', inject(cypherGeneratorService => {
     let cypher = cypherGeneratorService.generateBasicQuery({nodes: [[], []]}, 3, true);
     let query = "MATCH p = (n0)-[e0]->(n1) RETURN p UNION MATCH p = (n0)-[e0]->(n1)-[e1]->(n2) WHERE ((e0.arr_time < e1.dep_time) AND (e0.carrier = e1.carrier)) RETURN p UNION MATCH p = (n0)-[e0]->(n1)-[e1]->(n2)-[e2]->(n3) WHERE (((e0.arr_time < e1.dep_time) AND (e0.carrier = e1.carrier)) AND ((e1.arr_time < e2.dep_time) AND (e1.carrier = e2.carrier))) RETURN p";
     expect(cypher == query).toBe(true);

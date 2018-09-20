@@ -2,7 +2,9 @@
  graphlib
  */
 
-import {Utils} from "../utils/utils"
+import {
+  Utils
+} from "../utils/utils"
 
 export class cmGraph {
 
@@ -13,12 +15,15 @@ export class cmGraph {
   }
 
   activate() {
-    this.graph = new graphlib.Graph({multigraph: true});
+    let self = this;
+    this.graph = new graphlib.Graph({
+      multigraph: true
+    });
 
     // create nodes
-    this.nodeAttributes = this.activateNodeAttributes(this.jsonGraph.node_attributes);
-    for (var i = 0; i < this.nodeAttributes.length; ++i) {
-      if (this.nodeAttributes[i].isIndex) {
+    self.nodeAttributes = self.activateNodeAttributes(self.jsonGraph.node_attributes);
+    for (var i = 0; i < self.nodeAttributes.length; ++i) {
+      if (self.nodeAttributes[i].isIndex) {
         this.indexAttributeIndex = i;
       } else if (this.nodeAttributes[i].isId) {
         this.idAttributeIndex = i;
@@ -27,7 +32,7 @@ export class cmGraph {
 
     for (i = 0; i < this.jsonGraph.nodes.length; ++i) {
       var node = this.jsonGraph.nodes[i];
-      var index = this.parseNodeId(node, this.nodeAttributes, this.indexAttributeIndex);
+      var index = this.parseNodeId(node, this.nodeAttributes, this.idAttributeIndex);
       var attributes = this.parseAttributes(node, this.nodeAttributes, this.indexAttributeIndex);
       this.graph.setNode(index, attributes);
     }
@@ -37,8 +42,8 @@ export class cmGraph {
     if (this.database == "marclab") {
       for (i = 0; i < this.jsonGraph.edges.length; ++i) {
         let edge = this.jsonGraph.edges[i];
-        let sourceId = edge.SourceID;
-        let targetId = edge.TargetID;
+        let sourceId = edge.SourceStructureID;
+        let targetId = edge.TargetStructureID;
         let source = this.getNode(sourceId);
         let target = this.getNode(targetId);
 
@@ -47,7 +52,7 @@ export class cmGraph {
         }
 
         attributes = {
-          linkedStructures: edge.LinkedStructures,
+          links: edge.Links,
           sourceSizes: edge.SourceSizes,
           targetSizes: edge.TargetSizes,
           sourceStructureId: edge.SourceStructureID,
@@ -56,11 +61,34 @@ export class cmGraph {
           carrier: edge.Carrier
         };
 
+        let linkedStructures = "";
+        if (edge.Links) {
+          for (let i = 0; i < edge.Links.length; ++i) {
+            let link = edge.Links[i];
+            let description = link.SourceID;
+            description = description + (link.Directional ? " -> " : " <-> ");
+            description = description + link.TargetID;
+            if (linkedStructures.length) {
+              linkedStructures = linkedStructures + ";";
+            }
+            linkedStructures = linkedStructures + description;
+          }
+        }
+
+        attributes.linkedStructures = linkedStructures;
+
         this.edgeDict[edge.ID] = attributes;
 
         this.graph.setEdge(sourceId, targetId, attributes, edge.ID);
+
+        if (!edge.Directional && edge.SourceStructureID != edge.TargetStructureID) {
+          let id = (-Number(edge.ID)).toString();
+          self.edgeDict[id] = attributes;
+          this.graph.setEdge(targetId, sourceId, attributes, id);
+        }
       }
     } else {
+      // TODO - delete control flow for flight data. 
       for (i = 0; i < this.jsonGraph.edges.length; ++i) {
         let edge = this.jsonGraph.edges[i];
         let sourceId = edge.SourceID;
@@ -128,7 +156,7 @@ export class cmGraph {
           throw 'Bad datatype!';
         } else {
           current.parseFn = function (x) {
-            return x;
+            return x ? x.trim() : 'Null';
           }
         }
       }
@@ -184,11 +212,10 @@ export class cmGraph {
       var node = nodes[i];
       var attributes = this.graph.node(node);
       if ((nodeIdFilter == undefined) || (nodeIdFilter != undefined && nodeIdFilter.indexOf(Number(node)) != -1)) {
-        result.nodes.push(
-          {
-            id: node,
-            attributes: attributes
-          });
+        result.nodes.push({
+          id: node,
+          attributes: attributes
+        });
       }
     }
 
@@ -244,11 +271,10 @@ export class cmGraph {
 
   getEdgeDetails(edgeIndex) {
     let edge = this.getEdge(edgeIndex);
-
     if (this.database == "flights") {
       return "Dep: " + edge.depTime + "<br>Arr: " + edge.arrTime;
     } else {
-      return edge.linkedStructures;
+      return edge.links;
     }
   }
 
@@ -292,7 +318,9 @@ export class cmGraph {
     let nodes = Utils.getNodesFromPaths(paths);
     let edges = Utils.getEdgesFromPaths(paths);
 
-    let subgraph = new graphlib.Graph({multigraph: true});
+    let subgraph = new graphlib.Graph({
+      multigraph: true
+    });
 
     // the subgraph's graph is an object used by dagre layout.
     subgraph.setGraph({});
@@ -302,7 +330,7 @@ export class cmGraph {
 
     // if a node is in paths, add it to the subgraph
     graph.nodes().forEach(function (key) {
-      let id = parseInt(key);
+      let id = key;
       if (nodes.indexOf(id) != -1) {
         let value = graph.node(key);
         subgraph.setNode(id, value);
@@ -311,7 +339,7 @@ export class cmGraph {
 
     // if an edge's source and target nodes in paths, add it to the subgraph
     graph.edges().forEach(function (key) {
-      let id = parseInt(key.name);
+      let id = key.name;
       if (edges.indexOf(id) != -1) {
         subgraph.setEdge(key.v, key.w, graph.edge(key), key.name);
       }
