@@ -2,13 +2,15 @@
 
 # Graffinity
 
-Graffinity is a prototype implementation of two visualization techniques for visualizing connectivity realtionships in large graphs. These techniques are the connectivity matrix and intermediate node table. Graffinity also includes a query interface and supplemental views in the form of path lists and node-link diagrams. 
+Graffinity is a prototype implementation of two techniques for visualizing connectivity in large graphs: the connectivity matrix and the intermediate node table. We created these techniques to summarize many short paths that connect nodes. Please see our [EuroVis paper](http://vdl.sci.utah.edu/publications/2017_eurovis_graffinity) for details. 
 
-This project contains the client application written in HTML and JavaScript, using various open-source web frameworks. In order to use all the features of Graffinity, you must also have a running version of the [Graffinity Server](http://github.com/visdesignlab/graffinity_server).
+I recently updated Graffinity to run entirely in a web browser. It is available [here](http://vdl.sci.utah.edu/graffinity). Beware: this version only works with [neuroscience data](http://connectomes.utah.edu/export/files.html#neuron-connectivity-network).
 
-# Setup 
+Previously, Graffinity could be used with a flight dataset as well. However, it required a [server](https://github.com/visdesignlab/graffinity_server) running a graph database. The flight dataset can still be accessed by using the [release of Graffinity](https://github.com/visdesignlab/graffinity/releases/v0) that is described in our EuroVis paper.
 
-These are directions for running Graffinity on your local machine using npm and gulp. Graffinity comes with one example query result that is displayed by default. If you want to run queries, then you must also setup the server (see link above). 
+# Development
+
+These are directions for running Graffinity on your local machine using npm and gulp.
 
 1. Install prerequisites - npm and bower
 1. Clone this repository
