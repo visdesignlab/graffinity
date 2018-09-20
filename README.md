@@ -18,3 +18,7 @@ These are directions for running Graffinity on your local machine using npm and 
 1. Run `npm install`
 1. Run `bower install`
 1. Run `gulp serve` to start the application
+
+# Deployment
+
+The client-only version of Graffinity is hosted on this repository's github page. It can be updated from your local machine with using the gulp deploy task: e.g., running `gulp build && gulp deploy` from the local directory.
