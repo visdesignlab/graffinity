@@ -10,6 +10,12 @@ Previously, Graffinity could be used with a flight dataset as well. However, it 
 
 # Development
 
+I built Graffinity while I was also teaching myself how to build web applications. As a result, I made many design decisions that hinder its continued development and support. Furthermore, I built Graffinity to work with a few different datasets, but I have since deprecated support for everything that is not neuroscience data. It's a mess. 
+
+I strongly suggest that anyone who is interested in using the connectivity matrix or intermediate node table should read our EuroVis paper and implement these techniques themselves. Nevertheless, if you need to continue developing or supporting Graffinity, here are directions for building and deploying it.
+
+## Build
+
 These are directions for running Graffinity on your local machine using npm and gulp.
 
 1. Install prerequisites - npm and bower
@@ -19,6 +25,6 @@ These are directions for running Graffinity on your local machine using npm and 
 1. Run `bower install`
 1. Run `gulp serve` to start the application
 
-# Deployment
+## Deploy
 
 The client-only version of Graffinity is hosted on this repository's github page. It can be updated from your local machine with using the gulp deploy task: e.g., running `gulp build && gulp deploy` from the local directory.
