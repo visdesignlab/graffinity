@@ -166,13 +166,13 @@ export class MainController {
     self.isNodeListVisible = false;
 
     let defaultDataNames = [
-      "/assets/mock/2018.01.23-network-514-1-hop.json",
-      "/assets/mock/2018.01.23-network-all-hops.json"
+      "/assets/mock/2018.01.23-network-all-hops.json",
+      "/assets/mock/2018.01.23-network-debug.json"
     ];
     if (this.isProduction) {
       defaultDataNames = [
-        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-514-1-hop.json",
-        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-all-hops.json"
+        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-all-hops.json",
+        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.01.23-network-debug.json"
       ];
     }
 
