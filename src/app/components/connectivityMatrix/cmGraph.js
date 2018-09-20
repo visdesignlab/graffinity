@@ -271,11 +271,10 @@ export class cmGraph {
 
   getEdgeDetails(edgeIndex) {
     let edge = this.getEdge(edgeIndex);
-
     if (this.database == "flights") {
       return "Dep: " + edge.depTime + "<br>Arr: " + edge.arrTime;
     } else {
-      return edge.linkedStructures;
+      return edge.links;
     }
   }
 

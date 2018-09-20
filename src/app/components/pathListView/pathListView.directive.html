@@ -11,7 +11,7 @@
       <th>Paths</th>
       <th class="path-list-attribute-col"
           ng-click="controller.orderByField='paths[0].length'; controller.descending=!controller.descending">
-        Len
+        Hops
       </th>
       <th class="path-list-attribute-col"
           ng-click="controller.orderByField='paths.length'; controller.descending=!controller.descending">
@@ -62,7 +62,7 @@
 
       <!-- cell for path length -->
       <td class="path-list-attribute-col">
-        {{(row.paths[0].length + 1) / 2}}
+        {{(row.paths[0].length - 1) / 2}}
       </td>
 
       <!-- cell for num paths -->
@@ -117,8 +117,10 @@
           <tr ng-show="row.isPathExpanded[$index]">
             <td></td>
             <td ng-repeat="i in path track by $index" ng-if="$index %2 == 1">
-                <span class="path-list-child-edge"
-                      ng-bind-html="controller.pathListModel.getEdgeDetails(path[$index])">
+                <span class="path-list-child-edge">
+                    <div ng-repeat="link in controller.pathListModel.getEdgeDetails(path[$index])">
+                      {{link.SourceID}} {{link.Directional ? "<->" : "->"}} {{link.TargetID}}
+                    </div>
               </span>
             </td>
           </tr>
