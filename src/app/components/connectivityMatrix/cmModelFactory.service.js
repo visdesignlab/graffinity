@@ -117,10 +117,12 @@ export class cmModelFactory {
           let edgeIndex = currentNodeOutEdges[i].name;
           let currentAttributes = self.dataset.edgeDict[edgeIndex];
           let edgeType = currentAttributes.type;
-          if (edgeType.match(nextEdgeConstraint)) {
+          let match = edgeType.match(nextEdgeConstraint);
+          if (match && match[0] === edgeType) {
             let nextNodeId = currentEdge.w;
             let nextNode = graph.node(nextNodeId);
-            if (nextNode.label.match(nextNodeConstraint)) {
+            match = nextNode.label.match(nextNodeConstraint)
+            if (match && match[0] === nextNode.label) {
               let newPath = JSON.parse(JSON.stringify(currentPath));
               newPath.push(edgeIndex);
               newPath.push(nextNodeId.toString());
@@ -145,7 +147,8 @@ export class cmModelFactory {
 
     for (let i = 0; i < nodes.length; ++i) {
       let node = graph.node(nodes[i]);
-      if (node.label.match(query.nodes[0])) {
+      let match = node.label.match(query.nodes[0]);
+      if (match && match[0] === node.label) {
         let path = [nodes[i]];
         paths.push(path);
       }
