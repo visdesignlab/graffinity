@@ -24,25 +24,24 @@
     </span>
   </span>
   <div style="margin-left: auto; padding-right: 1em;">
-
-    <span>
-      <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
-        ng-click="main.areDetailsVisible = true;">
-        Show panel
-      </button>
-      <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
-        ng-click="main.areDetailsVisible = false;">
-        Hide panel
-      </button>
-    </span>
     <span>
       <button type="button" ng-show="!main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
         ng-click="main.isNodeListVisible= true;" ng-disabled="!main.model.getIntermediateNodeIndexes().length">
-        Show list
+        Show Int. Nodes
       </button>
       <button type="button" ng-show="main.isNodeListVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
         ng-click="main.isNodeListVisible= false;">
-        Hide list
+        Hide Int. Nodes
+      </button>
+    </span>
+    <span>
+      <button type="button" ng-show="!main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.areDetailsVisible = true;">
+        Show Details
+      </button>
+      <button type="button" ng-show="main.areDetailsVisible && main.hasGoodData" class="btn btn-default btn-xs btn-header"
+        ng-click="main.areDetailsVisible = false;">
+        Hide Details
       </button>
     </span>
   </div>
