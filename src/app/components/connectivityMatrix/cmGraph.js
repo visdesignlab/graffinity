@@ -53,12 +53,11 @@ export class cmGraph {
 
         attributes = {
           links: edge.Links,
-          sourceSizes: edge.SourceSizes,
-          targetSizes: edge.TargetSizes,
           sourceStructureId: edge.SourceStructureID,
           targetStructureId: edge.TargetStructureID,
           type: edge.Type,
-          carrier: edge.Carrier
+          targetArea: edge.TotalTargetArea ? edge.TotalTargetArea : 0.0,
+          sourceArea: edge.TotalSourceArea ? edge.TotalSourceArea : 0.0
         };
 
         let linkedStructures = "";
@@ -150,7 +149,7 @@ export class cmGraph {
       if (input.Type == 'int') {
         current.parseFn = parseInt;
       } else if (input.Type == 'float') {
-        current.parseFn = parseFloat;
+        current.parseFn = x => x ? parseFloat(x) : 0.0;
       } else if (input.Type == 'string') {
         if (current.isQuantitative) {
           throw 'Bad datatype!';

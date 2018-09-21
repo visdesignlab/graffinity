@@ -25,9 +25,9 @@ export class ColorScaleService {
     if (domain[0] === 0) {
       domain[0]++;
     }
-
     domain[1]++;
 
+    // This is where we can set custom ranges of the color scales, if needed to // make pretty figures.
     // if (colorScaleIndex == 0) {
     //   domain[0] = 1;
     //   domain[1] = 49;
@@ -35,7 +35,6 @@ export class ColorScaleService {
     //   domain[0] = 1;
     //   domain[1] = 749;
     // }
-
 
     let range = ColorScaleService.getColorScaleRange(colorbrewer[name], domain);
 

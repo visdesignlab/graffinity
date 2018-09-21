@@ -199,6 +199,7 @@ export class cmModelFactory {
 
     this.rawGraph = graph;
 
+    // In an earlier version of graffinity, the server would send back  information about how to interpret attributes of the graph. Here, we hard code this value so that that the graph can be parsed.
     graph.node_attributes = [{
         "DisplayName": "id",
         "Name": "ID",
@@ -222,43 +223,22 @@ export class cmModelFactory {
         "DatabaseName": "StructureID",
         "Unique": "true",
         "Type": "int"
-      }
-    ];
-
-    graph.edge_attributes = [{
-        "DataType": "index",
-        "Type": "int",
-        "Unique": "true",
-        "DisplayName": "id",
-        "Name": "ID"
       },
       {
-        "DataType": "source-index",
-        "Type": "int",
+        "DisplayName": "area",
+        "Name": "Area",
+        "DataType": "quantitative",
+        "DatabaseName": "Area",
         "Unique": "false",
-        "DisplayName": "source id",
-        "Name": "SourceStructureID"
+        "Type": "float"
       },
       {
-        "DataType": "target-index",
-        "Type": "int",
-        "Unique": "true",
-        "DisplayName": "target id",
-        "Name": "TargetStructureID"
-      },
-      {
-        "DataType": "categorical",
-        "Type": "string",
+        "DisplayName": "volume",
+        "Name": "Volume",
+        "DataType": "quantitative",
+        "DatabaseName": "Volume",
         "Unique": "false",
-        "DisplayName": "edge type",
-        "Name": "type"
-      },
-      {
-        "DataType": "string",
-        "Type": "string",
-        "Unique": "false",
-        "DisplayName": "structures",
-        "Name": "LinkedStructures"
+        "Type": "float"
       }
     ];
 

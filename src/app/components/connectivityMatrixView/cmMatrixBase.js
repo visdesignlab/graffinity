@@ -364,34 +364,34 @@ export class cmMatrixBase extends SvgGroupElement {
         "output": "scalar"
       });
     } else {
-      // metrics.push({
-      //   "name": "source area",
-      //   "tooltip": "source area",
-      //   "metricFn": function (paths, graph) {
-      //     return Utils.getAreaFromPaths("sourceSizes", paths, graph);
-      //   },
-      //   "output": "scalar"
-      // });
+      metrics.push({
+        "name": "source area",
+        "tooltip": "source area",
+        "metricFn": function (paths, graph) {
+          return Utils.getAreaFromPaths("sourceArea", paths, graph);
+        },
+        "output": "scalar"
+      });
 
-      // metrics.push({
-      //   "name": "target area",
-      //   "tooltip": "target area",
-      //   "metricFn": function (paths, graph) {
-      //     return Utils.getAreaFromPaths("targetSizes", paths, graph);
-      //   },
-      //   "output": "scalar"
-      // });
+      metrics.push({
+        "name": "target area",
+        "tooltip": "target area",
+        "metricFn": function (paths, graph) {
+          return Utils.getAreaFromPaths("targetArea", paths, graph);
+        },
+        "output": "scalar"
+      });
 
-      // metrics.push({
-      //     "name": "area diff",
-      //     "tooltip": "area diff",
-      //     "metricFn": function (paths, graph) {
-      //         let sourceSizes = Utils.getAreaFromPaths("sourceSizes", paths, graph);
-      //         let targetSizes = Utils.getAreaFromPaths("targetSizes", paths, graph);
-      //         return Math.abs(sourceSizes - targetSizes);
-      //     },
-      //     "output": "scalar"
-      // });
+      metrics.push({
+        "name": "area diff",
+        "tooltip": "area diff",
+        "metricFn": function (paths, graph) {
+          let sourceSizes = Utils.getAreaFromPaths("sourceArea", paths, graph);
+          let targetSizes = Utils.getAreaFromPaths("targetArea", paths, graph);
+          return Math.abs(sourceSizes - targetSizes);
+        },
+        "output": "scalar"
+      });
 
     }
 
@@ -426,8 +426,8 @@ export class cmMatrixBase extends SvgGroupElement {
         "output": "list"
       });
     }
-    return metrics;
 
+    return metrics;
   }
 
   getAvailableEncodings(metricOutput) {

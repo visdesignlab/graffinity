@@ -68,9 +68,6 @@ class AdjustableColorScaleController {
         self.histogramGroup = self.svgRoot.append("g")
           .attr("transform", "translate(5, 0)");
       }
-
-      //self.histogram = new visHistogramScent(self.$scope, self.histogramGroup, self.width - 10, 40, 30, false, self.values, 0, true);
-
     });
   }
 
@@ -81,8 +78,8 @@ class AdjustableColorScaleController {
     let newValue = self.xScale.invert(d3.event.x);
     newValue =
       newValue < xMin ? xMin :
-        xMax < newValue ? xMax :
-          newValue;
+      xMax < newValue ? xMax :
+      newValue;
 
     let newDomain = self.others.slice();
     newDomain.push(newValue);

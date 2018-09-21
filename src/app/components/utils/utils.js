@@ -70,9 +70,7 @@ Utils = (function () {
       for (let j = 1; j < path.length; j = j + 2) {
         let edgeId = path[j];
         let edge = graph.graph.edge(path[j - 1], path[j + 1], edgeId);
-        sizes = sizes + edge[area].reduce(function (sum, value) {
-            return sum + value;
-          }, 0);
+        sizes = sizes + edge[area];
       }
     }
     return Math.round(sizes);

@@ -41,7 +41,12 @@ export class visHistogramScent {
 
     if (isVertical) {
       // margin allows for histogram to be properly placed -- note can change the right to 2 if you want histogram farther way from 1D scatterplots
-      this.margin = {top: 2, right: 0, bottom: 2, left: 0};
+      this.margin = {
+        top: 2,
+        right: 0,
+        bottom: 2,
+        left: 0
+      };
 
       this.chartWidth = this.width - this.margin.left - this.margin.right - this.offset;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom;
@@ -62,10 +67,14 @@ export class visHistogramScent {
       }
 
       this.createHistogramBarsVertical();
-    }
-    else {
+    } else {
       // margin allows for histogram to be properly placed-- note can change the bottom to 2 if you want histogram farther way from 1D scatterplots
-      this.margin = {top: 0, right: 2, bottom: 0, left: 2};
+      this.margin = {
+        top: 0,
+        right: 2,
+        bottom: 0,
+        left: 2
+      };
       this.chartWidth = this.width - this.margin.left - this.margin.right;
       this.chartHeight = this.height - this.margin.top - this.margin.bottom - this.offset;
 
@@ -117,9 +126,11 @@ export class visHistogramScent {
         return "translate(" + (self.margin.left + self.xScale(d.x)) + "," + (self.yScale(d.y) - self.margin.bottom) + ")";
       });
 
+    let width = self.xScale(this.minValue + this.histogramData[0].dx);
+    width = width > 1 ? width - 1 : width;
     bar.append("rect")
       .attr("x", 1)
-      .attr("width", self.xScale(this.minValue + this.histogramData[0].dx) - 1)
+      .attr("width", width)
       .attr("height", function (d) {
         return (self.chartHeight - self.yScale(d.y));
       })
@@ -144,11 +155,18 @@ export class visHistogramScent {
         return "translate(" + (self.yScale(d.y) - self.margin.right) + "," + (self.margin.top + self.chartHeight - self.xScale(d.dx + d.x)) + ")";
       });
 
+    let height = self.xScale(this.minValue + this.histogramData[0].dx);
+    height = height > 1 ? height - 1 : height;
     bar.append("rect")
       .attr("x", 1)
-      .attr("height", self.xScale(this.minValue + this.histogramData[0].dx) - 1)
+      .attr("height", height)
       .attr("width", function (d) {
-        return (self.chartWidth - self.yScale(d.y));
+        let width = self.chartWidth - self.yScale(d.y);
+        if (width < 0) {
+          return 0;
+        } else {
+          return width;
+        }
       })
       .style("fill", "steelblue");
   }
