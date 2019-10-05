@@ -364,6 +364,7 @@ export class cmMatrixBase extends SvgGroupElement {
         "output": "scalar"
       });
     } else {
+
       metrics.push({
         "name": "source area",
         "tooltip": "source area",
@@ -393,31 +394,74 @@ export class cmMatrixBase extends SvgGroupElement {
         "output": "scalar"
       });
 
-    }
-
-    if (!this.isNodeListView) {
       metrics.push({
-        "name": "len vs paths",
-        "metricFn": function (paths) {
-          let summary = {};
-          for (var i = 0; i < paths.length; ++i) {
+        "name": "synapses (unique)",
+        "tooltip": "synapses (unique)",
+        "metricFn": function(paths) {
+          let numSynapses = 0;
+          let countedSyanpses = [];
+          for (let i = 0; i < paths.length; ++i) {
             let path = paths[i];
-
-            // Have we globally seen a path with this many hops before?
-            let numHops = Utils.getNumHops(path);
-
-            // Record this numHops locally. Summary is map[numHops] -> numPaths.
-            if (summary[numHops] == undefined) {
-              summary[numHops] = 1;
-            } else {
-              summary[numHops] += 1;
+            for (let j = 1; j < path.length; j = j + 2) {
+              let edgeId = path[j];
+              if(countedSyanpses.indexOf(edgeId) === -1){
+                countedSyanpses.push(edgeId);
+                numSynapses = numSynapses + 1;
+              }
             }
           }
-          return summary;
+          return numSynapses;
         },
-        "output": "list"
+        "output": "scalar"
       });
-    } else {
+
+      metrics.push({
+        "name": "target area (unique)",
+        "tooltip": "target area (unique)",
+        "metricFn": function(paths, graph) {
+          let size = 0;
+          let countedSyanpses = [];
+          for (let i = 0; i < paths.length; ++i) {
+            let path = paths[i];
+            for (let j = 1; j < path.length; j = j + 2) {
+              let edgeId = path[j];
+              if(countedSyanpses.indexOf(edgeId) === -1){
+                countedSyanpses.push(edgeId);
+                let edge = graph.graph.edge(path[j - 1], path[j + 1], edgeId);
+                size = size + edge["targetArea"];
+              }
+            }
+          }
+          return Math.round(size);
+        },
+        "output": "scalar"
+      });
+
+      metrics.push({
+        "name": "source area (unique)",
+        "tooltip": "source area (unique)",
+        "metricFn": function(paths, graph) {
+          let size = 0;
+          let countedSyanpses = [];
+          for (let i = 0; i < paths.length; ++i) {
+            let path = paths[i];
+            for (let j = 1; j < path.length; j = j + 2) {
+              let edgeId = path[j];
+              if(countedSyanpses.indexOf(edgeId) === -1){
+                countedSyanpses.push(edgeId);
+                let edge = graph.graph.edge(path[j - 1], path[j + 1], edgeId);
+                size = size + edge["sourceArea"];
+              }
+            }
+          }
+          return Math.round(size);
+        },
+        "output": "scalar"
+      });
+
+    }
+
+    if (this.isNodeListView) {
       metrics.push({
         "name": "num start | num end",
         "metricFn": function (paths) {
