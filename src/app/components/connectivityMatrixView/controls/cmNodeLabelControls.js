@@ -57,17 +57,14 @@ export class cmNodeLabelControls extends SvgGroupElement {
       self.toggleControlVisible(true, d);
     };
 
-    let outline = group.append("rect")
+    let outline = group.append("foreignObject")
       .data([isVertical])
-      .attr("width", width)
-      .attr("height", isVertical ? colWidth : rowHeight)
-      .classed("matrix-view-attribute-controls", true)
-      .on("mouseenter", mouseEnter)
+      .attr("width", (isVertical ? height : width))
+      .attr("height", 12) // height of the icons in the sort controls
+      .on("mouseover", mouseEnter)
       .on("mouseleave", mouseLeave);
 
-    let allControls = group.append("foreignObject")
-      .attr("width", width)
-      .append('xhtml:div')
+    let allControls = outline.append('xhtml:div')
       .style("justify-content", "space-between")
       .style("display", "flex")
       .data([isVertical])
@@ -85,7 +82,6 @@ export class cmNodeLabelControls extends SvgGroupElement {
       .classed("matrix-view-toolbar", true)
       .on("mouseover", mouseEnter)
       .on("mouseleave", mouseLeave);
-
 
     controls.append("i")
       .data([isVertical])
@@ -152,7 +148,7 @@ export class cmNodeLabelControls extends SvgGroupElement {
 
   toggleControlVisible(visible, isVertical) {
     if (isVertical) {
-      this.verticalOutline.attr("stroke", visible ? "black" : "none");
+      this.verticalOutline.style("outline", visible ? "thin solid grey" : "none");
       this.verticalControls.style("display", visible ? "flex" : "none");
 
       if (!visible && !this.verticalSortControls.select(".fa").attr("data-is-sorted")) {
@@ -162,7 +158,7 @@ export class cmNodeLabelControls extends SvgGroupElement {
       }
 
     } else {
-      this.outline.attr("stroke", visible ? "black" : "none");
+      this.outline.style("outline", visible ?  "thin solid grey" : "none");
       this.controls.style("display", visible ? "flex" : "none");
 
       if (!visible && !this.sortControls.select(".fa").attr("data-is-sorted")) {

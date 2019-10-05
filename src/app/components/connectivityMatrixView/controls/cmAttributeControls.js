@@ -108,24 +108,18 @@ export class cmAttributeControls extends SvgGroupElement {
       self.toggleControlVisible(true);
     };
 
-    this.outline = group.append("rect")
-      .attr("width", isVertical ? height : width)
-      .attr("height", isVertical ? width : height)
-      .classed("matrix-view-attribute-controls", true)
-      .on("mouseenter", mouseEnter)
-      .on("mouseleave", mouseLeave);
+    // this.outline handles the mouse events to show the outline
+    this.outline = group.append("foreignObject")
+    .attr("width", (isVertical ? height : width) - 3)
+    .attr("height", (isVertical ? width: height) - 3)
+    .on("mouseover", mouseEnter)
+    .on("mouseleave", mouseLeave);
 
-
-    this.allControls = group.append("foreignObject")
-      .attr("width", (isVertical ? height : width))
+    this.allControls = this.outline
       .append('xhtml:div')
       .style("justify-content", "space-between")
       .style("display", "flex")
-
-      .style("height", "auto")
-      .on("mouseover", mouseEnter)
-      .on("mouseleave", mouseLeave);
-
+      .style("height", "auto");
 
     this.sortControls = this.allControls.append('xhtml:div')
       .data([isVertical])
@@ -219,8 +213,8 @@ export class cmAttributeControls extends SvgGroupElement {
    * Called when mouse is on top of the interaction rect.
    */
   toggleControlVisible(visible) {
-    this.outline.attr("stroke", visible ? "black" : "none");
     this.controls.style("display", visible ? "flex" : "none");
+    this.outline.style('outline', visible ? 'thin solid grey' : 'none')
 
     if (!this.sortControls.select(".fa").attr("data-is-sorted") && !visible) {
       this.sortControls.style("display", "none");
@@ -229,7 +223,6 @@ export class cmAttributeControls extends SvgGroupElement {
     }
   }
 }
-
 
 export class cmCategoricalAttributeControls extends cmAttributeControls {
   constructor(parent, name, isVertical, width, height, onSort, onHide, index, onFilter, filterNodeIndexes,
