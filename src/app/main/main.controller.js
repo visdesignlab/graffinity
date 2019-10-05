@@ -165,15 +165,11 @@ export class MainController {
     self.hasGoodData = false;
     self.isNodeListVisible = false;
 
-    let defaultDataNames = [
-      "/assets/mock/2018.09.07-network-all-hops.json",
-      "/assets/mock/2018.09.20-synthetic-data.json",
+    let defaultDataNames = [      
       "/assets/mock/2018.09.21-514-3-hops.json"
     ];
     if (this.isProduction) {
       defaultDataNames = [
-        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.09.07-network-all-hops.json",
-        "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.09.20-synthetic-data.json",
         "http://vdl.sci.utah.edu/graffinity/assets/mock/2018.09.21-514-3-hops.json"
       ];
     }
